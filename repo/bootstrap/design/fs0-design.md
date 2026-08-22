@@ -29,7 +29,9 @@ The chunks collectively form one non-authoritative FS0 Design Proposal. No chunk
 | `fs0-design.md` | entry point, objective, invariant, capability map |
 | `fs0-authority-governance.md` | acceptance state, authority, Governance, normative requirements |
 | `fs0-conformance-assurance.md` | mechanical Conformance and semantic Assurance kernels |
-| `fs0-operating-substrate-github.md` | bootstrap boundary, operating substrate, GitHub binding, cutover |
+| `fs0-operating-substrate.md` | bootstrap boundary, user prerequisites, operating substrate, bootstrap implementation |
+| `fs0-github.md` | GitHub capability contract, fixed GitHub binding, cutover |
+| `fs0-installed-layout.md` | concrete installed FS0 tree and structure enforcement |
 | `fs0-self-hosting.md` | installed state, exclusions, self-hosting demonstration, acceptance and audit |
 
 ## Loading Rule

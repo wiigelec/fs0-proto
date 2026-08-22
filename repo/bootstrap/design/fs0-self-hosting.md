@@ -10,9 +10,11 @@ Read `fs0-design.md` first. This chunk does not independently create authority.
 
 # Minimum Installed FS0 State
 
-The exact final tree is not yet fixed.
+The bootstrap installed tree is fixed by `fs0-installed-layout.md` for FS0.
 
-However, the installed FS0 state must contain enough maintained artifacts and operating surfaces to represent and operate:
+That bootstrap layout may later change only through accepted FS0 Governance.
+
+The installed FS0 state must contain enough maintained artifacts and operating surfaces to represent and operate:
 
 ```text
 Framework Contract authority
@@ -155,6 +157,13 @@ Without invoking bootstrap authority, the resulting repository shall be capable 
 
 FS0 bootstrap is complete only when all of the following are true.
 
+## Installed Structure
+
+- The target repository conforms to `fs0-installed-layout.md`.
+- Required FS0 paths are mechanically enforced.
+- Unknown maintained artifacts inside governed FS0 roots are rejected unless explicitly authorized.
+- The bootstrap source repository remains separate from the installed target repository.
+
 ## Authority
 
 - FS0 accepted authority is explicitly identifiable.
@@ -191,7 +200,8 @@ FS0 bootstrap is complete only when all of the following are true.
 
 ## GitHub Operation
 
-- A fresh AI-agent session can orient from root `README.md` and `AGENTS.md` without relying on chat history.
+- A fresh AI-agent session can orient from bootstrap-generated root `README.md` and `AGENTS.md` without relying on chat history.
+- A clean bootstrap run generates `README.md`, `AGENTS.md`, and `LICENSE`; pre-existing copies are not required.
 - FS0 has authenticated network and Git/GitHub capability sufficient for its full governed lifecycle.
 - Technical write credentials remain distinct from Governance authorization.
 - FS0 can be operated without contributor-local filesystem access.
@@ -284,3 +294,8 @@ Before generating bootstrap scripts, this proposal should be audited for:
 18. whether authenticated GitHub write capability is cleanly separated from bounded Governance authorization;
 19. whether `README.md` and `AGENTS.md` provide enough context for a fresh AI agent without becoming competing authority; and
 20. whether any network, Git, GitHub API, or execution capability required to build FS1 is still missing from FS0.
+21. whether the bootstrap implementation generates `README.md`, `AGENTS.md`, and `LICENSE` into a clean target repository;
+22. whether `fs0-installed-layout.md` eliminates builder invention of maintained paths and artifact roles;
+23. whether structure enforcement is default-deny inside governed FS0 roots while permitting unrelated user project content outside those roots;
+24. whether Git/GitHub repository creation and credentials remain user prerequisites rather than bootstrap responsibilities; and
+25. whether the eventual `repo-spec --bootstrap --repo <path>` wrapper can delegate without creating a second bootstrap implementation.
