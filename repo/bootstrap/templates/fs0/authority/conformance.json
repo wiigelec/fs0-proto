@@ -15,13 +15,11 @@
     "FS0-CONF-003",
     "FS0-CONF-004",
     "FS0-CONF-005",
-    "FS0-CONF-006",
     "FS0-CONF-007",
     "FS0-CONF-008",
     "FS0-CONF-009",
     "FS0-CONF-010",
-    "FS0-CONF-011",
-    "FS0-CONF-012"
+    "FS0-CONF-011"
   ],
   "provenance": {
     "kind": "bootstrap-design-normalization",

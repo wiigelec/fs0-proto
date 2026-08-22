@@ -56,16 +56,6 @@
     {
       "schema_version": "1",
       "record_type": "requirement",
-      "requirement_id": "FS0-CONF-006",
-      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
-      "statement": "Every mechanically applicable requirement SHALL have executable assertion coverage.",
-      "lifecycle_state": "accepted",
-      "conformance_applicability": "mechanical",
-      "assurance_applicability": "none"
-    },
-    {
-      "schema_version": "1",
-      "record_type": "requirement",
       "requirement_id": "FS0-CONF-007",
       "owner_authority_id": "FS0-AUTH-CONFORMANCE",
       "statement": "Every executable assertion SHALL produce or resolve the evidence required by FS0 Conformance authority.",
@@ -112,16 +102,6 @@
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
-    },
-    {
-      "schema_version": "1",
-      "record_type": "requirement",
-      "requirement_id": "FS0-CONF-012",
-      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
-      "statement": "FS0 Conformance SHALL mechanically verify required installed paths and artifact roles, authority/requirement/correspondence record contracts, proposal registry completeness and authority-state none, deterministic proposal Markdown projection, retained bootstrap payload role closure, canonical bootstrap wrapper/src placement, canonical Conformance runner/workflow, valid bootstrap state, and generated root surfaces.",
-      "lifecycle_state": "accepted",
-      "conformance_applicability": "mechanical",
-      "assurance_applicability": "none"
     }
   ]
 }

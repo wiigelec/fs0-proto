@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "requirement-template-index",
-  "requirements_total": 73,
+  "requirements_total": 71,
   "authority_order": [
     "FS0-AUTH-FRAMEWORK",
     "FS0-AUTH-GOVERNANCE",

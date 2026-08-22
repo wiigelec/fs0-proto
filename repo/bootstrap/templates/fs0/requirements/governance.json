@@ -208,7 +208,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-021",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Design Normalize and Assurance SHALL be capable of identifying materially compound obligations, ambiguity, contradiction, duplication, inappropriate implementation leakage, and missing semantic ownership.",
+      "statement": "Design Normalize SHALL be capable of identifying materially compound obligations, ambiguity, contradiction, duplication, inappropriate implementation leakage, and missing semantic ownership.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
