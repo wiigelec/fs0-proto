@@ -1,0 +1,125 @@
+{
+  "authority": "FS0-AUTH-FRAMEWORK",
+  "requirements": [
+    {
+      "id": "FS0-FC-001",
+      "statement": "The authoritative framework namespace SHALL be rooted at repo/ in the repository.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-002",
+      "statement": "FS0 SHALL contain exactly one foundational Framework Contract authority.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-003",
+      "statement": "The Framework Contract SHALL explicitly delegate to Governance, Conformance, and Assurance.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-004",
+      "statement": "Every accepted authority SHALL have a stable machine-resolvable identity.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-005",
+      "statement": "Every independently governed semantic invariant SHALL have exactly one controlling normative authority owner.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-006",
+      "statement": "Maintained governed framework state SHALL require positive authorization or an explicit governed extension point.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-007",
+      "statement": "Implementation, validation output, review findings, generated artifacts, workflow convention, historical state, product behavior, and technical write capability SHALL NOT independently create normative authority.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-008",
+      "statement": "Normative authority dependencies SHALL be acyclic.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-009",
+      "statement": "Every maintained derived framework primitive SHALL have resolvable provenance to accepted normative authority.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-010",
+      "statement": "Each accepted normative obligation SHALL be represented by an identified requirement with owner, statement, lifecycle state, lineage where applicable, and Conformance and Assurance applicability.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-011",
+      "statement": "Bootstrap SHALL NOT initialize the target Git repository, create the GitHub repository, or establish user credentials.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-012",
+      "statement": "Before mutation, bootstrap SHALL verify the target repository, GitHub remote, Git authentication, GitHub API authentication, network connectivity, and required technical capabilities.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-013",
+      "statement": "The operating substrate SHALL provide Git operations, authenticated GitHub API access, HTTPS/TLS and name resolution, maintained-script execution, remote Conformance evidence retrieval, and accepted-state publication.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-014",
+      "statement": "Authentication secrets, tokens, private keys, and equivalent credentials SHALL remain external to repository-maintained state.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-015",
+      "statement": "GitHub SHALL be the required initial FS0 operating platform.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-016",
+      "statement": "FS0 SHALL support repository read/write; Git ref read/create/update; issue and pull-request operations; workflow/check and commit/status reads; event-driven workflow execution; and authenticated actor resolution.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-017",
+      "statement": "Bootstrap SHALL generate README.md, AGENTS.md, and LICENSE at repository root.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-018",
+      "statement": "README.md and AGENTS.md SHALL remain subordinate operational orientation surfaces.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-019",
+      "statement": "The bootstrap prototype and initial installed FS0 SHALL use GNU General Public License version 3 unless later accepted Governance changes that decision where legally permitted.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-020",
+      "statement": "repo/bootstrap/ SHALL contain only Design input, canonical maintenance inputs, and implementation required to construct, verify, accept, cut over, and maintain FS0.",
+      "c": "mechanical",
+      "a": "required"
+    }
+  ]
+}

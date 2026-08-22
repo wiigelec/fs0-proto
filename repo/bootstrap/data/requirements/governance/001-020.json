@@ -1,0 +1,125 @@
+{
+  "authority": "FS0-AUTH-GOVERNANCE",
+  "requirements": [
+    {
+      "id": "FS0-GOV-001",
+      "statement": "FS0 Governance SHALL implement Design Proposal -> Design -> Plan -> Build -> accepted repository state.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-002",
+      "statement": "Design SHALL use Audit, Normalize, Accept; Plan SHALL use Analyze, Specify, Accept; Build SHALL use Implement, Verify, Accept.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-003",
+      "statement": "Each governed Design, Plan, and Build work item SHALL record stable identity, predecessor, scope, material exclusions where applicable, candidate result, completion conditions, disposition, provenance, and bounded authorization.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-004",
+      "statement": "Design SHALL consume a non-authoritative Design Proposal.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-005",
+      "statement": "Plan SHALL consume accepted Design authority and define realization intent covering affected artifacts, Conformance work, Assurance work, dependencies, sequencing, and bounded Build scope.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-006",
+      "statement": "Build SHALL consume an accepted Plan and implement only work authorized by that Plan.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-007",
+      "statement": "Semantic defects SHALL route to Design, realization-intent defects to Plan, and implementation defects to Build.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-008",
+      "statement": "Governance acceptance SHALL be explicit, attributable, traceable, and candidate-specific.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-009",
+      "statement": "A Governance acceptance decision SHALL depend only on authority accepted before the candidate acquires authority produced by that acceptance.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-010",
+      "statement": "A governed work item SHALL authorize only its explicit scope.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-011",
+      "statement": "For the FS0 GitHub binding, each Design, Plan, or Build acceptance record SHALL be a structured machine-readable GitHub issue comment on that stage's governed-work issue.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-GOV-012",
+      "statement": "Every machine-readable acceptance comment SHALL use marker repo-spec-acceptance:v1 followed immediately by exactly one fenced JSON object using the Design-defined envelope.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-GOV-013",
+      "statement": "A governance-acceptance record SHALL use schema_version 1, record_type governance-acceptance, stage design|plan|build, disposition accepted|rejected, and the Design-defined required fields.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-GOV-014",
+      "statement": "A bootstrap-acceptance record SHALL use schema_version 1, record_type bootstrap-acceptance, stage bootstrap, disposition accepted|rejected, exact candidate revision, and required bootstrap evidence.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-GOV-015",
+      "statement": "For repository-changing work, candidate_id SHALL resolve to an exact Git commit SHA.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-GOV-016",
+      "statement": "Accepted repository state SHALL be represented by refs/heads/accepted plus a matching valid acceptance record.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-GOV-017",
+      "statement": "Default-branch position, merge state, pull-request state, review state, comment state, and workflow state SHALL NOT independently create accepted repository state.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-018",
+      "statement": "Initial bootstrap acceptance SHALL be recorded on a dedicated external bootstrap provenance issue.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-019",
+      "statement": "Technical write permission SHALL be treated only as capability and SHALL NOT enlarge Governance authorization.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-020",
+      "statement": "After FS0 cutover, every persistent framework change SHALL occur through FS0 Governance.",
+      "c": "mechanical",
+      "a": "required"
+    }
+  ]
+}

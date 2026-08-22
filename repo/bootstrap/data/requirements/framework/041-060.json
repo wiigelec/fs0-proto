@@ -1,0 +1,125 @@
+{
+  "authority": "FS0-AUTH-FRAMEWORK",
+  "requirements": [
+    {
+      "id": "FS0-FC-041",
+      "statement": "FS0 SHALL distinguish repository content, desired GitHub operating state, observed GitHub state, authorized mutation, and verified resulting state.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-042",
+      "statement": "The bootstrap data tree SHALL keep FS0 data distinct from successor Design Proposal data.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-043",
+      "statement": "Governance, Conformance, and Assurance SHALL be the only authority-bearing keystones delegated by the Framework Contract.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-044",
+      "statement": "No FS0 authority record SHALL acquire keystone authority implicitly.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-045",
+      "statement": "Every accepted normative requirement SHALL have a stable machine-resolvable identity.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-046",
+      "statement": "A missing bootstrap prerequisite SHALL stop bootstrap with a clear error before mutation.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-047",
+      "statement": "GitHub mechanisms SHALL remain subordinate realizations and SHALL NOT define Governance, Conformance, or Assurance semantics.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-048",
+      "statement": "Generated root surfaces SHALL be deterministic for identical canonical inputs except explicitly declared variable installation-state fields.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-049",
+      "statement": "README.md and AGENTS.md SHALL NOT become independent semantic owners.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-050",
+      "statement": "All substantive bootstrap implementation SHALL reside under repo/bootstrap/scripts/src/.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-051",
+      "statement": "Every bootstrap-installed successor Design Proposal seed SHALL have authority state none.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-052",
+      "statement": "Each installed proposal.md SHALL be a deterministic projection of its installed structured proposal read representation.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-053",
+      "statement": "Generated proposal Markdown SHALL NOT become an independent semantic owner.",
+      "c": "none",
+      "a": "required"
+    },
+    {
+      "id": "FS0-FC-054",
+      "statement": "Post-cutover FS0 SHALL require no semantic, template, generator, or script input from an external bootstrap environment.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-055",
+      "statement": "Unrelated user project content outside governed FS0 roots MAY remain.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-056",
+      "statement": "Authority lifecycle_state SHALL support accepted, superseded, and withdrawn.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-057",
+      "statement": "Requirement conformance_applicability SHALL be mechanical or none.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-058",
+      "statement": "Requirement assurance_applicability SHALL be required or none.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-059",
+      "statement": "Bootstrap state SHALL be candidate or cutover.",
+      "c": "mechanical",
+      "a": "none"
+    },
+    {
+      "id": "FS0-FC-060",
+      "statement": "After cutover, repo/state/bootstrap.json SHALL be immutable except through later accepted authority that explicitly governs recovery or reconstruction.",
+      "c": "mechanical",
+      "a": "required"
+    }
+  ]
+}

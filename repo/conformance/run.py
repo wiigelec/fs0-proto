@@ -56,7 +56,7 @@ def check_conformance_closure(root, assertion_ids):
 
 def check_generation_correspondence(root, assertion_ids):
     proc = subprocess.run([str(root / "repo/bootstrap/scripts/bootstrap"), "--check"], cwd=root, text=True, capture_output=True)
-    ok = proc.returncode == 0 and "FS0.3 generation correspondence: PASS" in proc.stdout
+    ok = proc.returncode == 0 and "FS0 generation correspondence: PASS" in proc.stdout
     evidence = {"returncode": proc.returncode, "stdout": proc.stdout.strip(), "stderr": proc.stderr.strip()}
     out = []
     for aid in assertion_ids:
