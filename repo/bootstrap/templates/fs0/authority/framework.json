@@ -44,7 +44,14 @@
     "FS0-FC-030",
     "FS0-FC-031",
     "FS0-FC-032",
-    "FS0-FC-033"
+    "FS0-FC-033",
+    "FS0-FC-034",
+    "FS0-FC-035",
+    "FS0-FC-036",
+    "FS0-FC-037",
+    "FS0-FC-038",
+    "FS0-FC-039",
+    "FS0-FC-040"
   ],
   "provenance": {
     "kind": "bootstrap-design-normalization",

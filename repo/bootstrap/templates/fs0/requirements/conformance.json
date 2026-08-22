@@ -102,6 +102,26 @@
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-013",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Each installed Conformance correspondence record SHALL contain requirement_id, applicability, and assertion_ids; applicability mechanical SHALL require at least one stable assertion identity and applicability none SHALL require an empty assertion_ids collection.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-014",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "In the fixed FS0 GitHub binding, canonical Conformance execution SHALL use the repository GitHub Actions workflow and Conformance evidence SHALL be a workflow or check result tied to the exact candidate commit SHA.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
     }
   ]
 }

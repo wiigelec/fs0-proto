@@ -332,6 +332,76 @@
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-034",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Every FS0 JSON record SHALL contain schema_version and record_type.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-035",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Each FS0 authority record SHALL contain schema_version, record_type authority, authority_id, title, owner, lifecycle_state, dependencies, delegates, requirements, and provenance; authority lifecycle_state SHALL support accepted, superseded, and withdrawn.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-036",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "The installed requirement registry SHALL contain requirement_id, owner_authority_id, statement, lifecycle_state, predecessor_requirement_id and successor_requirement_id where applicable, conformance_applicability, and assurance_applicability; Conformance applicability SHALL be mechanical|none and Assurance applicability SHALL be required|none.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-037",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "repo/state/bootstrap.json SHALL use record_type bootstrap-state and contain state, candidate_revision where applicable, first_accepted_fs0_revision where applicable, bootstrap_provenance_issue where applicable, bootstrap_acceptance_record where applicable, accepted_ref, and cutover_timestamp where applicable; state SHALL be candidate|cutover and after cutover the record SHALL be immutable except through explicitly authorized disaster-recovery or reconstruction semantics established by later accepted authority.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-038",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "README.md SHALL state repository purpose, current bootstrap/cutover status, the Design Proposal index, accepted-state discovery guidance, basic repository operation guidance, and that implementation and GitHub state do not independently create authority.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-039",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "AGENTS.md SHALL state required initial reading order, Design-chunk discovery, bootstrap/cutover-state discovery, accepted-state resolution after cutover, the prohibition against treating technical write capability as authority, the requirement to inspect exact GitHub candidate and evidence state before mutation, and the rule that post-cutover persistent framework mutation routes through FS0 Governance.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-040",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Bootstrap verification SHALL fail if any required generated root orientation or license surface is absent.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
     }
   ]
 }

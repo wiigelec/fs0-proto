@@ -16,7 +16,9 @@
     "FS0-ASSUR-004",
     "FS0-ASSUR-005",
     "FS0-ASSUR-006",
-    "FS0-ASSUR-007"
+    "FS0-ASSUR-007",
+    "FS0-ASSUR-008",
+    "FS0-ASSUR-009"
   ],
   "provenance": {
     "kind": "bootstrap-design-normalization",

@@ -212,6 +212,66 @@
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-022",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "The installed proposal registry SHALL record proposal identity, order, installed path, lifecycle state, bootstrap provenance, authority state, reconstruction dependencies, and predecessor and successor proposal identities where applicable.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-023",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Bootstrap-installed seed proposal registry records SHALL use lifecycle state available, bootstrap provenance bootstrap-seed, and authority state none.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-024",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "The proposal registry SHALL be machine-resolvable so a fresh agent can enumerate available unprocessed successor Design Proposals and their reconstruction dependencies without chat history.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-025",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "After cutover, a bootstrap-installed seed proposal SHALL NOT be mutated in place; a correction SHALL occur through a new or successor proposal with explicit lineage.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-026",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "In the fixed FS0 GitHub binding, Design governed work SHALL use a GitHub issue, Plan governed work SHALL use a separate GitHub issue, Build governed work SHALL use a separate GitHub issue, candidate repository state SHALL use a Git branch plus exact commit SHA, and the candidate review surface SHALL use a pull request.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-027",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "FS0 SHALL make the active Design work, initiating Design Proposal, candidate or accepted normative delta, accepted Plan, authorized Build work, exact revision under review, acceptance status, resulting accepted revision, and remaining unauthorized work machine-resolvable from repository and GitHub state without chat history.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
     }
   ]
 }
