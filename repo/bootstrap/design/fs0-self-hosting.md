@@ -308,8 +308,11 @@ Before generating bootstrap scripts, this proposal should be audited for:
 22. whether `fs0-installed-layout.md` eliminates builder invention of maintained paths and artifact roles;
 23. whether structure enforcement is default-deny inside governed FS0 roots while permitting unrelated user project content outside those roots;
 24. whether Git/GitHub repository creation and credentials remain user prerequisites rather than bootstrap responsibilities; and
-25. whether the eventual `repo-spec --bootstrap --repo <path>` wrapper can delegate without creating a second bootstrap implementation.
+25. whether the copied bootstrap payload is self-contained and free of future-product requirements not necessary to construct and cut over FS0.
 26. whether the complete successor Design Proposal seed set is installed before cutover and can drive the remainder of repo-spec without later bootstrap semantics;
 27. whether every seed proposal is explicitly non-authoritative and machine-enumerable through the proposal registry;
 28. whether the minimum structured record contracts are sufficient for the bootstrap implementation to avoid inventing authority, requirement, correspondence, state, or proposal fields; and
 29. whether bootstrap acceptance is unambiguously located as a structured comment on the dedicated bootstrap provenance issue.
+30. whether `repo/bootstrap/` contains only bootstrap Design input, canonical templates, and bootstrap implementation required for FS0 construction;
+31. whether all generated artifacts are written outside `repo/bootstrap/`; and
+32. whether ordinary post-cutover FS0 operation is independent of the bootstrap payload.

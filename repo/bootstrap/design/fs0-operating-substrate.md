@@ -17,6 +17,7 @@ fs0-proto/
 └── repo/
     └── bootstrap/
         ├── design/
+        ├── templates/
         └── scripts/
 ```
 
@@ -26,6 +27,12 @@ The initial FS0 Design Proposal belongs at:
 
 ```text
 repo/bootstrap/design/fs0-design.md
+```
+
+Canonical bootstrap templates belong at:
+
+```text
+repo/bootstrap/templates/
 ```
 
 Bootstrap construction scripts belong at:
@@ -234,37 +241,25 @@ FS0 shall carry an explicit repository license from the initial published protot
 
 The bootstrap prototype shall use GNU General Public License version 3, matching the originating repo-spec project, unless later accepted Governance changes the licensing decision where legally permitted.
 
-## Canonical Bootstrap Implementation
+## Bootstrap Payload Scope
 
-The scripts developed under:
+`repo/bootstrap/` shall contain only material required to construct, verify, accept, and cut over FS0.
 
-```text
-repo/bootstrap/scripts/
-```
-
-are the canonical bootstrap implementation for FS0.
-
-The eventual user-facing command:
+Its allowed source roles are:
 
 ```text
-repo-spec --bootstrap --repo <path>
+design/     non-authoritative bootstrap Design input
+templates/  canonical bootstrap realization inputs
+scripts/    bootstrap transformation, validation, installation, verification, and cutover implementation
 ```
 
-shall be an invocation wrapper around this bootstrap implementation.
+Generated artifacts shall not be written under `repo/bootstrap/`.
 
-The wrapper shall not contain an independent bootstrap semantics path.
+The bootstrap payload shall not contain requirements, design discussion, or implementation assumptions for the future developed repo-spec product except where strictly necessary to define the bootstrap output required for FS0 self-hosting.
 
-For equivalent inputs and environment, direct invocation of the canonical bootstrap implementation and invocation through `repo-spec --bootstrap` shall produce behaviorally equivalent installed FS0 state.
+The bootstrap implementation shall contain transformation and installation logic, not embedded successor semantics that belong in canonical template input.
 
-The prototype may use:
-
-```text
-repo/bootstrap/scripts/bootstrap.py --repo <path>
-```
-
-as its direct entry point.
-
-The literal final packaging may change later, but bootstrap implementation singularity shall be preserved.
+After `repo/bootstrap/` is present in a compliant target repository, bootstrap shall require no semantic, template, or script input from the originating repository.
 
 ## Bootstrap Independence
 

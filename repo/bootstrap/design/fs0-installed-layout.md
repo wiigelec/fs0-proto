@@ -316,9 +316,26 @@ fs0-proto/
 `-- repo/
     `-- bootstrap/
         |-- design/
+        |-- templates/
         `-- scripts/
 ```
 
-The bootstrap implementation reads its Design input and creates the installed FS0 layout in a separate target repository supplied through `--repo`.
+## Bootstrap Payload Source Contract
+
+The bootstrap source payload is closed and self-contained.
+
+`repo/bootstrap/design/` contains only bootstrap Design input.
+
+`repo/bootstrap/templates/` contains only canonical input material required to construct FS0 and install the complete non-authoritative successor Design Proposal seed set.
+
+`repo/bootstrap/scripts/` contains only bootstrap implementation.
+
+No generated FS0 authority, generated proposal Markdown, generated orientation surface, generated workflow output, temporary build output, cache, or runtime state belongs under `repo/bootstrap/`.
+
+Bootstrap-generated material shall be written only to its installed target location outside `repo/bootstrap/`.
+
+After cutover, ordinary FS0 operation and successor construction shall not depend on reading from `repo/bootstrap/`.
+
+The bootstrap implementation reads its local bootstrap Design and template inputs and creates the installed FS0 layout in the containing target repository.
 
 The prototype source tree shall not be used as evidence that installed FS0 structure exists.
