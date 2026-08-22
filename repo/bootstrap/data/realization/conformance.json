@@ -62,6 +62,13 @@
         "FS0-ASSERT-GOV-017",
         "FS0-ASSERT-GOV-035"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-ACCEPTED-STATE-PUBLICATION",
+      "callable": "accepted_state_publication",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-037"
+      ]
     }
   ],
   "evidence": [
@@ -93,6 +100,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-GOVERNANCE-STATE-RESOLUTION",
       "implementation_id": "FS0-IMPL-GOVERNANCE-STATE-RESOLUTION",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-ACCEPTED-STATE-PUBLICATION",
+      "implementation_id": "FS0-IMPL-ACCEPTED-STATE-PUBLICATION",
       "evidence_class": "execution-result"
     }
   ],

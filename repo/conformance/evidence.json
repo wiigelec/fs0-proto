@@ -31,6 +31,11 @@
       "evidence_id": "FS0-EVIDENCE-GOVERNANCE-STATE-RESOLUTION",
       "implementation_id": "FS0-IMPL-GOVERNANCE-STATE-RESOLUTION",
       "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-ACCEPTED-STATE-PUBLICATION",
+      "implementation_id": "FS0-IMPL-ACCEPTED-STATE-PUBLICATION",
+      "evidence_class": "execution-result"
     }
   ]
 }

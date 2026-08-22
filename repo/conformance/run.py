@@ -247,6 +247,124 @@ def check_governance_state_resolution(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+def check_accepted_state_publication(root, assertion_ids):
+    state_path = root / "repo/governance/accepted_state.py"
+    publish_path = root / "repo/governance/publish_accepted.py"
+    if not state_path.is_file() or not publish_path.is_file():
+        return [
+            result(aid, "fail", "accepted-state publication realization is missing")
+            for aid in assertion_ids
+        ]
+
+    old = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        state_spec = importlib.util.spec_from_file_location("fs0_accepted_state_pub", state_path)
+        state_module = importlib.util.module_from_spec(state_spec)
+        state_spec.loader.exec_module(state_module)
+
+        pub_spec = importlib.util.spec_from_file_location("fs0_publish_accepted", publish_path)
+        pub_module = importlib.util.module_from_spec(pub_spec)
+        pub_spec.loader.exec_module(pub_module)
+    finally:
+        sys.dont_write_bytecode = old
+
+    candidate = "c" * 40
+    current = "d" * 40
+
+    accepted_body = (
+        "repo-spec-acceptance:v1\n"
+        "```json\n"
+        + json.dumps(
+            {
+                "schema_version": "1",
+                "record_type": "bootstrap-acceptance",
+                "acceptance_id": "FS0-ACCEPT-PUBLISH-TEST",
+                "stage": "bootstrap",
+                "work_id": "FS0-BOOTSTRAP-PROVENANCE",
+                "candidate_id": candidate,
+                "disposition": "accepted",
+                "actor": "tester",
+                "evidence": ["conformance:test", "assurance:test"],
+                "decision_timestamp": "2026-08-22T00:00:00Z",
+                "resulting_accepted_state": candidate,
+            }
+        )
+        + "\n```\n"
+    )
+    current_body = (
+        "repo-spec-acceptance:v1\n"
+        "```json\n"
+        + json.dumps(
+            {
+                "schema_version": "1",
+                "record_type": "governance-acceptance",
+                "acceptance_id": "FS0-ACCEPT-CURRENT-TEST",
+                "stage": "build",
+                "work_id": "FS0-WORK-BUILD-CURRENT",
+                "candidate_id": current,
+                "disposition": "accepted",
+                "actor": "tester",
+                "evidence": ["conformance:test"],
+                "decision_timestamp": "2026-08-21T00:00:00Z",
+                "resulting_accepted_state": current,
+            }
+        )
+        + "\n```\n"
+    )
+    rejected_body = accepted_body.replace(
+        '"disposition": "accepted"',
+        '"disposition": "rejected"',
+    )
+
+    accepted_comments = [{"id": 1, "body": accepted_body}]
+    rejected_comments = [{"id": 2, "body": rejected_body}]
+    chain_comments = [
+        {"id": 3, "body": current_body},
+        {"id": 4, "body": accepted_body},
+    ]
+
+    denied_missing = pub_module.publication_decision(
+        candidate, None, [], state_module
+    )
+    denied_rejected = pub_module.publication_decision(
+        candidate, None, rejected_comments, state_module
+    )
+    allowed_create = pub_module.publication_decision(
+        candidate, None, accepted_comments, state_module
+    )
+    allowed_noop = pub_module.publication_decision(
+        candidate, candidate, accepted_comments, state_module
+    )
+    allowed_advance = pub_module.publication_decision(
+        candidate, current, chain_comments, state_module
+    )
+
+    source_text = publish_path.read_text(encoding="utf-8")
+    ok = (
+        not denied_missing["allowed"]
+        and not denied_rejected["allowed"]
+        and allowed_create["allowed"]
+        and allowed_create["action"] == "create"
+        and allowed_noop["allowed"]
+        and allowed_noop["action"] == "noop"
+        and allowed_advance["allowed"]
+        and allowed_advance["action"] == "advance"
+        and "decision = publication_decision(candidate, current, comments, module)" in source_text
+        and "if not decision[\"allowed\"]" in source_text
+        and "git\", \"push\", \"origin\"" in source_text
+        and "accepted ref changed concurrently; refusing publication" in source_text
+    )
+
+    return [
+        result(
+            aid,
+            "pass" if ok else "fail",
+            "accepted ref publication is denied without prior explicit acceptance and permitted only after a matching accepted candidate record exists",
+        )
+        for aid in assertion_ids
+    ]
+
 
 CALLABLES = {
     "requirement_metadata": check_requirement_metadata,
@@ -255,6 +373,7 @@ CALLABLES = {
     "canonical_entrypoint": check_canonical_entrypoint,
     "remote_execution": check_remote_execution,
     "governance_state_resolution": check_governance_state_resolution,
+    "accepted_state_publication": check_accepted_state_publication,
 }
 
 

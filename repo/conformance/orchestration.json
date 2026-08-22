@@ -30,7 +30,8 @@
     "FS0-ASSERT-GOV-015",
     "FS0-ASSERT-GOV-016",
     "FS0-ASSERT-GOV-017",
-    "FS0-ASSERT-GOV-035"
+    "FS0-ASSERT-GOV-035",
+    "FS0-ASSERT-GOV-037"
   ],
   "pending_assertion_ids": [
     "FS0-ASSERT-ASSUR-001",
@@ -137,7 +138,6 @@
     "FS0-ASSERT-GOV-031",
     "FS0-ASSERT-GOV-033",
     "FS0-ASSERT-GOV-036",
-    "FS0-ASSERT-GOV-037",
     "FS0-ASSERT-GOV-038",
     "FS0-ASSERT-GOV-040",
     "FS0-ASSERT-GOV-041",

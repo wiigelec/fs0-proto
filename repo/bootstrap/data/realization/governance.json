@@ -11,6 +11,16 @@
       "source": "governance/accepted-state",
       "target": "repo/scripts/accepted-state",
       "mode": "0755"
+    },
+    {
+      "source": "governance/publish_accepted.py",
+      "target": "repo/governance/publish_accepted.py",
+      "mode": "0755"
+    },
+    {
+      "source": "governance/publish-accepted",
+      "target": "repo/scripts/publish-accepted",
+      "mode": "0755"
     }
   ]
 }
