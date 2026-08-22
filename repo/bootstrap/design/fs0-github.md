@@ -102,7 +102,8 @@ The mapping is:
 | Assurance review case | structured maintained repository artifact |
 | Assurance finding | structured maintained repository artifact, optionally referenced in GitHub discussion |
 | Design/Plan/Build stage acceptance | structured machine-readable GitHub issue comment on the governed-work issue |
-| bootstrap acceptance | externally attributable structured GitHub record identifying the exact FS0 candidate commit |
+| bootstrap provenance | dedicated GitHub issue created by the external bootstrap process |
+| bootstrap acceptance | structured machine-readable comment on the bootstrap provenance issue identifying the exact FS0 candidate commit |
 | accepted repository state | dedicated `refs/heads/accepted` Git ref plus matching acceptance record |
 
 GitHub issue, pull-request, merge, review, comment, or workflow state shall not independently create Governance acceptance.
@@ -182,7 +183,7 @@ The bootstrap sequence shall be:
 8. perform external semantic audit as bootstrap audit evidence;
 9. correct defects in Design input or bootstrap realization as appropriate;
 10. repeat until the candidate satisfies FS0 bootstrap criteria;
-11. create the externally attributable structured bootstrap acceptance record for one exact candidate revision;
+11. create the dedicated bootstrap provenance issue and structured bootstrap acceptance comment for one exact candidate revision;
 12. create `refs/heads/accepted` at that exact accepted revision and verify it against the bootstrap acceptance record;
 13. create the one-way bootstrap cutover marker;
 14. treat FS0 Governance, Conformance, and Assurance as authoritative operating mechanisms only after that cutover;

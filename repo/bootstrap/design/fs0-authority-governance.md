@@ -45,7 +45,9 @@ An acceptance record is Governance state realized through GitHub.
 
 It is not a generated interpretation of merge status, issue closure, review state, or workflow success.
 
-For initial bootstrap cutover, where no FS0 governed-work issue yet has authority, the external bootstrap process shall create one externally attributable structured bootstrap acceptance record on GitHub that identifies the exact candidate FS0 commit and its bootstrap evidence.
+For initial bootstrap cutover, where no FS0 governed-work issue yet has authority, the external bootstrap process shall create one dedicated GitHub issue for bootstrap provenance and place one structured bootstrap acceptance comment on that issue. The comment shall identify the exact candidate FS0 commit, bootstrap verification evidence, bootstrap semantic-audit evidence, actor attribution, disposition, and decision timestamp.
+
+The bootstrap provenance issue is an external bootstrap record surface only. It shall not be represented as FS0 governed Design, Plan, or Build work.
 
 ## Accepted Repository State
 

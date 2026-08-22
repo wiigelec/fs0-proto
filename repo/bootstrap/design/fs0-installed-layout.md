@@ -32,6 +32,13 @@ The bootstrap implementation shall create and enforce the following installed st
     |   |-- assurance.json
     |   `-- requirements.json
     |-- governance/
+    |   |-- proposals/
+    |   |   |-- index.json
+    |   |   |-- framework-contract.md
+    |   |   |-- governance.md
+    |   |   |-- conformance.md
+    |   |   |-- assurance.md
+    |   |   `-- successor-concepts.md
     |   |-- work/
     |   `-- acceptance/
     |-- conformance/
@@ -63,7 +70,17 @@ Contains accepted FS0 normative authority and requirement identity/state.
 
 ### `repo/governance/`
 
-Contains maintained Governance realization artifacts.
+Contains maintained Governance realization artifacts and the complete bootstrap-installed successor Design Proposal seed set.
+
+`proposals/` contains non-authoritative Design Proposal inputs available to FS0 after cutover.
+
+`proposals/index.json` is the canonical proposal registry.
+
+The bootstrap implementation shall generate the complete successor Design Proposal seed set required to construct the remainder of repo-spec without receiving additional bootstrap-supplied semantics after cutover.
+
+The initial seed set shall include the successor Design proposals for Framework Contract, Governance, Conformance, Assurance, and Successor Concepts.
+
+Proposal presence shall never imply normative acceptance.
 
 `work/` contains repository-resident governed-work support artifacts where needed.
 
@@ -109,6 +126,163 @@ The workflow is an execution adapter and does not independently define Conforman
 
 They are installed operational surfaces, not bootstrap-source files in `fs0-proto`.
 
+## Proposal Seed Contract
+
+Bootstrap shall install the complete repo-spec successor Design Proposal seed set before cutover.
+
+Every proposal registry record shall contain at least:
+
+```text
+proposal identity
+proposal path
+lifecycle state
+bootstrap provenance
+authority state
+predecessor proposal identity where applicable
+successor proposal identity where applicable
+```
+
+For bootstrap-installed seed proposals:
+
+```text
+lifecycle state = available
+bootstrap provenance = bootstrap-seed
+authority state = none
+```
+
+`authority state = none` is mandatory.
+
+A proposal becomes accepted normative authority only through FS0 Governance Design.
+
+The proposal registry shall be machine-resolvable and shall allow a fresh AI agent to enumerate available unprocessed successor Design Proposals without relying on chat history.
+
+Bootstrap shall not mutate a seed proposal in place after cutover.
+
+A later correction shall occur through a new or successor proposal with explicit lineage.
+
+## Minimal Structured Record Contracts
+
+FS0 does not require final rich schemas, but bootstrap shall generate machine-resolvable JSON records with the following minimum contracts.
+
+All JSON records shall contain:
+
+```text
+schema_version
+record_type
+```
+
+### Authority document record
+
+Each authority document shall contain at least:
+
+```text
+schema_version
+record_type = authority
+authority_id
+title
+owner
+lifecycle_state
+dependencies
+delegates
+requirements
+provenance
+```
+
+`lifecycle_state` shall support at least:
+
+```text
+accepted
+superseded
+withdrawn
+```
+
+`dependencies` and `delegates` shall contain stable authority identities.
+
+`requirements` shall contain stable requirement identities owned by that authority record.
+
+### Requirement registry
+
+`repo/authority/requirements.json` shall contain records with at least:
+
+```text
+requirement_id
+owner_authority_id
+statement
+lifecycle_state
+predecessor_requirement_id where applicable
+successor_requirement_id where applicable
+conformance_applicability
+assurance_applicability
+```
+
+Allowed applicability values are:
+
+```text
+conformance_applicability = mechanical | none
+assurance_applicability = required | none
+```
+
+### Conformance correspondence
+
+`repo/conformance/correspondence.json` shall contain one canonical record per active requirement:
+
+```text
+requirement_id
+applicability
+assertion_ids
+```
+
+For `applicability = mechanical`, `assertion_ids` shall contain at least one stable assertion identity.
+
+For `applicability = none`, `assertion_ids` shall be empty.
+
+### Assurance correspondence
+
+`repo/assurance/correspondence.json` shall contain one canonical record per active requirement:
+
+```text
+requirement_id
+applicability
+obligation_ids
+```
+
+For `applicability = required`, `obligation_ids` shall contain at least one stable review-obligation identity.
+
+For `applicability = none`, `obligation_ids` shall be empty.
+
+### Bootstrap state record
+
+`repo/state/bootstrap.json` shall contain at least:
+
+```text
+schema_version
+record_type = bootstrap-state
+state
+candidate_revision where applicable
+first_accepted_fs0_revision where applicable
+bootstrap_provenance_issue where applicable
+bootstrap_acceptance_record where applicable
+accepted_ref
+cutover_timestamp where applicable
+```
+
+Allowed bootstrap `state` values are:
+
+```text
+candidate
+cutover
+```
+
+After `cutover`, the record shall be immutable except through explicitly authorized disaster-recovery or reconstruction semantics established by later accepted authority.
+
+### Proposal registry
+
+`repo/governance/proposals/index.json` shall contain proposal records defined by the Proposal Seed Contract.
+
+These minimum contracts are normative for FS0 bootstrap realization.
+
+A later FS0-governed functional set may replace them with richer schema architecture.
+
 ## Structure Enforcement
 
 FS0 shall mechanically enforce this bootstrap installation layout.
@@ -118,8 +292,10 @@ At minimum, Conformance shall verify:
 - every required path exists;
 - required files have the expected artifact role;
 - no unrecognized maintained artifact exists inside the FS0 governed roots unless authorized by an explicit extension point;
-- required authority documents resolve;
-- required correspondence files resolve;
+- required authority documents resolve and satisfy the minimum authority record contract;
+- the requirement registry satisfies the minimum requirement contract;
+- required correspondence files resolve and satisfy their minimum correspondence contracts;
+- the proposal registry resolves the complete bootstrap-installed successor Design Proposal seed set with `authority state = none`;
 - the canonical Conformance runner exists;
 - the canonical GitHub Actions workflow exists;
 - the bootstrap state file exists and has a valid lifecycle state; and

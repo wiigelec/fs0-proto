@@ -14,7 +14,7 @@ The bootstrap installed tree is fixed by `fs0-installed-layout.md` for FS0.
 
 That bootstrap layout may later change only through accepted FS0 Governance.
 
-The installed FS0 state must contain enough maintained artifacts and operating surfaces to represent and operate:
+The installed FS0 state must contain enough maintained artifacts, seed inputs, and operating surfaces to represent and operate:
 
 ```text
 Framework Contract authority
@@ -38,6 +38,8 @@ root LICENSE
 Git/GitHub operating substrate
 bounded privileged-mutation capability
 authenticated network operation
+complete bootstrap-installed successor Design Proposal seed set
+machine-resolvable proposal registry
 ```
 
 Bootstrap Design shall prefer the smallest representation satisfying those responsibilities.
@@ -109,7 +111,7 @@ Starting from the accepted FS0 GitHub revision:
 
 ### 1. Create FS1 Design Proposal
 
-Create a non-authoritative FS1 proposal through FS0-compatible repository/GitHub state.
+Select the applicable bootstrap-installed non-authoritative successor Design Proposal from `repo/governance/proposals/index.json` and initiate FS1 Design work from that seed input.
 
 ### 2. Execute Design
 
@@ -155,7 +157,7 @@ Without invoking bootstrap authority, the resulting repository shall be capable 
 
 # FS0 Acceptance Criteria
 
-FS0 bootstrap is complete only when all of the following are true.
+FS0 bootstrap is complete only when all of the following are true, including installation of the complete non-authoritative successor Design Proposal seed set required to build the remainder of repo-spec without additional bootstrap-supplied semantics.
 
 ## Installed Structure
 
@@ -172,6 +174,14 @@ FS0 bootstrap is complete only when all of the following are true.
 - Normative authority dependencies are acyclic.
 - Maintained governed framework state is positively authorized.
 - Derived maintained primitives have resolvable provenance.
+
+## Proposal Seed
+
+- The complete successor Design Proposal seed set is installed before cutover.
+- `repo/governance/proposals/index.json` enumerates every installed seed proposal.
+- Every bootstrap seed proposal has `authority state = none`.
+- FS0 can select the next unprocessed proposal without relying on chat history.
+- No new bootstrap-supplied semantics are required after cutover.
 
 ## Governance
 
@@ -230,18 +240,18 @@ The intended development loop is:
 
 ```text
 FS0 Design Proposal
-→ generate bootstrap scripts
-→ construct fs0-proto
-→ initialize Git
-→ create/publish GitHub repo
-→ audit
-→ identify defects
-→ revise proposal and/or bootstrap scripts
-→ rebuild disposable prototype
+→ generate or revise canonical bootstrap scripts
+→ prepare a user-supplied Git/GitHub target repository
+→ run bootstrap implementation against the target
+→ publish and inspect the candidate through the existing remote
+→ audit bootstrap output and remote behavior
+→ identify semantic or realization defects
+→ revise Design input and/or bootstrap scripts
+→ rebuild a fresh disposable target
 → repeat
 ```
 
-The prototype repository is disposable until the FS0 end-to-end lifecycle succeeds.
+The `fs0-proto` source repository remains the bootstrap source laboratory. Disposable target repositories are rebuilt until the FS0 end-to-end lifecycle succeeds.
 
 Corrections should prefer fixing the Design Proposal when the defect is semantic and fixing bootstrap scripts when the defect is only realization.
 
@@ -299,3 +309,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 23. whether structure enforcement is default-deny inside governed FS0 roots while permitting unrelated user project content outside those roots;
 24. whether Git/GitHub repository creation and credentials remain user prerequisites rather than bootstrap responsibilities; and
 25. whether the eventual `repo-spec --bootstrap --repo <path>` wrapper can delegate without creating a second bootstrap implementation.
+26. whether the complete successor Design Proposal seed set is installed before cutover and can drive the remainder of repo-spec without later bootstrap semantics;
+27. whether every seed proposal is explicitly non-authoritative and machine-enumerable through the proposal registry;
+28. whether the minimum structured record contracts are sufficient for the bootstrap implementation to avoid inventing authority, requirement, correspondence, state, or proposal fields; and
+29. whether bootstrap acceptance is unambiguously located as a structured comment on the dedicated bootstrap provenance issue.
