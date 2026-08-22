@@ -79,7 +79,7 @@
       "evidence_id": "FS0-EVID-ASSUR-009",
       "assertion_id": "FS0-ASSERT-ASSUR-009",
       "requirement_id": "FS0-ASSUR-009",
-      "evidence_class": "github-state",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
       "subject_class": "maintained-assurance-case-and-finding-artifacts"
     },
@@ -329,7 +329,7 @@
       "evidence_id": "FS0-EVID-FC-014",
       "assertion_id": "FS0-ASSERT-FC-014",
       "requirement_id": "FS0-FC-014",
-      "evidence_class": "integration-result",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
       "subject_class": "repository-maintained-secret-scan-surface"
     },
@@ -339,7 +339,7 @@
       "evidence_id": "FS0-EVID-FC-016",
       "assertion_id": "FS0-ASSERT-FC-016",
       "requirement_id": "FS0-FC-016",
-      "evidence_class": "github-state",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
       "subject_class": "git-github-capability-set"
     },
