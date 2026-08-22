@@ -35,7 +35,7 @@ FS0 shall be operable through the GitHub remote for:
 - explicit stage acceptance representation;
 - exact candidate revision resolution;
 - merge or equivalent accepted-state publication; and
-- accepted main-state resolution.
+- accepted repository-state resolution.
 
 ## Bootstrap GitHub Realization
 
@@ -174,7 +174,7 @@ Create the one accepted FS0 state from which all later framework evolution becom
 The bootstrap sequence shall be:
 
 1. verify the user-supplied target Git repository, GitHub remote, authentication, and required technical capabilities;
-2. construct the FS0 candidate from this non-authoritative bootstrap Design input;
+2. construct the FS0 candidate from this non-authoritative bootstrap Design input and the canonical bootstrap templates under `repo/bootstrap/templates/`;
 3. install candidate FS0 maintained artifacts;
 4. generate required root orientation and license surfaces;
 5. install the minimum candidate GitHub operating profile;

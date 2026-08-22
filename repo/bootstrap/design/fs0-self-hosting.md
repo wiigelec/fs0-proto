@@ -62,7 +62,7 @@ The following are outside FS0 unless later audit proves one is strictly required
 - generalized platform profile system;
 - support for non-GitHub platforms;
 - generalized remote-state administration;
-- generated Markdown projections;
+- generalized generated-projection framework beyond the narrowly required deterministic successor-proposal Markdown projection;
 - rich schema architecture;
 - complete Conformance primitive taxonomy;
 - mutation-testing framework;
@@ -325,3 +325,6 @@ Before generating bootstrap scripts, this proposal should be audited for:
 37. whether the only canonical bootstrap invocation is `./repo/bootstrap/scripts/bootstrap` from repository root;
 38. whether that entry point is a thin executable shell wrapper; and
 39. whether all substantive bootstrap implementation is confined to `repo/bootstrap/scripts/src/`.
+40. whether acceptance-record marker, fields, record types, stage values, and dispositions are defined by Design rather than invented by implementation;
+41. whether bootstrap candidate construction explicitly consumes both bootstrap Design input and canonical bootstrap templates; and
+42. whether the narrow required proposal Markdown projection is distinguished from a deferred generalized projection framework.

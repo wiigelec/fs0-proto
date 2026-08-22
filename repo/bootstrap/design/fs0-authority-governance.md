@@ -35,7 +35,68 @@ decision timestamp
 resulting accepted-state relationship where applicable
 ```
 
-The structured comment shall use a deterministic machine-recognizable marker and field representation defined by the FS0 bootstrap realization.
+The structured comment shall use the Design-defined acceptance-record envelope below. Bootstrap realization shall implement this envelope and shall not invent an alternate acceptance protocol.
+
+## Acceptance Record Envelope
+
+Every machine-readable acceptance comment shall contain exactly one fenced JSON object immediately following the marker:
+
+```text
+repo-spec-acceptance:v1
+```
+
+The JSON object shall contain at least:
+
+```text
+schema_version
+record_type
+acceptance_id
+stage
+work_id
+candidate_id
+disposition
+actor
+evidence
+decision_timestamp
+resulting_accepted_state where applicable
+```
+
+For governed Design, Plan, and Build acceptance:
+
+```text
+schema_version = 1
+record_type = governance-acceptance
+stage = design | plan | build
+```
+
+For bootstrap cutover acceptance:
+
+```text
+schema_version = 1
+record_type = bootstrap-acceptance
+stage = bootstrap
+```
+
+`disposition` shall support at least:
+
+```text
+accepted
+rejected
+```
+
+`candidate_id` shall resolve to the exact candidate identity required by the applicable stage and shall be an exact Git commit SHA for repository-changing work.
+
+`evidence` shall be a machine-readable collection of evidence references.
+
+`actor` shall provide attributable actor identity.
+
+`decision_timestamp` shall be an unambiguous timestamp.
+
+`resulting_accepted_state`, when present, shall identify the repository revision that acceptance causes to become eligible for publication through the accepted-state ref.
+
+The marker, field names, and enum values in this envelope are part of FS0 bootstrap Design.
+
+Implementation may choose formatting details that do not change parsing or semantics, but shall not change the marker, required fields, record types, stage values, or disposition values without later accepted Governance.
 
 The candidate identity for repository-changing work shall resolve to an exact Git commit SHA.
 
