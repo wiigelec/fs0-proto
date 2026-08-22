@@ -1,0 +1,127 @@
+{
+  "schema_version": "1",
+  "record_type": "requirement-template-chunk",
+  "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+  "requirements": [
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-001",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Every active accepted requirement SHALL have exactly one canonical Conformance correspondence declaring applicability mechanical or none.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-002",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Every mechanically applicable requirement SHALL resolve through its canonical correspondence to at least one executable assertion with stable assertion identity.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-003",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "FS0 Conformance SHALL use assertion, support, evidence, and orchestration as its only required top-level primitive roles.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-004",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Assertion identity SHALL remain distinct from implementation-callable identity; multiple assertions MAY share implementation only when assertion identity and provenance remain distinct.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-005",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Every maintained Conformance primitive SHALL resolve to accepted normative authority.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-006",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Every mechanically applicable requirement SHALL have executable assertion coverage.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-007",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Every executable assertion SHALL produce or resolve the evidence required by FS0 Conformance authority.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-008",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Every gating assertion SHALL be reachable from authorized canonical Conformance execution.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-009",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "FS0 Conformance evidence SHALL be sufficient to demonstrate that conforming state is accepted, targeted violating state is rejected, and required assertions actually execute.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-010",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "FS0 SHALL provide one canonical remotely runnable Conformance surface through GitHub Actions, with repo/conformance/run.py as the canonical repository execution entry point invoked by the workflow.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-011",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Before cutover, execution of candidate Conformance machinery SHALL be bootstrap mechanical verification evidence only; after cutover the accepted execution surface SHALL become canonical FS0 Conformance unless later changed through Governance.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-012",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "FS0 Conformance SHALL mechanically verify required installed paths and artifact roles, authority/requirement/correspondence record contracts, proposal registry completeness and authority-state none, deterministic proposal Markdown projection, retained bootstrap payload role closure, canonical bootstrap wrapper/src placement, canonical Conformance runner/workflow, valid bootstrap state, and generated root surfaces.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    }
+  ]
+}

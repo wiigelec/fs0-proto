@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "record_type": "requirement-template-index",
+  "requirements_total": 73,
+  "authority_order": [
+    "FS0-AUTH-FRAMEWORK",
+    "FS0-AUTH-GOVERNANCE",
+    "FS0-AUTH-CONFORMANCE",
+    "FS0-AUTH-ASSURANCE"
+  ],
+  "chunks": [
+    {
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "path": "fs0/requirements/framework.json"
+    },
+    {
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "path": "fs0/requirements/governance.json"
+    },
+    {
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "path": "fs0/requirements/conformance.json"
+    },
+    {
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "path": "fs0/requirements/assurance.json"
+    }
+  ],
+  "installed_target": "repo/authority/requirements.json",
+  "normalization_rule": "Bootstrap SHALL concatenate the registered requirement records without changing requirement identity, owner, statement, lifecycle state, or C/A applicability."
+}

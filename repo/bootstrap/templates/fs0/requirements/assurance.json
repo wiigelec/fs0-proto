@@ -1,0 +1,77 @@
+{
+  "schema_version": "1",
+  "record_type": "requirement-template-chunk",
+  "owner_authority_id": "FS0-AUTH-ASSURANCE",
+  "requirements": [
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-001",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "Every active accepted requirement SHALL have exactly one canonical Assurance correspondence declaring applicability required or none.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-002",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "Every requirement with Assurance applicability required SHALL resolve from accepted authorizing authority to a review obligation and instantiated review case with subject, evidence, finding, and Governance disposition.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-003",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "FS0 Assurance SHALL support requirement-quality review, ambiguity review, contradiction review, Design fidelity review, Plan fidelity review, Build realization-fidelity review, Conformance interpretation review, and evidence-sufficiency review.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-004",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "FS0 Assurance findings SHALL support at least satisfied, defect, insufficient, and governance-required.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-005",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "Every governed Assurance case SHALL identify authorizing authority, review obligation, reviewed subject, evidence, material exclusions where applicable, and finding identity.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-006",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "A review subject SHALL NOT authorize its own Assurance review.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-007",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "Assurance findings SHALL be case-specific and SHALL NOT independently create, amend, supersede, or withdraw persistent normative authority; persistent semantic change SHALL route through Governance Design.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    }
+  ]
+}
