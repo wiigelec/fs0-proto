@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "evidence-definition-registry",
-  "policy": "Each mechanically applicable assertion has one initial stable evidence identity. Evidence capture is planned until executable implementation and canonical execution are realized; later realization may refine evidence shape without changing assertion semantics.",
+  "policy": "Each mechanically applicable assertion has one initial stable evidence identity. Evidence class describes the observation or result that demonstrates the assertion, not the implementation mechanism used to evaluate it. subject_class identifies the kind of runtime subject; concrete subject identity and evidence capture remain deferred until executable realization.",
   "evidence": [
     {
       "schema_version": "1",
@@ -9,9 +9,9 @@
       "evidence_id": "FS0-EVID-ASSUR-001",
       "assertion_id": "FS0-ASSERT-ASSUR-001",
       "requirement_id": "FS0-ASSUR-001",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -19,9 +19,9 @@
       "evidence_id": "FS0-EVID-ASSUR-002",
       "assertion_id": "FS0-ASSERT-ASSUR-002",
       "requirement_id": "FS0-ASSUR-002",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -29,9 +29,9 @@
       "evidence_id": "FS0-EVID-ASSUR-003",
       "assertion_id": "FS0-ASSERT-ASSUR-003",
       "requirement_id": "FS0-ASSUR-003",
-      "evidence_class": "assurance-structure-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "assurance-registry-and-review-artifact-structure"
     },
     {
       "schema_version": "1",
@@ -39,9 +39,9 @@
       "evidence_id": "FS0-EVID-ASSUR-004",
       "assertion_id": "FS0-ASSERT-ASSUR-004",
       "requirement_id": "FS0-ASSUR-004",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -49,9 +49,9 @@
       "evidence_id": "FS0-EVID-ASSUR-005",
       "assertion_id": "FS0-ASSERT-ASSUR-005",
       "requirement_id": "FS0-ASSUR-005",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -59,9 +59,9 @@
       "evidence_id": "FS0-EVID-ASSUR-006",
       "assertion_id": "FS0-ASSERT-ASSUR-006",
       "requirement_id": "FS0-ASSUR-006",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -69,9 +69,9 @@
       "evidence_id": "FS0-EVID-ASSUR-008",
       "assertion_id": "FS0-ASSERT-ASSUR-008",
       "requirement_id": "FS0-ASSUR-008",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -79,9 +79,9 @@
       "evidence_id": "FS0-EVID-ASSUR-009",
       "assertion_id": "FS0-ASSERT-ASSUR-009",
       "requirement_id": "FS0-ASSUR-009",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "maintained-assurance-case-and-finding-artifacts"
     },
     {
       "schema_version": "1",
@@ -89,9 +89,9 @@
       "evidence_id": "FS0-EVID-CONF-001",
       "assertion_id": "FS0-ASSERT-CONF-001",
       "requirement_id": "FS0-CONF-001",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -99,9 +99,9 @@
       "evidence_id": "FS0-EVID-CONF-002",
       "assertion_id": "FS0-ASSERT-CONF-002",
       "requirement_id": "FS0-CONF-002",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -109,9 +109,9 @@
       "evidence_id": "FS0-EVID-CONF-003",
       "assertion_id": "FS0-ASSERT-CONF-003",
       "requirement_id": "FS0-CONF-003",
-      "evidence_class": "conformance-self-validation",
+      "evidence_class": "execution-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "conformance-registry-and-canonical-execution-result"
     },
     {
       "schema_version": "1",
@@ -119,9 +119,9 @@
       "evidence_id": "FS0-EVID-CONF-004",
       "assertion_id": "FS0-ASSERT-CONF-004",
       "requirement_id": "FS0-CONF-004",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -129,9 +129,9 @@
       "evidence_id": "FS0-EVID-CONF-005",
       "assertion_id": "FS0-ASSERT-CONF-005",
       "requirement_id": "FS0-CONF-005",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -139,9 +139,9 @@
       "evidence_id": "FS0-EVID-CONF-007",
       "assertion_id": "FS0-ASSERT-CONF-007",
       "requirement_id": "FS0-CONF-007",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -149,9 +149,9 @@
       "evidence_id": "FS0-EVID-CONF-008",
       "assertion_id": "FS0-ASSERT-CONF-008",
       "requirement_id": "FS0-CONF-008",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -159,9 +159,9 @@
       "evidence_id": "FS0-EVID-CONF-009",
       "assertion_id": "FS0-ASSERT-CONF-009",
       "requirement_id": "FS0-CONF-009",
-      "evidence_class": "conformance-self-validation",
+      "evidence_class": "execution-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "conformance-registry-and-canonical-execution-result"
     },
     {
       "schema_version": "1",
@@ -169,9 +169,9 @@
       "evidence_id": "FS0-EVID-CONF-010",
       "assertion_id": "FS0-ASSERT-CONF-010",
       "requirement_id": "FS0-CONF-010",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "canonical-conformance-entrypoint-and-workflow"
     },
     {
       "schema_version": "1",
@@ -179,9 +179,9 @@
       "evidence_id": "FS0-EVID-CONF-011",
       "assertion_id": "FS0-ASSERT-CONF-011",
       "requirement_id": "FS0-CONF-011",
-      "evidence_class": "bootstrap-contract-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "precutover-versus-postcutover-conformance-execution-state"
     },
     {
       "schema_version": "1",
@@ -189,9 +189,9 @@
       "evidence_id": "FS0-EVID-CONF-013",
       "assertion_id": "FS0-ASSERT-CONF-013",
       "requirement_id": "FS0-CONF-013",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -199,9 +199,9 @@
       "evidence_id": "FS0-EVID-CONF-014",
       "assertion_id": "FS0-ASSERT-CONF-014",
       "requirement_id": "FS0-CONF-014",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "workflow-or-check-for-exact-candidate-sha"
     },
     {
       "schema_version": "1",
@@ -209,9 +209,9 @@
       "evidence_id": "FS0-EVID-FC-001",
       "assertion_id": "FS0-ASSERT-FC-001",
       "requirement_id": "FS0-FC-001",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -219,9 +219,9 @@
       "evidence_id": "FS0-EVID-FC-002",
       "assertion_id": "FS0-ASSERT-FC-002",
       "requirement_id": "FS0-FC-002",
-      "evidence_class": "authority-graph-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "authority-and-requirement-graph"
     },
     {
       "schema_version": "1",
@@ -229,9 +229,9 @@
       "evidence_id": "FS0-EVID-FC-003",
       "assertion_id": "FS0-ASSERT-FC-003",
       "requirement_id": "FS0-FC-003",
-      "evidence_class": "authority-graph-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "authority-and-requirement-graph"
     },
     {
       "schema_version": "1",
@@ -239,9 +239,9 @@
       "evidence_id": "FS0-EVID-FC-004",
       "assertion_id": "FS0-ASSERT-FC-004",
       "requirement_id": "FS0-FC-004",
-      "evidence_class": "authority-graph-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "authority-and-requirement-graph"
     },
     {
       "schema_version": "1",
@@ -249,9 +249,9 @@
       "evidence_id": "FS0-EVID-FC-005",
       "assertion_id": "FS0-ASSERT-FC-005",
       "requirement_id": "FS0-FC-005",
-      "evidence_class": "authority-graph-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "authority-and-requirement-graph"
     },
     {
       "schema_version": "1",
@@ -259,9 +259,9 @@
       "evidence_id": "FS0-EVID-FC-006",
       "assertion_id": "FS0-ASSERT-FC-006",
       "requirement_id": "FS0-FC-006",
-      "evidence_class": "self-hosting-integration-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -269,9 +269,9 @@
       "evidence_id": "FS0-EVID-FC-008",
       "assertion_id": "FS0-ASSERT-FC-008",
       "requirement_id": "FS0-FC-008",
-      "evidence_class": "authority-graph-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "authority-dependency-graph"
     },
     {
       "schema_version": "1",
@@ -279,9 +279,9 @@
       "evidence_id": "FS0-EVID-FC-009",
       "assertion_id": "FS0-ASSERT-FC-009",
       "requirement_id": "FS0-FC-009",
-      "evidence_class": "authority-graph-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "authority-and-requirement-graph"
     },
     {
       "schema_version": "1",
@@ -289,9 +289,9 @@
       "evidence_id": "FS0-EVID-FC-010",
       "assertion_id": "FS0-ASSERT-FC-010",
       "requirement_id": "FS0-FC-010",
-      "evidence_class": "authority-graph-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "authority-and-requirement-graph"
     },
     {
       "schema_version": "1",
@@ -299,9 +299,9 @@
       "evidence_id": "FS0-EVID-FC-011",
       "assertion_id": "FS0-ASSERT-FC-011",
       "requirement_id": "FS0-FC-011",
-      "evidence_class": "bootstrap-contract-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "bootstrap-operation-and-state-transition"
     },
     {
       "schema_version": "1",
@@ -309,9 +309,9 @@
       "evidence_id": "FS0-EVID-FC-012",
       "assertion_id": "FS0-ASSERT-FC-012",
       "requirement_id": "FS0-FC-012",
-      "evidence_class": "bootstrap-contract-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "bootstrap-prerequisite-environment"
     },
     {
       "schema_version": "1",
@@ -319,9 +319,9 @@
       "evidence_id": "FS0-EVID-FC-013",
       "assertion_id": "FS0-ASSERT-FC-013",
       "requirement_id": "FS0-FC-013",
-      "evidence_class": "bootstrap-contract-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "operating-substrate-capability-set"
     },
     {
       "schema_version": "1",
@@ -329,9 +329,9 @@
       "evidence_id": "FS0-EVID-FC-014",
       "assertion_id": "FS0-ASSERT-FC-014",
       "requirement_id": "FS0-FC-014",
-      "evidence_class": "bootstrap-contract-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "repository-maintained-secret-scan-surface"
     },
     {
       "schema_version": "1",
@@ -339,9 +339,9 @@
       "evidence_id": "FS0-EVID-FC-016",
       "assertion_id": "FS0-ASSERT-FC-016",
       "requirement_id": "FS0-FC-016",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "git-github-capability-set"
     },
     {
       "schema_version": "1",
@@ -349,9 +349,9 @@
       "evidence_id": "FS0-EVID-FC-017",
       "assertion_id": "FS0-ASSERT-FC-017",
       "requirement_id": "FS0-FC-017",
-      "evidence_class": "orientation-surface-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "generated-root-orientation-surfaces"
     },
     {
       "schema_version": "1",
@@ -359,9 +359,9 @@
       "evidence_id": "FS0-EVID-FC-019",
       "assertion_id": "FS0-ASSERT-FC-019",
       "requirement_id": "FS0-FC-019",
-      "evidence_class": "bootstrap-contract-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "repository-license-surface"
     },
     {
       "schema_version": "1",
@@ -369,9 +369,9 @@
       "evidence_id": "FS0-EVID-FC-020",
       "assertion_id": "FS0-ASSERT-FC-020",
       "requirement_id": "FS0-FC-020",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -379,9 +379,9 @@
       "evidence_id": "FS0-EVID-FC-021",
       "assertion_id": "FS0-ASSERT-FC-021",
       "requirement_id": "FS0-FC-021",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -389,9 +389,9 @@
       "evidence_id": "FS0-EVID-FC-022",
       "assertion_id": "FS0-ASSERT-FC-022",
       "requirement_id": "FS0-FC-022",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -399,9 +399,9 @@
       "evidence_id": "FS0-EVID-FC-023",
       "assertion_id": "FS0-ASSERT-FC-023",
       "requirement_id": "FS0-FC-023",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -409,9 +409,9 @@
       "evidence_id": "FS0-EVID-FC-024",
       "assertion_id": "FS0-ASSERT-FC-024",
       "requirement_id": "FS0-FC-024",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -419,9 +419,9 @@
       "evidence_id": "FS0-EVID-FC-025",
       "assertion_id": "FS0-ASSERT-FC-025",
       "requirement_id": "FS0-FC-025",
-      "evidence_class": "proposal-registry-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "installed-successor-proposal-seed-set"
     },
     {
       "schema_version": "1",
@@ -429,9 +429,9 @@
       "evidence_id": "FS0-EVID-FC-026",
       "assertion_id": "FS0-ASSERT-FC-026",
       "requirement_id": "FS0-FC-026",
-      "evidence_class": "proposal-registry-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "proposal-json-and-generated-markdown-projection"
     },
     {
       "schema_version": "1",
@@ -439,9 +439,9 @@
       "evidence_id": "FS0-EVID-FC-027",
       "assertion_id": "FS0-ASSERT-FC-027",
       "requirement_id": "FS0-FC-027",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -449,9 +449,9 @@
       "evidence_id": "FS0-EVID-FC-028",
       "assertion_id": "FS0-ASSERT-FC-028",
       "requirement_id": "FS0-FC-028",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -459,9 +459,9 @@
       "evidence_id": "FS0-EVID-FC-029",
       "assertion_id": "FS0-ASSERT-FC-029",
       "requirement_id": "FS0-FC-029",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -469,9 +469,9 @@
       "evidence_id": "FS0-EVID-FC-030",
       "assertion_id": "FS0-ASSERT-FC-030",
       "requirement_id": "FS0-FC-030",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -479,9 +479,9 @@
       "evidence_id": "FS0-EVID-FC-031",
       "assertion_id": "FS0-ASSERT-FC-031",
       "requirement_id": "FS0-FC-031",
-      "evidence_class": "bootstrap-contract-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "bootstrap-lifecycle-state"
     },
     {
       "schema_version": "1",
@@ -489,9 +489,9 @@
       "evidence_id": "FS0-EVID-FC-032",
       "assertion_id": "FS0-ASSERT-FC-032",
       "requirement_id": "FS0-FC-032",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-repository-filesystem-state"
     },
     {
       "schema_version": "1",
@@ -499,9 +499,9 @@
       "evidence_id": "FS0-EVID-FC-033",
       "assertion_id": "FS0-ASSERT-FC-033",
       "requirement_id": "FS0-FC-033",
-      "evidence_class": "self-hosting-integration-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-self-hosting-integration-cycle"
     },
     {
       "schema_version": "1",
@@ -509,9 +509,9 @@
       "evidence_id": "FS0-EVID-FC-034",
       "assertion_id": "FS0-ASSERT-FC-034",
       "requirement_id": "FS0-FC-034",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -519,9 +519,9 @@
       "evidence_id": "FS0-EVID-FC-035",
       "assertion_id": "FS0-ASSERT-FC-035",
       "requirement_id": "FS0-FC-035",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -529,9 +529,9 @@
       "evidence_id": "FS0-EVID-FC-036",
       "assertion_id": "FS0-ASSERT-FC-036",
       "requirement_id": "FS0-FC-036",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "fs0-structured-records-and-registries"
     },
     {
       "schema_version": "1",
@@ -539,9 +539,9 @@
       "evidence_id": "FS0-EVID-FC-037",
       "assertion_id": "FS0-ASSERT-FC-037",
       "requirement_id": "FS0-FC-037",
-      "evidence_class": "structured-json-model-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "bootstrap-state-record"
     },
     {
       "schema_version": "1",
@@ -549,9 +549,9 @@
       "evidence_id": "FS0-EVID-FC-038",
       "assertion_id": "FS0-ASSERT-FC-038",
       "requirement_id": "FS0-FC-038",
-      "evidence_class": "orientation-surface-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "readme-operational-content"
     },
     {
       "schema_version": "1",
@@ -559,9 +559,9 @@
       "evidence_id": "FS0-EVID-FC-039",
       "assertion_id": "FS0-ASSERT-FC-039",
       "requirement_id": "FS0-FC-039",
-      "evidence_class": "orientation-surface-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "agents-operational-content"
     },
     {
       "schema_version": "1",
@@ -569,9 +569,9 @@
       "evidence_id": "FS0-EVID-FC-040",
       "assertion_id": "FS0-ASSERT-FC-040",
       "requirement_id": "FS0-FC-040",
-      "evidence_class": "bootstrap-contract-validation",
+      "evidence_class": "integration-result",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "required-generated-root-surfaces"
     },
     {
       "schema_version": "1",
@@ -579,9 +579,9 @@
       "evidence_id": "FS0-EVID-FC-041",
       "assertion_id": "FS0-ASSERT-FC-041",
       "requirement_id": "FS0-FC-041",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "git-github-state-separation"
     },
     {
       "schema_version": "1",
@@ -589,9 +589,9 @@
       "evidence_id": "FS0-EVID-FC-042",
       "assertion_id": "FS0-ASSERT-FC-042",
       "requirement_id": "FS0-FC-042",
-      "evidence_class": "filesystem-contract-validation",
+      "evidence_class": "repository-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "bootstrap-template-source-topology"
     },
     {
       "schema_version": "1",
@@ -599,9 +599,9 @@
       "evidence_id": "FS0-EVID-GOV-001",
       "assertion_id": "FS0-ASSERT-GOV-001",
       "requirement_id": "FS0-GOV-001",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -609,9 +609,9 @@
       "evidence_id": "FS0-EVID-GOV-002",
       "assertion_id": "FS0-ASSERT-GOV-002",
       "requirement_id": "FS0-GOV-002",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -619,9 +619,9 @@
       "evidence_id": "FS0-EVID-GOV-003",
       "assertion_id": "FS0-ASSERT-GOV-003",
       "requirement_id": "FS0-GOV-003",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -629,9 +629,9 @@
       "evidence_id": "FS0-EVID-GOV-004",
       "assertion_id": "FS0-ASSERT-GOV-004",
       "requirement_id": "FS0-GOV-004",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -639,9 +639,9 @@
       "evidence_id": "FS0-EVID-GOV-005",
       "assertion_id": "FS0-ASSERT-GOV-005",
       "requirement_id": "FS0-GOV-005",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -649,9 +649,9 @@
       "evidence_id": "FS0-EVID-GOV-006",
       "assertion_id": "FS0-ASSERT-GOV-006",
       "requirement_id": "FS0-GOV-006",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -659,9 +659,9 @@
       "evidence_id": "FS0-EVID-GOV-008",
       "assertion_id": "FS0-ASSERT-GOV-008",
       "requirement_id": "FS0-GOV-008",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -669,9 +669,9 @@
       "evidence_id": "FS0-EVID-GOV-010",
       "assertion_id": "FS0-ASSERT-GOV-010",
       "requirement_id": "FS0-GOV-010",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -679,9 +679,9 @@
       "evidence_id": "FS0-EVID-GOV-011",
       "assertion_id": "FS0-ASSERT-GOV-011",
       "requirement_id": "FS0-GOV-011",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governance-acceptance-issue-comment"
     },
     {
       "schema_version": "1",
@@ -689,9 +689,9 @@
       "evidence_id": "FS0-EVID-GOV-012",
       "assertion_id": "FS0-ASSERT-GOV-012",
       "requirement_id": "FS0-GOV-012",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "machine-readable-acceptance-comment-envelope"
     },
     {
       "schema_version": "1",
@@ -699,9 +699,9 @@
       "evidence_id": "FS0-EVID-GOV-013",
       "assertion_id": "FS0-ASSERT-GOV-013",
       "requirement_id": "FS0-GOV-013",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governance-acceptance-record"
     },
     {
       "schema_version": "1",
@@ -709,9 +709,9 @@
       "evidence_id": "FS0-EVID-GOV-014",
       "assertion_id": "FS0-ASSERT-GOV-014",
       "requirement_id": "FS0-GOV-014",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "bootstrap-acceptance-record"
     },
     {
       "schema_version": "1",
@@ -719,9 +719,9 @@
       "evidence_id": "FS0-EVID-GOV-015",
       "assertion_id": "FS0-ASSERT-GOV-015",
       "requirement_id": "FS0-GOV-015",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "repository-changing-candidate-commit-sha"
     },
     {
       "schema_version": "1",
@@ -729,9 +729,9 @@
       "evidence_id": "FS0-EVID-GOV-016",
       "assertion_id": "FS0-ASSERT-GOV-016",
       "requirement_id": "FS0-GOV-016",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "accepted-ref-and-matching-acceptance-record"
     },
     {
       "schema_version": "1",
@@ -739,9 +739,9 @@
       "evidence_id": "FS0-EVID-GOV-017",
       "assertion_id": "FS0-ASSERT-GOV-017",
       "requirement_id": "FS0-GOV-017",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "non-authoritative-github-state"
     },
     {
       "schema_version": "1",
@@ -749,9 +749,9 @@
       "evidence_id": "FS0-EVID-GOV-018",
       "assertion_id": "FS0-ASSERT-GOV-018",
       "requirement_id": "FS0-GOV-018",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "external-bootstrap-provenance-issue"
     },
     {
       "schema_version": "1",
@@ -759,9 +759,9 @@
       "evidence_id": "FS0-EVID-GOV-020",
       "assertion_id": "FS0-ASSERT-GOV-020",
       "requirement_id": "FS0-GOV-020",
-      "evidence_class": "governance-work-validation",
+      "evidence_class": "structured-record",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "governed-work-records-and-acceptance-state"
     },
     {
       "schema_version": "1",
@@ -769,9 +769,9 @@
       "evidence_id": "FS0-EVID-GOV-022",
       "assertion_id": "FS0-ASSERT-GOV-022",
       "requirement_id": "FS0-GOV-022",
-      "evidence_class": "proposal-registry-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "successor-proposal-registry-and-projections"
     },
     {
       "schema_version": "1",
@@ -779,9 +779,9 @@
       "evidence_id": "FS0-EVID-GOV-023",
       "assertion_id": "FS0-ASSERT-GOV-023",
       "requirement_id": "FS0-GOV-023",
-      "evidence_class": "proposal-registry-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "successor-proposal-registry-and-projections"
     },
     {
       "schema_version": "1",
@@ -789,9 +789,9 @@
       "evidence_id": "FS0-EVID-GOV-024",
       "assertion_id": "FS0-ASSERT-GOV-024",
       "requirement_id": "FS0-GOV-024",
-      "evidence_class": "proposal-registry-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "successor-proposal-registry-and-projections"
     },
     {
       "schema_version": "1",
@@ -799,9 +799,9 @@
       "evidence_id": "FS0-EVID-GOV-025",
       "assertion_id": "FS0-ASSERT-GOV-025",
       "requirement_id": "FS0-GOV-025",
-      "evidence_class": "proposal-registry-validation",
+      "evidence_class": "generated-artifact",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "successor-proposal-registry-and-projections"
     },
     {
       "schema_version": "1",
@@ -809,9 +809,9 @@
       "evidence_id": "FS0-EVID-GOV-026",
       "assertion_id": "FS0-ASSERT-GOV-026",
       "requirement_id": "FS0-GOV-026",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "github-governed-work-and-review-surfaces"
     },
     {
       "schema_version": "1",
@@ -819,9 +819,9 @@
       "evidence_id": "FS0-EVID-GOV-027",
       "assertion_id": "FS0-ASSERT-GOV-027",
       "requirement_id": "FS0-GOV-027",
-      "evidence_class": "git-github-state-validation",
+      "evidence_class": "github-state",
       "capture_status": "planned",
-      "canonical_subject": "exact repository/GitHub candidate state under evaluation"
+      "subject_class": "machine-resolvable-governed-work-state"
     }
   ]
 }

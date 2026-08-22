@@ -338,7 +338,7 @@
         "kind": "canonical-requirement-coverage",
         "requirement_id": "FS0-FC-006"
       },
-      "implementation_binding": "FS0-IMPL-SELF-HOSTING",
+      "implementation_binding": "FS0-IMPL-FILESYSTEM",
       "evidence_binding": "FS0-EVID-FC-006"
     },
     {
