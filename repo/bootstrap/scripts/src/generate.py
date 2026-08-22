@@ -238,6 +238,46 @@ def derive_identity_surfaces(model, requirements):
     return conformance_records, assertions, assurance_records, obligations
 
 
+def derive_root_surfaces(root: Path):
+    data_dir = root / "repo/bootstrap/data/root"
+    index = load_json(data_dir / "index.json")
+    if index.get("schema_version") != "1":
+        raise SystemExit("unsupported generated root surface index schema")
+    if index.get("record_type") != "generated-root-surface-index":
+        raise SystemExit("unexpected generated root surface index record_type")
+
+    records = index.get("artifacts")
+    if not isinstance(records, list) or not records:
+        raise SystemExit("generated root surface index must contain artifacts")
+
+    outputs = {}
+    seen_targets = set()
+    for rec in records:
+        source_rel = rec.get("source")
+        target_rel = rec.get("target")
+        if not isinstance(source_rel, str) or not source_rel:
+            raise SystemExit("generated root surface source must be a non-empty path")
+        if not isinstance(target_rel, str) or not target_rel:
+            raise SystemExit("generated root surface target must be a non-empty path")
+
+        source_path = Path(source_rel)
+        target_path = Path(target_rel)
+        if source_path.is_absolute() or ".." in source_path.parts:
+            raise SystemExit(f"invalid generated root surface source: {source_rel}")
+        if target_path.is_absolute() or ".." in target_path.parts:
+            raise SystemExit(f"invalid generated root surface target: {target_rel}")
+        if target_rel in seen_targets:
+            raise SystemExit(f"duplicate generated root surface target: {target_rel}")
+
+        source = data_dir / source_path
+        if not source.is_file():
+            raise SystemExit(f"missing generated root surface source: {source}")
+        seen_targets.add(target_rel)
+        outputs[root / target_path] = source.read_text(encoding="utf-8")
+
+    return outputs
+
+
 def derive(root: Path):
     model, authority_order, authority, requirements, _ = load_source(root)
     c_records, assertions, a_records, obligations = derive_identity_surfaces(
@@ -283,6 +323,7 @@ def derive(root: Path):
         "obligations": obligations,
     }
     outputs.update(derive_conformance_realization(root, requirements, assertions))
+    outputs.update(derive_root_surfaces(root))
     return outputs
 
 
