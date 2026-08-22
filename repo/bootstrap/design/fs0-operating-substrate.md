@@ -271,7 +271,7 @@ The bootstrap prototype shall use GNU General Public License version 3, matching
 
 ## Bootstrap Payload Scope
 
-`repo/bootstrap/` shall contain only material required to construct, verify, accept, and cut over FS0.
+`repo/bootstrap/` shall contain only material required to construct, verify, accept, cut over, and maintain FS0.
 
 Its allowed source roles are:
 

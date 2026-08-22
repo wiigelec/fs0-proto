@@ -62,7 +62,7 @@ The following are outside FS0 unless later audit proves one is strictly required
 - generalized platform profile system;
 - support for non-GitHub platforms;
 - generalized remote-state administration;
-- generalized generated-projection framework beyond the narrowly required deterministic successor-proposal Markdown projection;
+- generalized successor-framework projection architecture beyond the bounded FS0 generation mechanism;
 - rich schema architecture;
 - complete Conformance primitive taxonomy;
 - mutation-testing framework;
@@ -179,8 +179,8 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 
 - The complete successor Design Proposal seed set defined by the bootstrap proposal template registry is installed before cutover.
 - `repo/governance/proposals/index.json` enumerates every installed seed proposal and reconstruction dependency.
-- Each installed proposal retains canonical structured JSON and a generated Markdown projection.
-- Generated proposal Markdown is subordinate to canonical structured proposal content.
+- Each installed proposal contains a canonical structured read representation and a generated Markdown projection.
+- Generated proposal Markdown is subordinate to the installed structured proposal read representation.
 - Every bootstrap seed proposal has `authority state = none`.
 - FS0 can select the next unprocessed proposal without relying on chat history.
 - No new bootstrap-supplied semantics are required after cutover.
@@ -316,13 +316,13 @@ Before generating bootstrap scripts, this proposal should be audited for:
 27. whether every seed proposal is explicitly non-authoritative and machine-enumerable through the proposal registry;
 28. whether the minimum structured record contracts are sufficient for the bootstrap implementation to avoid inventing authority, requirement, correspondence, state, or proposal fields; and
 29. whether bootstrap acceptance is unambiguously located as a structured comment on the dedicated bootstrap provenance issue.
-30. whether `repo/bootstrap/` contains only bootstrap Design input, canonical templates, and bootstrap implementation required for FS0 construction;
+30. whether `repo/bootstrap/` contains only bootstrap Design input, canonical templates, and bootstrap implementation required for FS0 construction and maintenance;
 31. whether all generated artifacts are written outside `repo/bootstrap/`; and
 32. whether post-cutover authoritative determination is independent of reading the bootstrap payload.
 33. whether retained bootstrap source remains non-authoritative while supporting Governance-authorized FS0 maintenance;
 34. whether `repo/bootstrap/templates/` has a fixed internal source contract separating FS0 realization input from successor proposal input;
 35. whether the installed successor proposal tree is registry-driven rather than hard-coded to a fixed filename list; and
-36. whether generated proposal Markdown is deterministically derived from canonical installed JSON and cannot become a second semantic owner.
+36. whether installed proposal read surfaces are deterministically derived from bootstrap maintenance source and cannot become independent maintenance sources.
 37. whether the only canonical bootstrap invocation is `./repo/bootstrap/scripts/bootstrap` from repository root;
 38. whether that entry point is a thin executable shell wrapper; and
 39. whether all substantive bootstrap implementation is confined to `repo/bootstrap/scripts/src/`.

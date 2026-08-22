@@ -55,7 +55,7 @@ Multiple assertions may share implementation where identities and provenance rem
 
 ## Required Closure Properties
 
-FS0 Conformance shall establish all four closures.
+FS0 Conformance shall establish all required closures.
 
 ### Authority Closure
 
