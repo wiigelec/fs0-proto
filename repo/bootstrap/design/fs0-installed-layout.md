@@ -374,7 +374,7 @@ The bootstrap source payload is closed and self-contained.
 
 `repo/bootstrap/design/` contains only bootstrap Design input.
 
-`repo/bootstrap/templates/` contains only canonical input material required to construct and maintain FS0 and install the complete non-authoritative successor Design Proposal seed set.
+`repo/bootstrap/templates/` contains only canonical input material and source-definition metadata required to construct and maintain FS0 and install the complete non-authoritative successor Design Proposal seed set.
 
 `repo/bootstrap/scripts/` contains only the canonical shell entry point and substantive bootstrap implementation.
 

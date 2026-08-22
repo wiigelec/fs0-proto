@@ -302,6 +302,26 @@ structured source data
 
 Each generated artifact shall have a machine-resolvable source definition identifying its canonical source data, applicable template or layout, generator, and generated destination.
 
+The canonical FS0 generation source registry shall be:
+
+```text
+repo/bootstrap/templates/fs0/index.json
+```
+
+Each registry entry shall identify at least:
+
+```text
+source_id
+content_source
+template_or_layout
+generator
+destination
+```
+
+`content_source` and `template_or_layout` shall be separately resolvable when both roles are required.
+
+The registry is maintenance metadata only and shall not become an authoritative read surface.
+
 The same general model shall be used for the complete successor repo-spec Design Proposal seed set.
 
 Generated artifacts are read or operating surfaces and shall not become independent maintenance sources.
@@ -313,6 +333,7 @@ The canonical bootstrap template source tree shall be:
 ```text
 repo/bootstrap/templates/
 |-- fs0/
+|   |-- index.json
 |   |-- authority/
 |   |-- requirements/
 |   |-- conformance/
@@ -327,7 +348,9 @@ repo/bootstrap/templates/
             `-- <ordered-chunk>.json
 ```
 
-`templates/fs0/` contains canonical structured inputs used to construct the initial FS0 candidate.
+`templates/fs0/index.json` is the canonical machine-resolvable registry for FS0 generated-artifact source definitions.
+
+`templates/fs0/` contains canonical structured inputs used to construct and maintain FS0.
 
 `templates/proposals/` contains canonical structured non-authoritative successor Design Proposal inputs.
 

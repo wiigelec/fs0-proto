@@ -75,7 +75,7 @@ Every gating assertion shall be reachable from authorized canonical Conformance 
 
 ### Generation Correspondence Closure
 
-Every generated FS0 read surface shall resolve to a canonical bootstrap source definition.
+Every generated FS0 read surface shall resolve through `repo/bootstrap/templates/fs0/index.json` to a canonical bootstrap source definition.
 
 Canonical Conformance shall mechanically verify generated read surfaces against deterministic regeneration from their declared source inputs.
 
