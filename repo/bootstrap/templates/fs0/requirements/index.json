@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "requirement-template-index",
-  "requirements_total": 88,
+  "requirements_total": 90,
   "authority_order": [
     "FS0-AUTH-FRAMEWORK",
     "FS0-AUTH-GOVERNANCE",
@@ -34,7 +34,9 @@
       "minimum structured record contracts",
       "root orientation content contracts",
       "proposal registry and seed-lineage contracts",
-      "fixed FS0 GitHub binding"
+      "fixed FS0 GitHub binding",
+      "GitHub state-separation contract",
+      "canonical bootstrap-template topology and class separation"
     ],
     "rule": "Before deriving Conformance assertions or Assurance obligations, every normative bootstrap Design contract used by implementation SHALL resolve to an identified requirement owned by exactly one FS0 authority."
   }

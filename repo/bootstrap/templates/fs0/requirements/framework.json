@@ -402,6 +402,26 @@
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-041",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "FS0 SHALL distinguish repository content, desired GitHub operating state, observed GitHub state, authorized mutation, and verified resulting state; none of those states SHALL be inferred to have the semantics of another merely because they coincide.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-042",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "The canonical bootstrap template source tree SHALL separate initial FS0 realization inputs under repo/bootstrap/templates/fs0/ from non-authoritative successor Design Proposal inputs under repo/bootstrap/templates/proposals/, using the Design-defined authority, requirements, Conformance, Assurance, orientation, GitHub, proposal-registry, proposal-metadata, and ordered-chunk source roles.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
     }
   ]
 }
