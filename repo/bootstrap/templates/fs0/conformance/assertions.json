@@ -1,0 +1,1155 @@
+{
+  "schema_version": "1",
+  "record_type": "assertion-definition-registry",
+  "derivation_policy": "Exactly one initial stable assertion identity is derived for each requirement with conformance_applicability=mechanical. Later accepted realization may split coverage into multiple assertion identities without changing requirement semantics.",
+  "assertions": [
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-ASSUR-001",
+      "requirement_id": "FS0-ASSUR-001",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-ASSUR-001"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-ASSUR-002",
+      "requirement_id": "FS0-ASSUR-002",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-ASSUR-002"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-ASSUR-003",
+      "requirement_id": "FS0-ASSUR-003",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-ASSUR-003"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-ASSUR-004",
+      "requirement_id": "FS0-ASSUR-004",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-ASSUR-004"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-ASSUR-005",
+      "requirement_id": "FS0-ASSUR-005",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-ASSUR-005"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-ASSUR-006",
+      "requirement_id": "FS0-ASSUR-006",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-ASSUR-006"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-ASSUR-008",
+      "requirement_id": "FS0-ASSUR-008",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-ASSUR-008"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-ASSUR-009",
+      "requirement_id": "FS0-ASSUR-009",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-ASSUR-009"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-001",
+      "requirement_id": "FS0-CONF-001",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-001"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-002",
+      "requirement_id": "FS0-CONF-002",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-002"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-003",
+      "requirement_id": "FS0-CONF-003",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-003"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-004",
+      "requirement_id": "FS0-CONF-004",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-004"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-005",
+      "requirement_id": "FS0-CONF-005",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-005"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-007",
+      "requirement_id": "FS0-CONF-007",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-007"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-008",
+      "requirement_id": "FS0-CONF-008",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-008"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-009",
+      "requirement_id": "FS0-CONF-009",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-009"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-010",
+      "requirement_id": "FS0-CONF-010",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-010"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-011",
+      "requirement_id": "FS0-CONF-011",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-011"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-013",
+      "requirement_id": "FS0-CONF-013",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-013"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-014",
+      "requirement_id": "FS0-CONF-014",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-014"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-001",
+      "requirement_id": "FS0-FC-001",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-001"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-002",
+      "requirement_id": "FS0-FC-002",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-002"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-003",
+      "requirement_id": "FS0-FC-003",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-003"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-004",
+      "requirement_id": "FS0-FC-004",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-004"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-005",
+      "requirement_id": "FS0-FC-005",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-005"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-006",
+      "requirement_id": "FS0-FC-006",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-006"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-008",
+      "requirement_id": "FS0-FC-008",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-008"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-009",
+      "requirement_id": "FS0-FC-009",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-009"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-010",
+      "requirement_id": "FS0-FC-010",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-010"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-011",
+      "requirement_id": "FS0-FC-011",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-011"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-012",
+      "requirement_id": "FS0-FC-012",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-012"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-013",
+      "requirement_id": "FS0-FC-013",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-013"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-014",
+      "requirement_id": "FS0-FC-014",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-014"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-016",
+      "requirement_id": "FS0-FC-016",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-016"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-017",
+      "requirement_id": "FS0-FC-017",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-017"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-019",
+      "requirement_id": "FS0-FC-019",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-019"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-020",
+      "requirement_id": "FS0-FC-020",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-020"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-021",
+      "requirement_id": "FS0-FC-021",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-021"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-022",
+      "requirement_id": "FS0-FC-022",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-022"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-023",
+      "requirement_id": "FS0-FC-023",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-023"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-024",
+      "requirement_id": "FS0-FC-024",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-024"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-025",
+      "requirement_id": "FS0-FC-025",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-025"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-026",
+      "requirement_id": "FS0-FC-026",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-026"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-027",
+      "requirement_id": "FS0-FC-027",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-027"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-028",
+      "requirement_id": "FS0-FC-028",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-028"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-029",
+      "requirement_id": "FS0-FC-029",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-029"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-030",
+      "requirement_id": "FS0-FC-030",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-030"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-031",
+      "requirement_id": "FS0-FC-031",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-031"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-032",
+      "requirement_id": "FS0-FC-032",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-032"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-033",
+      "requirement_id": "FS0-FC-033",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-033"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-034",
+      "requirement_id": "FS0-FC-034",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-034"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-035",
+      "requirement_id": "FS0-FC-035",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-035"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-036",
+      "requirement_id": "FS0-FC-036",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-036"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-037",
+      "requirement_id": "FS0-FC-037",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-037"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-038",
+      "requirement_id": "FS0-FC-038",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-038"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-039",
+      "requirement_id": "FS0-FC-039",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-039"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-040",
+      "requirement_id": "FS0-FC-040",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-040"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-041",
+      "requirement_id": "FS0-FC-041",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-041"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-042",
+      "requirement_id": "FS0-FC-042",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-042"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-001",
+      "requirement_id": "FS0-GOV-001",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-001"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-002",
+      "requirement_id": "FS0-GOV-002",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-002"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-003",
+      "requirement_id": "FS0-GOV-003",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-003"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-004",
+      "requirement_id": "FS0-GOV-004",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-004"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-005",
+      "requirement_id": "FS0-GOV-005",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-005"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-006",
+      "requirement_id": "FS0-GOV-006",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-006"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-008",
+      "requirement_id": "FS0-GOV-008",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-008"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-010",
+      "requirement_id": "FS0-GOV-010",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-010"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-011",
+      "requirement_id": "FS0-GOV-011",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-011"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-012",
+      "requirement_id": "FS0-GOV-012",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-012"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-013",
+      "requirement_id": "FS0-GOV-013",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-013"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-014",
+      "requirement_id": "FS0-GOV-014",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-014"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-015",
+      "requirement_id": "FS0-GOV-015",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-015"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-016",
+      "requirement_id": "FS0-GOV-016",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-016"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-017",
+      "requirement_id": "FS0-GOV-017",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-017"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-018",
+      "requirement_id": "FS0-GOV-018",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-018"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-020",
+      "requirement_id": "FS0-GOV-020",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-020"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-022",
+      "requirement_id": "FS0-GOV-022",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-022"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-023",
+      "requirement_id": "FS0-GOV-023",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-023"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-024",
+      "requirement_id": "FS0-GOV-024",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-024"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-025",
+      "requirement_id": "FS0-GOV-025",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-025"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-026",
+      "requirement_id": "FS0-GOV-026",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-026"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-027",
+      "requirement_id": "FS0-GOV-027",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-027"
+      },
+      "implementation_binding": null,
+      "evidence_binding": null,
+      "gating": true
+    }
+  ]
+}
