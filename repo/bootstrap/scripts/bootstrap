@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+if [ ! -d .git ] || [ ! -d repo/bootstrap/data ]; then
+    echo "FS0 bootstrap must be invoked from repository root" >&2
+    exit 2
+fi
+
+exec python3 repo/bootstrap/scripts/src/generate.py "$@"
