@@ -21,7 +21,7 @@ fs0-proto/
         └── scripts/
 ```
 
-Before repository initialization, this skeleton is only bootstrap construction state.
+Before bootstrap execution, this payload is only bootstrap construction state.
 
 The initial FS0 Design Proposal belongs at:
 
@@ -260,6 +260,42 @@ The bootstrap payload shall not contain requirements, design discussion, or impl
 The bootstrap implementation shall contain transformation and installation logic, not embedded successor semantics that belong in canonical template input.
 
 After `repo/bootstrap/` is present in a compliant target repository, bootstrap shall require no semantic, template, or script input from the originating repository.
+
+## Bootstrap Template Source Tree
+
+The canonical bootstrap template source tree shall be:
+
+```text
+repo/bootstrap/templates/
+|-- fs0/
+|   |-- authority/
+|   |-- requirements/
+|   |-- conformance/
+|   |-- assurance/
+|   |-- orientation/
+|   `-- github/
+`-- proposals/
+    |-- index.json
+    `-- <proposal-id>/
+        |-- proposal.json
+        `-- chunks/
+            `-- <ordered-chunk>.json
+```
+
+`templates/fs0/` contains canonical structured inputs used to construct the initial FS0 candidate.
+
+`templates/proposals/` contains canonical structured non-authoritative successor Design Proposal inputs.
+
+The two classes shall remain distinct because their authority status differs:
+
+```text
+templates/fs0/        bootstrap realization input for initial accepted FS0 candidate
+templates/proposals/  non-authoritative seed input for later FS0 Governance Design
+```
+
+Template content shall be structured and machine-resolvable.
+
+Generated Markdown shall not be stored under `repo/bootstrap/templates/`.
 
 ## Bootstrap Independence
 

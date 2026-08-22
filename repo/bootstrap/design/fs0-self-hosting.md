@@ -111,7 +111,7 @@ Starting from the accepted FS0 GitHub revision:
 
 ### 1. Create FS1 Design Proposal
 
-Select the applicable bootstrap-installed non-authoritative successor Design Proposal from `repo/governance/proposals/index.json` and initiate FS1 Design work from that seed input.
+Select the next applicable bootstrap-installed non-authoritative successor Design Proposal from `repo/governance/proposals/index.json`, load its canonical JSON chunks, and initiate FS1 Design work from that seed input.
 
 ### 2. Execute Design
 
@@ -177,8 +177,10 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 
 ## Proposal Seed
 
-- The complete successor Design Proposal seed set is installed before cutover.
-- `repo/governance/proposals/index.json` enumerates every installed seed proposal.
+- The complete successor Design Proposal seed set defined by the bootstrap proposal template registry is installed before cutover.
+- `repo/governance/proposals/index.json` enumerates every installed seed proposal and reconstruction dependency.
+- Each installed proposal retains canonical structured JSON and a generated Markdown projection.
+- Generated proposal Markdown is subordinate to canonical structured proposal content.
 - Every bootstrap seed proposal has `authority state = none`.
 - FS0 can select the next unprocessed proposal without relying on chat history.
 - No new bootstrap-supplied semantics are required after cutover.
@@ -316,3 +318,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 30. whether `repo/bootstrap/` contains only bootstrap Design input, canonical templates, and bootstrap implementation required for FS0 construction;
 31. whether all generated artifacts are written outside `repo/bootstrap/`; and
 32. whether ordinary post-cutover FS0 operation is independent of the bootstrap payload.
+33. whether the retained bootstrap payload remains intact but inert after cutover;
+34. whether `repo/bootstrap/templates/` has a fixed internal source contract separating FS0 realization input from successor proposal input;
+35. whether the installed successor proposal tree is registry-driven rather than hard-coded to a fixed filename list; and
+36. whether generated proposal Markdown is deterministically derived from canonical installed JSON and cannot become a second semantic owner.
