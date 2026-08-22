@@ -16,6 +16,11 @@
       "source": "LICENSE",
       "target": "LICENSE",
       "role": "license"
+    },
+    {
+      "source": "fs0-conformance.yml",
+      "target": ".github/workflows/fs0-conformance.yml",
+      "role": "canonical-conformance-workflow"
     }
   ]
 }

@@ -52,6 +52,16 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-016"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-REMOTE-EXECUTION",
+      "role": "support",
+      "callable": "remote_execution",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-010"
+      ]
     }
   ]
 }

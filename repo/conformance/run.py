@@ -19,10 +19,11 @@ def result(assertion_id, status, detail, evidence=None):
 
 
 def check_requirement_metadata(root, assertion_ids):
-    reqs = load(root / "repo/authority/requirements.json")["requirements"]
+    registry = load(root / "repo/authority/requirements.json")
+    reqs = registry["requirements"]
     ids = [r["requirement_id"] for r in reqs]
     checks = {
-        "FS0-ASSERT-FC-045": (len(reqs) == 164 and len(ids) == len(set(ids)) and all(ids), "requirement identities are present and unique"),
+        "FS0-ASSERT-FC-045": (registry.get("requirements_total") == len(reqs) and len(ids) == len(set(ids)) and all(ids), "requirement identities are present and unique and the registry count is self-consistent"),
         "FS0-ASSERT-FC-056": (all(r.get("lifecycle_state") in {"accepted", "superseded", "withdrawn"} for r in reqs), "requirement lifecycle states use the allowed enumeration"),
         "FS0-ASSERT-FC-057": (all(r.get("conformance_applicability") in {"mechanical", "none"} for r in reqs), "Conformance applicability uses mechanical|none"),
         "FS0-ASSERT-FC-058": (all(r.get("assurance_applicability") in {"required", "none"} for r in reqs), "Assurance applicability uses required|none"),
@@ -33,8 +34,10 @@ def check_requirement_metadata(root, assertion_ids):
 
 
 def check_conformance_closure(root, assertion_ids):
-    reqs = load(root / "repo/authority/requirements.json")["requirements"]
-    corr = load(root / "repo/conformance/correspondence.json")["records"]
+    req_registry = load(root / "repo/authority/requirements.json")
+    corr_registry = load(root / "repo/conformance/correspondence.json")
+    reqs = req_registry["requirements"]
+    corr = corr_registry["records"]
     assertions = load(root / "repo/conformance/assertions.json")["assertions"]
     impl = load(root / "repo/conformance/support/implementations.json")["implementations"]
 
@@ -44,7 +47,7 @@ def check_conformance_closure(root, assertion_ids):
     implementation_ids = {i["implementation_id"] for i in impl}
 
     checks = {
-        "FS0-ASSERT-CONF-001": (len(corr) == len(reqs) == 164 and set(corr_by_req) == set(req_ids), "every requirement has exactly one Conformance correspondence"),
+        "FS0-ASSERT-CONF-001": (req_registry.get("requirements_total") == corr_registry.get("requirements_total") == len(reqs) == len(corr) and set(corr_by_req) == set(req_ids), "every requirement has exactly one Conformance correspondence and registry totals agree"),
         "FS0-ASSERT-CONF-004": (all(a["assertion_id"] not in implementation_ids for a in assertions), "assertion identities are distinct from implementation identities"),
         "FS0-ASSERT-CONF-013": (all({"requirement_id", "applicability", "assertion_ids"} <= set(r) for r in corr), "all correspondence records contain required fields"),
         "FS0-ASSERT-CONF-015": (len({a["assertion_id"] for a in assertions}) == len(assertions) and all(a.get("requirement_id") for a in assertions), "shared implementations preserve distinct assertion identity and provenance"),
@@ -72,11 +75,27 @@ def check_canonical_entrypoint(root, assertion_ids):
     return [result(aid, "pass" if ok else "fail", "repo/conformance/run.py exists as the canonical Conformance engine and repo/scripts/validate exposes it", {"entrypoint": "repo/conformance/run.py", "wrapper": "repo/scripts/validate"}) for aid in assertion_ids]
 
 
+def check_remote_execution(root, assertion_ids):
+    workflow = root / ".github/workflows/fs0-conformance.yml"
+    required = (
+        "name: FS0 Conformance",
+        "pull_request:",
+        "push:",
+        "workflow_dispatch:",
+        "./repo/scripts/validate --verbose",
+    )
+    text = workflow.read_text(encoding="utf-8") if workflow.is_file() else ""
+    ok = workflow.is_file() and all(item in text for item in required)
+    evidence = {"workflow": ".github/workflows/fs0-conformance.yml"}
+    return [result(aid, "pass" if ok else "fail", "GitHub Actions exposes the canonical FS0 Conformance wrapper for push, pull request, and manual execution", evidence) for aid in assertion_ids]
+
+
 CALLABLES = {
     "requirement_metadata": check_requirement_metadata,
     "conformance_closure": check_conformance_closure,
     "generation_correspondence": check_generation_correspondence,
     "canonical_entrypoint": check_canonical_entrypoint,
+    "remote_execution": check_remote_execution,
 }
 
 

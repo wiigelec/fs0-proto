@@ -40,6 +40,13 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-016"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-REMOTE-EXECUTION",
+      "callable": "remote_execution",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-010"
+      ]
     }
   ],
   "evidence": [
@@ -61,6 +68,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-CANONICAL-ENTRYPOINT",
       "implementation_id": "FS0-IMPL-CANONICAL-ENTRYPOINT",
+      "evidence_class": "repository-state"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-REMOTE-EXECUTION",
+      "implementation_id": "FS0-IMPL-REMOTE-EXECUTION",
       "evidence_class": "repository-state"
     }
   ],
