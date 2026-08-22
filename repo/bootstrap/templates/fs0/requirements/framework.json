@@ -772,6 +772,26 @@
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-078",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Every bootstrap-created maintained FS0 generated artifact SHALL resolve through repo/bootstrap/templates/fs0/index.json to one canonical source definition.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-079",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Each generated successor Design Proposal artifact SHALL have a machine-resolvable bootstrap source definition identifying content source, applicable template or layout, generator, and destination.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
     }
   ]
 }

@@ -56,7 +56,8 @@
     "FS0-GOV-044",
     "FS0-GOV-045",
     "FS0-GOV-046",
-    "FS0-GOV-047"
+    "FS0-GOV-047",
+    "FS0-GOV-048"
   ],
   "provenance": {
     "kind": "bootstrap-design-normalization",
