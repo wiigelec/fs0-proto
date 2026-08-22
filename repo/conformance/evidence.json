@@ -26,6 +26,11 @@
       "evidence_id": "FS0-EVIDENCE-REMOTE-EXECUTION",
       "implementation_id": "FS0-IMPL-REMOTE-EXECUTION",
       "evidence_class": "repository-state"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-GOVERNANCE-STATE-RESOLUTION",
+      "implementation_id": "FS0-IMPL-GOVERNANCE-STATE-RESOLUTION",
+      "evidence_class": "execution-result"
     }
   ]
 }

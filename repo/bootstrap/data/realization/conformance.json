@@ -47,6 +47,21 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-010"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-GOVERNANCE-STATE-RESOLUTION",
+      "callable": "governance_state_resolution",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-008",
+        "FS0-ASSERT-GOV-011",
+        "FS0-ASSERT-GOV-012",
+        "FS0-ASSERT-GOV-013",
+        "FS0-ASSERT-GOV-014",
+        "FS0-ASSERT-GOV-015",
+        "FS0-ASSERT-GOV-016",
+        "FS0-ASSERT-GOV-017",
+        "FS0-ASSERT-GOV-035"
+      ]
     }
   ],
   "evidence": [
@@ -74,6 +89,11 @@
       "evidence_id": "FS0-EVIDENCE-REMOTE-EXECUTION",
       "implementation_id": "FS0-IMPL-REMOTE-EXECUTION",
       "evidence_class": "repository-state"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-GOVERNANCE-STATE-RESOLUTION",
+      "implementation_id": "FS0-IMPL-GOVERNANCE-STATE-RESOLUTION",
+      "evidence_class": "execution-result"
     }
   ],
   "orchestration": {

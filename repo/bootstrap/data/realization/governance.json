@@ -1,0 +1,16 @@
+{
+  "schema_version": "1",
+  "record_type": "governance-realization-data",
+  "artifacts": [
+    {
+      "source": "governance/accepted_state.py",
+      "target": "repo/governance/accepted_state.py",
+      "mode": "0755"
+    },
+    {
+      "source": "governance/accepted-state",
+      "target": "repo/scripts/accepted-state",
+      "mode": "0755"
+    }
+  ]
+}

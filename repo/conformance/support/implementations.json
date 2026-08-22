@@ -62,6 +62,24 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-010"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-GOVERNANCE-STATE-RESOLUTION",
+      "role": "support",
+      "callable": "governance_state_resolution",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-008",
+        "FS0-ASSERT-GOV-011",
+        "FS0-ASSERT-GOV-012",
+        "FS0-ASSERT-GOV-013",
+        "FS0-ASSERT-GOV-014",
+        "FS0-ASSERT-GOV-015",
+        "FS0-ASSERT-GOV-016",
+        "FS0-ASSERT-GOV-017",
+        "FS0-ASSERT-GOV-035"
+      ]
     }
   ]
 }

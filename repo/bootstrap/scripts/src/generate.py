@@ -278,6 +278,53 @@ def derive_root_surfaces(root: Path):
     return outputs
 
 
+
+def derive_governance_realization(root: Path):
+    data_dir = root / "repo/bootstrap/data/realization"
+    config = load_json(data_dir / "governance.json")
+    if config.get("schema_version") != "1":
+        raise SystemExit("unsupported Governance realization data schema")
+    if config.get("record_type") != "governance-realization-data":
+        raise SystemExit("unexpected Governance realization data record_type")
+
+    artifacts = config.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        raise SystemExit("Governance realization must define artifacts")
+
+    outputs = {}
+    modes = {}
+    seen_targets = set()
+    for item in artifacts:
+        source_rel = item.get("source")
+        target_rel = item.get("target")
+        mode = item.get("mode")
+        if not isinstance(source_rel, str) or not source_rel:
+            raise SystemExit("Governance realization source must be a non-empty path")
+        if not isinstance(target_rel, str) or not target_rel:
+            raise SystemExit("Governance realization target must be a non-empty path")
+        source_path = Path(source_rel)
+        target_path = Path(target_rel)
+        if source_path.is_absolute() or ".." in source_path.parts:
+            raise SystemExit(f"invalid Governance realization source: {source_rel}")
+        if target_path.is_absolute() or ".." in target_path.parts:
+            raise SystemExit(f"invalid Governance realization target: {target_rel}")
+        if target_rel in seen_targets:
+            raise SystemExit(f"duplicate Governance realization target: {target_rel}")
+        if not isinstance(mode, str) or len(mode) != 4 or any(
+            ch not in "01234567" for ch in mode
+        ):
+            raise SystemExit(f"invalid Governance realization mode for {target_rel}: {mode}")
+
+        source = data_dir / source_path
+        if not source.is_file():
+            raise SystemExit(f"missing Governance realization source: {source}")
+        seen_targets.add(target_rel)
+        outputs[root / target_path] = source.read_text(encoding="utf-8")
+        modes[target_rel] = mode
+
+    return outputs, modes
+
+
 def derive(root: Path):
     model, authority_order, authority, requirements, _ = load_source(root)
     c_records, assertions, a_records, obligations = derive_identity_surfaces(
@@ -323,6 +370,8 @@ def derive(root: Path):
         "obligations": obligations,
     }
     outputs.update(derive_conformance_realization(root, requirements, assertions))
+    governance_outputs, _ = derive_governance_realization(root)
+    outputs.update(governance_outputs)
     outputs.update(derive_root_surfaces(root))
     return outputs
 
@@ -331,9 +380,11 @@ def artifact_modes(root: Path):
     realization = load_json(
         root / "repo/bootstrap/data/realization/conformance.json"
     )
-    modes = realization.get("artifact_modes", {})
+    modes = dict(realization.get("artifact_modes", {}))
     if not isinstance(modes, dict):
         raise SystemExit("artifact_modes must be an object")
+    _, governance_modes = derive_governance_realization(root)
+    modes.update(governance_modes)
     return modes
 
 
