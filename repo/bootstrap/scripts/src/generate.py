@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import stat
 import sys
 from collections import Counter
 from conformance_realization import derive_conformance_realization
@@ -31,6 +32,17 @@ def render_output(value) -> bytes:
     if isinstance(value, str):
         return value.encode("utf-8")
     return canonical_bytes(value)
+
+
+def required_mode(root: Path, target: Path) -> int:
+    rel = str(target.relative_to(root))
+    data_path = root / "repo/bootstrap/data/conformance/realization.json"
+    data = load_json(data_path)
+    modes = data.get("artifact_modes", {})
+    raw = modes.get(rel, "0644")
+    if not isinstance(raw, str) or len(raw) != 4 or any(ch not in "01234567" for ch in raw):
+        raise SystemExit(f"invalid generated artifact mode for {rel}: {raw}")
+    return int(raw, 8)
 
 
 def repository_root() -> Path:
@@ -258,17 +270,20 @@ def main():
     mismatches = []
     for target, obj in outputs.items():
         expected = render_output(obj)
+        expected_mode = required_mode(root, target)
         if args.check:
             try:
                 actual = target.read_bytes()
+                actual_mode = stat.S_IMODE(target.stat().st_mode)
             except FileNotFoundError:
                 mismatches.append(str(target.relative_to(root)))
                 continue
-            if actual != expected:
+            if actual != expected or actual_mode != expected_mode:
                 mismatches.append(str(target.relative_to(root)))
         else:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(expected)
+            target.chmod(expected_mode)
 
     if args.check:
         if mismatches:

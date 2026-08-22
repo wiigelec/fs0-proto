@@ -1,9 +1,14 @@
 #!/bin/sh
 set -eu
 
-if [ ! -d .git ] || [ ! -d repo/bootstrap/data ]; then
-    echo "FS0 bootstrap must be invoked from repository root" >&2
+if [ ! -d repo/bootstrap/data ] || [ ! -f repo/bootstrap/scripts/src/generate.py ]; then
+    echo "FS0 bootstrap must be invoked from the target repository root" >&2
     exit 2
 fi
 
-exec python3 repo/bootstrap/scripts/src/generate.py "$@"
+if [ ! -d .git ]; then
+    echo "FS0 bootstrap requires a user-initialized Git repository" >&2
+    exit 2
+fi
+
+exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"

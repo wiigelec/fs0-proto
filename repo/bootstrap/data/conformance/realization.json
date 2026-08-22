@@ -69,5 +69,9 @@
     "entrypoint": "repo/conformance/run.py",
     "public_wrapper": "repo/scripts/validate",
     "mode": "candidate-bootstrap-verification"
+  },
+  "artifact_modes": {
+    "repo/conformance/run.py": "0755",
+    "repo/scripts/validate": "0755"
   }
 }
