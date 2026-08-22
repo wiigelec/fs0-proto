@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "record_type": "requirement-template-index",
+  "record_type": "requirement-data-index",
   "requirements_total": 164,
   "authority_order": [
     "FS0-AUTH-FRAMEWORK",
@@ -11,25 +11,25 @@
   "chunks": [
     {
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "path": "fs0/requirements/framework.json"
+      "path": "repo/bootstrap/data/requirements/framework.json"
     },
     {
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "path": "fs0/requirements/governance.json"
+      "path": "repo/bootstrap/data/requirements/governance.json"
     },
     {
       "owner_authority_id": "FS0-AUTH-CONFORMANCE",
-      "path": "fs0/requirements/conformance.json"
+      "path": "repo/bootstrap/data/requirements/conformance.json"
     },
     {
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "path": "fs0/requirements/assurance.json"
+      "path": "repo/bootstrap/data/requirements/assurance.json"
     }
   ],
   "installed_target": "repo/authority/requirements.json",
   "normalization_rule": "Bootstrap SHALL concatenate the registered normalized requirement records without changing requirement identity, owner, statement, lifecycle state, or C/A applicability.",
   "design_coverage": {
-    "status": "closed-for-normalized-fs0-template-derivation",
+    "status": "closed-for-normalized-fs0-data-derivation",
     "covered_contract_groups": [
       "authority and requirement identity and ownership",
       "Governance lifecycle and accepted-state semantics",
@@ -39,11 +39,11 @@
       "fixed FS0 GitHub binding",
       "GitHub state-separation contract",
       "bootstrap maintenance-source and authoritative-read isolation",
-      "canonical generation-source registry and deterministic generation",
+      "canonical bootstrap data source and deterministic generation",
       "generation-correspondence closure",
       "normative requirement atomicity and statement-length discipline",
-      "complete generated-artifact source-definition coverage",
-      "successor-proposal generated-artifact source definitions",
+      "complete generated-artifact reproducibility coverage",
+      "successor-proposal canonical-data derivation",
       "mandatory decomposition of materially compound obligations"
     ],
     "rule": "Before deriving Conformance assertions or Assurance obligations, every normative bootstrap Design contract used by implementation SHALL resolve to one identified requirement owned by exactly one FS0 authority."

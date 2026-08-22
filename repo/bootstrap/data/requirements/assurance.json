@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "record_type": "requirement-template-chunk",
+  "record_type": "requirement-data-chunk",
   "owner_authority_id": "FS0-AUTH-ASSURANCE",
   "requirements": [
     {

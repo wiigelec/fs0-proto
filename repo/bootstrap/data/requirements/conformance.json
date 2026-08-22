@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "record_type": "requirement-template-chunk",
+  "record_type": "requirement-data-chunk",
   "owner_authority_id": "FS0-AUTH-CONFORMANCE",
   "requirements": [
     {
@@ -188,7 +188,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-CONF-021",
       "owner_authority_id": "FS0-AUTH-CONFORMANCE",
-      "statement": "Every generated FS0 read surface SHALL resolve through repo/bootstrap/templates/fs0/index.json to a canonical bootstrap source definition.",
+      "statement": "Every generated FS0 read surface SHALL be reproducible from repo/bootstrap/data/ and repo/bootstrap/scripts/.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"

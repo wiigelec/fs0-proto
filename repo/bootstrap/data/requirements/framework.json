@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "record_type": "requirement-template-chunk",
+  "record_type": "requirement-data-chunk",
   "owner_authority_id": "FS0-AUTH-FRAMEWORK",
   "requirements": [
     {
@@ -418,7 +418,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-042",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "The bootstrap source tree SHALL keep FS0 realization inputs under repo/bootstrap/templates/fs0/ distinct from successor Design Proposal inputs under repo/bootstrap/templates/proposals/.",
+      "statement": "The bootstrap data tree SHALL keep FS0 data distinct from successor Design Proposal data.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -628,7 +628,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-063",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "repo/bootstrap/templates/fs0/ SHALL provide the Design-defined authority, requirements, Conformance, Assurance, orientation, and GitHub source roles.",
+      "statement": "repo/bootstrap/data/ SHALL provide the canonical maintained data required to derive FS0 artifacts.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -638,7 +638,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-064",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "repo/bootstrap/templates/proposals/ SHALL provide a proposal registry plus per-proposal metadata and ordered structured chunks.",
+      "statement": "Successor Design Proposal source data SHALL reside under repo/bootstrap/data/proposals/.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -648,7 +648,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-065",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Bootstrap-created maintained artifacts SHALL be generated from structured source data plus applicable layout/template input and a generator.",
+      "statement": "Bootstrap-created maintained artifacts SHALL be generated from canonical data under repo/bootstrap/data/ by generator code under repo/bootstrap/scripts/.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -678,7 +678,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-068",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "The canonical FS0 generation source registry SHALL be repo/bootstrap/templates/fs0/index.json.",
+      "statement": "The canonical FS0 data source SHALL be rooted at repo/bootstrap/data/.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -688,7 +688,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-069",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Each FS0 generation-source registry entry SHALL contain source_id, content_source, template_or_layout, generator, and destination.",
+      "statement": "FS0 semantic and realization choices required for generation SHALL be represented in repo/bootstrap/data/ rather than embedded in generator code.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -698,7 +698,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-070",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "content_source and template_or_layout SHALL be separately resolvable when both roles apply to a generated artifact.",
+      "statement": "Generator code SHALL NOT independently define FS0 normative semantics.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -768,7 +768,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-077",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Generated FS0 read surfaces SHALL be produced from canonical bootstrap data, templates, and generators.",
+      "statement": "Generated FS0 read surfaces SHALL be produced from repo/bootstrap/data/ by repo/bootstrap/scripts/.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -778,7 +778,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-078",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Every bootstrap-created maintained FS0 generated artifact SHALL resolve through repo/bootstrap/templates/fs0/index.json to one canonical source definition.",
+      "statement": "Every bootstrap-created maintained FS0 generated artifact SHALL be reproducible from repo/bootstrap/data/ and repo/bootstrap/scripts/.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -788,7 +788,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-079",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Each generated successor Design Proposal artifact SHALL have a machine-resolvable bootstrap source definition identifying content source, applicable template or layout, generator, and destination.",
+      "statement": "Each generated successor Design Proposal artifact SHALL be reproducible from canonical proposal data under repo/bootstrap/data/proposals/ and repo/bootstrap/scripts/.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
