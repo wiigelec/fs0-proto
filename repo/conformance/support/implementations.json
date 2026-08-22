@@ -1,0 +1,57 @@
+{
+  "schema_version": "1",
+  "record_type": "conformance-implementation-registry",
+  "implementations": [
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-REQUIREMENT-METADATA",
+      "role": "support",
+      "callable": "requirement_metadata",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-045",
+        "FS0-ASSERT-FC-056",
+        "FS0-ASSERT-FC-057",
+        "FS0-ASSERT-FC-058",
+        "FS0-ASSERT-FC-075",
+        "FS0-ASSERT-CONF-024"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-CONFORMANCE-CLOSURE",
+      "role": "support",
+      "callable": "conformance_closure",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-001",
+        "FS0-ASSERT-CONF-004",
+        "FS0-ASSERT-CONF-013",
+        "FS0-ASSERT-CONF-015",
+        "FS0-ASSERT-CONF-018",
+        "FS0-ASSERT-CONF-019"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-GENERATION-CORRESPONDENCE",
+      "role": "support",
+      "callable": "generation_correspondence",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-022",
+        "FS0-ASSERT-CONF-023"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-CANONICAL-ENTRYPOINT",
+      "role": "support",
+      "callable": "canonical_entrypoint",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-016"
+      ]
+    }
+  ]
+}

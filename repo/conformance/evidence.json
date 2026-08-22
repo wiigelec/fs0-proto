@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "record_type": "conformance-evidence-registry",
+  "evidence": [
+    {
+      "evidence_id": "FS0-EVIDENCE-REQUIREMENT-METADATA",
+      "implementation_id": "FS0-IMPL-REQUIREMENT-METADATA",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-CONFORMANCE-CLOSURE",
+      "implementation_id": "FS0-IMPL-CONFORMANCE-CLOSURE",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-GENERATION-CORRESPONDENCE",
+      "implementation_id": "FS0-IMPL-GENERATION-CORRESPONDENCE",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-CANONICAL-ENTRYPOINT",
+      "implementation_id": "FS0-IMPL-CANONICAL-ENTRYPOINT",
+      "evidence_class": "repository-state"
+    }
+  ]
+}

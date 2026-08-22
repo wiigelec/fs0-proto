@@ -5,6 +5,7 @@ import argparse
 import json
 import sys
 from collections import Counter
+from conformance_realization import derive_conformance_realization
 from pathlib import Path
 
 AUTH_NAMES = ("framework", "governance", "conformance", "assurance")
@@ -22,6 +23,14 @@ def load_json(path: Path):
 
 def canonical_bytes(obj) -> bytes:
     return (json.dumps(obj, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def render_output(value) -> bytes:
+    if isinstance(value, bytes):
+        return value
+    if isinstance(value, str):
+        return value.encode("utf-8")
+    return canonical_bytes(value)
 
 
 def repository_root() -> Path:
@@ -63,7 +72,7 @@ def derive(root: Path):
         "FS0-AUTH-ASSURANCE",
     ]
     if req_index.get("requirements_total") != 164:
-        raise SystemExit("FS0.2 requires exactly 164 normalized requirements")
+        raise SystemExit("FS0.3 requires exactly 164 normalized requirements")
     if req_index.get("authority_order") != expected_order:
         raise SystemExit("unexpected requirement authority order")
 
@@ -230,11 +239,12 @@ def derive(root: Path):
         ),
         "obligations": obligations,
     }
+    outputs.update(derive_conformance_realization(root, requirements, assertions))
     return outputs
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate FS0.2 normative and C/A identity read surfaces")
+    parser = argparse.ArgumentParser(description="Generate FS0.3 normative, C/A identity, and Conformance realization surfaces")
     parser.add_argument(
         "--check",
         action="store_true",
@@ -247,7 +257,7 @@ def main():
 
     mismatches = []
     for target, obj in outputs.items():
-        expected = canonical_bytes(obj)
+        expected = render_output(obj)
         if args.check:
             try:
                 actual = target.read_bytes()
@@ -262,11 +272,11 @@ def main():
 
     if args.check:
         if mismatches:
-            print("FS0.2 generation correspondence: FAIL", file=sys.stderr)
+            print("FS0.3 generation correspondence: FAIL", file=sys.stderr)
             for item in mismatches:
                 print(f"  mismatch: {item}", file=sys.stderr)
             raise SystemExit(1)
-        print("FS0.2 generation correspondence: PASS")
+        print("FS0.3 generation correspondence: PASS")
     else:
         for target in outputs:
             print(target.relative_to(root))

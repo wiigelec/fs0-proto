@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+if [ ! -d .git ] || [ ! -f repo/conformance/run.py ]; then
+    echo "repo/scripts/validate must be invoked from repository root" >&2
+    exit 2
+fi
+
+exec python3 repo/conformance/run.py "$@"
