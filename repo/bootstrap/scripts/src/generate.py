@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 AUTH_NAMES = ("framework", "governance", "conformance", "assurance")
@@ -32,6 +33,20 @@ def repository_root() -> Path:
     return cwd
 
 
+def derived_suffix(requirement_id: str) -> str:
+    if not requirement_id.startswith("FS0-"):
+        raise SystemExit(f"unexpected requirement identity: {requirement_id}")
+    return requirement_id[4:]
+
+
+def assertion_id(requirement_id: str) -> str:
+    return f"FS0-ASSERT-{derived_suffix(requirement_id)}"
+
+
+def obligation_id(requirement_id: str) -> str:
+    return f"FS0-OBL-{derived_suffix(requirement_id)}"
+
+
 def derive(root: Path):
     data = root / "repo" / "bootstrap" / "data"
     authority_dir = data / "authority"
@@ -48,7 +63,7 @@ def derive(root: Path):
         "FS0-AUTH-ASSURANCE",
     ]
     if req_index.get("requirements_total") != 164:
-        raise SystemExit("FS0.1 requires exactly 164 normalized requirements")
+        raise SystemExit("FS0.2 requires exactly 164 normalized requirements")
     if req_index.get("authority_order") != expected_order:
         raise SystemExit("unexpected requirement authority order")
 
@@ -95,6 +110,82 @@ def derive(root: Path):
         if ids != chunk_ids:
             raise SystemExit(f"{name}: authority requirement list does not match normalized requirement data")
 
+    c_counts = Counter(r["conformance_applicability"] for r in requirements)
+    a_counts = Counter(r["assurance_applicability"] for r in requirements)
+    if c_counts != Counter({"mechanical": 139, "none": 25}):
+        raise SystemExit(f"unexpected Conformance applicability counts: {dict(c_counts)}")
+    if a_counts != Counter({"required": 100, "none": 64}):
+        raise SystemExit(f"unexpected Assurance applicability counts: {dict(a_counts)}")
+
+    conformance_records = []
+    assertions = []
+    assurance_records = []
+    obligations = []
+
+    for rec in requirements:
+        rid = rec["requirement_id"]
+        owner = rec["owner_authority_id"]
+        c = rec["conformance_applicability"]
+        a = rec["assurance_applicability"]
+
+        aid = assertion_id(rid)
+        oid = obligation_id(rid)
+
+        conformance_records.append({
+            "schema_version": "1",
+            "record_type": "conformance-correspondence",
+            "requirement_id": rid,
+            "applicability": c,
+            "assertion_ids": [aid] if c == "mechanical" else [],
+        })
+        if c == "mechanical":
+            assertions.append({
+                "schema_version": "1",
+                "record_type": "assertion-definition",
+                "assertion_id": aid,
+                "requirement_id": rid,
+                "role": "assertion",
+                "derivation": {
+                    "kind": "canonical-requirement-coverage",
+                    "requirement_id": rid,
+                },
+            })
+
+        assurance_records.append({
+            "schema_version": "1",
+            "record_type": "assurance-correspondence",
+            "requirement_id": rid,
+            "applicability": a,
+            "obligation_ids": [oid] if a == "required" else [],
+        })
+        if a == "required":
+            obligations.append({
+                "schema_version": "1",
+                "record_type": "assurance-obligation-definition",
+                "obligation_id": oid,
+                "requirement_id": rid,
+                "authorizing_authority_id": owner,
+                "review_objective": (
+                    f"Determine whether the governed review subject satisfies {rid} "
+                    "semantically using applicable FS0 Assurance review capabilities."
+                ),
+                "derivation": {
+                    "kind": "canonical-requirement-assurance",
+                    "requirement_id": rid,
+                },
+            })
+
+    if len(conformance_records) != 164 or len(assurance_records) != 164:
+        raise SystemExit("C/A correspondence closure failure")
+    if len(assertions) != 139:
+        raise SystemExit(f"expected 139 assertion identities, found {len(assertions)}")
+    if len(obligations) != 100:
+        raise SystemExit(f"expected 100 Assurance obligation identities, found {len(obligations)}")
+    if len({a["assertion_id"] for a in assertions}) != 139:
+        raise SystemExit("duplicate assertion identity")
+    if len({o["obligation_id"] for o in obligations}) != 100:
+        raise SystemExit("duplicate Assurance obligation identity")
+
     outputs = {
         root / "repo" / "authority" / f"{name}.json": authority[name]
         for name in AUTH_NAMES
@@ -106,12 +197,49 @@ def derive(root: Path):
         "authority_order": expected_order,
         "requirements": requirements,
     }
+    outputs[root / "repo" / "conformance" / "correspondence.json"] = {
+        "schema_version": "1",
+        "record_type": "conformance-correspondence-registry",
+        "requirements_total": 164,
+        "records": conformance_records,
+    }
+    outputs[root / "repo" / "conformance" / "assertions.json"] = {
+        "schema_version": "1",
+        "record_type": "assertion-definition-registry",
+        "derivation_policy": (
+            "Exactly one initial stable assertion identity is derived for each requirement "
+            "with conformance_applicability=mechanical. This registry defines assertion identity "
+            "and requirement provenance only. Implementation, evidence, and gating bindings are "
+            "separate realization layers and are not inferred by identity derivation."
+        ),
+        "assertions": assertions,
+    }
+    outputs[root / "repo" / "assurance" / "correspondence.json"] = {
+        "schema_version": "1",
+        "record_type": "assurance-correspondence-registry",
+        "requirements_total": 164,
+        "records": assurance_records,
+    }
+    outputs[root / "repo" / "assurance" / "obligations.json"] = {
+        "schema_version": "1",
+        "record_type": "assurance-obligation-registry",
+        "derivation_policy": (
+            "Exactly one initial stable review-obligation identity is derived for each requirement "
+            "with assurance_applicability=required. Review cases instantiate obligations against "
+            "governed subjects and evidence."
+        ),
+        "obligations": obligations,
+    }
     return outputs
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate FS0.1 normative read surfaces")
-    parser.add_argument("--check", action="store_true", help="verify generated surfaces match bootstrap data without writing")
+    parser = argparse.ArgumentParser(description="Generate FS0.2 normative and C/A identity read surfaces")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="verify generated surfaces match bootstrap data without writing",
+    )
     args = parser.parse_args()
 
     root = repository_root()
@@ -134,11 +262,11 @@ def main():
 
     if args.check:
         if mismatches:
-            print("FS0.1 generation correspondence: FAIL", file=sys.stderr)
+            print("FS0.2 generation correspondence: FAIL", file=sys.stderr)
             for item in mismatches:
                 print(f"  mismatch: {item}", file=sys.stderr)
             raise SystemExit(1)
-        print("FS0.1 generation correspondence: PASS")
+        print("FS0.2 generation correspondence: PASS")
     else:
         for target in outputs:
             print(target.relative_to(root))
