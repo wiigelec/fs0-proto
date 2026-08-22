@@ -4,7 +4,11 @@
 
 Design proposal for the disposable `fs0-proto` bootstrap repository.
 
-This document is non-authoritative until accepted through the bootstrap process it is intended to establish.
+This document is non-authoritative bootstrap Design input.
+
+It does not become accepted FS0 authority before cutover.
+
+The one-time external bootstrap process may use this Design input to construct, audit, verify, and explicitly accept the first FS0 operating state.
 
 Its purpose is to define the minimum end-to-end functional set required to install a self-hosting repository framework that can use its own Governance, Conformance, Assurance, and GitHub operating mechanisms to build the remainder of the successor repo-spec design.
 
@@ -74,7 +78,13 @@ FS0 Design shall decide which installed artifacts become maintained framework st
 
 FS0 cannot authorize its own initial existence.
 
-Therefore one explicit bootstrap exception is required.
+Therefore one explicit external bootstrap exception is required.
+
+Before cutover, the bootstrap process operates outside FS0 Governance authority.
+
+Pre-cutover execution of candidate FS0 mechanisms produces bootstrap verification evidence only.
+
+It shall not be represented as governed FS0 Conformance, governed FS0 Assurance, or FS0 Governance acceptance before the first FS0 state is accepted.
 
 The bootstrap mechanism may:
 
@@ -83,8 +93,10 @@ The bootstrap mechanism may:
 - create the GitHub repository;
 - publish the initial candidate;
 - install the minimum GitHub operating profile;
-- run initial bootstrap verification; and
-- establish the first explicitly accepted FS0 repository revision.
+- run initial bootstrap mechanical verification;
+- run external bootstrap semantic audit;
+- correct bootstrap defects; and
+- explicitly accept one exact repository revision as the first FS0 operating state.
 
 After initial FS0 acceptance, bootstrap authority is exhausted.
 
@@ -100,7 +112,57 @@ All subsequent persistent framework change shall occur through FS0 Governance.
 
 ---
 
-# 5. FS0 Capability Set
+# 5. Accepted State and Acceptance Record
+
+FS0 requires one minimal authoritative representation of explicit Governance acceptance and accepted repository state.
+
+Merge state, issue closure, workflow success, or review approval shall not independently answer whether a candidate is accepted.
+
+## Acceptance Record
+
+Each accepted or rejected governed-stage candidate shall have a machine-resolvable acceptance record containing at least:
+
+```text
+acceptance identity
+Governance stage
+governed-work identity
+exact candidate identity
+disposition
+actor attribution
+evidence references
+decision timestamp
+resulting accepted-state relationship where applicable
+```
+
+The candidate identity for repository-changing work shall resolve to an exact Git commit SHA.
+
+An acceptance record is Governance state.
+
+It is not a generated interpretation of GitHub merge status.
+
+## Accepted Repository State
+
+FS0 shall maintain one machine-resolvable accepted-state record that identifies:
+
+```text
+accepted repository revision
+acceptance record authorizing that revision
+predecessor accepted revision where applicable
+```
+
+For FS0 bootstrap cutover, the first accepted-state record is created by the external bootstrap acceptance process.
+
+After cutover, only FS0 Governance may create a successor accepted-state record.
+
+The accepted-state record is the canonical answer to:
+
+> What exact repository revision is currently accepted?
+
+The default branch HEAD may equal the accepted revision, but equality shall not be the source of acceptance semantics.
+
+---
+
+# 6. FS0 Capability Set
 
 FS0 consists of seven capability groups:
 
@@ -116,7 +178,7 @@ These groups are capability boundaries, not necessarily final specification or d
 
 ---
 
-# 6. FS0.1 — Authority Kernel
+# 7. FS0.1 — Authority Kernel
 
 ## Purpose
 
@@ -170,7 +232,7 @@ FS0 shall defer:
 
 ---
 
-# 7. FS0.2 — Governance Kernel
+# 8. FS0.2 — Governance Kernel
 
 ## Purpose
 
@@ -289,7 +351,7 @@ Completion or acceptance shall not independently authorize unrelated or successo
 
 ---
 
-# 8. FS0.3 — Normative Requirement Kernel
+# 9. FS0.3 — Normative Requirement Kernel
 
 ## Purpose
 
@@ -324,7 +386,7 @@ FS0 does not need the final requirement-quality framework.
 
 ---
 
-# 9. FS0.4 — Conformance Kernel
+# 10. FS0.4 — Conformance Kernel
 
 ## Purpose
 
@@ -407,7 +469,7 @@ Local execution may exist as an implementation convenience, but remote canonical
 
 ---
 
-# 10. FS0.5 — Assurance Kernel
+# 11. FS0.5 — Assurance Kernel
 
 ## Purpose
 
@@ -481,7 +543,7 @@ Persistent semantic change shall route through Governance Design.
 
 ---
 
-# 11. FS0.6 — GitHub Remote Operating Profile
+# 12. FS0.6 — GitHub Remote Operating Profile
 
 ## Purpose
 
@@ -525,6 +587,33 @@ FS0 may use GitHub-native mechanisms such as:
 The exact mapping is a bootstrap implementation decision.
 
 No GitHub mechanism gains framework authority merely because FS0 uses it.
+
+## FS0 GitHub Binding
+
+The initial GitHub realization is fixed for FS0 bootstrap and first self-hosted operation.
+
+The mapping is:
+
+| Framework concept | FS0 GitHub realization |
+| --- | --- |
+| Design Proposal | maintained repository file |
+| Design governed work | GitHub issue |
+| Plan governed work | separate GitHub issue |
+| Build governed work | separate GitHub issue |
+| candidate repository state | Git branch and exact commit SHA |
+| candidate review surface | pull request |
+| canonical Conformance execution | GitHub Actions workflow |
+| Conformance evidence | workflow/check result tied to exact candidate SHA |
+| Assurance review case | structured maintained repository artifact |
+| Assurance finding | structured maintained repository artifact, optionally referenced in GitHub discussion |
+| stage acceptance | structured maintained acceptance record attributable to a GitHub actor |
+| accepted repository state | structured accepted-state record resolving to exact Git revision |
+
+GitHub issue, pull-request, merge, review, comment, or workflow state shall not independently create Governance acceptance.
+
+GitHub provides identity, collaboration, execution, and publication surfaces.
+
+Framework semantics remain defined by accepted FS0 authority.
 
 ## Required Remote Questions
 
@@ -575,7 +664,7 @@ FS0 shall defer unless strictly required for safe bootstrap operation:
 
 ---
 
-# 12. FS0.7 — Bootstrap Installation and Cutover
+# 13. FS0.7 — Bootstrap Installation and Cutover
 
 ## Purpose
 
@@ -585,18 +674,50 @@ Create the one accepted FS0 state from which all later framework evolution becom
 
 The bootstrap sequence shall be:
 
-1. construct FS0 candidate from this accepted bootstrap Design input;
+1. construct the FS0 candidate from this non-authoritative bootstrap Design input;
 2. initialize the disposable Git repository;
-3. install FS0 maintained artifacts;
-4. install the minimum GitHub operating profile;
+3. install candidate FS0 maintained artifacts;
+4. install the minimum candidate GitHub operating profile;
 5. create the GitHub remote repository;
 6. publish the candidate;
-7. execute bootstrap Conformance;
-8. execute bootstrap Assurance;
-9. correct defects;
+7. execute candidate mechanical checks as bootstrap verification evidence;
+8. perform external semantic audit as bootstrap audit evidence;
+9. correct defects in Design input or bootstrap realization as appropriate;
 10. repeat until the candidate satisfies FS0 bootstrap criteria;
-11. explicitly accept one exact repository revision as the FS0 operating baseline;
-12. disable further use of bootstrap authority for ordinary framework evolution.
+11. create the bootstrap acceptance record for one exact candidate revision;
+12. create the first accepted-state record resolving to that exact revision and acceptance record;
+13. create the one-way bootstrap cutover marker;
+14. treat FS0 Governance, Conformance, and Assurance as authoritative operating mechanisms only after that cutover;
+15. disable further use of bootstrap authority for ordinary framework evolution.
+
+## One-Way Cutover Marker
+
+FS0 shall maintain a machine-resolvable bootstrap cutover record.
+
+The cutover record shall identify at least:
+
+```text
+cutover state
+first accepted FS0 revision
+bootstrap acceptance record
+cutover timestamp
+```
+
+The only valid bootstrap lifecycle is:
+
+```text
+candidate
+→ cutover
+```
+
+There is no transition from `cutover` back to bootstrap candidate mode.
+
+After `cutover`:
+
+- bootstrap construction scripts shall refuse ordinary framework mutation;
+- bootstrap scripts may be inspected for provenance;
+- bootstrap scripts may be used only for explicitly authorized disaster-recovery or reconstruction work defined by later accepted authority; and
+- ordinary framework evolution shall occur only through FS0 Governance.
 
 ## Bootstrap Artifact Status
 
@@ -610,7 +731,7 @@ They shall not automatically remain active framework authority or ordinary mutat
 
 ---
 
-# 13. Minimum Installed FS0 State
+# 14. Minimum Installed FS0 State
 
 The exact final tree is not yet fixed.
 
@@ -629,14 +750,16 @@ stage acceptance
 Conformance execution
 Assurance review cases/findings
 GitHub bootstrap operating realization
-accepted repository state identity
+acceptance records
+accepted repository state record
+bootstrap cutover record
 ```
 
 Bootstrap Design shall prefer the smallest representation satisfying those responsibilities.
 
 ---
 
-# 14. Explicit FS0 Exclusions
+# 15. Explicit FS0 Exclusions
 
 The following are outside FS0 unless later audit proves one is strictly required for the first self-hosted FS1 cycle:
 
@@ -665,7 +788,7 @@ The following are outside FS0 unless later audit proves one is strictly required
 
 ---
 
-# 15. FS0 Build Principle
+# 16. FS0 Build Principle
 
 Every proposed FS0 artifact shall answer:
 
@@ -675,7 +798,7 @@ If the answer is no, the artifact or capability should be deferred.
 
 ---
 
-# 16. FS0 Self-Hosting Demonstration
+# 17. FS0 Self-Hosting Demonstration
 
 FS0 is not accepted merely because its own files exist or its bootstrap tests pass.
 
@@ -683,9 +806,11 @@ The decisive proof is construction of a successor functional set.
 
 The initial demonstration target should be a deliberately deferred capability, tentatively:
 
-**FS1 — Repository Structure and Artifact Model**
+**FS1 — Repository Structure**
 
 The exact FS1 definition remains outside this proposal.
+
+Artifact classification is intentionally deferred to a later functional set so the first self-hosting proof exercises one bounded semantic domain rather than two coupled domains.
 
 ## Required Demonstration
 
@@ -735,7 +860,7 @@ Without invoking bootstrap authority, the resulting repository shall be capable 
 
 ---
 
-# 17. FS0 Acceptance Criteria
+# 18. FS0 Acceptance Criteria
 
 FS0 bootstrap is complete only when all of the following are true.
 
@@ -785,13 +910,13 @@ FS0 bootstrap is complete only when all of the following are true.
 
 ## Self-Hosting
 
-- FS0 successfully Designs, Plans, Builds, Conforms, Assures, and accepts FS1.
+- After cutover, FS0 successfully Designs, Plans, Builds, Conforms, Assures, and accepts FS1 through FS0-governed mechanisms.
 - FS1 becomes accepted GitHub repository state.
 - FS2 can begin without bootstrap authority.
 
 ---
 
-# 18. Bootstrap Iteration Strategy
+# 19. Bootstrap Iteration Strategy
 
 FS0 is expected to require multiple bootstrap iterations.
 
@@ -818,7 +943,7 @@ This mirrors the target Governance separation even before FS0 is fully self-host
 
 ---
 
-# 19. Bootstrap Completion Boundary
+# 20. Bootstrap Completion Boundary
 
 FS0 development ends when the bootstrap process is no longer needed to evolve the framework.
 
@@ -835,7 +960,7 @@ At that point, FS0 becomes the operating kernel from which the remainder of the 
 
 ---
 
-# 20. Audit Questions
+# 21. Audit Questions
 
 Before generating bootstrap scripts, this proposal should be audited for:
 
@@ -851,5 +976,8 @@ Before generating bootstrap scripts, this proposal should be audited for:
 10. whether FS0 can distinguish accepted authority from candidate authority during its own first self-hosted evolution;
 11. whether any current repo-spec mechanism should be reused conceptually to reduce bootstrap risk;
 12. whether the proposed FS1 demonstration is sufficiently independent to prove genuine self-hosting; and
-13. whether any bootstrap-only shortcut would remain as an undeclared permanent authority path after cutover.
+13. whether any bootstrap-only shortcut would remain as an undeclared permanent authority path after cutover;
+14. whether the acceptance-record and accepted-state-record model is sufficient to distinguish merge from Governance acceptance;
+15. whether the fixed FS0 GitHub binding is minimal but complete enough to generate realization scripts without inventing Governance semantics; and
+16. whether pre-cutover verification is clearly distinguished from governed FS0 Conformance and Assurance.
 
