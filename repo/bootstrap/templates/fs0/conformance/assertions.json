@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "assertion-definition-registry",
-  "derivation_policy": "Exactly one initial stable assertion identity is derived for each requirement with conformance_applicability=mechanical. Later accepted realization may split coverage into multiple assertion identities without changing requirement semantics.",
+  "derivation_policy": "Exactly one initial stable assertion identity is derived for each requirement with conformance_applicability=mechanical. Gating policy is intentionally deferred to later orchestration/implementation realization. Later accepted realization may split coverage into multiple assertion identities without changing requirement semantics.",
   "assertions": [
     {
       "schema_version": "1",
@@ -14,8 +14,7 @@
         "requirement_id": "FS0-ASSUR-001"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -28,8 +27,7 @@
         "requirement_id": "FS0-ASSUR-002"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -42,8 +40,7 @@
         "requirement_id": "FS0-ASSUR-003"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -56,8 +53,7 @@
         "requirement_id": "FS0-ASSUR-004"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -70,8 +66,7 @@
         "requirement_id": "FS0-ASSUR-005"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -84,8 +79,7 @@
         "requirement_id": "FS0-ASSUR-006"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -98,8 +92,7 @@
         "requirement_id": "FS0-ASSUR-008"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -112,8 +105,7 @@
         "requirement_id": "FS0-ASSUR-009"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -126,8 +118,7 @@
         "requirement_id": "FS0-CONF-001"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -140,8 +131,7 @@
         "requirement_id": "FS0-CONF-002"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -154,8 +144,7 @@
         "requirement_id": "FS0-CONF-003"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -168,8 +157,7 @@
         "requirement_id": "FS0-CONF-004"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -182,8 +170,7 @@
         "requirement_id": "FS0-CONF-005"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -196,8 +183,7 @@
         "requirement_id": "FS0-CONF-007"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -210,8 +196,7 @@
         "requirement_id": "FS0-CONF-008"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -224,8 +209,7 @@
         "requirement_id": "FS0-CONF-009"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -238,8 +222,7 @@
         "requirement_id": "FS0-CONF-010"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -252,8 +235,7 @@
         "requirement_id": "FS0-CONF-011"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -266,8 +248,7 @@
         "requirement_id": "FS0-CONF-013"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -280,8 +261,7 @@
         "requirement_id": "FS0-CONF-014"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -294,8 +274,7 @@
         "requirement_id": "FS0-FC-001"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -308,8 +287,7 @@
         "requirement_id": "FS0-FC-002"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -322,8 +300,7 @@
         "requirement_id": "FS0-FC-003"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -336,8 +313,7 @@
         "requirement_id": "FS0-FC-004"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -350,8 +326,7 @@
         "requirement_id": "FS0-FC-005"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -364,8 +339,7 @@
         "requirement_id": "FS0-FC-006"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -378,8 +352,7 @@
         "requirement_id": "FS0-FC-008"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -392,8 +365,7 @@
         "requirement_id": "FS0-FC-009"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -406,8 +378,7 @@
         "requirement_id": "FS0-FC-010"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -420,8 +391,7 @@
         "requirement_id": "FS0-FC-011"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -434,8 +404,7 @@
         "requirement_id": "FS0-FC-012"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -448,8 +417,7 @@
         "requirement_id": "FS0-FC-013"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -462,8 +430,7 @@
         "requirement_id": "FS0-FC-014"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -476,8 +443,7 @@
         "requirement_id": "FS0-FC-016"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -490,8 +456,7 @@
         "requirement_id": "FS0-FC-017"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -504,8 +469,7 @@
         "requirement_id": "FS0-FC-019"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -518,8 +482,7 @@
         "requirement_id": "FS0-FC-020"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -532,8 +495,7 @@
         "requirement_id": "FS0-FC-021"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -546,8 +508,7 @@
         "requirement_id": "FS0-FC-022"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -560,8 +521,7 @@
         "requirement_id": "FS0-FC-023"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -574,8 +534,7 @@
         "requirement_id": "FS0-FC-024"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -588,8 +547,7 @@
         "requirement_id": "FS0-FC-025"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -602,8 +560,7 @@
         "requirement_id": "FS0-FC-026"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -616,8 +573,7 @@
         "requirement_id": "FS0-FC-027"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -630,8 +586,7 @@
         "requirement_id": "FS0-FC-028"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -644,8 +599,7 @@
         "requirement_id": "FS0-FC-029"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -658,8 +612,7 @@
         "requirement_id": "FS0-FC-030"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -672,8 +625,7 @@
         "requirement_id": "FS0-FC-031"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -686,8 +638,7 @@
         "requirement_id": "FS0-FC-032"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -700,8 +651,7 @@
         "requirement_id": "FS0-FC-033"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -714,8 +664,7 @@
         "requirement_id": "FS0-FC-034"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -728,8 +677,7 @@
         "requirement_id": "FS0-FC-035"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -742,8 +690,7 @@
         "requirement_id": "FS0-FC-036"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -756,8 +703,7 @@
         "requirement_id": "FS0-FC-037"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -770,8 +716,7 @@
         "requirement_id": "FS0-FC-038"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -784,8 +729,7 @@
         "requirement_id": "FS0-FC-039"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -798,8 +742,7 @@
         "requirement_id": "FS0-FC-040"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -812,8 +755,7 @@
         "requirement_id": "FS0-FC-041"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -826,8 +768,7 @@
         "requirement_id": "FS0-FC-042"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -840,8 +781,7 @@
         "requirement_id": "FS0-GOV-001"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -854,8 +794,7 @@
         "requirement_id": "FS0-GOV-002"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -868,8 +807,7 @@
         "requirement_id": "FS0-GOV-003"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -882,8 +820,7 @@
         "requirement_id": "FS0-GOV-004"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -896,8 +833,7 @@
         "requirement_id": "FS0-GOV-005"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -910,8 +846,7 @@
         "requirement_id": "FS0-GOV-006"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -924,8 +859,7 @@
         "requirement_id": "FS0-GOV-008"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -938,8 +872,7 @@
         "requirement_id": "FS0-GOV-010"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -952,8 +885,7 @@
         "requirement_id": "FS0-GOV-011"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -966,8 +898,7 @@
         "requirement_id": "FS0-GOV-012"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -980,8 +911,7 @@
         "requirement_id": "FS0-GOV-013"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -994,8 +924,7 @@
         "requirement_id": "FS0-GOV-014"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1008,8 +937,7 @@
         "requirement_id": "FS0-GOV-015"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1022,8 +950,7 @@
         "requirement_id": "FS0-GOV-016"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1036,8 +963,7 @@
         "requirement_id": "FS0-GOV-017"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1050,8 +976,7 @@
         "requirement_id": "FS0-GOV-018"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1064,8 +989,7 @@
         "requirement_id": "FS0-GOV-020"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1078,8 +1002,7 @@
         "requirement_id": "FS0-GOV-022"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1092,8 +1015,7 @@
         "requirement_id": "FS0-GOV-023"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1106,8 +1028,7 @@
         "requirement_id": "FS0-GOV-024"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1120,8 +1041,7 @@
         "requirement_id": "FS0-GOV-025"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1134,8 +1054,7 @@
         "requirement_id": "FS0-GOV-026"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     },
     {
       "schema_version": "1",
@@ -1148,8 +1067,7 @@
         "requirement_id": "FS0-GOV-027"
       },
       "implementation_binding": null,
-      "evidence_binding": null,
-      "gating": true
+      "evidence_binding": null
     }
   ]
 }
