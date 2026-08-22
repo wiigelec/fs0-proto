@@ -18,7 +18,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-002",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Every requirement with Assurance applicability required SHALL resolve from accepted authorizing authority to a review obligation and instantiated review case with subject, evidence, finding, and Governance disposition.",
+      "statement": "Every requirement with Assurance applicability required SHALL resolve from accepted authorizing authority to a review obligation and review case with subject, evidence, finding, and Governance disposition.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -28,7 +28,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-003",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "FS0 Assurance SHALL support requirement-quality review, ambiguity review, contradiction review, Design fidelity review, Plan fidelity review, Build realization-fidelity review, Conformance interpretation review, and evidence-sufficiency review.",
+      "statement": "FS0 Assurance SHALL support requirement-quality, ambiguity, contradiction, Design-fidelity, Plan-fidelity, Build-fidelity, Conformance-interpretation, and evidence-sufficiency review.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -68,7 +68,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-007",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Assurance findings SHALL be case-specific and SHALL NOT independently create, amend, supersede, or withdraw persistent normative authority; persistent semantic change SHALL route through Governance Design.",
+      "statement": "Assurance findings SHALL be case-specific.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -78,7 +78,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-008",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Each installed Assurance correspondence record SHALL contain requirement_id, applicability, and obligation_ids; applicability required SHALL require at least one stable review-obligation identity and applicability none SHALL require an empty obligation_ids collection.",
+      "statement": "Each installed Assurance correspondence record SHALL contain requirement_id, applicability, and obligation_ids.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -88,9 +88,69 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-009",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "In the fixed FS0 GitHub binding, each Assurance review case and finding SHALL be a structured maintained repository artifact that is remotely accessible, with findings optionally referenced from GitHub discussion.",
+      "statement": "In the fixed FS0 GitHub binding, each Assurance review case and finding SHALL be a structured maintained repository artifact.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-010",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "An Assurance finding SHALL NOT independently create, amend, supersede, or withdraw persistent normative authority.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-011",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "Persistent semantic change identified by Assurance SHALL route through Governance Design.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-012",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "An Assurance correspondence with applicability required SHALL contain at least one stable review-obligation identity.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-013",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "An Assurance correspondence with applicability none SHALL contain an empty obligation_ids collection.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-014",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "Assurance review cases and findings SHALL be remotely accessible in the fixed FS0 GitHub binding.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-ASSUR-015",
+      "owner_authority_id": "FS0-AUTH-ASSURANCE",
+      "statement": "Assurance requirement-quality review SHALL detect materially compound identified requirements and material semantic omission caused by statement-length compression.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
       "assurance_applicability": "required"
     }
   ]

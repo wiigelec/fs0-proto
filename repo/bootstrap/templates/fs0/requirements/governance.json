@@ -8,7 +8,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-001",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "FS0 Governance SHALL implement the lifecycle Design Proposal -> Design -> Plan -> Build -> accepted repository state, with Design, Plan, and Build represented as distinct governed work.",
+      "statement": "FS0 Governance SHALL implement Design Proposal -> Design -> Plan -> Build -> accepted repository state.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -18,7 +18,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-002",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Design SHALL use Audit, Normalize, Accept; Plan SHALL use Analyze, Specify, Accept; and Build SHALL use Implement, Verify, Accept.",
+      "statement": "Design SHALL use Audit, Normalize, Accept; Plan SHALL use Analyze, Specify, Accept; Build SHALL use Implement, Verify, Accept.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -28,7 +28,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-003",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Each governed Design, Plan, and Build work item SHALL have stable identity, explicit predecessor, explicit scope, material exclusions where applicable, candidate result, completion conditions, explicit acceptance or rejection, provenance, and bounded authorization.",
+      "statement": "Each governed Design, Plan, and Build work item SHALL record stable identity, predecessor, scope, material exclusions where applicable, candidate result, completion conditions, disposition, provenance, and bounded authorization.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -38,7 +38,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-004",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Design SHALL consume a non-authoritative Design Proposal, audit accepted authority and relevant repository state, normalize persistent normative semantics into identified requirements, and explicitly accept or reject the normative delta.",
+      "statement": "Design SHALL consume a non-authoritative Design Proposal.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -48,7 +48,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-005",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Plan SHALL consume accepted Design authority, define realization intent including affected artifacts, Conformance work, Assurance work, dependencies, sequencing, and bounded Build scope, and SHALL NOT create or amend normative semantics.",
+      "statement": "Plan SHALL consume accepted Design authority and define realization intent covering affected artifacts, Conformance work, Assurance work, dependencies, sequencing, and bounded Build scope.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -58,7 +58,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-006",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Build SHALL consume an accepted Plan, implement only authorized Plan work, produce required evidence, invoke required Conformance and Assurance, verify completion, and SHALL NOT invent Design semantics or Plan intent.",
+      "statement": "Build SHALL consume an accepted Plan and implement only work authorized by that Plan.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -68,7 +68,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-007",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Semantic defects SHALL route to Design, realization-intent defects SHALL route to Plan, and implementation defects SHALL route to Build.",
+      "statement": "Semantic defects SHALL route to Design, realization-intent defects to Plan, and implementation defects to Build.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -78,7 +78,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-008",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Governance acceptance SHALL be explicit, attributable, traceable, candidate-specific, and distinct from merge state, issue closure, Conformance success, Assurance findings, review approval, workflow success, and tool declarations.",
+      "statement": "Governance acceptance SHALL be explicit, attributable, traceable, and candidate-specific.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -88,7 +88,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-009",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "A Governance acceptance decision SHALL depend only on authority accepted before the candidate acquires any authority produced by that acceptance.",
+      "statement": "A Governance acceptance decision SHALL depend only on authority accepted before the candidate acquires authority produced by that acceptance.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -98,7 +98,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-010",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "A governed work item SHALL authorize only its explicit scope, and completion or acceptance SHALL NOT independently authorize unrelated or successor work.",
+      "statement": "A governed work item SHALL authorize only its explicit scope.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -108,7 +108,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-011",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "For the FS0 GitHub binding, each Design, Plan, or Build acceptance record SHALL be a structured machine-readable GitHub issue comment attached to that stage's governed-work issue.",
+      "statement": "For the FS0 GitHub binding, each Design, Plan, or Build acceptance record SHALL be a structured machine-readable GitHub issue comment on that stage's governed-work issue.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -118,7 +118,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-012",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Every machine-readable acceptance comment SHALL use marker repo-spec-acceptance:v1 followed by exactly one fenced JSON object using the Design-defined acceptance-record envelope and enum values.",
+      "statement": "Every machine-readable acceptance comment SHALL use marker repo-spec-acceptance:v1 followed immediately by exactly one fenced JSON object using the Design-defined envelope.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -128,7 +128,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-013",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "A governance-acceptance record SHALL use schema_version 1, record_type governance-acceptance, stage design|plan|build, and disposition accepted|rejected, and SHALL contain acceptance_id, work_id, candidate_id, actor, evidence, decision_timestamp, and resulting_accepted_state where applicable.",
+      "statement": "A governance-acceptance record SHALL use schema_version 1, record_type governance-acceptance, stage design|plan|build, disposition accepted|rejected, and the Design-defined required fields.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -138,7 +138,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-014",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "A bootstrap-acceptance record SHALL use schema_version 1, record_type bootstrap-acceptance, stage bootstrap, and disposition accepted|rejected, and SHALL identify the exact candidate revision plus bootstrap verification and semantic-audit evidence.",
+      "statement": "A bootstrap-acceptance record SHALL use schema_version 1, record_type bootstrap-acceptance, stage bootstrap, disposition accepted|rejected, exact candidate revision, and required bootstrap evidence.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -158,7 +158,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-016",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Accepted repository state SHALL be represented by refs/heads/accepted plus a matching valid acceptance record; the accepted ref SHALL move only after the applicable explicit acceptance decision exists.",
+      "statement": "Accepted repository state SHALL be represented by refs/heads/accepted plus a matching valid acceptance record.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -178,7 +178,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-018",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Initial bootstrap acceptance SHALL be recorded on a dedicated external bootstrap provenance issue and SHALL NOT be represented as FS0-governed Design, Plan, or Build work.",
+      "statement": "Initial bootstrap acceptance SHALL be recorded on a dedicated external bootstrap provenance issue.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -188,7 +188,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-019",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Technical write permission SHALL be treated only as capability and SHALL NOT enlarge Governance authorization; privileged mutation SHALL remain bounded by accepted authority, accepted Plan, and authorized Build scope.",
+      "statement": "Technical write permission SHALL be treated only as capability and SHALL NOT enlarge Governance authorization.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -198,7 +198,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-020",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "After FS0 cutover, every persistent framework change SHALL occur through FS0 Governance and no bootstrap-only mechanism SHALL independently create accepted framework state.",
+      "statement": "After FS0 cutover, every persistent framework change SHALL occur through FS0 Governance.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -208,7 +208,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-021",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Design Normalize SHALL be capable of identifying materially compound obligations, ambiguity, contradiction, duplication, inappropriate implementation leakage, and missing semantic ownership.",
+      "statement": "Design Normalize SHALL identify materially compound obligations, ambiguity, contradiction, duplication, inappropriate implementation leakage, and missing semantic ownership.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -218,7 +218,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-022",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "The installed proposal registry SHALL record proposal identity, order, installed path, lifecycle state, bootstrap provenance, authority state, reconstruction dependencies, and predecessor and successor proposal identities where applicable.",
+      "statement": "The installed proposal registry SHALL record proposal identity, order, installed path, lifecycle state, bootstrap provenance, authority state, reconstruction dependencies, and predecessor/successor identities where applicable.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -238,7 +238,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-024",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "The proposal registry SHALL be machine-resolvable so a fresh agent can enumerate available unprocessed successor Design Proposals and their reconstruction dependencies without chat history.",
+      "statement": "The proposal registry SHALL let a fresh agent enumerate available unprocessed successor Design Proposals and reconstruction dependencies without chat history.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -248,7 +248,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-025",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "After cutover, a bootstrap-installed seed proposal SHALL NOT be mutated in place; a correction SHALL occur through a new or successor proposal with explicit lineage.",
+      "statement": "After cutover, a bootstrap-installed seed proposal SHALL NOT be mutated in place.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -258,7 +258,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-026",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "In the fixed FS0 GitHub binding, Design governed work SHALL use a GitHub issue, Plan governed work SHALL use a separate GitHub issue, Build governed work SHALL use a separate GitHub issue, candidate repository state SHALL use a Git branch plus exact commit SHA, and the candidate review surface SHALL use a pull request.",
+      "statement": "In the fixed FS0 GitHub binding, Design governed work SHALL use a GitHub issue.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -268,7 +268,207 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-027",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "FS0 SHALL make the active Design work, initiating Design Proposal, candidate or accepted normative delta, accepted Plan, authorized Build work, exact revision under review, acceptance status, resulting accepted revision, and remaining unauthorized work machine-resolvable from repository and GitHub state without chat history.",
+      "statement": "FS0 SHALL make current governed work and accepted realization intent machine-resolvable from repository and GitHub state without chat history.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-028",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Design, Plan, and Build SHALL be represented as distinct governed work.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-029",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Design SHALL audit accepted authority and relevant repository state.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-030",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Design SHALL normalize persistent normative semantics into identified requirements.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-031",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Design SHALL explicitly accept or reject the normative delta.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-032",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Plan SHALL NOT create or amend normative semantics.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-033",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Build SHALL produce required evidence, invoke required Conformance and Assurance, and verify completion.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-034",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Build SHALL NOT invent Design semantics or Plan intent.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-035",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Governance acceptance SHALL remain distinct from merge, issue closure, Conformance success, Assurance findings, review approval, workflow success, and tool declarations.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-036",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Completion or acceptance of governed work SHALL NOT independently authorize unrelated or successor work.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-037",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "refs/heads/accepted SHALL move only after the applicable explicit acceptance decision exists.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-038",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "The external bootstrap provenance issue SHALL NOT be represented as FS0-governed Design, Plan, or Build work.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-039",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Privileged mutation SHALL remain bounded by accepted authority, accepted Plan, and authorized Build scope.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-040",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "No bootstrap-only mechanism SHALL independently create accepted framework state after cutover.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-041",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "A correction to a bootstrap-installed seed proposal SHALL use a new or successor proposal with explicit lineage.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-042",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "In the fixed FS0 GitHub binding, Plan governed work SHALL use a separate GitHub issue.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-043",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "In the fixed FS0 GitHub binding, Build governed work SHALL use a separate GitHub issue.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-044",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "In the fixed FS0 GitHub binding, candidate repository state SHALL use a Git branch plus exact commit SHA.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-045",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "In the fixed FS0 GitHub binding, the candidate review surface SHALL use a pull request.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-046",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "FS0 SHALL make the active Design work, initiating proposal, and candidate or accepted normative delta machine-resolvable without chat history.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-047",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "FS0 SHALL make the exact revision under review, acceptance status, resulting accepted revision, and remaining unauthorized work machine-resolvable without chat history.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"

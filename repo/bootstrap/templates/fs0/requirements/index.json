@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "requirement-template-index",
-  "requirements_total": 90,
+  "requirements_total": 161,
   "authority_order": [
     "FS0-AUTH-FRAMEWORK",
     "FS0-AUTH-GOVERNANCE",
@@ -27,17 +27,22 @@
     }
   ],
   "installed_target": "repo/authority/requirements.json",
-  "normalization_rule": "Bootstrap SHALL concatenate the registered requirement records without changing requirement identity, owner, statement, lifecycle state, or C/A applicability.",
+  "normalization_rule": "Bootstrap SHALL concatenate the registered normalized requirement records without changing requirement identity, owner, statement, lifecycle state, or C/A applicability.",
   "design_coverage": {
-    "status": "closed-for-fs0-template-derivation",
+    "status": "closed-for-normalized-fs0-template-derivation",
     "covered_contract_groups": [
+      "authority and requirement identity and ownership",
+      "Governance lifecycle and accepted-state semantics",
       "minimum structured record contracts",
       "root orientation content contracts",
-      "proposal registry and seed-lineage contracts",
+      "proposal registry, seed, projection, and lineage contracts",
       "fixed FS0 GitHub binding",
       "GitHub state-separation contract",
-      "canonical bootstrap-template topology and class separation"
+      "bootstrap maintenance-source and authoritative-read isolation",
+      "canonical generation-source registry and deterministic generation",
+      "generation-correspondence closure",
+      "normative requirement atomicity and statement-length discipline"
     ],
-    "rule": "Before deriving Conformance assertions or Assurance obligations, every normative bootstrap Design contract used by implementation SHALL resolve to an identified requirement owned by exactly one FS0 authority."
+    "rule": "Before deriving Conformance assertions or Assurance obligations, every normative bootstrap Design contract used by implementation SHALL resolve to one identified requirement owned by exactly one FS0 authority."
   }
 }
