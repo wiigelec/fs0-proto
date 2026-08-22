@@ -201,6 +201,7 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 - Every maintained Conformance primitive has provenance.
 - Required evidence exists.
 - Every gating assertion participates in canonical GitHub execution.
+- Generated FS0 read surfaces satisfy required generation-correspondence checks.
 
 ## Assurance
 
@@ -292,7 +293,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 3. whether the bootstrap exception is sufficiently bounded;
 4. whether GitHub operating requirements accidentally redefine portable Governance semantics;
 5. whether explicit acceptance can be represented remotely without equating acceptance with merge;
-6. whether the minimum Conformance kernel truly satisfies authority, coverage, evidence, and execution closure;
+6. whether the minimum Conformance kernel satisfies all required Conformance closures;
 7. whether the minimum Assurance kernel can perform the semantic reviews needed for Design, Plan, and Build acceptance;
 8. whether candidate and accepted repository states are unambiguously identifiable;
 9. whether retained bootstrap maintenance source can be used without becoming an authoritative read surface;
@@ -328,4 +329,4 @@ Before generating bootstrap scripts, this proposal should be audited for:
 39. whether all substantive bootstrap implementation is confined to `repo/bootstrap/scripts/src/`.
 40. whether acceptance-record marker, fields, record types, stage values, and dispositions are defined by Design rather than invented by implementation;
 41. whether bootstrap candidate construction explicitly consumes both bootstrap Design input and canonical bootstrap templates; and
-42. whether the narrow required proposal Markdown projection is distinguished from a deferred generalized projection framework.
+42. whether the bounded FS0 generation mechanism is distinguished from a deferred generalized successor-framework projection architecture.

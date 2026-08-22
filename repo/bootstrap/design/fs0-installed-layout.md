@@ -161,13 +161,13 @@ chunks/<ordered-chunk>.json
 proposal.md
 ```
 
-`proposal.json` and `chunks/*.json` are the canonical installed proposal representation.
+`proposal.json` and `chunks/*.json` are the canonical installed proposal read representation.
 
 `proposal.md` is a deterministic generated projection for human and AI-agent reading.
 
 Generated Markdown shall not be an independent semantic owner.
 
-A semantic change shall modify the canonical structured representation and regenerate the Markdown projection.
+A semantic change shall modify the applicable bootstrap maintenance source and regenerate the installed proposal read surfaces.
 
 The installed proposal registry shall enumerate proposal identity, order, installed path, lifecycle state, provenance, authority state, and reconstruction dependencies where applicable.
 
@@ -341,7 +341,7 @@ At minimum, Conformance shall verify:
 - the requirement registry satisfies the minimum requirement contract;
 - required correspondence files resolve and satisfy their minimum correspondence contracts;
 - the proposal registry resolves the complete bootstrap-installed successor Design Proposal seed set with `authority state = none`;
-- every installed proposal canonical JSON representation matches the proposal registry and its generated Markdown projection is deterministic from that canonical representation;
+- every installed proposal read representation is deterministically derived from bootstrap maintenance source and its Markdown projection is deterministic from that installed read representation;
 - the retained `repo/bootstrap/` tree contains only `design/`, `templates/`, and `scripts/` bootstrap source roles and no generated material;
 - `repo/bootstrap/scripts/bootstrap` exists, is executable, is a shell wrapper, and substantive bootstrap implementation is confined to `repo/bootstrap/scripts/src/`;
 - the canonical Conformance runner exists;
@@ -374,7 +374,7 @@ The bootstrap source payload is closed and self-contained.
 
 `repo/bootstrap/design/` contains only bootstrap Design input.
 
-`repo/bootstrap/templates/` contains only canonical input material required to construct FS0 and install the complete non-authoritative successor Design Proposal seed set.
+`repo/bootstrap/templates/` contains only canonical input material required to construct and maintain FS0 and install the complete non-authoritative successor Design Proposal seed set.
 
 `repo/bootstrap/scripts/` contains only the canonical shell entry point and substantive bootstrap implementation.
 
@@ -386,7 +386,7 @@ No generated FS0 authority, generated proposal Markdown, generated orientation s
 
 Bootstrap-generated material shall be written only to its installed target location outside `repo/bootstrap/`.
 
-After cutover, ordinary FS0 operation and successor construction shall not depend on reading from `repo/bootstrap/`.
+After cutover, authoritative determination shall not depend on reading from `repo/bootstrap/`.
 
 ## Bootstrap Execution Contract
 
@@ -411,15 +411,15 @@ Retention does not grant authority.
 After cutover:
 
 ```text
-repo/bootstrap/design/      historical bootstrap Design input
-repo/bootstrap/templates/   historical bootstrap realization inputs
-repo/bootstrap/scripts/     historical bootstrap implementation
+repo/bootstrap/design/      non-authoritative bootstrap Design provenance
+repo/bootstrap/templates/   retained non-authoritative FS0 maintenance source
+repo/bootstrap/scripts/     retained FS0 generation and maintenance implementation
 ```
 
-shall be treated as inert provenance and shall not serve as ordinary FS0 mutation or semantic input paths.
+may support FS0 Governance-authorized maintenance.
 
-Ordinary FS0 operation shall use the installed authority, Governance, Conformance, Assurance, state, and proposal locations outside `repo/bootstrap/`.
+Authoritative determination shall use accepted read surfaces outside `repo/bootstrap/`.
 
-The bootstrap implementation reads its local bootstrap Design and template inputs and creates the installed FS0 layout in the containing target repository.
+The bootstrap implementation reads its local bootstrap Design and template inputs and creates or regenerates the installed FS0 layout in the containing target repository.
 
 The prototype source tree shall not be used as evidence that installed FS0 structure exists.
