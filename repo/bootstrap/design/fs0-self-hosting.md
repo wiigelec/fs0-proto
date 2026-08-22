@@ -1,0 +1,286 @@
+# FS0 Self-Hosting and Acceptance
+
+## Status
+
+Part of the non-authoritative FS0-Core Bootstrap Design Proposal.
+
+Read `fs0-design.md` first. This chunk does not independently create authority.
+
+---
+
+# Minimum Installed FS0 State
+
+The exact final tree is not yet fixed.
+
+However, the installed FS0 state must contain enough maintained artifacts and operating surfaces to represent and operate:
+
+```text
+Framework Contract authority
+Governance authority
+Conformance authority
+Assurance authority
+accepted normative requirements
+Conformance correspondence
+Assurance correspondence
+governed work
+stage acceptance
+Conformance execution
+Assurance review cases/findings
+GitHub bootstrap operating realization
+acceptance-record resolution rules
+accepted Git ref resolution
+bootstrap cutover record
+root README.md
+root AGENTS.md
+root LICENSE
+Git/GitHub operating substrate
+bounded privileged-mutation capability
+authenticated network operation
+```
+
+Bootstrap Design shall prefer the smallest representation satisfying those responsibilities.
+
+---
+
+---
+
+# Explicit FS0 Exclusions
+
+The following are outside FS0 unless later audit proves one is strictly required for the first self-hosted FS1 cycle:
+
+- complete repository structure specification;
+- complete artifact taxonomy;
+- complete manifest framework;
+- product Level 0–3 model;
+- permanent functional-set process;
+- product decomposition framework;
+- rich implementation-plan document model;
+- generalized platform profile system;
+- support for non-GitHub platforms;
+- generalized remote-state administration;
+- generated Markdown projections;
+- rich schema architecture;
+- complete Conformance primitive taxonomy;
+- mutation-testing framework;
+- advanced evidence classification;
+- complete Assurance finding taxonomy;
+- reviewer assignment framework;
+- product correspondence framework;
+- release management;
+- migration framework;
+- user convenience namespaces; and
+- permanent bootstrap tooling.
+
+---
+
+---
+
+# FS0 Build Principle
+
+Every proposed FS0 artifact shall answer:
+
+> Is this required for FS0 to build and accept FS1 through its own remotely operable Governance, Conformance, and Assurance loop?
+
+If the answer is no, the artifact or capability should be deferred.
+
+---
+
+---
+
+# FS0 Self-Hosting Demonstration
+
+FS0 is not accepted merely because its own files exist or its bootstrap tests pass.
+
+The decisive proof is construction of a successor functional set.
+
+The initial demonstration target should be a deliberately deferred capability, tentatively:
+
+**FS1 — Repository Structure**
+
+The exact FS1 definition remains outside this proposal.
+
+Artifact classification is intentionally deferred to a later functional set so the first self-hosting proof exercises one bounded semantic domain rather than two coupled domains.
+
+## Required Demonstration
+
+Starting from the accepted FS0 GitHub revision:
+
+### 1. Create FS1 Design Proposal
+
+Create a non-authoritative FS1 proposal through FS0-compatible repository/GitHub state.
+
+### 2. Execute Design
+
+Use FS0 to:
+
+- audit;
+- normalize;
+- perform required Conformance;
+- perform required Assurance; and
+- explicitly accept FS1 normative authority.
+
+### 3. Execute Plan
+
+Use FS0 to:
+
+- analyze realization;
+- specify bounded work;
+- identify Conformance and Assurance changes; and
+- explicitly accept the Plan.
+
+### 4. Execute Build
+
+Use FS0 to:
+
+- implement the accepted Plan;
+- produce a candidate remote revision;
+- execute canonical GitHub Conformance;
+- execute required Assurance cases;
+- resolve findings; and
+- explicitly accept the Build result.
+
+### 5. Publish Accepted State
+
+The accepted FS1 Build result shall become the new accepted repository state on the GitHub remote.
+
+### 6. Begin FS2
+
+Without invoking bootstrap authority, the resulting repository shall be capable of initiating the next Design Proposal and Governance cycle.
+
+---
+
+---
+
+# FS0 Acceptance Criteria
+
+FS0 bootstrap is complete only when all of the following are true.
+
+## Authority
+
+- FS0 accepted authority is explicitly identifiable.
+- All accepted normative requirements have stable identities.
+- Semantic ownership is unique.
+- Normative authority dependencies are acyclic.
+- Maintained governed framework state is positively authorized.
+- Derived maintained primitives have resolvable provenance.
+
+## Governance
+
+- Design, Plan, and Build are independently operable.
+- Each stage has explicit governed identity and state.
+- Acceptance is explicit and candidate-specific.
+- Downstream invention is prohibited and testable through audit.
+- Authorization is bounded.
+- Historical authority lineage is resolvable.
+
+## Conformance
+
+- Every accepted requirement has one canonical Conformance correspondence.
+- Every mechanical requirement has executable assertion coverage.
+- Every maintained Conformance primitive has provenance.
+- Required evidence exists.
+- Every gating assertion participates in canonical GitHub execution.
+
+## Assurance
+
+- Every accepted requirement has one canonical Assurance correspondence.
+- Required review obligations are identifiable.
+- Triggered obligations are instantiated as review cases.
+- Findings are attributable, scoped, and evidence-linked.
+- Assurance cannot independently create persistent semantics.
+
+## GitHub Operation
+
+- A fresh AI-agent session can orient from root `README.md` and `AGENTS.md` without relying on chat history.
+- FS0 has authenticated network and Git/GitHub capability sufficient for its full governed lifecycle.
+- Technical write credentials remain distinct from Governance authorization.
+- FS0 can be operated without contributor-local filesystem access.
+- Candidate revisions are exact and remotely resolvable.
+- Canonical Conformance executes remotely.
+- Assurance evidence/findings are remotely accessible.
+- Explicit acceptance can be resolved independently of merge state.
+- `refs/heads/accepted` resolves the accepted repository revision and agrees with its acceptance record.
+- Unauthorized successor work is distinguishable from authorized work.
+
+## Self-Hosting
+
+- After cutover, FS0 successfully Designs, Plans, Builds, Conforms, Assures, and accepts FS1 through FS0-governed mechanisms.
+- FS1 becomes accepted GitHub repository state.
+- FS2 can begin without bootstrap authority.
+
+---
+
+---
+
+# Bootstrap Iteration Strategy
+
+FS0 is expected to require multiple bootstrap iterations.
+
+The intended development loop is:
+
+```text
+FS0 Design Proposal
+→ generate bootstrap scripts
+→ construct fs0-proto
+→ initialize Git
+→ create/publish GitHub repo
+→ audit
+→ identify defects
+→ revise proposal and/or bootstrap scripts
+→ rebuild disposable prototype
+→ repeat
+```
+
+The prototype repository is disposable until the FS0 end-to-end lifecycle succeeds.
+
+Corrections should prefer fixing the Design Proposal when the defect is semantic and fixing bootstrap scripts when the defect is only realization.
+
+This mirrors the target Governance separation even before FS0 is fully self-hosting.
+
+---
+
+---
+
+# Bootstrap Completion Boundary
+
+FS0 development ends when the bootstrap process is no longer needed to evolve the framework.
+
+The transition is:
+
+```text
+external bootstrap construction
+→ accepted FS0
+→ self-hosted FS0 Governance
+→ FS1 and later functional sets
+```
+
+At that point, FS0 becomes the operating kernel from which the remainder of the successor repo-spec is built.
+
+---
+
+---
+
+# Audit Questions
+
+Before generating bootstrap scripts, this proposal should be audited for:
+
+1. whether every included capability is necessary for the first self-hosted FS1 cycle;
+2. whether any omitted capability is actually required to complete that cycle;
+3. whether the bootstrap exception is sufficiently bounded;
+4. whether GitHub operating requirements accidentally redefine portable Governance semantics;
+5. whether explicit acceptance can be represented remotely without equating acceptance with merge;
+6. whether the minimum Conformance kernel truly satisfies authority, coverage, evidence, and execution closure;
+7. whether the minimum Assurance kernel can perform the semantic reviews needed for Design, Plan, and Build acceptance;
+8. whether candidate and accepted repository states are unambiguously identifiable;
+9. whether bootstrap artifacts can be retired without breaking provenance;
+10. whether FS0 can distinguish accepted authority from candidate authority during its own first self-hosted evolution;
+11. whether any current repo-spec mechanism should be reused conceptually to reduce bootstrap risk;
+12. whether the proposed FS1 demonstration is sufficiently independent to prove genuine self-hosting; and
+13. whether any bootstrap-only shortcut would remain as an undeclared permanent authority path after cutover;
+14. whether the structured acceptance-record plus `refs/heads/accepted` model is sufficient to distinguish merge and publication from Governance acceptance;
+15. whether the fixed FS0 GitHub binding is minimal but complete enough to generate realization scripts without inventing Governance semantics; and
+16. whether pre-cutover verification is clearly distinguished from governed FS0 Conformance and Assurance.
+17. whether the installed FS0 operating substrate is sufficient for complete self-hosting without the external bootstrap environment;
+18. whether authenticated GitHub write capability is cleanly separated from bounded Governance authorization;
+19. whether `README.md` and `AGENTS.md` provide enough context for a fresh AI agent without becoming competing authority; and
+20. whether any network, Git, GitHub API, or execution capability required to build FS1 is still missing from FS0.
