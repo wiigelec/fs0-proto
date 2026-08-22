@@ -90,3 +90,27 @@ FS0 consists of eight capability groups:
 These groups are capability boundaries, not necessarily final specification or directory boundaries.
 
 ---
+
+# FS0 Maintenance and Read-Surface Boundary
+
+`repo/bootstrap/` is the canonical non-authoritative maintenance source and generation implementation for FS0.
+
+After cutover, authoritative determination shall use accepted read surfaces outside `repo/bootstrap/`.
+
+Bootstrap source shall not become fallback authority when source and generated read surfaces disagree.
+
+Post-cutover FS0 maintenance may modify bootstrap source only through FS0 Governance-authorized work.
+
+Generated FS0 read surfaces shall be produced from canonical bootstrap data, templates, and generators.
+
+Generated FS0 read surfaces shall not be independently maintained as canonical source.
+
+Generation shall be deterministic for identical canonical inputs and explicitly declared variable inputs.
+
+Conformance shall mechanically verify correspondence between canonical bootstrap source and generated FS0 read surfaces.
+
+A source/read-surface mismatch is a Conformance defect.
+
+Post-cutover FS0 shall require no semantic, template, generator, or script input from outside the accepted repository state.
+
+---

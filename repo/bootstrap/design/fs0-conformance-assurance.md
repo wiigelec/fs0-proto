@@ -73,6 +73,16 @@ Every executable assertion shall have the evidence required by FS0 Conformance a
 
 Every gating assertion shall be reachable from authorized canonical Conformance execution.
 
+### Generation Correspondence Closure
+
+Every generated FS0 read surface shall resolve to a canonical bootstrap source definition.
+
+Canonical Conformance shall mechanically verify generated read surfaces against deterministic regeneration from their declared source inputs.
+
+A failed generation-correspondence check shall produce a Conformance defect.
+
+Bootstrap source shall not replace the generated read surface as authority when correspondence fails.
+
 ## Minimum Evidence
 
 FS0 shall support enough evidence to demonstrate:

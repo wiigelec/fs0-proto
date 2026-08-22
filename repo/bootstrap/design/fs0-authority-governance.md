@@ -352,6 +352,14 @@ Unidentified accepted normative prose is not sufficient.
 
 ## Minimum Quality Discipline
 
+Each uniquely identified normative requirement shall express exactly one primary normative obligation.
+
+Each normative requirement statement shall contain no more than 300 characters.
+
+Material normative semantics shall not be omitted solely to satisfy the statement-length bound.
+
+Design Normalize shall decompose materially compound obligations into separately identified requirements.
+
 FS0 Design Normalize and Assurance shall be capable of identifying at least:
 
 - materially compound obligations;

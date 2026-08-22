@@ -214,16 +214,19 @@ There is no transition from `cutover` back to bootstrap candidate mode.
 
 After `cutover`:
 
-- bootstrap construction scripts shall refuse ordinary framework mutation;
-- bootstrap scripts may be inspected for provenance;
-- bootstrap scripts may be used only for explicitly authorized disaster-recovery or reconstruction work defined by later accepted authority; and
+- bootstrap authority shall remain exhausted;
+- authoritative determination shall use accepted read surfaces outside `repo/bootstrap/`;
+- bootstrap maintenance machinery may be used only within FS0 Governance-authorized work;
+- bootstrap maintenance machinery shall not independently create acceptance; and
 - ordinary framework evolution shall occur only through FS0 Governance.
 
 ## Bootstrap Artifact Status
 
-Bootstrap scripts and Design artifacts may remain in history for provenance.
+Bootstrap Design artifacts remain non-authoritative provenance.
 
-They shall not automatically remain active framework authority or ordinary mutation paths after cutover.
+Bootstrap source data, templates, and generators may remain active FS0 maintenance state after cutover.
+
+They shall not become authoritative read surfaces or independent authorization paths.
 
 ## Cutover Invariant
 

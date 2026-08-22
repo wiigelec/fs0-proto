@@ -73,7 +73,7 @@ The following are outside FS0 unless later audit proves one is strictly required
 - release management;
 - migration framework;
 - user convenience namespaces; and
-- permanent bootstrap tooling.
+- generalized bootstrap tooling beyond the retained FS0 maintenance-source and generation mechanism.
 
 ---
 
@@ -265,7 +265,7 @@ This mirrors the target Governance separation even before FS0 is fully self-host
 
 # Bootstrap Completion Boundary
 
-FS0 development ends when the bootstrap process is no longer needed to evolve the framework.
+External bootstrap authority ends when the first FS0 state is accepted and cut over.
 
 The transition is:
 
@@ -273,10 +273,11 @@ The transition is:
 external bootstrap construction
 → accepted FS0
 → self-hosted FS0 Governance
+→ Governance-authorized FS0 maintenance
 → FS1 and later functional sets
 ```
 
-At that point, FS0 becomes the operating kernel from which the remainder of the successor repo-spec is built.
+The retained bootstrap maintenance source and generation machinery may continue to maintain FS0 without retaining bootstrap authority.
 
 ---
 
@@ -294,7 +295,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 6. whether the minimum Conformance kernel truly satisfies authority, coverage, evidence, and execution closure;
 7. whether the minimum Assurance kernel can perform the semantic reviews needed for Design, Plan, and Build acceptance;
 8. whether candidate and accepted repository states are unambiguously identifiable;
-9. whether bootstrap artifacts can be retired without breaking provenance;
+9. whether retained bootstrap maintenance source can be used without becoming an authoritative read surface;
 10. whether FS0 can distinguish accepted authority from candidate authority during its own first self-hosted evolution;
 11. whether any current repo-spec mechanism should be reused conceptually to reduce bootstrap risk;
 12. whether the proposed FS1 demonstration is sufficiently independent to prove genuine self-hosting; and
@@ -317,8 +318,8 @@ Before generating bootstrap scripts, this proposal should be audited for:
 29. whether bootstrap acceptance is unambiguously located as a structured comment on the dedicated bootstrap provenance issue.
 30. whether `repo/bootstrap/` contains only bootstrap Design input, canonical templates, and bootstrap implementation required for FS0 construction;
 31. whether all generated artifacts are written outside `repo/bootstrap/`; and
-32. whether ordinary post-cutover FS0 operation is independent of the bootstrap payload.
-33. whether the retained bootstrap payload remains intact but inert after cutover;
+32. whether post-cutover authoritative determination is independent of reading the bootstrap payload.
+33. whether retained bootstrap source remains non-authoritative while supporting Governance-authorized FS0 maintenance;
 34. whether `repo/bootstrap/templates/` has a fixed internal source contract separating FS0 realization input from successor proposal input;
 35. whether the installed successor proposal tree is registry-driven rather than hard-coded to a fixed filename list; and
 36. whether generated proposal Markdown is deterministically derived from canonical installed JSON and cannot become a second semantic owner.

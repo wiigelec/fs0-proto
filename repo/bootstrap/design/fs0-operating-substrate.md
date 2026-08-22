@@ -67,11 +67,11 @@ repo/bootstrap/scripts/src/
 
 `scripts/src/` defines implementation.
 
-These bootstrap paths are temporary construction surfaces.
+These bootstrap paths are retained FS0 maintenance-source and generation surfaces after cutover.
 
-They do not automatically become permanent successor-framework namespaces.
+They do not gain normative authority from that role.
 
-FS0 Design shall decide which installed artifacts become maintained framework state and which bootstrap artifacts remain historical or disposable.
+Their retention does not require later functional sets or the final successor framework to use the same namespace or mechanism.
 
 ---
 
@@ -101,7 +101,9 @@ The bootstrap mechanism may:
 
 After initial FS0 acceptance, bootstrap authority is exhausted.
 
-The bootstrap mechanism shall not remain an alternate path for ordinary framework evolution.
+Bootstrap maintenance machinery may remain in use for FS0 maintenance.
+
+Its execution shall not independently authorize mutation or create accepted state.
 
 All subsequent persistent framework change shall occur through FS0 Governance.
 
@@ -287,6 +289,23 @@ The shell wrapper shall contain no substantive bootstrap semantics. Substantive 
 
 After `repo/bootstrap/` is present in a compliant target repository, bootstrap shall require no semantic, template, or script input from the originating repository.
 
+## Bootstrap Data, Template, and Generator Model
+
+For bootstrap-created maintained artifacts, the canonical maintenance model is:
+
+```text
+structured source data
++ layout template
++ generator
+→ generated artifact outside repo/bootstrap/
+```
+
+Each generated artifact shall have a machine-resolvable source definition identifying its canonical source data, applicable template or layout, generator, and generated destination.
+
+The same general model shall be used for the complete successor repo-spec Design Proposal seed set.
+
+Generated artifacts are read or operating surfaces and shall not become independent maintenance sources.
+
 ## Bootstrap Template Source Tree
 
 The canonical bootstrap template source tree shall be:
@@ -344,9 +363,11 @@ Implementation language and internal module structure may evolve during realizat
 
 ## Bootstrap Independence
 
-After cutover, routine self-hosting shall remain possible if the external bootstrap scripts are unavailable.
+After cutover, authoritative determination shall not require reading `repo/bootstrap/`.
 
-Bootstrap scripts may remain as historical provenance, but FS0's ability to build FS1 and later functional sets shall depend only on installed FS0 capabilities and ordinary external services explicitly included in its operating substrate, such as GitHub.
+FS0 maintenance may use the accepted repository's retained bootstrap source and generation machinery when authorized by FS0 Governance.
+
+Post-cutover operation shall require no semantic, template, generator, or script input from the originating bootstrap repository or another external bootstrap environment.
 
 ## Operating-Substrate Acceptance Test
 

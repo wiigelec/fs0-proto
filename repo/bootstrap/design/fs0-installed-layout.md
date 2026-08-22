@@ -65,11 +65,13 @@ The bootstrap implementation shall create and enforce the following installed st
 
 ### `repo/authority/`
 
-Contains accepted FS0 normative authority and requirement identity/state.
+Contains accepted FS0 normative authority read surfaces and requirement identity/state.
 
 `framework.json`, `governance.json`, `conformance.json`, and `assurance.json` are the four initial normative authority documents.
 
 `requirements.json` is the canonical machine-readable requirement registry for FS0.
+
+These authoritative read surfaces are generated from canonical non-authoritative bootstrap maintenance source.
 
 ### `repo/governance/`
 
@@ -116,6 +118,14 @@ Contains the machine-resolvable bootstrap lifecycle state and cutover marker.
 Before cutover it records bootstrap candidate state.
 
 After cutover it records the immutable fact that bootstrap cutover occurred and identifies the first accepted FS0 revision and bootstrap acceptance record.
+
+### `repo/bootstrap/`
+
+Contains retained non-authoritative FS0 maintenance source, templates, and generation implementation.
+
+After cutover it remains available for Governance-authorized FS0 maintenance.
+
+It is not an authoritative read surface.
 
 ### `.github/workflows/fs0-conformance.yml`
 
