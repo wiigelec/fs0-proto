@@ -41,6 +41,32 @@ Bootstrap construction scripts belong at:
 repo/bootstrap/scripts/
 ```
 
+The canonical bootstrap entry point is the executable shell wrapper:
+
+```text
+repo/bootstrap/scripts/bootstrap
+```
+
+It shall be invoked from the target repository root as:
+
+```bash
+./repo/bootstrap/scripts/bootstrap
+```
+
+The wrapper shall remain thin.
+
+Its responsibilities are limited to invocation concerns such as validating repository-root execution context, resolving its own implementation path, and delegating to the substantive bootstrap implementation.
+
+All substantive bootstrap implementation shall live under:
+
+```text
+repo/bootstrap/scripts/src/
+```
+
+`scripts/bootstrap` defines invocation.
+
+`scripts/src/` defines implementation.
+
 These bootstrap paths are temporary construction surfaces.
 
 They do not automatically become permanent successor-framework namespaces.
@@ -250,14 +276,14 @@ Its allowed source roles are:
 ```text
 design/     non-authoritative bootstrap Design input
 templates/  canonical bootstrap realization inputs
-scripts/    bootstrap transformation, validation, installation, verification, and cutover implementation
+scripts/    canonical shell entry point plus bootstrap implementation under `scripts/src/`
 ```
 
 Generated artifacts shall not be written under `repo/bootstrap/`.
 
 The bootstrap payload shall not contain requirements, design discussion, or implementation assumptions for the future developed repo-spec product except where strictly necessary to define the bootstrap output required for FS0 self-hosting.
 
-The bootstrap implementation shall contain transformation and installation logic, not embedded successor semantics that belong in canonical template input.
+The shell wrapper shall contain no substantive bootstrap semantics. Substantive transformation, validation, installation, verification, and cutover logic shall live under `repo/bootstrap/scripts/src/` and shall not embed successor semantics that belong in canonical template input.
 
 After `repo/bootstrap/` is present in a compliant target repository, bootstrap shall require no semantic, template, or script input from the originating repository.
 
@@ -296,6 +322,25 @@ templates/proposals/  non-authoritative seed input for later FS0 Governance Desi
 Template content shall be structured and machine-resolvable.
 
 Generated Markdown shall not be stored under `repo/bootstrap/templates/`.
+
+## Bootstrap Script Layout
+
+The bootstrap script tree shall be:
+
+```text
+repo/bootstrap/scripts/
+|-- bootstrap
+`-- src/
+    `-- ...
+```
+
+`bootstrap` shall be a shell script with an executable bit and a shell shebang.
+
+It is the only canonical bootstrap invocation surface.
+
+Substantive implementation files shall be located under `src/`.
+
+Implementation language and internal module structure may evolve during realization so long as the canonical entry point and wrapper/implementation separation remain unchanged.
 
 ## Bootstrap Independence
 

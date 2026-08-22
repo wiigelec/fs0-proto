@@ -213,7 +213,7 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 ## GitHub Operation
 
 - A fresh AI-agent session can orient from bootstrap-generated root `README.md` and `AGENTS.md` without relying on chat history.
-- A clean bootstrap run generates `README.md`, `AGENTS.md`, and `LICENSE`; pre-existing copies are not required.
+- A clean bootstrap run started from repository root through `./repo/bootstrap/scripts/bootstrap` generates `README.md`, `AGENTS.md`, and `LICENSE`; pre-existing copies are not required.
 - FS0 has authenticated network and Git/GitHub capability sufficient for its full governed lifecycle.
 - Technical write credentials remain distinct from Governance authorization.
 - FS0 can be operated without contributor-local filesystem access.
@@ -322,3 +322,6 @@ Before generating bootstrap scripts, this proposal should be audited for:
 34. whether `repo/bootstrap/templates/` has a fixed internal source contract separating FS0 realization input from successor proposal input;
 35. whether the installed successor proposal tree is registry-driven rather than hard-coded to a fixed filename list; and
 36. whether generated proposal Markdown is deterministically derived from canonical installed JSON and cannot become a second semantic owner.
+37. whether the only canonical bootstrap invocation is `./repo/bootstrap/scripts/bootstrap` from repository root;
+38. whether that entry point is a thin executable shell wrapper; and
+39. whether all substantive bootstrap implementation is confined to `repo/bootstrap/scripts/src/`.

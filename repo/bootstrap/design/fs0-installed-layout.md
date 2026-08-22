@@ -57,6 +57,8 @@ The bootstrap implementation shall create and enforce the following installed st
         |-- design/
         |-- templates/
         `-- scripts/
+            |-- bootstrap
+            `-- src/
 ```
 
 ## Layout Semantics
@@ -331,6 +333,7 @@ At minimum, Conformance shall verify:
 - the proposal registry resolves the complete bootstrap-installed successor Design Proposal seed set with `authority state = none`;
 - every installed proposal canonical JSON representation matches the proposal registry and its generated Markdown projection is deterministic from that canonical representation;
 - the retained `repo/bootstrap/` tree contains only `design/`, `templates/`, and `scripts/` bootstrap source roles and no generated material;
+- `repo/bootstrap/scripts/bootstrap` exists, is executable, is a shell wrapper, and substantive bootstrap implementation is confined to `repo/bootstrap/scripts/src/`;
 - the canonical Conformance runner exists;
 - the canonical GitHub Actions workflow exists;
 - the bootstrap state file exists and has a valid lifecycle state; and
@@ -363,13 +366,31 @@ The bootstrap source payload is closed and self-contained.
 
 `repo/bootstrap/templates/` contains only canonical input material required to construct FS0 and install the complete non-authoritative successor Design Proposal seed set.
 
-`repo/bootstrap/scripts/` contains only bootstrap implementation.
+`repo/bootstrap/scripts/` contains only the canonical shell entry point and substantive bootstrap implementation.
+
+The canonical entry point is `repo/bootstrap/scripts/bootstrap`.
+
+All substantive implementation resides under `repo/bootstrap/scripts/src/`.
 
 No generated FS0 authority, generated proposal Markdown, generated orientation surface, generated workflow output, temporary build output, cache, or runtime state belongs under `repo/bootstrap/`.
 
 Bootstrap-generated material shall be written only to its installed target location outside `repo/bootstrap/`.
 
 After cutover, ordinary FS0 operation and successor construction shall not depend on reading from `repo/bootstrap/`.
+
+## Bootstrap Execution Contract
+
+Bootstrap shall be started from the target repository root with:
+
+```bash
+./repo/bootstrap/scripts/bootstrap
+```
+
+The wrapper shall fail clearly if invoked from an invalid repository context rather than silently guessing another target.
+
+The wrapper shall resolve and delegate to implementation under `repo/bootstrap/scripts/src/`.
+
+No file directly under `repo/bootstrap/scripts/` other than the canonical wrapper is required to carry substantive implementation.
 
 ## Bootstrap Payload Retention
 
