@@ -120,9 +120,14 @@ Merge state, issue closure, workflow success, or review approval shall not indep
 
 ## Acceptance Record
 
-Each accepted or rejected governed-stage candidate shall have a machine-resolvable acceptance record containing at least:
+Each accepted or rejected governed-stage candidate shall have one structured machine-resolvable acceptance record attached to the governed-work identity for that stage.
+
+For the FS0 GitHub binding, a governed Design, Plan, or Build acceptance record shall be represented as a structured GitHub issue comment on that stage's governed-work issue.
+
+The record shall contain at least:
 
 ```text
+record kind
 acceptance identity
 Governance stage
 governed-work identity
@@ -134,31 +139,56 @@ decision timestamp
 resulting accepted-state relationship where applicable
 ```
 
+The structured comment shall use a deterministic machine-recognizable marker and field representation defined by the FS0 bootstrap realization.
+
 The candidate identity for repository-changing work shall resolve to an exact Git commit SHA.
 
-An acceptance record is Governance state.
+The acceptance record exists outside the candidate Git commit and therefore may identify that exact candidate without changing its identity.
 
-It is not a generated interpretation of GitHub merge status.
+An acceptance record is Governance state realized through GitHub.
+
+It is not a generated interpretation of merge status, issue closure, review state, or workflow success.
+
+For initial bootstrap cutover, where no FS0 governed-work issue yet has authority, the external bootstrap process shall create one externally attributable structured bootstrap acceptance record on GitHub that identifies the exact candidate FS0 commit and its bootstrap evidence.
 
 ## Accepted Repository State
 
-FS0 shall maintain one machine-resolvable accepted-state record that identifies:
+FS0 shall realize accepted repository state through one dedicated Git ref named:
 
 ```text
-accepted repository revision
-acceptance record authorizing that revision
-predecessor accepted revision where applicable
+refs/heads/accepted
 ```
 
-For FS0 bootstrap cutover, the first accepted-state record is created by the external bootstrap acceptance process.
+The `accepted` ref shall point directly to the exact Git commit currently accepted as repository state.
 
-After cutover, only FS0 Governance may create a successor accepted-state record.
+Moving the `accepted` ref is a realization of an already explicit acceptance decision; moving the ref shall not itself create acceptance.
 
-The accepted-state record is the canonical answer to:
+For a post-cutover Build acceptance:
+
+1. the structured Build acceptance record shall identify the exact candidate commit;
+2. the acceptance decision shall be recorded;
+3. only after that decision exists may the `accepted` ref advance to that same commit; and
+4. the resulting ref shall be verified against the acceptance record.
+
+For bootstrap cutover, the external bootstrap acceptance record shall identify the exact first FS0 candidate commit before the `accepted` ref is created at that commit.
+
+The pair:
+
+```text
+structured acceptance record
++
+accepted Git ref
+```
+
+is the canonical remote representation of accepted repository state.
+
+The canonical answer to:
 
 > What exact repository revision is currently accepted?
 
-The default branch HEAD may equal the accepted revision, but equality shall not be the source of acceptance semantics.
+is the commit currently referenced by `refs/heads/accepted`, provided that a corresponding valid acceptance record resolves to the same commit.
+
+The default branch HEAD may equal or advance beyond the accepted revision during candidate publication, but default-branch position shall not independently create acceptance.
 
 ---
 
@@ -465,7 +495,11 @@ The final evidence taxonomy is deferred.
 
 FS0 shall provide one canonical remotely runnable Conformance surface suitable for GitHub Actions.
 
-Local execution may exist as an implementation convenience, but remote canonical execution is required for bootstrap acceptance.
+Local execution may exist as an implementation convenience.
+
+Before cutover, the candidate remote execution surface shall run in GitHub Actions as bootstrap mechanical verification evidence.
+
+After cutover, that accepted execution surface becomes canonical FS0 Conformance execution unless later changed through Governance.
 
 ---
 
@@ -584,7 +618,7 @@ FS0 may use GitHub-native mechanisms such as:
 - comments or reviews; and
 - repository files.
 
-The exact mapping is a bootstrap implementation decision.
+The allowed GitHub mechanism set above is implementation latitude only; the normative FS0 mapping is fixed by the binding below.
 
 No GitHub mechanism gains framework authority merely because FS0 uses it.
 
@@ -606,8 +640,9 @@ The mapping is:
 | Conformance evidence | workflow/check result tied to exact candidate SHA |
 | Assurance review case | structured maintained repository artifact |
 | Assurance finding | structured maintained repository artifact, optionally referenced in GitHub discussion |
-| stage acceptance | structured maintained acceptance record attributable to a GitHub actor |
-| accepted repository state | structured accepted-state record resolving to exact Git revision |
+| Design/Plan/Build stage acceptance | structured machine-readable GitHub issue comment on the governed-work issue |
+| bootstrap acceptance | externally attributable structured GitHub record identifying the exact FS0 candidate commit |
+| accepted repository state | dedicated `refs/heads/accepted` Git ref plus matching acceptance record |
 
 GitHub issue, pull-request, merge, review, comment, or workflow state shall not independently create Governance acceptance.
 
@@ -684,8 +719,8 @@ The bootstrap sequence shall be:
 8. perform external semantic audit as bootstrap audit evidence;
 9. correct defects in Design input or bootstrap realization as appropriate;
 10. repeat until the candidate satisfies FS0 bootstrap criteria;
-11. create the bootstrap acceptance record for one exact candidate revision;
-12. create the first accepted-state record resolving to that exact revision and acceptance record;
+11. create the externally attributable structured bootstrap acceptance record for one exact candidate revision;
+12. create `refs/heads/accepted` at that exact accepted revision and verify it against the bootstrap acceptance record;
 13. create the one-way bootstrap cutover marker;
 14. treat FS0 Governance, Conformance, and Assurance as authoritative operating mechanisms only after that cutover;
 15. disable further use of bootstrap authority for ordinary framework evolution.
@@ -700,6 +735,7 @@ The cutover record shall identify at least:
 cutover state
 first accepted FS0 revision
 bootstrap acceptance record
+accepted Git ref
 cutover timestamp
 ```
 
@@ -750,8 +786,8 @@ stage acceptance
 Conformance execution
 Assurance review cases/findings
 GitHub bootstrap operating realization
-acceptance records
-accepted repository state record
+acceptance-record resolution rules
+accepted Git ref resolution
 bootstrap cutover record
 ```
 
@@ -905,7 +941,7 @@ FS0 bootstrap is complete only when all of the following are true.
 - Canonical Conformance executes remotely.
 - Assurance evidence/findings are remotely accessible.
 - Explicit acceptance can be resolved independently of merge state.
-- Accepted main state is identifiable.
+- `refs/heads/accepted` resolves the accepted repository revision and agrees with its acceptance record.
 - Unauthorized successor work is distinguishable from authorized work.
 
 ## Self-Hosting
@@ -977,7 +1013,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 11. whether any current repo-spec mechanism should be reused conceptually to reduce bootstrap risk;
 12. whether the proposed FS1 demonstration is sufficiently independent to prove genuine self-hosting; and
 13. whether any bootstrap-only shortcut would remain as an undeclared permanent authority path after cutover;
-14. whether the acceptance-record and accepted-state-record model is sufficient to distinguish merge from Governance acceptance;
+14. whether the structured acceptance-record plus `refs/heads/accepted` model is sufficient to distinguish merge and publication from Governance acceptance;
 15. whether the fixed FS0 GitHub binding is minimal but complete enough to generate realization scripts without inventing Governance semantics; and
 16. whether pre-cutover verification is clearly distinguished from governed FS0 Conformance and Assurance.
 
