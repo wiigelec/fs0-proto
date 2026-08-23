@@ -46,6 +46,11 @@
       "evidence_id": "FS0-EVIDENCE-ACCEPTED-STATE-PUBLICATION",
       "implementation_id": "FS0-IMPL-ACCEPTED-STATE-PUBLICATION",
       "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-REPOSITORY-STRUCTURE",
+      "implementation_id": "FS0-IMPL-REPOSITORY-STRUCTURE",
+      "evidence_class": "execution-result"
     }
   ]
 }

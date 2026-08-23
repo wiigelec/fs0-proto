@@ -83,6 +83,41 @@
       "assertion_ids": [
         "FS0-ASSERT-GOV-037"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-REPOSITORY-STRUCTURE",
+      "callable": "repository_structure",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-006",
+        "FS0-ASSERT-FC-029",
+        "FS0-ASSERT-FC-030",
+        "FS0-ASSERT-FC-055",
+        "FS0-ASSERT-FC-080",
+        "FS0-ASSERT-FC-081",
+        "FS0-ASSERT-FC-082",
+        "FS0-ASSERT-FC-083",
+        "FS0-ASSERT-FC-084",
+        "FS0-ASSERT-FC-085",
+        "FS0-ASSERT-FC-086",
+        "FS0-ASSERT-FC-087",
+        "FS0-ASSERT-FC-088",
+        "FS0-ASSERT-FC-089",
+        "FS0-ASSERT-FC-090",
+        "FS0-ASSERT-FC-091",
+        "FS0-ASSERT-FC-092",
+        "FS0-ASSERT-FC-093",
+        "FS0-ASSERT-FC-094",
+        "FS0-ASSERT-FC-095",
+        "FS0-ASSERT-FC-096",
+        "FS0-ASSERT-FC-097",
+        "FS0-ASSERT-FC-098",
+        "FS0-ASSERT-FC-099",
+        "FS0-ASSERT-CONF-025",
+        "FS0-ASSERT-CONF-026",
+        "FS0-ASSERT-CONF-027",
+        "FS0-ASSERT-CONF-028",
+        "FS0-ASSERT-CONF-029"
+      ]
     }
   ],
   "evidence": [
@@ -129,6 +164,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-ACCEPTED-STATE-PUBLICATION",
       "implementation_id": "FS0-IMPL-ACCEPTED-STATE-PUBLICATION",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-REPOSITORY-STRUCTURE",
+      "implementation_id": "FS0-IMPL-REPOSITORY-STRUCTURE",
       "evidence_class": "execution-result"
     }
   ],

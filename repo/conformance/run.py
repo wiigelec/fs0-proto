@@ -6,6 +6,8 @@ import json
 import os
 import subprocess
 import sys
+import stat
+import tempfile
 from pathlib import Path
 
 
@@ -475,7 +477,425 @@ def check_accepted_state_publication(root, assertion_ids):
     ]
 
 
+def _walk_physical_namespace(root):
+    records = {}
+    stack = [root]
+    while stack:
+        directory = stack.pop()
+        try:
+            entries = list(os.scandir(directory))
+        except OSError as exc:
+            raise RuntimeError(f"cannot scan {directory}: {exc}") from exc
+        for entry in entries:
+            path = Path(entry.path)
+            rel = path.relative_to(root).as_posix()
+            try:
+                mode = entry.stat(follow_symlinks=False).st_mode
+            except OSError as exc:
+                raise RuntimeError(f"cannot lstat {rel}: {exc}") from exc
+            if stat.S_ISREG(mode):
+                kind = "file"
+            elif stat.S_ISDIR(mode):
+                kind = "directory"
+            elif stat.S_ISLNK(mode):
+                kind = "symlink"
+            else:
+                kind = "unsupported"
+            records[rel] = {"path": path, "object_type": kind, "mode": mode}
+            if kind == "directory":
+                stack.append(path)
+    return records
+
+
+def _json_record(path):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+
+
+def _discover_structure_binding(root, namespace=None):
+    namespace = namespace if namespace is not None else _walk_physical_namespace(root)
+    matches = []
+    for rel, item in namespace.items():
+        if item["object_type"] != "file":
+            continue
+        obj = _json_record(item["path"])
+        if (
+            isinstance(obj, dict)
+            and obj.get("schema_version") == "1"
+            and obj.get("record_type") == "repository-structure-binding"
+        ):
+            matches.append((rel, obj))
+    if len(matches) != 1:
+        raise RuntimeError(
+            "governed repository state must contain exactly one "
+            f"repository-structure-binding record; found {len(matches)}"
+        )
+    rel, record = matches[0]
+    identity = record.get("configuration_identity")
+    if not isinstance(identity, str) or not identity:
+        raise RuntimeError("repository-structure-binding lacks configuration_identity")
+    return identity, rel
+
+
+def _resolve_structure_configuration(root, identity, namespace=None):
+    namespace = namespace if namespace is not None else _walk_physical_namespace(root)
+    matches = []
+    for rel, item in namespace.items():
+        if item["object_type"] != "file":
+            continue
+        obj = _json_record(item["path"])
+        if (
+            isinstance(obj, dict)
+            and obj.get("schema_version") == "1"
+            and obj.get("record_type") == "repository-structure-configuration"
+            and obj.get("configuration_id") == identity
+        ):
+            matches.append((rel, obj))
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"configuration identity {identity!r} must resolve to exactly one "
+            f"configuration object; found {len(matches)}"
+        )
+    return matches[0]
+
+
+def _normalize_config_entries(config):
+    if config.get("schema_version") != "1":
+        raise RuntimeError("unsupported repository-structure configuration schema")
+    if config.get("record_type") != "repository-structure-configuration":
+        raise RuntimeError("unexpected repository-structure configuration record_type")
+    identity = config.get("configuration_id")
+    if not isinstance(identity, str) or not identity:
+        raise RuntimeError("configuration_id must be a non-empty string")
+    raw_entries = config.get("objects")
+    if not isinstance(raw_entries, list):
+        raise RuntimeError("repository-structure configuration objects must be a list")
+
+    entries = {}
+    for rec in raw_entries:
+        if not isinstance(rec, dict):
+            raise RuntimeError("repository-structure object entries must be records")
+        rel = rec.get("path")
+        obj_type = rec.get("object_type")
+        presence = rec.get("presence")
+        descendants = rec.get("descendants", "closed")
+        if not isinstance(rel, str) or not rel:
+            raise RuntimeError("repository-structure object path must be non-empty")
+        p = Path(rel)
+        if p.is_absolute() or ".." in p.parts or rel in {".", "./"}:
+            raise RuntimeError(f"invalid repository-structure path: {rel}")
+        normalized = p.as_posix()
+        if normalized != rel:
+            raise RuntimeError(f"repository-structure path is not normalized: {rel}")
+        if rel in entries:
+            raise RuntimeError(f"duplicate repository-structure path: {rel}")
+        if obj_type not in {"file", "directory", "symlink"}:
+            raise RuntimeError(f"unsupported configured object type for {rel}: {obj_type}")
+        if presence not in {"required", "permitted"}:
+            raise RuntimeError(f"invalid presence for {rel}: {presence}")
+        if descendants not in {"closed", "complete-subtree"}:
+            raise RuntimeError(f"invalid descendants mode for {rel}: {descendants}")
+        if obj_type != "directory" and descendants != "closed":
+            raise RuntimeError(f"non-directory cannot authorize descendants: {rel}")
+        entries[rel] = {
+            "path": rel,
+            "object_type": obj_type,
+            "presence": presence,
+            "descendants": descendants,
+        }
+    return entries
+
+
+def _applicable_authorization(rel, entries):
+    exact = entries.get(rel)
+    if exact is not None:
+        return exact, "exact"
+    parts = Path(rel).parts
+    for i in range(len(parts) - 1, 0, -1):
+        ancestor = Path(*parts[:i]).as_posix()
+        rec = entries.get(ancestor)
+        if rec and rec["object_type"] == "directory" and rec["descendants"] == "complete-subtree":
+            return rec, "complete-subtree"
+    return None, None
+
+
+def _evaluate_repository_structure(root):
+    namespace = _walk_physical_namespace(root)
+    identity, binding_path = _discover_structure_binding(root, namespace)
+    config_path, config = _resolve_structure_configuration(root, identity, namespace)
+    entries = _normalize_config_entries(config)
+
+    unauthorized = []
+    unsupported = []
+    type_mismatches = []
+    missing = []
+
+    for rel, item in namespace.items():
+        actual_type = item["object_type"]
+        rec, mode = _applicable_authorization(rel, entries)
+        if actual_type == "unsupported":
+            unsupported.append(rel)
+            continue
+        if rec is None:
+            unauthorized.append(rel)
+            continue
+        if mode == "exact" and rec["object_type"] != actual_type:
+            type_mismatches.append({
+                "path": rel,
+                "expected": rec["object_type"],
+                "actual": actual_type,
+            })
+
+    for rel, rec in entries.items():
+        if rec["presence"] == "required" and rel not in namespace:
+            missing.append(rel)
+
+    self_rec, self_mode = _applicable_authorization(config_path, entries)
+    self_authorized = (
+        self_rec is not None
+        and namespace.get(config_path, {}).get("object_type") == "file"
+        and (self_mode == "complete-subtree" or self_rec.get("object_type") == "file")
+    )
+
+    ok = not unauthorized and not unsupported and not type_mismatches and not missing and self_authorized
+    return {
+        "ok": ok,
+        "configuration_identity": identity,
+        "binding_path": binding_path,
+        "configuration_path": config_path,
+        "observed_objects": len(namespace),
+        "configured_objects": len(entries),
+        "unauthorized": sorted(unauthorized),
+        "unsupported": sorted(unsupported),
+        "type_mismatches": sorted(type_mismatches, key=lambda x: x["path"]),
+        "missing": sorted(missing),
+        "configuration_self_authorized": self_authorized,
+    }
+
+
+def _write_test_json(path, obj):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, indent=2) + "\n", encoding="utf-8")
+
+
+def _test_config(objects, identity="TEST-CONFIG"):
+    return {
+        "schema_version": "1",
+        "record_type": "repository-structure-configuration",
+        "configuration_id": identity,
+        "objects": objects,
+    }
+
+
+def _test_binding(identity="TEST-CONFIG"):
+    return {
+        "schema_version": "1",
+        "record_type": "repository-structure-binding",
+        "configuration_identity": identity,
+    }
+
+
+def _exercise_structure_semantics():
+    cases = {}
+
+    def run_case(name, setup, expect_ok=None, expect_error=False, inspect=None):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            setup(root)
+            try:
+                report = _evaluate_repository_structure(root)
+                if expect_error:
+                    cases[name] = False
+                    return
+                ok = report["ok"] == expect_ok
+                if inspect is not None:
+                    ok = ok and bool(inspect(report))
+                cases[name] = ok
+            except Exception:
+                cases[name] = bool(expect_error)
+
+    def base(root, extra_objects=None):
+        _write_test_json(root / "state.bin", _test_binding())
+        objects = [
+            {"path": "state.bin", "object_type": "file", "presence": "required"},
+            {"path": "policy.bin", "object_type": "file", "presence": "required"},
+        ]
+        if extra_objects:
+            objects.extend(extra_objects)
+        _write_test_json(root / "policy.bin", _test_config(objects))
+
+    run_case("conforming_state", lambda r: base(r), expect_ok=True)
+    run_case(
+        "unknown_file_rejected",
+        lambda r: (base(r), (r / "unknown").write_text("x", encoding="utf-8")),
+        expect_ok=False,
+        inspect=lambda x: "unknown" in x["unauthorized"],
+    )
+    run_case(
+        "unknown_directory_rejected",
+        lambda r: (base(r), (r / "unknown-dir").mkdir()),
+        expect_ok=False,
+        inspect=lambda x: "unknown-dir" in x["unauthorized"],
+    )
+    run_case(
+        "closed_directory_rejects_descendant",
+        lambda r: (
+            (r / "closed").mkdir(),
+            base(r, [{"path": "closed", "object_type": "directory", "presence": "required"}]),
+            (r / "closed" / "child").write_text("x", encoding="utf-8"),
+        ),
+        expect_ok=False,
+        inspect=lambda x: "closed/child" in x["unauthorized"],
+    )
+    run_case(
+        "complete_subtree_accepts_descendant",
+        lambda r: (
+            (r / "tree").mkdir(),
+            (r / "tree" / "child").write_text("x", encoding="utf-8"),
+            base(r, [{
+                "path": "tree",
+                "object_type": "directory",
+                "presence": "required",
+                "descendants": "complete-subtree",
+            }]),
+        ),
+        expect_ok=True,
+    )
+    if hasattr(os, "mkfifo"):
+        run_case(
+            "unsupported_fifo_rejected_under_subtree",
+            lambda r: (
+                (r / "tree").mkdir(),
+                os.mkfifo(r / "tree" / "fifo"),
+                base(r, [{
+                    "path": "tree",
+                    "object_type": "directory",
+                    "presence": "required",
+                    "descendants": "complete-subtree",
+                }]),
+            ),
+            expect_ok=False,
+            inspect=lambda x: "tree/fifo" in x["unsupported"],
+        )
+    run_case(
+        "required_missing_rejected",
+        lambda r: base(r, [{"path": "must-exist", "object_type": "file", "presence": "required"}]),
+        expect_ok=False,
+        inspect=lambda x: "must-exist" in x["missing"],
+    )
+    run_case(
+        "permitted_missing_accepted",
+        lambda r: base(r, [{"path": "optional", "object_type": "file", "presence": "permitted"}]),
+        expect_ok=True,
+    )
+    run_case(
+        "type_mismatch_rejected",
+        lambda r: (
+            (r / "thing").mkdir(),
+            base(r, [{"path": "thing", "object_type": "file", "presence": "required"}]),
+        ),
+        expect_ok=False,
+        inspect=lambda x: any(i["path"] == "thing" for i in x["type_mismatches"]),
+    )
+    run_case(
+        "authorized_symlink_is_link_object",
+        lambda r: (
+            (r / "target").write_text("x", encoding="utf-8"),
+            os.symlink("target", r / "link"),
+            base(r, [
+                {"path": "target", "object_type": "file", "presence": "required"},
+                {"path": "link", "object_type": "symlink", "presence": "required"},
+            ]),
+        ),
+        expect_ok=True,
+    )
+    run_case(
+        "external_symlink_target_not_traversed",
+        lambda r: (
+            os.symlink("/tmp", r / "link"),
+            base(r, [{"path": "link", "object_type": "symlink", "presence": "required"}]),
+        ),
+        expect_ok=True,
+    )
+    run_case(
+        "configuration_self_authorization_required",
+        lambda r: (
+            _write_test_json(r / "state.bin", _test_binding()),
+            _write_test_json(r / "policy.bin", _test_config([
+                {"path": "state.bin", "object_type": "file", "presence": "required"},
+            ])),
+        ),
+        expect_ok=False,
+        inspect=lambda x: not x["configuration_self_authorized"],
+    )
+    run_case(
+        "missing_binding_rejected",
+        lambda r: _write_test_json(r / "policy.bin", _test_config([
+            {"path": "policy.bin", "object_type": "file", "presence": "required"},
+        ])),
+        expect_error=True,
+    )
+    run_case(
+        "ambiguous_binding_rejected",
+        lambda r: (
+            _write_test_json(r / "state-a", _test_binding()),
+            _write_test_json(r / "state-b", _test_binding()),
+            _write_test_json(r / "policy.bin", _test_config([
+                {"path": "state-a", "object_type": "file", "presence": "required"},
+                {"path": "state-b", "object_type": "file", "presence": "required"},
+                {"path": "policy.bin", "object_type": "file", "presence": "required"},
+            ])),
+        ),
+        expect_error=True,
+    )
+    run_case(
+        "unresolved_identity_rejected",
+        lambda r: _write_test_json(r / "state.bin", _test_binding("NO-SUCH-CONFIG")),
+        expect_error=True,
+    )
+    return {"ok": all(cases.values()), "cases": cases}
+
+
+def check_repository_structure(root, assertion_ids):
+    try:
+        live = _evaluate_repository_structure(root)
+        semantic = _exercise_structure_semantics()
+        ok = live["ok"] and semantic["ok"]
+        diagnostics = []
+        for key in ("unauthorized", "unsupported", "missing", "type_mismatches"):
+            if live.get(key):
+                diagnostics.append(f"{key}={live[key]}")
+        detail = (
+            "closed/default-deny repository structure is satisfied"
+            if ok
+            else "repository-structure defect: " + ("; ".join(diagnostics) or "semantic self-test failure")
+        )
+        evidence = {
+            "configuration_identity": live.get("configuration_identity"),
+            "binding_path": live.get("binding_path"),
+            "configuration_path": live.get("configuration_path"),
+            "observed_objects": live.get("observed_objects"),
+            "configured_objects": live.get("configured_objects"),
+            "configuration_self_authorized": live.get("configuration_self_authorized"),
+            "unauthorized": live.get("unauthorized"),
+            "unsupported": live.get("unsupported"),
+            "missing": live.get("missing"),
+            "type_mismatches": live.get("type_mismatches"),
+            "semantic_tests": semantic["cases"],
+        }
+    except Exception as exc:
+        ok = False
+        detail = f"repository-structure resolution/evaluation failed: {exc}"
+        evidence = {"error": str(exc)}
+    return [
+        result(aid, "pass" if ok else "fail", detail, evidence)
+        for aid in assertion_ids
+    ]
+
 CALLABLES = {
+    "repository_structure": check_repository_structure,
     "requirement_metadata": check_requirement_metadata,
     "conformance_closure": check_conformance_closure,
     "generation_correspondence": check_generation_correspondence,
