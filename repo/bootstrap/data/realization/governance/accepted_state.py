@@ -50,6 +50,64 @@ def _valid_timestamp(value):
     return True
 
 
+def _json_fence_objects(body):
+    if not isinstance(body, str):
+        return []
+    objects = []
+    for match in re.finditer(r"```(?:json)?\n(.*?)\n```", body, re.DOTALL):
+        try:
+            value = json.loads(match.group(1))
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            objects.append(value)
+    return objects
+
+
+def _authorized_actor(issue_body, record_type):
+    if record_type == "governance-acceptance":
+        path = ("bounded_authorization", "acceptance_actor")
+    elif record_type == "bootstrap-acceptance":
+        path = ("bootstrap_authorization", "acceptance_actor")
+    else:
+        return None
+
+    values = []
+    for obj in _json_fence_objects(issue_body):
+        node = obj
+        for key in path:
+            if not isinstance(node, dict) or key not in node:
+                node = None
+                break
+            node = node[key]
+        if node is not None:
+            values.append(node)
+
+    if len(values) != 1:
+        return None
+    return values[0]
+
+
+def _has_bootstrap_evidence(evidence):
+    if not isinstance(evidence, list):
+        return False
+    labels = set()
+    for item in evidence:
+        if isinstance(item, str):
+            labels.add(item.strip().lower())
+        elif isinstance(item, dict):
+            for key in ("type", "kind", "evidence_type", "class", "name"):
+                value = item.get(key)
+                if isinstance(value, str):
+                    labels.add(value.strip().lower())
+    has_verification = any("verification" in value for value in labels)
+    has_audit = any(
+        "semantic-audit" in value or "semantic_audit" in value or "semantic audit" in value
+        for value in labels
+    )
+    return has_verification and has_audit
+
+
 def parse_acceptance_comment(body):
     if not isinstance(body, str) or MARKER not in body:
         return None
@@ -118,13 +176,39 @@ def parse_acceptance_comment(body):
     if not _valid_timestamp(payload.get("decision_timestamp")):
         raise AcceptanceError("decision_timestamp must be an unambiguous ISO-8601 timestamp")
 
+    has_resulting = "resulting_accepted_state" in payload
     resulting = payload.get("resulting_accepted_state")
-    if resulting is not None:
+    if has_resulting:
         if not isinstance(resulting, str) or not SHA_RE.fullmatch(resulting):
             raise AcceptanceError(
                 "resulting_accepted_state must be an exact 40-hex Git commit SHA"
             )
         payload["resulting_accepted_state"] = resulting.lower()
+        resulting = payload["resulting_accepted_state"]
+
+    accepted = payload["disposition"] == "accepted"
+    state_producing = (
+        record_type == "bootstrap-acceptance"
+        or (record_type == "governance-acceptance" and stage == "build")
+    )
+    must_have_resulting = accepted and state_producing
+
+    if must_have_resulting:
+        if not has_resulting:
+            raise AcceptanceError(
+                "accepted bootstrap/build record requires resulting_accepted_state"
+            )
+        if resulting != payload["candidate_id"]:
+            raise AcceptanceError("resulting_accepted_state must equal candidate_id")
+    elif has_resulting:
+        raise AcceptanceError(
+            "resulting_accepted_state must be absent unless bootstrap/build is accepted"
+        )
+
+    if record_type == "bootstrap-acceptance" and not _has_bootstrap_evidence(payload["evidence"]):
+        raise AcceptanceError(
+            "bootstrap evidence must identify verification and semantic-audit results"
+        )
 
     return payload
 
@@ -180,6 +264,24 @@ def resolve_accepted_state(accepted_sha, comments):
             )
             continue
         acceptance_ids.add(acceptance_id)
+
+        authorized_actor = _authorized_actor(comment.get("issue_body"), record["record_type"])
+        if authorized_actor is None:
+            defects.append(
+                {
+                    "comment_id": comment.get("id"),
+                    "error": "issue does not expose exactly one machine-resolvable acceptance_actor",
+                }
+            )
+            continue
+        if record["actor"] != authorized_actor:
+            defects.append(
+                {
+                    "comment_id": comment.get("id"),
+                    "error": "acceptance actor does not match issue authorization",
+                }
+            )
+            continue
 
         parsed.append(
             {
@@ -291,17 +393,20 @@ def _gh_paginated(endpoint):
 
 def github_issue_comments(repo):
     issues = _gh_paginated(f"repos/{repo}/issues?state=all&per_page=100")
-    issue_urls = {
-        item.get("url")
+    issue_by_url = {
+        item.get("url"): item
         for item in issues
         if isinstance(item, dict) and "pull_request" not in item and item.get("url")
     }
     comments = _gh_paginated(f"repos/{repo}/issues/comments?per_page=100")
-    return [
-        item
-        for item in comments
-        if isinstance(item, dict) and item.get("issue_url") in issue_urls
-    ]
+    out = []
+    for item in comments:
+        if not isinstance(item, dict) or item.get("issue_url") not in issue_by_url:
+            continue
+        enriched = dict(item)
+        enriched["issue_body"] = issue_by_url[item["issue_url"]].get("body")
+        out.append(enriched)
+    return out
 
 
 def main():

@@ -292,7 +292,7 @@ def check_governance_state_resolution(root, assertion_ids):
                 "candidate_id": sha,
                 "disposition": "accepted",
                 "actor": "tester",
-                "evidence": ["conformance:test", "assurance:test"],
+                "evidence": ["bootstrap-verification:test", "semantic-audit:test"],
                 "decision_timestamp": "2026-08-22T00:00:00+00:00",
                 "resulting_accepted_state": sha,
             }
@@ -321,6 +321,17 @@ def check_governance_state_resolution(root, assertion_ids):
         "issue_url": "https://api.github.com/repos/example/repo/issues/1",
         "html_url": "https://github.com/example/repo/issues/1#issuecomment-1",
         "body": governance_body,
+        "issue_body": (
+            "```json\n"
+            + json.dumps(
+                {
+                    "bounded_authorization": {
+                        "acceptance_actor": {"login": "tester"}
+                    }
+                }
+            )
+            + "\n```\n"
+        ),
     }
     paired = module.resolve_accepted_state(sha, [comment])
     mismatch = module.resolve_accepted_state(other, [comment])
@@ -439,7 +450,7 @@ def check_accepted_state_publication(root, assertion_ids):
                 "candidate_id": candidate,
                 "disposition": "accepted",
                 "actor": "tester",
-                "evidence": ["conformance:test", "assurance:test"],
+                "evidence": ["bootstrap-verification:test", "semantic-audit:test"],
                 "decision_timestamp": "2026-08-22T00:00:00Z",
                 "resulting_accepted_state": candidate,
             }
@@ -466,16 +477,61 @@ def check_accepted_state_publication(root, assertion_ids):
         )
         + "\n```\n"
     )
-    rejected_body = accepted_body.replace(
-        '"disposition": "accepted"',
-        '"disposition": "rejected"',
+    rejected_payload = {
+        "schema_version": "1",
+        "record_type": "bootstrap-acceptance",
+        "acceptance_id": "FS0-ACCEPT-PUBLISH-REJECTED-TEST",
+        "stage": "bootstrap",
+        "work_id": "FS0-BOOTSTRAP-PROVENANCE",
+        "candidate_id": candidate,
+        "disposition": "rejected",
+        "actor": "tester",
+        "evidence": ["bootstrap-verification:test", "semantic-audit:test"],
+        "decision_timestamp": "2026-08-22T00:00:00Z",
+    }
+    rejected_body = (
+        "repo-spec-acceptance:v1\n"
+        "```json\n"
+        + json.dumps(rejected_payload)
+        + "\n```\n"
     )
 
-    accepted_comments = [{"id": 1, "body": accepted_body}]
-    rejected_comments = [{"id": 2, "body": rejected_body}]
+    bootstrap_issue_body = (
+        "```json\n"
+        + json.dumps(
+            {"bootstrap_authorization": {"acceptance_actor": "tester"}}
+        )
+        + "\n```\n"
+    )
+    governance_issue_body = (
+        "```json\n"
+        + json.dumps(
+            {"bounded_authorization": {"acceptance_actor": "tester"}}
+        )
+        + "\n```\n"
+    )
+
+    accepted_comments = [{
+        "id": 1,
+        "body": accepted_body,
+        "issue_body": bootstrap_issue_body,
+    }]
+    rejected_comments = [{
+        "id": 2,
+        "body": rejected_body,
+        "issue_body": bootstrap_issue_body,
+    }]
     chain_comments = [
-        {"id": 3, "body": current_body},
-        {"id": 4, "body": accepted_body},
+        {
+            "id": 3,
+            "body": current_body,
+            "issue_body": governance_issue_body,
+        },
+        {
+            "id": 4,
+            "body": accepted_body,
+            "issue_body": bootstrap_issue_body,
+        },
     ]
 
     denied_missing = pub_module.publication_decision(
