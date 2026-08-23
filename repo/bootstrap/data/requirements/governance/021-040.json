@@ -75,7 +75,7 @@
     },
     {
       "id": "FS0-GOV-033",
-      "statement": "Build SHALL produce required evidence, invoke required Conformance and Assurance, resolve any material adverse Assurance finding, and verify completion before acceptance.",
+      "statement": "Build SHALL produce required evidence, invoke required Conformance and all triggered Assurance cases, and SHALL NOT be accepted while any required case has an adverse finding that remains unresolved.",
       "c": "mechanical",
       "a": "required"
     },

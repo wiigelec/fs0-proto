@@ -9,7 +9,7 @@
     },
     {
       "id": "FS0-ASSUR-002",
-      "statement": "Every Assurance-required requirement SHALL resolve to a stable review obligation; when that obligation applies to a governed subject, FS0 SHALL instantiate a case-specific review case.",
+      "statement": "An Assurance obligation SHALL trigger when governed Design, Plan, or Build work includes or relies on a subject governed by its requirement; each triggered obligation SHALL instantiate a case-specific review case.",
       "c": "mechanical",
       "a": "required"
     },
@@ -21,7 +21,7 @@
     },
     {
       "id": "FS0-ASSUR-004",
-      "statement": "FS0 Assurance findings SHALL support at least satisfied, defect, insufficient, and governance-required.",
+      "statement": "Assurance findings SHALL be satisfied, defect, insufficient, or governance-required; defect, insufficient, and governance-required SHALL be adverse until a later case-specific finding records satisfied.",
       "c": "mechanical",
       "a": "none"
     },
