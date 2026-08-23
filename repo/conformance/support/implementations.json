@@ -612,6 +612,19 @@
       "authority_requirement_ids": [
         "FS0-GOV-020"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-RETAINED-BOOTSTRAP-PAYLOAD",
+      "role": "support",
+      "callable": "retained_bootstrap_payload",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-020"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-020"
+      ]
     }
   ]
 }

@@ -991,6 +991,56 @@ def check_post_cutover_mutation_binding(root, assertion_ids):
     evidence = {'binding': 'repo/governance/github_binding.py', 'required_fragments_present': fragments_ok, 'cases': observations}
     return [result(aid, 'pass' if ok else 'fail', 'post-cutover mutation requires a pending Build derived from an accepted Plan with non-empty bounded mutation scope; candidate bootstrap remains permitted', evidence) for aid in assertion_ids]
 
+def check_retained_bootstrap_payload(root, assertion_ids):
+    import subprocess
+    policy_path = root / 'repo/bootstrap/data/retained_payload.json'
+    try:
+        policy = json.loads(policy_path.read_text(encoding='utf-8'))
+    except Exception as exc:
+        return [result(aid, 'fail', 'retained bootstrap payload policy is missing or invalid', {'error': str(exc), 'policy': str(policy_path.relative_to(root))}) for aid in assertion_ids]
+    expected_roles = {'repo/bootstrap/design/': 'design-input', 'repo/bootstrap/data/': 'canonical-realization-input', 'repo/bootstrap/scripts/': 'implementation'}
+    expected_purposes = {'construct', 'verify', 'accept', 'cut-over', 'maintain'}
+    classes = policy.get('payload_classes')
+    class_map = {}
+    class_shape_ok = isinstance(classes, list) and len(classes) == 3
+    if class_shape_ok:
+        for entry in classes:
+            if not isinstance(entry, dict):
+                class_shape_ok = False
+                break
+            prefix = entry.get('path_prefix')
+            role = entry.get('role')
+            purposes = entry.get('required_for')
+            if not isinstance(prefix, str) or not isinstance(role, str) or (not isinstance(purposes, list)) or (not all((isinstance(x, str) for x in purposes))) or (prefix in class_map):
+                class_shape_ok = False
+                break
+            class_map[prefix] = {'role': role, 'required_for': set(purposes)}
+    policy_ok = policy.get('schema_version') == '1' and policy.get('record_type') == 'retained-bootstrap-payload-policy' and (policy.get('payload_root') == 'repo/bootstrap') and class_shape_ok and (set(class_map) == set(expected_roles)) and all((class_map[prefix]['role'] == role for prefix, role in expected_roles.items())) and (set(policy.get('required_capabilities', [])) == expected_purposes) and all((class_map[prefix]['required_for'] <= expected_purposes and bool(class_map[prefix]['required_for']) for prefix in class_map))
+    proc = subprocess.run(['git', 'ls-files', '-z', '--', 'repo/bootstrap'], cwd=root, text=False, capture_output=True)
+    tracked_ok = proc.returncode == 0
+    tracked = []
+    if tracked_ok:
+        tracked = [item.decode('utf-8') for item in proc.stdout.split(b'\x00') if item]
+    uncovered = []
+    ambiguous = []
+    classifications = {}
+    for path in tracked:
+        matches = [prefix for prefix in expected_roles if path.startswith(prefix)]
+        if len(matches) == 0:
+            uncovered.append(path)
+            continue
+        if len(matches) != 1:
+            ambiguous.append(path)
+            continue
+        classifications[path] = expected_roles[matches[0]]
+    roles_present = set(classifications.values())
+    role_coverage_ok = roles_present == set(expected_roles.values())
+    top_level = sorted({path.split('/', 3)[2] for path in tracked if path.startswith('repo/bootstrap/') and len(path.split('/', 3)) >= 3})
+    top_level_ok = top_level == ['data', 'design', 'scripts']
+    ok = policy_ok and tracked_ok and bool(tracked) and (not uncovered) and (not ambiguous) and role_coverage_ok and top_level_ok
+    evidence = {'policy': 'repo/bootstrap/data/retained_payload.json', 'tracked_file_count': len(tracked), 'allowed_top_level': ['data', 'design', 'scripts'], 'observed_top_level': top_level, 'roles_present': sorted(roles_present), 'uncovered': uncovered, 'ambiguous': ambiguous, 'policy_valid': policy_ok}
+    return [result(aid, 'pass' if ok else 'fail', 'the retained bootstrap payload is closed to Design input, canonical realization inputs, and implementation required for the declared FS0 bootstrap capabilities', evidence) for aid in assertion_ids]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1016,7 +1066,7 @@ def check_repository_structure(root, assertion_ids):
         return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], checks[aid][2]) for aid in assertion_ids]
     except Exception as exc:
         return [result(aid, 'fail', f'repository-structure resolution/evaluation failed: {exc}', {'error': str(exc), 'post_cutover_mutation_binding': check_post_cutover_mutation_binding}) for aid in assertion_ids]
-CALLABLES = {'repository_structure': check_repository_structure, 'requirement_metadata': check_requirement_metadata, 'conformance_closure': check_conformance_closure, 'generation_correspondence': check_generation_correspondence, 'canonical_entrypoint': check_canonical_entrypoint, 'remote_execution': check_remote_execution, 'exact_candidate': check_exact_candidate, 'bootstrap_state': check_bootstrap_state, 'governance_state_resolution': check_governance_state_resolution, 'accepted_state_publication': check_accepted_state_publication, 'assurance_runtime': check_assurance_runtime, 'successor_proposal_registry': check_successor_proposal_registry, 'governed_work_kernel': check_governed_work_kernel, 'github_governance_binding': check_github_governance_binding, 'proposal_lineage': check_proposal_lineage, 'conformance_selftest': check_conformance_selftest, 'conformance_canonicality': check_conformance_canonicality, 'generation_contract': check_generation_contract, 'authority_kernel': check_authority_kernel, 'requirement_provenance': check_requirement_provenance, 'operating_substrate_preflight': check_operating_substrate_preflight, 'bootstrap_read_surfaces': check_bootstrap_read_surfaces, 'framework_record_orientation': check_framework_record_and_orientation_contract, 'bootstrap_independence': check_bootstrap_independence, 'bootstrap_authority_lifecycle': check_bootstrap_authority_lifecycle, 'post_cutover_mutation_authority': check_post_cutover_mutation_authority, 'post_cutover_mutation_binding': check_post_cutover_mutation_binding}
+CALLABLES = {'repository_structure': check_repository_structure, 'requirement_metadata': check_requirement_metadata, 'conformance_closure': check_conformance_closure, 'generation_correspondence': check_generation_correspondence, 'canonical_entrypoint': check_canonical_entrypoint, 'remote_execution': check_remote_execution, 'exact_candidate': check_exact_candidate, 'bootstrap_state': check_bootstrap_state, 'governance_state_resolution': check_governance_state_resolution, 'accepted_state_publication': check_accepted_state_publication, 'assurance_runtime': check_assurance_runtime, 'successor_proposal_registry': check_successor_proposal_registry, 'governed_work_kernel': check_governed_work_kernel, 'github_governance_binding': check_github_governance_binding, 'proposal_lineage': check_proposal_lineage, 'conformance_selftest': check_conformance_selftest, 'conformance_canonicality': check_conformance_canonicality, 'generation_contract': check_generation_contract, 'authority_kernel': check_authority_kernel, 'requirement_provenance': check_requirement_provenance, 'operating_substrate_preflight': check_operating_substrate_preflight, 'bootstrap_read_surfaces': check_bootstrap_read_surfaces, 'framework_record_orientation': check_framework_record_and_orientation_contract, 'bootstrap_independence': check_bootstrap_independence, 'bootstrap_authority_lifecycle': check_bootstrap_authority_lifecycle, 'post_cutover_mutation_authority': check_post_cutover_mutation_authority, 'post_cutover_mutation_binding': check_post_cutover_mutation_binding, 'retained_bootstrap_payload': check_retained_bootstrap_payload}
 
 def main():
     root = Path.cwd().resolve()

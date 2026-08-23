@@ -320,6 +320,13 @@
       "assertion_ids": [
         "FS0-ASSERT-GOV-020"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-RETAINED-BOOTSTRAP-PAYLOAD",
+      "callable": "retained_bootstrap_payload",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-020"
+      ]
     }
   ],
   "evidence": [
@@ -456,6 +463,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-POST-CUTOVER-MUTATION-BINDING",
       "implementation_id": "FS0-IMPL-POST-CUTOVER-MUTATION-BINDING",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-RETAINED-BOOTSTRAP-PAYLOAD",
+      "implementation_id": "FS0-IMPL-RETAINED-BOOTSTRAP-PAYLOAD",
       "evidence_class": "execution-result"
     }
   ],

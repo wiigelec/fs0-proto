@@ -394,6 +394,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/retained_payload.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/root",
       "object_type": "directory",
       "presence": "required",

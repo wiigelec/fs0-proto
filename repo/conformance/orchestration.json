@@ -58,6 +58,7 @@
     "FS0-ASSERT-FC-016",
     "FS0-ASSERT-FC-017",
     "FS0-ASSERT-FC-019",
+    "FS0-ASSERT-FC-020",
     "FS0-ASSERT-FC-021",
     "FS0-ASSERT-FC-022",
     "FS0-ASSERT-FC-023",
@@ -167,7 +168,6 @@
   "pending_assertion_ids": [
     "FS0-ASSERT-CONF-002",
     "FS0-ASSERT-CONF-008",
-    "FS0-ASSERT-FC-020",
     "FS0-ASSERT-FC-033",
     "FS0-ASSERT-FC-034",
     "FS0-ASSERT-FC-041",
