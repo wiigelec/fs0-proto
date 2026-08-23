@@ -98,6 +98,21 @@ def check_conformance_closure(root, assertion_ids):
         )
     )
 
+    evidence_by_impl = {}
+    for record in evidence:
+        evidence_by_impl.setdefault(record.get("implementation_id"), []).append(record)
+    executable_assertion_evidence_ok = all(
+        evidence_by_impl.get(implementation.get("implementation_id"))
+        and all(
+            record.get("evidence_id")
+            and record.get("role") == "evidence"
+            and record.get("evidence_class") in {"execution-result", "repository-state"}
+            for record in evidence_by_impl[implementation["implementation_id"]]
+        )
+        for implementation in impl
+        if implementation.get("assertion_ids")
+    )
+
     checks = {
         "FS0-ASSERT-CONF-001": (
             req_registry.get("requirements_total") == corr_registry.get("requirements_total")
@@ -119,6 +134,10 @@ def check_conformance_closure(root, assertion_ids):
             and evidence_provenance_ok
             and orchestration_provenance_ok,
             "every maintained Conformance primitive resolves to accepted normative authority",
+        ),
+        "FS0-ASSERT-CONF-007": (
+            executable_assertion_evidence_ok,
+            "every implementation that makes assertions executable resolves at least one declared Conformance evidence primitive",
         ),
         "FS0-ASSERT-CONF-013": (
             all({"requirement_id", "applicability", "assertion_ids"} <= set(r) for r in corr),
@@ -152,6 +171,7 @@ def check_conformance_closure(root, assertion_ids):
 
 
 
+
 def check_generation_correspondence(root, assertion_ids):
     proc = subprocess.run([str(root / "repo/bootstrap/scripts/bootstrap"), "--check"], cwd=root, text=True, capture_output=True)
     ok = proc.returncode == 0 and "FS0 generation correspondence: PASS" in proc.stdout
@@ -180,9 +200,29 @@ def check_remote_execution(root, assertion_ids):
         "./repo/scripts/validate --verbose",
     )
     text = workflow.read_text(encoding="utf-8") if workflow.is_file() else ""
-    ok = workflow.is_file() and all(item in text for item in required)
+    workflow_ok = workflow.is_file() and all(item in text for item in required)
+    orchestration = load(root / "repo/conformance/orchestration.json")
+    canonical_binding_ok = (
+        orchestration.get("entrypoint") == "repo/conformance/run.py"
+        and orchestration.get("public_wrapper") == "repo/scripts/validate"
+        and "./repo/scripts/validate --verbose" in text
+    )
+    checks = {
+        "FS0-ASSERT-CONF-010": (
+            workflow_ok,
+            "GitHub Actions exposes the canonical FS0 Conformance wrapper for push, pull request, and manual execution",
+        ),
+        "FS0-ASSERT-CONF-014": (
+            workflow_ok and canonical_binding_ok,
+            "the fixed FS0 GitHub workflow invokes the machine-resolvable canonical repository Conformance surface",
+        ),
+    }
     evidence = {"workflow": ".github/workflows/fs0-conformance.yml"}
-    return [result(aid, "pass" if ok else "fail", "GitHub Actions exposes the canonical FS0 Conformance wrapper for push, pull request, and manual execution", evidence) for aid in assertion_ids]
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
 
 
 
@@ -270,26 +310,39 @@ def check_bootstrap_state(root, assertion_ids):
         "accepted_ref",
         "cutover_timestamp",
     }
-    ok = (
+    state_ok = (
         set(record) == required
         and record.get("schema_version") == "1"
         and record.get("record_type") == "bootstrap-state"
         and record.get("state") in {"candidate", "cutover"}
         and record.get("accepted_ref") == "refs/heads/accepted"
     )
-    detail = (
-        "repo/state/bootstrap.json contains the required bootstrap-state fields, "
-        "uses candidate|cutover lifecycle state, and identifies refs/heads/accepted"
+    orchestration = load(root / "repo/conformance/orchestration.json")
+    pre_cutover_mode_ok = (
+        record.get("state") == "candidate"
+        and orchestration.get("mode") == "candidate-bootstrap-verification"
     )
+    checks = {
+        "FS0-ASSERT-FC-037": (
+            state_ok,
+            "repo/state/bootstrap.json contains the required bootstrap-state fields, uses candidate|cutover lifecycle state, and identifies refs/heads/accepted",
+        ),
+        "FS0-ASSERT-CONF-011": (
+            pre_cutover_mode_ok,
+            "while bootstrap state is candidate, candidate Conformance execution is explicitly bootstrap mechanical verification evidence only",
+        ),
+    }
     evidence = {
         "path": "repo/state/bootstrap.json",
         "state": record.get("state"),
         "accepted_ref": record.get("accepted_ref"),
+        "conformance_mode": orchestration.get("mode"),
     }
     return [
-        result(aid, "pass" if ok else "fail", detail, evidence)
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
         for aid in assertion_ids
     ]
+
 
 
 def check_governance_state_resolution(root, assertion_ids):

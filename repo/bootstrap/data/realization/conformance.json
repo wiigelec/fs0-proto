@@ -25,7 +25,8 @@
         "FS0-ASSERT-CONF-018",
         "FS0-ASSERT-CONF-019",
         "FS0-ASSERT-CONF-003",
-        "FS0-ASSERT-CONF-005"
+        "FS0-ASSERT-CONF-005",
+        "FS0-ASSERT-CONF-007"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "implementation_id": "FS0-IMPL-REMOTE-EXECUTION",
       "callable": "remote_execution",
       "assertion_ids": [
-        "FS0-ASSERT-CONF-010"
+        "FS0-ASSERT-CONF-010",
+        "FS0-ASSERT-CONF-014"
       ]
     },
     {
@@ -61,7 +63,8 @@
       "implementation_id": "FS0-IMPL-BOOTSTRAP-STATE",
       "callable": "bootstrap_state",
       "assertion_ids": [
-        "FS0-ASSERT-FC-037"
+        "FS0-ASSERT-FC-037",
+        "FS0-ASSERT-CONF-011"
       ]
     },
     {

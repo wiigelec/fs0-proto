@@ -39,7 +39,8 @@
         "FS0-ASSERT-CONF-018",
         "FS0-ASSERT-CONF-019",
         "FS0-ASSERT-CONF-003",
-        "FS0-ASSERT-CONF-005"
+        "FS0-ASSERT-CONF-005",
+        "FS0-ASSERT-CONF-007"
       ],
       "authority_requirement_ids": [
         "FS0-CONF-001",
@@ -49,7 +50,8 @@
         "FS0-CONF-018",
         "FS0-CONF-019",
         "FS0-CONF-003",
-        "FS0-CONF-005"
+        "FS0-CONF-005",
+        "FS0-CONF-007"
       ]
     },
     {
@@ -87,10 +89,12 @@
       "role": "support",
       "callable": "remote_execution",
       "assertion_ids": [
-        "FS0-ASSERT-CONF-010"
+        "FS0-ASSERT-CONF-010",
+        "FS0-ASSERT-CONF-014"
       ],
       "authority_requirement_ids": [
-        "FS0-CONF-010"
+        "FS0-CONF-010",
+        "FS0-CONF-014"
       ]
     },
     {
@@ -113,10 +117,12 @@
       "role": "support",
       "callable": "bootstrap_state",
       "assertion_ids": [
-        "FS0-ASSERT-FC-037"
+        "FS0-ASSERT-FC-037",
+        "FS0-ASSERT-CONF-011"
       ],
       "authority_requirement_ids": [
-        "FS0-FC-037"
+        "FS0-FC-037",
+        "FS0-CONF-011"
       ]
     },
     {
