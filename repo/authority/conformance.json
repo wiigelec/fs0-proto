@@ -31,7 +31,11 @@
     "FS0-CONF-021",
     "FS0-CONF-022",
     "FS0-CONF-023",
-    "FS0-CONF-024"
+    "FS0-CONF-024",
+    "FS0-CONF-025",
+    "FS0-CONF-026",
+    "FS0-CONF-027",
+    "FS0-CONF-028"
   ],
   "provenance": {
     "kind": "bootstrap-design-normalization",

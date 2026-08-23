@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "assurance-correspondence-registry",
-  "requirements_total": 164,
+  "requirements_total": 185,
   "records": [
     {
       "schema_version": "1",
@@ -657,6 +657,159 @@
     {
       "schema_version": "1",
       "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-080",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-080"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-081",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-081"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-082",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-082"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-083",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-083"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-084",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-084"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-085",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-085"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-086",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-086"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-087",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-087"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-088",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-088"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-089",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-089"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-090",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-090"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-091",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-091"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-092",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-092"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-093",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-093"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-094",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-094"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-095",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-095"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-FC-096",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-FC-096"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
       "requirement_id": "FS0-GOV-001",
       "applicability": "required",
       "obligation_ids": [
@@ -1225,6 +1378,42 @@
       "requirement_id": "FS0-CONF-024",
       "applicability": "none",
       "obligation_ids": []
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-CONF-025",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-CONF-025"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-CONF-026",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-CONF-026"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-CONF-027",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-CONF-027"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-CONF-028",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-CONF-028"
+      ]
     },
     {
       "schema_version": "1",

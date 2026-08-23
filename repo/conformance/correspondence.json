@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "conformance-correspondence-registry",
-  "requirements_total": 164,
+  "requirements_total": 185,
   "records": [
     {
       "schema_version": "1",
@@ -695,6 +695,159 @@
     {
       "schema_version": "1",
       "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-080",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-080"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-081",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-081"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-082",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-082"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-083",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-083"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-084",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-084"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-085",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-085"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-086",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-086"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-087",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-087"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-088",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-088"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-089",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-089"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-090",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-090"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-091",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-091"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-092",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-092"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-093",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-093"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-094",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-094"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-095",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-095"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-FC-096",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-096"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
       "requirement_id": "FS0-GOV-001",
       "applicability": "mechanical",
       "assertion_ids": [
@@ -1300,6 +1453,42 @@
       "applicability": "mechanical",
       "assertion_ids": [
         "FS0-ASSERT-CONF-024"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-CONF-025",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-025"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-CONF-026",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-026"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-CONF-027",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-027"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-correspondence",
+      "requirement_id": "FS0-CONF-028",
+      "applicability": "mechanical",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-028"
       ]
     },
     {

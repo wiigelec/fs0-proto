@@ -3,7 +3,7 @@
   "requirements": [
     {
       "id": "FS0-FC-001",
-      "statement": "The authoritative framework namespace SHALL be rooted at repo/ in the repository.",
+      "statement": "The authoritative framework namespace SHALL have one machine-resolvable identity whose concrete filesystem placement is defined by repository configuration.",
       "c": "mechanical",
       "a": "none"
     },
@@ -33,7 +33,7 @@
     },
     {
       "id": "FS0-FC-006",
-      "statement": "Maintained governed framework state SHALL require positive authorization or an explicit governed extension point.",
+      "statement": "Every filesystem object beneath the repository root SHALL require applicable positive authorization from the canonical repository-structure configuration.",
       "c": "mechanical",
       "a": "required"
     },
@@ -99,13 +99,13 @@
     },
     {
       "id": "FS0-FC-017",
-      "statement": "Bootstrap SHALL generate README.md, AGENTS.md, and LICENSE at repository root.",
+      "statement": "Bootstrap SHALL generate the required repository-orientation and license surfaces at configuration-authorized locations.",
       "c": "mechanical",
       "a": "none"
     },
     {
       "id": "FS0-FC-018",
-      "statement": "README.md and AGENTS.md SHALL remain subordinate operational orientation surfaces.",
+      "statement": "Canonical repository-orientation surfaces SHALL remain subordinate operational surfaces and SHALL NOT become independent semantic owners.",
       "c": "none",
       "a": "required"
     },
@@ -117,7 +117,7 @@
     },
     {
       "id": "FS0-FC-020",
-      "statement": "repo/bootstrap/ SHALL contain only Design input, canonical maintenance inputs, and implementation required to construct, verify, accept, cut over, and maintain FS0.",
+      "statement": "The retained bootstrap payload SHALL contain only Design input, canonical realization inputs, and implementation required to construct, verify, accept, cut over, and maintain FS0.",
       "c": "mechanical",
       "a": "required"
     }

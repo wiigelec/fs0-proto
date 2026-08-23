@@ -754,6 +754,193 @@
     {
       "schema_version": "1",
       "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-080",
+      "requirement_id": "FS0-FC-080",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-080"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-081",
+      "requirement_id": "FS0-FC-081",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-081"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-082",
+      "requirement_id": "FS0-FC-082",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-082"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-083",
+      "requirement_id": "FS0-FC-083",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-083"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-084",
+      "requirement_id": "FS0-FC-084",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-084"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-085",
+      "requirement_id": "FS0-FC-085",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-085"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-086",
+      "requirement_id": "FS0-FC-086",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-086"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-087",
+      "requirement_id": "FS0-FC-087",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-087"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-088",
+      "requirement_id": "FS0-FC-088",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-088"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-089",
+      "requirement_id": "FS0-FC-089",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-089"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-090",
+      "requirement_id": "FS0-FC-090",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-090"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-091",
+      "requirement_id": "FS0-FC-091",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-091"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-092",
+      "requirement_id": "FS0-FC-092",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-092"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-093",
+      "requirement_id": "FS0-FC-093",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-093"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-094",
+      "requirement_id": "FS0-FC-094",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-094"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-095",
+      "requirement_id": "FS0-FC-095",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-095"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-096",
+      "requirement_id": "FS0-FC-096",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-096"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
       "assertion_id": "FS0-ASSERT-GOV-001",
       "requirement_id": "FS0-GOV-001",
       "role": "assertion",
@@ -1409,6 +1596,50 @@
       "derivation": {
         "kind": "canonical-requirement-coverage",
         "requirement_id": "FS0-CONF-024"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-025",
+      "requirement_id": "FS0-CONF-025",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-025"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-026",
+      "requirement_id": "FS0-CONF-026",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-026"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-027",
+      "requirement_id": "FS0-CONF-027",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-027"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-028",
+      "requirement_id": "FS0-CONF-028",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-028"
       }
     },
     {

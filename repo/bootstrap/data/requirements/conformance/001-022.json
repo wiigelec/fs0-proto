@@ -81,7 +81,7 @@
     },
     {
       "id": "FS0-CONF-016",
-      "statement": "repo/conformance/run.py SHALL be the canonical repository Conformance execution entry point invoked by the workflow.",
+      "statement": "FS0 SHALL provide one machine-resolvable canonical repository Conformance execution entry point invoked by the fixed FS0 GitHub workflow.",
       "c": "mechanical",
       "a": "none"
     },
@@ -111,7 +111,7 @@
     },
     {
       "id": "FS0-CONF-021",
-      "statement": "Every generated FS0 read surface SHALL be reproducible from repo/bootstrap/data/ and repo/bootstrap/scripts/.",
+      "statement": "Every generated FS0 read surface SHALL be reproducible from its declared canonical maintenance inputs and identified generation implementation.",
       "c": "mechanical",
       "a": "none"
     },

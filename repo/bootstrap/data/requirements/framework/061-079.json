@@ -3,7 +3,7 @@
   "requirements": [
     {
       "id": "FS0-FC-061",
-      "statement": "AGENTS.md SHALL prohibit treating technical write capability as authority, require exact candidate/evidence inspection before mutation, and require post-cutover persistent framework mutation to route through Governance.",
+      "statement": "The canonical agent-orientation surface SHALL prohibit treating technical write capability as authority, require exact candidate/evidence inspection before mutation, and require post-cutover persistent framework mutation to route through Governance.",
       "c": "mechanical",
       "a": "required"
     },
@@ -15,19 +15,19 @@
     },
     {
       "id": "FS0-FC-063",
-      "statement": "repo/bootstrap/data/ SHALL provide the canonical maintained data required to derive FS0 artifacts.",
+      "statement": "Canonical bootstrap maintenance data SHALL provide the maintained source required to derive FS0 artifacts.",
       "c": "mechanical",
       "a": "required"
     },
     {
       "id": "FS0-FC-064",
-      "statement": "Successor Design Proposal source data SHALL reside under repo/bootstrap/data/proposals/.",
+      "statement": "Successor Design Proposal source data SHALL remain machine-resolvably identifiable as a distinct canonical bootstrap source role.",
       "c": "mechanical",
       "a": "required"
     },
     {
       "id": "FS0-FC-065",
-      "statement": "Bootstrap-created maintained artifacts SHALL be generated from canonical data under repo/bootstrap/data/ by generator code under repo/bootstrap/scripts/.",
+      "statement": "Bootstrap-created maintained artifacts SHALL be generated from canonical maintenance data by separately identified generator implementation.",
       "c": "mechanical",
       "a": "required"
     },
@@ -45,13 +45,13 @@
     },
     {
       "id": "FS0-FC-068",
-      "statement": "The canonical FS0 data source SHALL be rooted at repo/bootstrap/data/.",
+      "statement": "FS0 SHALL have one machine-resolvable canonical maintenance-data source role for generated FS0 artifacts.",
       "c": "mechanical",
       "a": "none"
     },
     {
       "id": "FS0-FC-069",
-      "statement": "FS0 semantic and realization choices required for generation SHALL be represented in repo/bootstrap/data/ rather than embedded in generator code.",
+      "statement": "FS0 semantic and realization choices required for generation SHALL be represented in canonical maintenance data rather than embedded in generator code.",
       "c": "mechanical",
       "a": "required"
     },
@@ -99,19 +99,19 @@
     },
     {
       "id": "FS0-FC-077",
-      "statement": "Generated FS0 read surfaces SHALL be produced from repo/bootstrap/data/ by repo/bootstrap/scripts/.",
+      "statement": "Generated FS0 read surfaces SHALL be produced from canonical maintenance data by the identified generation implementation.",
       "c": "mechanical",
       "a": "required"
     },
     {
       "id": "FS0-FC-078",
-      "statement": "Every bootstrap-created maintained FS0 generated artifact SHALL be reproducible from repo/bootstrap/data/ and repo/bootstrap/scripts/.",
+      "statement": "Every bootstrap-created maintained FS0 generated artifact SHALL be reproducible from its canonical maintenance data and identified generation implementation.",
       "c": "mechanical",
       "a": "none"
     },
     {
       "id": "FS0-FC-079",
-      "statement": "Each generated successor Design Proposal artifact SHALL be reproducible from canonical proposal data under repo/bootstrap/data/proposals/ and repo/bootstrap/scripts/.",
+      "statement": "Each generated successor Design Proposal artifact SHALL be reproducible from canonical proposal source data and identified generation implementation.",
       "c": "mechanical",
       "a": "required"
     }

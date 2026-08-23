@@ -9,7 +9,7 @@
     },
     {
       "id": "FS0-FC-042",
-      "statement": "The bootstrap data tree SHALL keep FS0 data distinct from successor Design Proposal data.",
+      "statement": "Canonical bootstrap source roles SHALL keep FS0 realization input semantically distinct from successor Design Proposal input.",
       "c": "mechanical",
       "a": "required"
     },
@@ -45,19 +45,19 @@
     },
     {
       "id": "FS0-FC-048",
-      "statement": "Generated root surfaces SHALL be deterministic for identical canonical inputs except explicitly declared variable installation-state fields.",
+      "statement": "Generated repository-orientation and license surfaces SHALL be deterministic for identical canonical inputs except explicitly declared variable installation-state fields.",
       "c": "mechanical",
       "a": "none"
     },
     {
       "id": "FS0-FC-049",
-      "statement": "README.md and AGENTS.md SHALL NOT become independent semantic owners.",
+      "statement": "Repository-orientation surfaces SHALL NOT become independent semantic owners.",
       "c": "none",
       "a": "required"
     },
     {
       "id": "FS0-FC-050",
-      "statement": "All substantive bootstrap implementation SHALL reside under repo/bootstrap/scripts/src/.",
+      "statement": "Substantive bootstrap implementation SHALL be machine-resolvably distinct from the canonical bootstrap invocation surface.",
       "c": "mechanical",
       "a": "none"
     },
@@ -69,7 +69,7 @@
     },
     {
       "id": "FS0-FC-052",
-      "statement": "Each installed proposal.md SHALL be a deterministic projection of its installed structured proposal read representation.",
+      "statement": "Each generated successor Design Proposal Markdown surface SHALL be a deterministic projection of its canonical structured proposal read representation.",
       "c": "mechanical",
       "a": "required"
     },
@@ -87,7 +87,7 @@
     },
     {
       "id": "FS0-FC-055",
-      "statement": "Unrelated user project content outside governed FS0 roots MAY remain.",
+      "statement": "The repository root SHALL be the complete structural governance boundary; no filesystem namespace beneath it SHALL remain outside structural governance.",
       "c": "mechanical",
       "a": "none"
     },
@@ -117,7 +117,7 @@
     },
     {
       "id": "FS0-FC-060",
-      "statement": "After cutover, repo/state/bootstrap.json SHALL be immutable except through later accepted authority that explicitly governs recovery or reconstruction.",
+      "statement": "After cutover, the bootstrap cutover record SHALL be immutable except through later accepted authority that explicitly governs recovery or reconstruction.",
       "c": "mechanical",
       "a": "required"
     }

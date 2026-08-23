@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "requirement-registry",
-  "requirements_total": 164,
+  "requirements_total": 185,
   "authority_order": [
     "FS0-AUTH-FRAMEWORK",
     "FS0-AUTH-GOVERNANCE",
@@ -14,7 +14,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-001",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "The authoritative framework namespace SHALL be rooted at repo/ in the repository.",
+      "statement": "The authoritative framework namespace SHALL have one machine-resolvable identity whose concrete filesystem placement is defined by repository configuration.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -64,7 +64,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-006",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Maintained governed framework state SHALL require positive authorization or an explicit governed extension point.",
+      "statement": "Every filesystem object beneath the repository root SHALL require applicable positive authorization from the canonical repository-structure configuration.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -174,7 +174,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-017",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Bootstrap SHALL generate README.md, AGENTS.md, and LICENSE at repository root.",
+      "statement": "Bootstrap SHALL generate the required repository-orientation and license surfaces at configuration-authorized locations.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -184,7 +184,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-018",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "README.md and AGENTS.md SHALL remain subordinate operational orientation surfaces.",
+      "statement": "Canonical repository-orientation surfaces SHALL remain subordinate operational surfaces and SHALL NOT become independent semantic owners.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -204,7 +204,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-020",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "repo/bootstrap/ SHALL contain only Design input, canonical maintenance inputs, and implementation required to construct, verify, accept, cut over, and maintain FS0.",
+      "statement": "The retained bootstrap payload SHALL contain only Design input, canonical realization inputs, and implementation required to construct, verify, accept, cut over, and maintain FS0.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -214,7 +214,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-021",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Generated authority, proposal Markdown, orientation, workflow output, temporary build output, caches, and runtime state SHALL NOT be written under repo/bootstrap/.",
+      "statement": "Generated artifacts SHALL remain semantically distinct from non-authoritative bootstrap maintenance source and SHALL require structural authorization at their configured locations.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -224,7 +224,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-022",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "The canonical bootstrap entry point SHALL be executable shell wrapper repo/bootstrap/scripts/bootstrap invoked from repository root.",
+      "statement": "FS0 SHALL expose exactly one canonical bootstrap invocation surface that is machine-resolvable from repository state.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -234,7 +234,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-023",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "The bootstrap shell wrapper SHALL be limited to invocation concerns.",
+      "statement": "The canonical bootstrap invocation surface SHALL contain only invocation concerns and delegate substantive behavior to separately identified implementation.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -264,7 +264,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-026",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Installed successor proposal.json and chunks/*.json SHALL be the canonical installed structured read representation.",
+      "statement": "Each installed successor Design Proposal SHALL have one canonical structured read representation.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -274,7 +274,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-027",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "After cutover, authoritative determination SHALL use accepted read surfaces outside repo/bootstrap/.",
+      "statement": "After cutover, authoritative determination SHALL use accepted authoritative read surfaces and SHALL NOT use non-authoritative bootstrap maintenance source as fallback authority.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -284,7 +284,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-028",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "repo/bootstrap/ SHALL be the canonical non-authoritative maintenance source and generation implementation for FS0.",
+      "statement": "FS0 SHALL retain one machine-resolvable non-authoritative bootstrap maintenance-source and generation role after cutover.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -294,7 +294,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-029",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "The installed FS0 repository SHALL contain the Design-defined fixed bootstrap layout.",
+      "statement": "Exactly one canonical repository-structure configuration SHALL be the sole instance-level source of filesystem permission beneath the repository root.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -304,7 +304,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-030",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Unknown maintained artifacts inside governed FS0 roots SHALL be rejected unless authorized by an explicit extension point.",
+      "statement": "A present filesystem object beneath the repository root without applicable positive structural authorization SHALL cause Conformance failure.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -374,7 +374,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-037",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "repo/state/bootstrap.json SHALL use record_type bootstrap-state and contain state, candidate revision where applicable, first accepted FS0 revision where applicable, bootstrap provenance issue, bootstrap acceptance record, accepted_ref, and cutover timestamp.",
+      "statement": "FS0 SHALL maintain one machine-resolvable bootstrap cutover record containing state, applicable candidate or accepted revision, bootstrap provenance, acceptance record, accepted ref, and cutover timestamp.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -384,7 +384,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-038",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "README.md SHALL state repository purpose, bootstrap/cutover status, Design Proposal index, accepted-state discovery guidance, basic operation guidance, and that implementation and GitHub state do not independently create authority.",
+      "statement": "The canonical repository-orientation surface SHALL state repository purpose, bootstrap/cutover status, Design Proposal discovery, accepted-state discovery, operation guidance, and limits on implementation/GitHub authority.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -394,7 +394,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-039",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "AGENTS.md SHALL state initial reading order, Design-chunk discovery, bootstrap/cutover-state discovery, and accepted-state resolution after cutover.",
+      "statement": "The canonical agent-orientation surface SHALL state initial reading order, Design-chunk discovery, bootstrap/cutover-state discovery, and accepted-state resolution after cutover.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -404,7 +404,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-040",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Bootstrap verification SHALL fail if any required generated root orientation or license surface is absent.",
+      "statement": "Bootstrap verification SHALL fail if any required generated orientation or license surface is absent.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -424,7 +424,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-042",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "The bootstrap data tree SHALL keep FS0 data distinct from successor Design Proposal data.",
+      "statement": "Canonical bootstrap source roles SHALL keep FS0 realization input semantically distinct from successor Design Proposal input.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -484,7 +484,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-048",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Generated root surfaces SHALL be deterministic for identical canonical inputs except explicitly declared variable installation-state fields.",
+      "statement": "Generated repository-orientation and license surfaces SHALL be deterministic for identical canonical inputs except explicitly declared variable installation-state fields.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -494,7 +494,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-049",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "README.md and AGENTS.md SHALL NOT become independent semantic owners.",
+      "statement": "Repository-orientation surfaces SHALL NOT become independent semantic owners.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -504,7 +504,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-050",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "All substantive bootstrap implementation SHALL reside under repo/bootstrap/scripts/src/.",
+      "statement": "Substantive bootstrap implementation SHALL be machine-resolvably distinct from the canonical bootstrap invocation surface.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -524,7 +524,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-052",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Each installed proposal.md SHALL be a deterministic projection of its installed structured proposal read representation.",
+      "statement": "Each generated successor Design Proposal Markdown surface SHALL be a deterministic projection of its canonical structured proposal read representation.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -554,7 +554,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-055",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Unrelated user project content outside governed FS0 roots MAY remain.",
+      "statement": "The repository root SHALL be the complete structural governance boundary; no filesystem namespace beneath it SHALL remain outside structural governance.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -604,7 +604,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-060",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "After cutover, repo/state/bootstrap.json SHALL be immutable except through later accepted authority that explicitly governs recovery or reconstruction.",
+      "statement": "After cutover, the bootstrap cutover record SHALL be immutable except through later accepted authority that explicitly governs recovery or reconstruction.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -614,7 +614,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-061",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "AGENTS.md SHALL prohibit treating technical write capability as authority, require exact candidate/evidence inspection before mutation, and require post-cutover persistent framework mutation to route through Governance.",
+      "statement": "The canonical agent-orientation surface SHALL prohibit treating technical write capability as authority, require exact candidate/evidence inspection before mutation, and require post-cutover persistent framework mutation to route through Governance.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -634,7 +634,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-063",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "repo/bootstrap/data/ SHALL provide the canonical maintained data required to derive FS0 artifacts.",
+      "statement": "Canonical bootstrap maintenance data SHALL provide the maintained source required to derive FS0 artifacts.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -644,7 +644,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-064",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Successor Design Proposal source data SHALL reside under repo/bootstrap/data/proposals/.",
+      "statement": "Successor Design Proposal source data SHALL remain machine-resolvably identifiable as a distinct canonical bootstrap source role.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -654,7 +654,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-065",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Bootstrap-created maintained artifacts SHALL be generated from canonical data under repo/bootstrap/data/ by generator code under repo/bootstrap/scripts/.",
+      "statement": "Bootstrap-created maintained artifacts SHALL be generated from canonical maintenance data by separately identified generator implementation.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -684,7 +684,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-068",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "The canonical FS0 data source SHALL be rooted at repo/bootstrap/data/.",
+      "statement": "FS0 SHALL have one machine-resolvable canonical maintenance-data source role for generated FS0 artifacts.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -694,7 +694,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-069",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "FS0 semantic and realization choices required for generation SHALL be represented in repo/bootstrap/data/ rather than embedded in generator code.",
+      "statement": "FS0 semantic and realization choices required for generation SHALL be represented in canonical maintenance data rather than embedded in generator code.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -774,7 +774,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-077",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Generated FS0 read surfaces SHALL be produced from repo/bootstrap/data/ by repo/bootstrap/scripts/.",
+      "statement": "Generated FS0 read surfaces SHALL be produced from canonical maintenance data by the identified generation implementation.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -784,7 +784,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-078",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Every bootstrap-created maintained FS0 generated artifact SHALL be reproducible from repo/bootstrap/data/ and repo/bootstrap/scripts/.",
+      "statement": "Every bootstrap-created maintained FS0 generated artifact SHALL be reproducible from its canonical maintenance data and identified generation implementation.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -794,7 +794,177 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-079",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "Each generated successor Design Proposal artifact SHALL be reproducible from canonical proposal data under repo/bootstrap/data/proposals/ and repo/bootstrap/scripts/.",
+      "statement": "Each generated successor Design Proposal artifact SHALL be reproducible from canonical proposal source data and identified generation implementation.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-080",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Absence of applicable structural authorization for a filesystem object beneath the repository root SHALL mean deny.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-081",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "No version-control, ignored, generated, cached, temporary, editor, build, tool, or runtime filesystem class SHALL receive implicit structural authorization.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-082",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Governed repository state SHALL determine exactly one canonical repository-structure configuration identity for the validation subject.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-083",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "The operating substrate SHALL resolve the governed repository-structure configuration identity and SHALL NOT select among candidate configurations.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-084",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Caller preference, environment convention, implementation default, filename convention, search order, or fallback location SHALL NOT determine the canonical repository-structure configuration identity.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-085",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "The canonical repository-structure configuration SHALL positively authorize its own filesystem object.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-086",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Repository-structure authorization SHALL distinguish required presence from permitted presence.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-087",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Authorizing a directory SHALL authorize only that directory object unless complete-subtree authorization is explicit.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-088",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Complete-subtree authorization SHALL authorize descendant paths without requiring individual descendant path declarations.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-089",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Complete-subtree authorization SHALL NOT override repository-wide structural invariants, including object-type admissibility.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-090",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Repository-structure authorization SHALL support ordinary files, directories, and symbolic links as explicit object types.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-091",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "A filesystem object type unsupported by canonical repository-structure configuration semantics SHALL be denied.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-092",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "A symbolic link SHALL be structurally authorized as the link object itself.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-093",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Repository-structure traversal SHALL NOT follow symbolic-link targets to discover descendants.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-094",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "A symbolic-link target outside the repository root SHALL NOT enlarge the repository-structure governance boundary.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-095",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Bootstrap creation of a candidate filesystem object SHALL NOT independently grant structural authorization.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-096",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "After candidate creation, bootstrap conventions, hard-coded paths, generator destination lists, and tool defaults SHALL NOT substitute for structural authorization.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1414,7 +1584,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-CONF-016",
       "owner_authority_id": "FS0-AUTH-CONFORMANCE",
-      "statement": "repo/conformance/run.py SHALL be the canonical repository Conformance execution entry point invoked by the workflow.",
+      "statement": "FS0 SHALL provide one machine-resolvable canonical repository Conformance execution entry point invoked by the fixed FS0 GitHub workflow.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1464,7 +1634,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-CONF-021",
       "owner_authority_id": "FS0-AUTH-CONFORMANCE",
-      "statement": "Every generated FS0 read surface SHALL be reproducible from repo/bootstrap/data/ and repo/bootstrap/scripts/.",
+      "statement": "Every generated FS0 read surface SHALL be reproducible from its declared canonical maintenance inputs and identified generation implementation.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1498,6 +1668,46 @@
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-025",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Repository-structure Conformance SHALL evaluate the actual filesystem namespace beneath the repository root rather than only tracked, maintained, generated, or preclassified objects.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-026",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "For every observed filesystem object beneath the repository root, Conformance SHALL resolve applicable structural authorization.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-027",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "For every repository-structure configuration entry requiring presence, Conformance SHALL verify that the required filesystem object exists.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-028",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Repository-structure Conformance SHALL fail when governed state does not determine exactly one canonical structure-configuration identity or that identity does not resolve to exactly one configuration object.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
     },
     {
       "schema_version": "1",
