@@ -52,16 +52,56 @@ def check_conformance_closure(root, assertion_ids):
     corr_by_req = {r["requirement_id"]: r for r in corr}
     assertion_by_id = {a["assertion_id"]: a for a in assertions}
     implementation_ids = {i["implementation_id"] for i in impl}
+    implementation_assertion_ids = [
+        aid
+        for implementation in impl
+        for aid in implementation.get("assertion_ids", [])
+    ]
+    implementation_bindings_closed = (
+        len(implementation_assertion_ids) == len(set(implementation_assertion_ids))
+        and all(aid in assertion_by_id for aid in implementation_assertion_ids)
+    )
 
     checks = {
-        "FS0-ASSERT-CONF-001": (req_registry.get("requirements_total") == corr_registry.get("requirements_total") == len(reqs) == len(corr) and set(corr_by_req) == set(req_ids), "every requirement has exactly one Conformance correspondence and registry totals agree"),
-        "FS0-ASSERT-CONF-004": (all(a["assertion_id"] not in implementation_ids for a in assertions), "assertion identities are distinct from implementation identities"),
-        "FS0-ASSERT-CONF-013": (all({"requirement_id", "applicability", "assertion_ids"} <= set(r) for r in corr), "all correspondence records contain required fields"),
-        "FS0-ASSERT-CONF-015": (len({a["assertion_id"] for a in assertions}) == len(assertions) and all(a.get("requirement_id") for a in assertions), "shared implementations preserve distinct assertion identity and provenance"),
-        "FS0-ASSERT-CONF-018": (all(r["assertion_ids"] and all(aid in assertion_by_id for aid in r["assertion_ids"]) for r in corr if r["applicability"] == "mechanical"), "mechanical correspondence records contain stable assertion identities"),
-        "FS0-ASSERT-CONF-019": (all(not r["assertion_ids"] for r in corr if r["applicability"] == "none"), "none-applicable correspondence records contain empty assertion_ids"),
+        "FS0-ASSERT-CONF-001": (
+            req_registry.get("requirements_total") == corr_registry.get("requirements_total")
+            == len(reqs) == len(corr)
+            and set(corr_by_req) == set(req_ids),
+            "every requirement has exactly one Conformance correspondence and registry totals agree",
+        ),
+        "FS0-ASSERT-CONF-004": (
+            all(a["assertion_id"] not in implementation_ids for a in assertions),
+            "assertion identities are distinct from implementation identities",
+        ),
+        "FS0-ASSERT-CONF-013": (
+            all({"requirement_id", "applicability", "assertion_ids"} <= set(r) for r in corr),
+            "all correspondence records contain required fields",
+        ),
+        "FS0-ASSERT-CONF-015": (
+            len({a["assertion_id"] for a in assertions}) == len(assertions)
+            and all(a.get("requirement_id") for a in assertions)
+            and implementation_bindings_closed,
+            "shared implementations preserve distinct declared assertion identity and provenance, and implementation bindings are closed over the assertion registry",
+        ),
+        "FS0-ASSERT-CONF-018": (
+            all(
+                r["assertion_ids"]
+                and all(aid in assertion_by_id for aid in r["assertion_ids"])
+                for r in corr
+                if r["applicability"] == "mechanical"
+            )
+            and implementation_bindings_closed,
+            "mechanical correspondence records and implementation bindings contain only stable declared assertion identities",
+        ),
+        "FS0-ASSERT-CONF-019": (
+            all(not r["assertion_ids"] for r in corr if r["applicability"] == "none"),
+            "none-applicable correspondence records contain empty assertion_ids",
+        ),
     }
-    return [result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1]) for aid in assertion_ids]
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1])
+        for aid in assertion_ids
+    ]
 
 
 def check_generation_correspondence(root, assertion_ids):
@@ -1051,7 +1091,7 @@ def check_repository_structure(root, assertion_ids):
             "FS0-ASSERT-FC-095": (
                 live_clean
                 and source_uses_only_config_authorization
-                and any(rec.get("path") == "repo/bootstrap/data/structure.json" for rec in load(root / "repo/config/repository-structure.json")["objects"]),
+                and live["configuration_path"] == "repo/bootstrap/data/structure.json" and live["configuration_self_authorized"],
                 "bootstrap construction is not itself treated as structural authorization; the resulting candidate is evaluated through the resolved configuration",
                 ev(authorization_path="_evaluate_repository_structure -> resolved configuration"),
             ),
@@ -1170,37 +1210,139 @@ def main():
     all_assertions = load(root / "repo/conformance/assertions.json")["assertions"]
     mechanical_ids = {a["assertion_id"] for a in all_assertions}
 
+    bound_ids = [
+        aid
+        for implementation in implementations
+        for aid in implementation.get("assertion_ids", [])
+    ]
+    unknown_bound_ids = sorted(set(bound_ids) - mechanical_ids)
+    duplicate_bound_ids = sorted(
+        aid for aid in set(bound_ids) if bound_ids.count(aid) > 1
+    )
+
+    execution_defects = []
+    if unknown_bound_ids:
+        execution_defects.append(
+            {
+                "kind": "unknown-implementation-assertion-binding",
+                "assertion_ids": unknown_bound_ids,
+            }
+        )
+    if duplicate_bound_ids:
+        execution_defects.append(
+            {
+                "kind": "duplicate-implementation-assertion-binding",
+                "assertion_ids": duplicate_bound_ids,
+            }
+        )
+
     realized = set()
     results = []
     for impl in implementations:
         callable_name = impl["callable"]
-        assertion_ids = impl["assertion_ids"]
-        realized.update(assertion_ids)
+        declared_ids = [
+            aid for aid in impl.get("assertion_ids", []) if aid in mechanical_ids
+        ]
+        realized.update(declared_ids)
+
+        if not declared_ids:
+            continue
+
         fn = CALLABLES.get(callable_name)
         if fn is None:
-            results.extend(result(aid, "fail", f"unknown implementation callable: {callable_name}") for aid in assertion_ids)
+            results.extend(
+                result(aid, "fail", f"unknown implementation callable: {callable_name}")
+                for aid in declared_ids
+            )
             continue
-        results.extend(fn(root, assertion_ids))
+
+        impl_results = fn(root, declared_ids)
+        result_ids = [r.get("assertion_id") for r in impl_results]
+        expected = set(declared_ids)
+        observed = set(result_ids)
+
+        if len(result_ids) != len(observed):
+            execution_defects.append(
+                {
+                    "kind": "duplicate-emitted-assertion-result",
+                    "implementation_id": impl.get("implementation_id"),
+                    "assertion_ids": sorted(
+                        aid for aid in observed if result_ids.count(aid) > 1
+                    ),
+                }
+            )
+        if observed != expected:
+            execution_defects.append(
+                {
+                    "kind": "implementation-result-closure-mismatch",
+                    "implementation_id": impl.get("implementation_id"),
+                    "missing": sorted(expected - observed),
+                    "unexpected": sorted(observed - expected),
+                }
+            )
+
+        results.extend(
+            r for r in impl_results
+            if r.get("assertion_id") in expected
+        )
+
+    emitted_ids = [r["assertion_id"] for r in results]
+    if len(emitted_ids) != len(set(emitted_ids)):
+        execution_defects.append(
+            {
+                "kind": "duplicate-global-assertion-result",
+                "assertion_ids": sorted(
+                    aid for aid in set(emitted_ids) if emitted_ids.count(aid) > 1
+                ),
+            }
+        )
 
     pending = sorted(mechanical_ids - realized)
-    failed = sorted(r["assertion_id"] for r in results if r["status"] == "fail")
-    passed = sorted(r["assertion_id"] for r in results if r["status"] == "pass")
-    status = "fail" if failed else ("incomplete" if pending else "pass")
+    failed = sorted(
+        {
+            r["assertion_id"]
+            for r in results
+            if r["assertion_id"] in mechanical_ids and r["status"] == "fail"
+        }
+    )
+    passed = sorted(
+        {
+            r["assertion_id"]
+            for r in results
+            if r["assertion_id"] in mechanical_ids and r["status"] == "pass"
+        }
+    )
+
+    if set(passed) & set(failed):
+        execution_defects.append(
+            {
+                "kind": "assertion-has-conflicting-results",
+                "assertion_ids": sorted(set(passed) & set(failed)),
+            }
+        )
+
+    status = (
+        "fail"
+        if failed or execution_defects
+        else ("incomplete" if pending else "pass")
+    )
 
     report = {
         "schema_version": "1",
         "record_type": "conformance-execution-result",
         "orchestration_id": orchestration["orchestration_id"],
         "status": status,
+        "declared_mechanical_assertions": len(mechanical_ids),
         "realized_assertions": len(realized),
         "passed_assertions": len(passed),
         "failed_assertions": failed,
         "pending_assertions": pending,
+        "execution_defects": execution_defects,
         "results": results,
     }
     print(json.dumps(report, indent=2))
 
-    if failed:
+    if failed or execution_defects:
         return 1
     if pending:
         return 2

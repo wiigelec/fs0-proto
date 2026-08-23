@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "record_type": "repository-structure-bootstrap-source",
+  "record_type": "repository-structure-configuration",
   "configuration_id": "FS0-REPOSITORY-STRUCTURE",
   "objects": [
     {
@@ -391,17 +391,6 @@
     },
     {
       "path": "repo/bootstrap/scripts/src/generate.py",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
-      "path": "repo/config",
-      "object_type": "directory",
-      "presence": "required",
-      "descendants": "closed"
-    },
-    {
-      "path": "repo/config/repository-structure.json",
       "object_type": "file",
       "presence": "required"
     },

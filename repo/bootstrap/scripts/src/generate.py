@@ -314,7 +314,7 @@ def derive_bootstrap_state(root: Path):
 
 
 def derive_repository_structure_state(root: Path):
-    source = load_json(root / "repo/bootstrap/data/structure.json")
+    config = load_json(root / "repo/bootstrap/data/structure.json")
 
     required = {
         "schema_version",
@@ -322,91 +322,72 @@ def derive_repository_structure_state(root: Path):
         "configuration_id",
         "objects",
     }
-    if set(source) != required:
-        missing = sorted(required - set(source))
-        extra = sorted(set(source) - required)
+    if set(config) != required:
+        missing = sorted(required - set(config))
+        extra = sorted(set(config) - required)
         raise SystemExit(
-            f"repository structure bootstrap source fields mismatch; "
+            f"repository structure configuration fields mismatch; "
             f"missing={missing} extra={extra}"
         )
-    if source.get("schema_version") != "1":
-        raise SystemExit("unsupported repository structure bootstrap source schema")
-    if source.get("record_type") != "repository-structure-bootstrap-source":
-        raise SystemExit("unexpected repository structure bootstrap source record_type")
+    if config.get("schema_version") != "1":
+        raise SystemExit("unsupported repository structure configuration schema")
+    if config.get("record_type") != "repository-structure-configuration":
+        raise SystemExit("unexpected repository structure configuration record_type")
 
-    identity = source.get("configuration_id")
+    identity = config.get("configuration_id")
     if not isinstance(identity, str) or not identity:
-        raise SystemExit("repository structure bootstrap source configuration_id is invalid")
+        raise SystemExit("repository structure configuration_id is invalid")
 
-    objects = source.get("objects")
+    objects = config.get("objects")
     if not isinstance(objects, list):
-        raise SystemExit("repository structure bootstrap source objects must be a list")
+        raise SystemExit("repository structure configuration objects must be a list")
 
     seen = set()
-    normalized = []
     for rec in objects:
         if not isinstance(rec, dict):
-            raise SystemExit("repository structure bootstrap object entries must be records")
+            raise SystemExit("repository structure object entries must be records")
         rel = rec.get("path")
         obj_type = rec.get("object_type")
         presence = rec.get("presence")
         descendants = rec.get("descendants", "closed")
 
         if not isinstance(rel, str) or not rel:
-            raise SystemExit("repository structure bootstrap path must be non-empty")
+            raise SystemExit("repository structure path must be non-empty")
         p = Path(rel)
         if p.is_absolute() or ".." in p.parts or rel in {".", "./"}:
-            raise SystemExit(f"invalid repository structure bootstrap path: {rel}")
+            raise SystemExit(f"invalid repository structure path: {rel}")
         if p.as_posix() != rel:
-            raise SystemExit(f"repository structure bootstrap path is not normalized: {rel}")
+            raise SystemExit(f"repository structure path is not normalized: {rel}")
         if rel in seen:
-            raise SystemExit(f"duplicate repository structure bootstrap path: {rel}")
+            raise SystemExit(f"duplicate repository structure path: {rel}")
         if obj_type not in {"file", "directory", "symlink"}:
-            raise SystemExit(f"invalid repository structure bootstrap object type: {rel}")
+            raise SystemExit(f"invalid repository structure object type: {rel}")
         if presence not in {"required", "permitted"}:
-            raise SystemExit(f"invalid repository structure bootstrap presence: {rel}")
+            raise SystemExit(f"invalid repository structure presence: {rel}")
         if descendants not in {"closed", "complete-subtree"}:
-            raise SystemExit(f"invalid repository structure bootstrap descendants mode: {rel}")
+            raise SystemExit(f"invalid repository structure descendants mode: {rel}")
         if obj_type != "directory" and descendants != "closed":
             raise SystemExit(
-                f"non-directory repository structure bootstrap entry authorizes descendants: {rel}"
+                f"non-directory repository structure entry authorizes descendants: {rel}"
             )
-
-        out = {
-            "path": rel,
-            "object_type": obj_type,
-            "presence": presence,
-        }
-        if obj_type == "directory":
-            out["descendants"] = descendants
-        normalized.append(out)
         seen.add(rel)
 
-    required_source = "repo/bootstrap/data/structure.json"
-    required_config = "repo/config/repository-structure.json"
+    required_config = "repo/bootstrap/data/structure.json"
     required_binding = "repo/state/repository-structure-binding.json"
-    for rel in (required_source, required_config, required_binding):
+    for rel in (required_config, required_binding):
         if rel not in seen:
             raise SystemExit(
-                f"repository structure bootstrap source does not authorize required object: {rel}"
+                f"canonical repository structure configuration does not authorize "
+                f"required object: {rel}"
             )
-
-    normalized.sort(key=lambda r: r["path"])
 
     binding = {
         "schema_version": "1",
         "record_type": "repository-structure-binding",
         "configuration_identity": identity,
     }
-    config = {
-        "schema_version": "1",
-        "record_type": "repository-structure-configuration",
-        "configuration_id": identity,
-        "objects": normalized,
-    }
     return {
         root / "repo/state/repository-structure-binding.json": binding,
-        root / "repo/config/repository-structure.json": config,
     }
 
 def derive_governance_realization(root: Path):
