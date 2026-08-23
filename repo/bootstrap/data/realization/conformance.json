@@ -290,6 +290,15 @@
         "FS0-ASSERT-FC-061",
         "FS0-ASSERT-FC-062"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-INDEPENDENCE",
+      "callable": "bootstrap_independence",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-024",
+        "FS0-ASSERT-FC-028",
+        "FS0-ASSERT-FC-054"
+      ]
     }
   ],
   "evidence": [
@@ -406,6 +415,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-FRAMEWORK-RECORD-ORIENTATION",
       "implementation_id": "FS0-IMPL-FRAMEWORK-RECORD-ORIENTATION",
+      "evidence_class": "repository-state"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-INDEPENDENCE",
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-INDEPENDENCE",
       "evidence_class": "repository-state"
     }
   ],

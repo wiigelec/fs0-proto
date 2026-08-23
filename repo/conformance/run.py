@@ -2642,6 +2642,117 @@ def check_framework_record_and_orientation_contract(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+def check_bootstrap_independence(root, assertion_ids):
+    contract = load(root / "repo/bootstrap/data/realization/generation_contract.json")
+    structure = load(root / "repo/bootstrap/data/structure.json")
+
+    bootstrap = root / "repo/bootstrap"
+    top_level = sorted(
+        path.name for path in bootstrap.iterdir()
+        if path.name not in {"__pycache__"}
+    )
+    payload_roles_ok = top_level == ["data", "design", "scripts"]
+
+    local_paths = {
+        "canonical_input_root": contract.get("canonical_input_root"),
+        "generation_implementation": contract.get("generation_implementation"),
+        "generation_entrypoint": contract.get("generation_entrypoint"),
+    }
+    local_paths_ok = all(
+        isinstance(rel, str)
+        and rel.startswith("repo/bootstrap/")
+        and (root / rel).exists()
+        for rel in local_paths.values()
+    )
+
+    generator = root / local_paths["generation_implementation"]
+    generator_source = generator.read_text(encoding="utf-8")
+    imported_sibling_ok = "from conformance_realization import derive_conformance_realization" in generator_source
+    sibling = generator.parent / "conformance_realization.py"
+    sibling_ok = sibling.is_file()
+
+    # Generation source discovery must remain rooted in the retained target
+    # repository rather than an originating bootstrap checkout.
+    repository_rooted = (
+        'cwd = Path.cwd().resolve()' in generator_source
+        and 'data = root / "repo/bootstrap/data"' in generator_source
+        and "../" not in contract.get("canonical_input_root", "")
+        and not any(
+            marker in generator_source
+            for marker in (
+                "BOOTSTRAP_SOURCE_ROOT",
+                "ORIGINATING_BOOTSTRAP",
+                "external_template_root",
+                "external_generator_root",
+            )
+        )
+    )
+
+    structure_paths = {
+        record.get("path")
+        for record in structure.get("objects", [])
+        if isinstance(record, dict)
+    }
+    retained_paths_authorized = all(
+        rel in structure_paths
+        for rel in (
+            "repo/bootstrap/data",
+            "repo/bootstrap/design",
+            "repo/bootstrap/scripts",
+            "repo/bootstrap/scripts/bootstrap",
+            "repo/bootstrap/scripts/src/generate.py",
+            "repo/bootstrap/scripts/src/conformance_realization.py",
+            "repo/bootstrap/scripts/src/preflight.py",
+        )
+    )
+
+    role_ok = (
+        contract.get("canonical_source_role") == "canonical-bootstrap-maintenance-data"
+        and contract.get("generated_surfaces_are_canonical_source") is False
+        and contract.get("canonical_input_root") == "repo/bootstrap/data"
+        and contract.get("generation_implementation")
+            == "repo/bootstrap/scripts/src/generate.py"
+        and contract.get("generation_entrypoint")
+            == "repo/bootstrap/scripts/bootstrap"
+    )
+
+    checks = {
+        "FS0-ASSERT-FC-024": (
+            payload_roles_ok
+            and local_paths_ok
+            and sibling_ok
+            and imported_sibling_ok
+            and repository_rooted,
+            "the retained bootstrap payload resolves canonical data and generation implementation entirely from the target repository and requires no originating bootstrap semantic, template, generator, or script input",
+        ),
+        "FS0-ASSERT-FC-028": (
+            role_ok and retained_paths_authorized,
+            "one machine-resolvable non-authoritative retained bootstrap maintenance-source and generation role remains installed and structurally authorized",
+        ),
+        "FS0-ASSERT-FC-054": (
+            payload_roles_ok
+            and local_paths_ok
+            and sibling_ok
+            and imported_sibling_ok
+            and repository_rooted,
+            "post-cutover operation of retained bootstrap generation machinery requires no semantic, template, generator, or script input from an external bootstrap environment",
+        ),
+    }
+
+    evidence = {
+        "bootstrap_top_level": top_level,
+        "canonical_source_role": contract.get("canonical_source_role"),
+        "canonical_input_root": contract.get("canonical_input_root"),
+        "generation_implementation": contract.get("generation_implementation"),
+        "generation_entrypoint": contract.get("generation_entrypoint"),
+        "generated_surfaces_are_canonical_source":
+            contract.get("generated_surfaces_are_canonical_source"),
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -2967,6 +3078,7 @@ CALLABLES = {
     "operating_substrate_preflight": check_operating_substrate_preflight,
     "bootstrap_read_surfaces": check_bootstrap_read_surfaces,
     "framework_record_orientation": check_framework_record_and_orientation_contract,
+    "bootstrap_independence": check_bootstrap_independence,
 }
 
 

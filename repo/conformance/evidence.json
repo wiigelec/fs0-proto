@@ -231,6 +231,16 @@
         "FS0-CONF-007",
         "FS0-CONF-009"
       ]
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-INDEPENDENCE",
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-INDEPENDENCE",
+      "evidence_class": "repository-state",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     }
   ]
 }

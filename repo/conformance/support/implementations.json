@@ -556,6 +556,23 @@
         "FS0-FC-061",
         "FS0-FC-062"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-INDEPENDENCE",
+      "role": "support",
+      "callable": "bootstrap_independence",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-024",
+        "FS0-ASSERT-FC-028",
+        "FS0-ASSERT-FC-054"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-024",
+        "FS0-FC-028",
+        "FS0-FC-054"
+      ]
     }
   ]
 }
