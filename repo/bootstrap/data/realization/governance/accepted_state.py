@@ -213,6 +213,136 @@ def parse_acceptance_comment(body):
     return payload
 
 
+
+def governed_work_from_issue_body(body):
+    matches = [
+        obj
+        for obj in _json_fence_objects(body)
+        if obj.get("record_type") == "governed-work"
+    ]
+    if len(matches) != 1:
+        raise AcceptanceError(
+            "issue must expose exactly one governed-work JSON record"
+        )
+    return matches[0]
+
+
+def resolve_governance_work_acceptance(issue_body, comments, expected_stage, expected_work_id):
+    if expected_stage not in {"design", "plan", "build"}:
+        raise AcceptanceError("expected_stage must be design|plan|build")
+    if not _nonempty(expected_work_id):
+        raise AcceptanceError("expected_work_id must be non-empty")
+
+    authorized_actor = _authorized_actor(
+        issue_body,
+        "governance-acceptance",
+    )
+    if authorized_actor is None:
+        return {
+            "schema_version": "1",
+            "record_type": "governance-work-acceptance-resolution",
+            "status": "invalid",
+            "stage": expected_stage,
+            "work_id": expected_work_id,
+            "acceptance_records": [],
+            "defects": [
+                "issue does not expose exactly one machine-resolvable acceptance_actor"
+            ],
+        }
+
+    matches = []
+    defects = []
+    seen_ids = set()
+
+    for comment in comments:
+        body = comment.get("body") if isinstance(comment, dict) else None
+        if not isinstance(body, str) or MARKER not in body:
+            continue
+        try:
+            record = parse_acceptance_comment(body)
+        except AcceptanceError as exc:
+            defects.append({
+                "comment_id": comment.get("id") if isinstance(comment, dict) else None,
+                "error": str(exc),
+            })
+            continue
+
+        if (
+            record.get("record_type") != "governance-acceptance"
+            or record.get("stage") != expected_stage
+            or record.get("work_id") != expected_work_id
+        ):
+            continue
+
+        acceptance_id = record["acceptance_id"]
+        if acceptance_id in seen_ids:
+            defects.append({
+                "comment_id": comment.get("id") if isinstance(comment, dict) else None,
+                "error": f"duplicate acceptance_id: {acceptance_id}",
+            })
+            continue
+        seen_ids.add(acceptance_id)
+
+        if record.get("actor") != authorized_actor:
+            defects.append({
+                "comment_id": comment.get("id") if isinstance(comment, dict) else None,
+                "error": "acceptance actor does not match issue authorization",
+            })
+            continue
+
+        if record.get("disposition") == "accepted":
+            matches.append({
+                "record": record,
+                "comment_id": comment.get("id") if isinstance(comment, dict) else None,
+                "comment_url": (
+                    comment.get("html_url") or comment.get("url")
+                    if isinstance(comment, dict)
+                    else None
+                ),
+            })
+
+    if defects or len(matches) != 1:
+        if len(matches) != 1:
+            defects.append(
+                "governed work must have exactly one matching accepted Governance record"
+            )
+        return {
+            "schema_version": "1",
+            "record_type": "governance-work-acceptance-resolution",
+            "status": "invalid",
+            "stage": expected_stage,
+            "work_id": expected_work_id,
+            "acceptance_records": matches,
+            "defects": defects,
+        }
+
+    return {
+        "schema_version": "1",
+        "record_type": "governance-work-acceptance-resolution",
+        "status": "accepted",
+        "stage": expected_stage,
+        "work_id": expected_work_id,
+        "acceptance_records": matches,
+        "defects": [],
+    }
+
+
+def github_issues(repo):
+    issues = _gh_paginated(f"repos/{repo}/issues?state=all&per_page=100")
+    return [
+        item
+        for item in issues
+        if isinstance(item, dict) and "pull_request" not in item
+    ]
+
+
+def github_issue_comments_for(repo, issue_number):
+    if not isinstance(issue_number, int) or issue_number < 1:
+        raise RuntimeError("issue_number must be a positive integer")
+    return _gh_paginated(
+        f"repos/{repo}/issues/{issue_number}/comments?per_page=100"
+    )
+
 def resolve_accepted_state(accepted_sha, comments):
     if accepted_sha is None:
         return {

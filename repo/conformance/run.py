@@ -950,25 +950,30 @@ def check_post_cutover_mutation_authority(root, assertion_ids):
     wrapper = (root / 'repo/bootstrap/scripts/bootstrap').read_text(encoding='utf-8')
     guard_path = root / 'repo/governance/bootstrap_mutation_guard.py'
     guard_source = guard_path.read_text(encoding='utf-8') if guard_path.is_file() else ''
+    accepted_path = root / 'repo/governance/accepted_state.py'
+    accepted_source = accepted_path.read_text(encoding='utf-8') if accepted_path.is_file() else ''
     binding_path = root / 'repo/governance/github_binding.py'
     binding_source = binding_path.read_text(encoding='utf-8') if binding_path.is_file() else ''
-    guard_before_generator = 'python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py' in wrapper and wrapper.index('python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py') < wrapper.index('exec python3 -B repo/bootstrap/scripts/src/generate.py')
-    check_bypass = 'if [ "${1:-}" != "--check" ]' in wrapper and guard_before_generator
-    module_path = root / 'repo/governance/github_binding.py'
-    spec = importlib.util.spec_from_file_location('fs0_fc032_binding', module_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    candidate = {'state': 'candidate'}
-    cutover = {'state': 'cutover'}
-    pending = {'stage': 'build', 'disposition': 'pending', 'accepted_plan_id': 'PLAN-1', 'bounded_authorization': {'mutation_scope': ['repo/bootstrap/data/model.json']}}
-    accepted = dict(pending, disposition='accepted')
-    rejected = dict(pending, disposition='rejected')
-    predicate_ok = module.post_cutover_mutation_allowed(candidate, None) is True and module.post_cutover_mutation_allowed(cutover, pending) is True and (module.post_cutover_mutation_allowed(cutover, accepted) is False) and (module.post_cutover_mutation_allowed(cutover, rejected) is False) and (module.post_cutover_mutation_allowed(cutover, None) is False)
-    guard_semantics = all((marker in guard_source for marker in ('FS0_GOVERNED_BUILD_FILE', 'work.get("stage") != "build"', 'work.get("disposition") != "pending"', 'work.get("accepted_plan_id")', 'bounded_authorization', 'mutation_scope', 'rel.startswith("repo/bootstrap/")')))
-    no_acceptance_creation = all((marker not in guard_source for marker in ('repo-spec-acceptance:v1', 'refs/heads/accepted', 'publish_accepted', 'git push')))
-    checks = {'FS0-ASSERT-FC-032': (guard_before_generator and check_bypass and guard_semantics and no_acceptance_creation and predicate_ok, 'after cutover the bootstrap invocation requires a pending Governance Build derived from an accepted Plan with bounded mutation_scope covering changed bootstrap paths, and the guard has no acceptance-publication capability')}
-    evidence = {'guard': 'repo/governance/bootstrap_mutation_guard.py', 'wrapper': 'repo/bootstrap/scripts/bootstrap', 'guard_before_generator': guard_before_generator, 'governance_binding_predicate': predicate_ok, 'acceptance_creation_tokens_absent': no_acceptance_creation}
-    return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
+    guard_call = 'repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py'
+    gen_call = 'repo/bootstrap/scripts/src/generate.py'
+    guard_before_generator = 'python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null' in wrapper and 'python3 -B repo/bootstrap/scripts/src/preflight.py' in wrapper and ('exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"' in wrapper) and (wrapper.index('python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null') < wrapper.index('python3 -B repo/bootstrap/scripts/src/preflight.py') < wrapper.index('exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"'))
+    check_bypass = 'if [ "${1:-}" != "--check" ]' in wrapper or 'if [[ "${1:-}" != "--check" ]]' in wrapper
+    required_guard = ('FS0_GOVERNED_BUILD_ISSUE', 'governed_work_from_issue_body', 'github_issues', 'github_issue_comments_for', 'resolve_governance_work_acceptance', 'accepted_plan_id must resolve to exactly one Governance Plan issue', 'Governance Build scope exceeds accepted Plan build_scope', 'mutation_scope does not authorize bootstrap paths')
+    forbidden_guard = ('FS0_GOVERNED_BUILD_FILE', 'repo-spec-acceptance:v1', 'refs/heads/accepted', 'publish_accepted', 'git push')
+    guard_semantics = all((marker in guard_source for marker in required_guard)) and all((marker not in guard_source for marker in forbidden_guard))
+    accepted_helpers = 'def governed_work_from_issue_body(body):' in accepted_source and 'def resolve_governance_work_acceptance(' in accepted_source and ('def github_issues(repo):' in accepted_source) and ('def github_issue_comments_for(repo, issue_number):' in accepted_source)
+    predicate_ok = 'def post_cutover_mutation_allowed' in binding_source and 'governed_build.get("stage") == "build"' in binding_source and ('governed_build.get("disposition") == "pending"' in binding_source) and ('governed_build.get("accepted_plan_id")' in binding_source) and ('mutation_scope' in binding_source)
+    spec = importlib.util.spec_from_file_location('fs0_fc032_accepted_state', accepted_path)
+    accepted = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(accepted)
+    plan_body = '```json\n{\n  "schema_version": "1",\n  "record_type": "governed-work",\n  "stage": "plan",\n  "work_id": "PLAN-1",\n  "bounded_authorization": {\n    "acceptance_actor": "actor-1",\n    "mutation_scope": []\n  }\n}\n```'
+    acceptance_body = 'repo-spec-acceptance:v1\n```json\n{\n  "schema_version": "1",\n  "record_type": "governance-acceptance",\n  "acceptance_id": "ACC-PLAN-1",\n  "stage": "plan",\n  "work_id": "PLAN-1",\n  "candidate_id": "1111111111111111111111111111111111111111",\n  "disposition": "accepted",\n  "actor": "actor-1",\n  "evidence": [],\n  "decision_timestamp": "2026-01-01T00:00:00Z"\n}\n```'
+    synthetic = accepted.resolve_governance_work_acceptance(plan_body, [{'id': 1, 'body': acceptance_body}], 'plan', 'PLAN-1')
+    synthetic_bad_actor = accepted.resolve_governance_work_acceptance(plan_body, [{'id': 2, 'body': acceptance_body.replace('"actor": "actor-1"', '"actor": "actor-2"')}], 'plan', 'PLAN-1')
+    resolution_ok = synthetic.get('status') == 'accepted' and synthetic_bad_actor.get('status') == 'invalid'
+    ok = guard_before_generator and check_bypass and guard_semantics and accepted_helpers and predicate_ok and resolution_ok
+    evidence = {'guard': 'repo/governance/bootstrap_mutation_guard.py', 'accepted_state': 'repo/governance/accepted_state.py', 'wrapper': 'repo/bootstrap/scripts/bootstrap', 'guard_before_generator': guard_before_generator, 'accepted_plan_resolution_test': synthetic.get('status'), 'wrong_actor_resolution_test': synthetic_bad_actor.get('status'), 'local_build_file_authority_absent': 'FS0_GOVERNED_BUILD_FILE' not in guard_source, 'governance_binding_predicate': predicate_ok}
+    return [result(aid, 'pass' if ok else 'fail', 'after cutover bootstrap mutation resolves a pending Governance Build from GitHub, resolves and verifies its explicitly accepted predecessor Plan and actor authorization, enforces Plan/Build/mutation scope bounds, and has no independent acceptance-publication capability', evidence) for aid in assertion_ids]
 
 def check_post_cutover_mutation_binding(root, assertion_ids):
     binding_path = root / 'repo/governance/github_binding.py'

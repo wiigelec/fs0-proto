@@ -5,7 +5,6 @@ import importlib.util
 import json
 import os
 import subprocess
-import sys
 from pathlib import Path
 
 
@@ -22,11 +21,10 @@ def load_json(path: Path):
         fail(f"invalid JSON {path}: {exc}")
 
 
-def load_work_module(root: Path):
-    path = root / "repo/governance/work.py"
+def load_module(path: Path, name: str):
     if not path.is_file():
-        fail("Governance work realization is missing")
-    spec = importlib.util.spec_from_file_location("fs0_governance_work", path)
+        fail(f"required Governance realization is missing: {path}")
+    spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -49,6 +47,44 @@ def dirty_bootstrap_paths(root: Path):
         if rel.startswith("repo/bootstrap/"):
             paths.append(rel)
     return sorted(set(paths))
+
+
+def gh_json(root: Path, endpoint: str):
+    proc = subprocess.run(
+        ["gh", "api", endpoint],
+        cwd=root,
+        text=True,
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        fail(
+            "GitHub Governance resolution failed for "
+            + endpoint
+            + ": "
+            + (proc.stderr.strip() or proc.stdout.strip())
+        )
+    try:
+        value = json.loads(proc.stdout)
+    except json.JSONDecodeError as exc:
+        fail(f"GitHub API returned invalid JSON for {endpoint}: {exc}")
+    return value
+
+
+def resolve_plan_issue(accepted_state, repo: str, accepted_plan_id: str):
+    matches = []
+    for issue in accepted_state.github_issues(repo):
+        body = issue.get("body")
+        try:
+            work = accepted_state.governed_work_from_issue_body(body)
+        except Exception:
+            continue
+        if work.get("work_id") == accepted_plan_id:
+            matches.append((issue, work))
+    if len(matches) != 1:
+        fail(
+            "accepted_plan_id must resolve to exactly one Governance Plan issue"
+        )
+    return matches[0]
 
 
 def authorize(root: Path):
@@ -83,31 +119,92 @@ def authorize(root: Path):
             "changed_bootstrap_paths": [],
         }
 
-    work_path_raw = os.environ.get("FS0_GOVERNED_BUILD_FILE")
-    if not work_path_raw:
-        fail(
-            "cutover bootstrap mutation requires FS0_GOVERNED_BUILD_FILE "
-            "naming an authorized Governance Build record"
-        )
-    work_path = Path(work_path_raw)
-    if not work_path.is_absolute():
-        work_path = root / work_path
-    record = load_json(work_path)
-
-    module = load_work_module(root)
+    issue_raw = os.environ.get("FS0_GOVERNED_BUILD_ISSUE")
     try:
-        work = module.validate_work(record)
+        build_issue_number = int(issue_raw) if issue_raw is not None else 0
+    except ValueError:
+        build_issue_number = 0
+    if build_issue_number < 1:
+        fail(
+            "cutover bootstrap mutation requires FS0_GOVERNED_BUILD_ISSUE "
+            "naming the pending Governance Build issue"
+        )
+
+    work_module = load_module(
+        root / "repo/governance/work.py",
+        "fs0_governance_work",
+    )
+    accepted_state = load_module(
+        root / "repo/governance/accepted_state.py",
+        "fs0_accepted_state",
+    )
+
+    repo = accepted_state.origin_repository(root)
+    build_issue = gh_json(
+        root,
+        f"repos/{repo}/issues/{build_issue_number}",
+    )
+    if not isinstance(build_issue, dict) or "pull_request" in build_issue:
+        fail("FS0_GOVERNED_BUILD_ISSUE must identify a GitHub issue")
+
+    try:
+        build_record = accepted_state.governed_work_from_issue_body(
+            build_issue.get("body")
+        )
+        build = work_module.validate_work(dict(build_record))
     except Exception as exc:
-        fail(f"Governance Build record is invalid: {exc}")
+        fail(f"Governance Build issue is invalid: {exc}")
 
-    if work.get("stage") != "build":
+    if build.get("stage") != "build":
         fail("post-cutover mutation requires Governance Build work")
-    if work.get("disposition") != "pending":
+    if build.get("disposition") != "pending":
         fail("post-cutover mutation is authorized only while Build is pending")
-    if not work.get("accepted_plan_id"):
-        fail("Governance Build does not resolve an accepted Plan")
 
-    scope = work.get("bounded_authorization", {}).get("mutation_scope", [])
+    accepted_plan_id = build.get("accepted_plan_id")
+    if not isinstance(accepted_plan_id, str) or not accepted_plan_id:
+        fail("Governance Build does not identify an accepted Plan")
+    if build.get("predecessor_id") != accepted_plan_id:
+        fail("Governance Build predecessor does not match accepted_plan_id")
+
+    plan_issue, plan_record = resolve_plan_issue(
+        accepted_state,
+        repo,
+        accepted_plan_id,
+    )
+    try:
+        plan = work_module.validate_work(dict(plan_record))
+    except Exception as exc:
+        fail(f"resolved Governance Plan issue is invalid: {exc}")
+
+    if plan.get("stage") != "plan":
+        fail("accepted_plan_id does not resolve to Governance Plan work")
+    if plan.get("disposition") != "accepted":
+        fail("resolved Governance Plan is not accepted")
+
+    plan_scope = plan.get("realization_intent", {}).get("build_scope", [])
+    if not set(build.get("scope", [])) <= set(plan_scope):
+        fail("Governance Build scope exceeds accepted Plan build_scope")
+
+    comments = accepted_state.github_issue_comments_for(
+        repo,
+        plan_issue.get("number"),
+    )
+    plan_acceptance = accepted_state.resolve_governance_work_acceptance(
+        plan_issue.get("body"),
+        comments,
+        "plan",
+        accepted_plan_id,
+    )
+    if plan_acceptance.get("status") != "accepted":
+        fail(
+            "resolved Governance Plan lacks exactly one explicit authorized "
+            "accepted Governance record"
+        )
+
+    scope = build.get("bounded_authorization", {}).get(
+        "mutation_scope",
+        [],
+    )
     missing = [path for path in changed if path not in scope]
     if missing:
         fail(
@@ -120,8 +217,13 @@ def authorize(root: Path):
         "record_type": "bootstrap-mutation-authorization",
         "state": "cutover",
         "authorized": True,
-        "governance_work_id": work.get("work_id"),
-        "accepted_plan_id": work.get("accepted_plan_id"),
+        "governance_work_id": build.get("work_id"),
+        "governance_issue_number": build_issue_number,
+        "accepted_plan_id": accepted_plan_id,
+        "accepted_plan_issue_number": plan_issue.get("number"),
+        "plan_acceptance_id": (
+            plan_acceptance["acceptance_records"][0]["record"]["acceptance_id"]
+        ),
         "changed_bootstrap_paths": changed,
     }
 
