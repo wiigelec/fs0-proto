@@ -147,6 +147,25 @@
         "FS0-ASSERT-GOV-024",
         "FS0-ASSERT-GOV-025"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-GOVERNED-WORK-KERNEL",
+      "callable": "governed_work_kernel",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-001",
+        "FS0-ASSERT-GOV-002",
+        "FS0-ASSERT-GOV-003",
+        "FS0-ASSERT-GOV-004",
+        "FS0-ASSERT-GOV-005",
+        "FS0-ASSERT-GOV-006",
+        "FS0-ASSERT-GOV-010",
+        "FS0-ASSERT-GOV-028",
+        "FS0-ASSERT-GOV-031",
+        "FS0-ASSERT-GOV-033",
+        "FS0-ASSERT-GOV-036",
+        "FS0-ASSERT-GOV-049",
+        "FS0-ASSERT-GOV-050"
+      ]
     }
   ],
   "evidence": [
@@ -208,6 +227,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-SUCCESSOR-PROPOSAL-REGISTRY",
       "implementation_id": "FS0-IMPL-SUCCESSOR-PROPOSAL-REGISTRY",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-GOVERNED-WORK-KERNEL",
+      "implementation_id": "FS0-IMPL-GOVERNED-WORK-KERNEL",
       "evidence_class": "execution-result"
     }
   ],

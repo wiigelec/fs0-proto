@@ -254,6 +254,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/realization/governance/work.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/requirements",
       "object_type": "directory",
       "presence": "required",
@@ -528,6 +533,11 @@
     },
     {
       "path": "repo/governance/publish_accepted.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/governance/work.py",
       "object_type": "file",
       "presence": "required"
     },

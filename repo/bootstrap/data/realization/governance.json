@@ -21,6 +21,11 @@
       "source": "governance/publish-accepted",
       "target": "repo/scripts/publish-accepted",
       "mode": "0755"
+    },
+    {
+      "source": "governance/work.py",
+      "target": "repo/governance/work.py",
+      "mode": "0644"
     }
   ]
 }

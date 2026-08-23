@@ -61,6 +61,11 @@
       "evidence_id": "FS0-EVIDENCE-SUCCESSOR-PROPOSAL-REGISTRY",
       "implementation_id": "FS0-IMPL-SUCCESSOR-PROPOSAL-REGISTRY",
       "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-GOVERNED-WORK-KERNEL",
+      "implementation_id": "FS0-IMPL-GOVERNED-WORK-KERNEL",
+      "evidence_class": "execution-result"
     }
   ]
 }

@@ -183,6 +183,28 @@
         "FS0-ASSERT-GOV-024",
         "FS0-ASSERT-GOV-025"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-GOVERNED-WORK-KERNEL",
+      "role": "support",
+      "callable": "governed_work_kernel",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-001",
+        "FS0-ASSERT-GOV-002",
+        "FS0-ASSERT-GOV-003",
+        "FS0-ASSERT-GOV-004",
+        "FS0-ASSERT-GOV-005",
+        "FS0-ASSERT-GOV-006",
+        "FS0-ASSERT-GOV-010",
+        "FS0-ASSERT-GOV-028",
+        "FS0-ASSERT-GOV-031",
+        "FS0-ASSERT-GOV-033",
+        "FS0-ASSERT-GOV-036",
+        "FS0-ASSERT-GOV-049",
+        "FS0-ASSERT-GOV-050"
+      ]
     }
   ]
 }

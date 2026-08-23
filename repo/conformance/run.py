@@ -1245,6 +1245,127 @@ def check_successor_proposal_registry(root, assertion_ids):
     }
     return [result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1]) for aid in assertion_ids]
 
+def check_governed_work_kernel(root, assertion_ids):
+    path = root / "repo/governance/work.py"
+    if not path.is_file():
+        return [result(a, "fail", "Governance work runtime is missing") for a in assertion_ids]
+    spec = importlib.util.spec_from_file_location("fs0_governance_work", path)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    obligation = "FS0-OBL-TEST"
+    d = m.create_design(
+        "D1","REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",["repo/authority/requirements.json"],
+        {"candidate":"design"},["normalized"],{"proposal":"framework-contract"},
+        {"acceptance_actor":"tester","mutation_scope":["repo/authority/requirements.json"]},
+        {"created":["FS1-X"],"amended":[],"withdrawn":[]},
+    )
+    case_d = {"case_id":"CD","review_obligation_id":obligation}
+    finding_d = {"case_id":"CD","status":"satisfied","sequence":1}
+    ad = m.decide(d,"accepted",[obligation],[case_d],[finding_d])
+
+    intent = {
+        "affected_artifacts":["repo/governance/work.py"],
+        "conformance_work":["FS0-ASSERT-GOV-001"],
+        "assurance_work":["Build-fidelity"],
+        "dependencies":[],
+        "sequencing":["runtime","conformance"],
+        "build_scope":["repo/governance/work.py"],
+    }
+
+    plan_without_own_auth_rejected = False
+    try:
+        m.create_plan(
+            "P-NOAUTH",ad,["repo/governance/work.py"],{"candidate":"plan"},["specified"],
+            {"design":"D1"},{},intent,
+        )
+    except m.GovernanceWorkError:
+        plan_without_own_auth_rejected = True
+
+    p = m.create_plan(
+        "P1",ad,["repo/governance/work.py"],{"candidate":"plan"},["specified"],
+        {"design":"D1"},{"acceptance_actor":"tester","mutation_scope":["repo/governance/work.py"]},intent,
+    )
+    case_p = {"case_id":"CP","review_obligation_id":obligation}
+    finding_p = {"case_id":"CP","status":"satisfied","sequence":1}
+    ap = m.decide(p,"accepted",[obligation],[case_p],[finding_p])
+
+    build_without_own_auth_rejected = False
+    try:
+        m.create_build(
+            "B-NOAUTH",ap,["repo/governance/work.py"],{"candidate_id":"c"*40},
+            ["implemented"],{"plan":"P1"},{},["evidence:test"],
+        )
+    except m.GovernanceWorkError:
+        build_without_own_auth_rejected = True
+
+    b = m.create_build(
+        "B1",ap,["repo/governance/work.py"],{"candidate_id":"a"*40},
+        ["implemented","verified"],{"plan":"P1"},
+        {"acceptance_actor":"tester","mutation_scope":["repo/governance/work.py"]},
+        ["evidence:test"],
+    )
+    overbroad = False
+    try:
+        m.create_build(
+            "B2",ap,["repo/governance/work.py","repo/authority/requirements.json"],
+            {"candidate_id":"b"*40},["complete"],{"plan":"P1"},
+            {"acceptance_actor":"tester","mutation_scope":["repo/governance/work.py"]},
+            ["evidence:test"],
+        )
+    except m.GovernanceWorkError:
+        overbroad = True
+
+    b = m.record_conformance(b,"pass")
+    case_b = {"case_id":"CB","review_obligation_id":obligation}
+    adverse = {"case_id":"CB","status":"defect","sequence":1}
+    satisfied = {"case_id":"CB","status":"satisfied","sequence":2}
+    missing = m.acceptance_eligibility(b,[obligation],[],[])
+    blocked = m.acceptance_eligibility(b,[obligation],[case_b],[adverse])
+    resolved = m.acceptance_eligibility(b,[obligation],[case_b],[adverse,satisfied])
+    ab = m.decide(b,"accepted",[obligation],[case_b],[adverse,satisfied])
+
+    rd = m.decide(
+        m.create_design(
+            "D2","REPO-SPEC-PROPOSAL-GOVERNANCE",["repo/authority/governance.json"],
+            {"candidate":"rejected"},["decision"],{"proposal":"governance"},
+            {"acceptance_actor":"tester","mutation_scope":[]},
+            {"created":[],"amended":[],"withdrawn":[]},
+        ),
+        "rejected",[],[],[],
+    )
+
+    checks = {
+        "FS0-ASSERT-GOV-001": (ad["stage"]=="design" and ap["stage"]=="plan" and ab["stage"]=="build",
+                               "Governance runtime implements proposal->Design->Plan->Build progression"),
+        "FS0-ASSERT-GOV-002": (m.STAGE_STEPS=={"design":["audit","normalize","accept"],"plan":["analyze","specify","accept"],"build":["implement","verify","accept"]},
+                               "required three-step stage structures are explicit"),
+        "FS0-ASSERT-GOV-003": (all({"work_id","predecessor_id","scope","material_exclusions","candidate_result","completion_conditions","disposition","provenance","bounded_authorization"} <= set(x) for x in (d,p,b)),
+                               "common governed-work properties are validated"),
+        "FS0-ASSERT-GOV-004": (d["initiating_proposal_id"]==d["predecessor_id"],
+                               "Design consumes an explicit proposal identity"),
+        "FS0-ASSERT-GOV-005": (p["accepted_design_id"]==ad["work_id"] and set(intent)>={"affected_artifacts","conformance_work","assurance_work","dependencies","sequencing","build_scope"},
+                               "Plan consumes accepted Design and records bounded realization intent"),
+        "FS0-ASSERT-GOV-006": (b["accepted_plan_id"]==ap["work_id"] and overbroad,
+                               "Build consumes accepted Plan and rejects over-broad scope"),
+        "FS0-ASSERT-GOV-010": (set(b["bounded_authorization"]["mutation_scope"]) <= set(b["scope"]),
+                               "mutation authorization is bounded by explicit scope"),
+        "FS0-ASSERT-GOV-028": (len({d["work_id"],p["work_id"],b["work_id"]})==3,
+                               "Design Plan and Build are distinct governed work"),
+        "FS0-ASSERT-GOV-031": (ad["disposition"]=="accepted" and rd["disposition"]=="rejected" and isinstance(d["normative_delta"],dict),
+                               "Design records normative delta and explicit disposition"),
+        "FS0-ASSERT-GOV-033": (b["verification"]["conformance_status"]=="pass" and not blocked["eligible"] and resolved["eligible"] and ab["disposition"]=="accepted",
+                               "Build acceptance requires evidence Conformance and resolved Assurance"),
+        "FS0-ASSERT-GOV-036": (plan_without_own_auth_rejected and build_without_own_auth_rejected,
+                               "accepted predecessor work does not independently authorize successor Plan or Build work"),
+        "FS0-ASSERT-GOV-049": (not blocked["eligible"] and resolved["eligible"],
+                               "adverse Assurance blocks acceptance until satisfied"),
+        "FS0-ASSERT-GOV-050": (not missing["eligible"] and missing["reason"]=="missing-or-ambiguous-required-case",
+                               "triggered obligations require instantiated cases before acceptance"),
+    }
+    return [result(a,"pass" if checks[a][0] else "fail",checks[a][1]) for a in assertion_ids]
+
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1559,6 +1680,7 @@ CALLABLES = {
     "accepted_state_publication": check_accepted_state_publication,
     "assurance_runtime": check_assurance_runtime,
     "successor_proposal_registry": check_successor_proposal_registry,
+    "governed_work_kernel": check_governed_work_kernel,
 }
 
 
