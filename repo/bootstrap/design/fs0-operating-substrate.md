@@ -56,31 +56,23 @@ All subsequent persistent framework change shall occur through FS0 Governance.
 
 ---
 
-## User-Supplied Git and GitHub Prerequisites
+## Local Bootstrap and GitHub Publication Boundary
 
-The bootstrap implementation shall not initialize the target Git repository, create the GitHub repository, or establish user credentials.
+The retained bootstrap payload is copied into an otherwise empty target directory.
 
-Before bootstrap begins, the user is responsible for providing:
+Bootstrap shall initialize the target Git repository when it is absent, verify required local Git and execution capabilities, construct the complete initial FS0 candidate, and create the first local commit containing that complete candidate.
 
-```text
-target repository path
-initialized Git repository
-configured GitHub remote
-existing GitHub repository
-working Git authentication
-working GitHub API authentication
-required network connectivity
-```
+Bootstrap shall not create the GitHub repository, configure or publish a remote, or establish user credentials.
 
-Bootstrap shall verify these prerequisites before mutation.
+After local bootstrap succeeds, the user creates the GitHub repository and may use `gh repo create` to add the remote and push the existing local repository.
 
-A missing prerequisite shall stop bootstrap with a clear error.
+That first remote push publishes the already complete locally bootstrapped FS0 candidate; no partial bootstrap commit is required on the remote.
 
-Bootstrap shall not silently create repositories, manufacture credentials, or substitute an ungoverned manual path.
+GitHub authentication, network connectivity, and remote mutation capability are operating prerequisites for publication and subsequent FS0 operation, not prerequisites to construction of the initial local candidate.
 
-Git and GitHub presence are external operating prerequisites.
+A missing local prerequisite shall stop bootstrap with a clear error.
 
-Their existence does not create FS0 authority.
+Technical Git or GitHub capability does not create FS0 authority.
 
 # FS0.6 — Operating Substrate
 

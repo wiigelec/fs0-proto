@@ -1,4 +1,6 @@
 from __future__ import annotations
+import re
+import shutil
 import importlib.util
 import json
 import os
@@ -817,33 +819,75 @@ def check_requirement_provenance(root, assertion_ids):
     evidence = {'requirements_total': len(requirements), 'accepted_requirements': len(accepted), 'conformance_correspondence_records': len(c_records), 'assertions': len(assertions), 'assurance_correspondence_records': len(a_records), 'obligations': len(obligations)}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
 
+def _bootstrap_clean_room_regression(root):
+    with tempfile.TemporaryDirectory() as td:
+        target = Path(td)
+        shutil.copytree(root / 'repo/bootstrap', target / 'repo/bootstrap')
+        env = os.environ.copy()
+        env['GIT_AUTHOR_NAME'] = 'FS0 Bootstrap Test'
+        env['GIT_AUTHOR_EMAIL'] = 'fs0-bootstrap@example.invalid'
+        env['GIT_COMMITTER_NAME'] = 'FS0 Bootstrap Test'
+        env['GIT_COMMITTER_EMAIL'] = 'fs0-bootstrap@example.invalid'
+        proc = subprocess.run(['./repo/bootstrap/scripts/bootstrap'], cwd=target, text=True, capture_output=True, env=env)
+        if proc.returncode != 0:
+            return {'ok': False, 'returncode': proc.returncode, 'output': (proc.stdout + proc.stderr).strip()}
+
+        def git(*args):
+            return subprocess.run(['git', *args], cwd=target, text=True, capture_output=True, check=True).stdout.strip()
+        commit_count = int(git('rev-list', '--count', 'HEAD'))
+        status_clean = git('status', '--porcelain') == ''
+        remotes = git('remote').splitlines()
+        subject = git('log', '-1', '--pretty=%s')
+        tracked = set(git('ls-tree', '-r', '--name-only', 'HEAD').splitlines())
+        required = {'repo/state/bootstrap.json', 'repo/scripts/validate', 'repo/conformance/run.py', '.github/workflows/fs0-conformance.yml', 'repo/bootstrap/scripts/bootstrap'}
+        state = load(target / 'repo/state/bootstrap.json')
+        check_proc = subprocess.run(['./repo/bootstrap/scripts/bootstrap', '--check'], cwd=target, text=True, capture_output=True, env=env)
+        return {'ok': (target / '.git').is_dir() and commit_count == 1 and status_clean and (remotes == []) and (subject == 'Bootstrap FS0') and (required <= tracked) and (state.get('state') == 'candidate') and (check_proc.returncode == 0), 'returncode': proc.returncode, 'git_initialized': (target / '.git').is_dir(), 'commit_count': commit_count, 'status_clean': status_clean, 'remotes': remotes, 'commit_subject': subject, 'required_installed_paths_committed': sorted(required <= tracked and required or []), 'bootstrap_state': state.get('state'), 'generation_check_returncode': check_proc.returncode, 'output': (proc.stdout + proc.stderr).strip()}
+
 def check_operating_substrate_preflight(root, assertion_ids):
-    wrapper = root / 'repo/bootstrap/scripts/bootstrap'
-    preflight = root / 'repo/bootstrap/scripts/src/preflight.py'
-    wrapper_text = wrapper.read_text(encoding='utf-8') if wrapper.is_file() else ''
-    source = preflight.read_text(encoding='utf-8') if preflight.is_file() else ''
-    preflight_before_generator = 'python3 -B repo/bootstrap/scripts/src/preflight.py' in wrapper_text and wrapper_text.index('python3 -B repo/bootstrap/scripts/src/preflight.py') < wrapper_text.index('exec python3 -B repo/bootstrap/scripts/src/generate.py')
-    check_bypass_is_nonmutating = 'if [ "${1:-}" != "--check" ]' in wrapper_text and preflight_before_generator
-    required_probe_tokens = {'git_remote': 'git", "remote", "get-url", "origin', 'git_remote_read': 'git", "ls-remote", "origin", "HEAD', 'github_auth': 'gh", "auth", "status"', 'github_actor': 'gh_json(root, "user")', 'dns': 'socket.getaddrinfo("api.github.com", 443', 'tls': '"https://api.github.com/meta"', 'issues': 'f"repos/{repository}/issues?per_page=1"', 'pulls': 'f"repos/{repository}/pulls?per_page=1"', 'workflows': 'f"repos/{repository}/actions/runs?per_page=1"', 'status': 'f"repos/{repository}/commits/HEAD/status"', 'refs': 'f"repos/{repository}/git/ref/heads/', 'push_dry_run': '"push", "--dry-run", "origin"', 'accepted_publication': '"HEAD:refs/heads/accepted"', 'workflow_dispatch': '"workflow_dispatch:"'}
-    probes_present = {name: token in source for name, token in required_probe_tokens.items()}
-    no_repo_creation = all((token not in wrapper_text + source for token in ('git init', 'gh repo create', 'git credential approve')))
-    signatures = (('gh' + 'p_').encode(), ('github' + '_pat_').encode(), ('-----BEGIN OPENSSH ' + 'PRIVATE KEY-----').encode(), ('-----BEGIN RSA ' + 'PRIVATE KEY-----').encode())
-    listed = subprocess.run(['git', 'ls-files', '-z'], cwd=root, capture_output=True)
-    tracked_paths = [value.decode('utf-8') for value in listed.stdout.split(b'\x00') if value]
-    secret_hits = []
-    for rel in tracked_paths:
-        path = root / rel
+    wrapper_path = root / 'repo/bootstrap/scripts/bootstrap'
+    preflight_path = root / 'repo/bootstrap/scripts/src/preflight.py'
+    wrapper = wrapper_path.read_text(encoding='utf-8')
+    preflight = preflight_path.read_text(encoding='utf-8')
+    clean_room = _bootstrap_clean_room_regression(root)
+    bootstrap_owns_local_creation = 'git init' in wrapper and 'git add -A' in wrapper and ('git commit -m "Bootstrap FS0"' in wrapper) and ('gh repo create' not in wrapper) and ('git push' not in wrapper)
+    preflight_before_git_init = 'preflight.py --initial-commit' in wrapper and 'git init' in wrapper and (wrapper.index('preflight.py --initial-commit') < wrapper.index('git init'))
+    initial_preflight_call = 'python3 -B repo/bootstrap/scripts/src/preflight.py --initial-commit'
+    maintenance_preflight_call = 'python3 -B repo/bootstrap/scripts/src/preflight.py'
+    generator_call = 'python3 -B repo/bootstrap/scripts/src/generate.py "$@"'
+    guard_call = 'python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null'
+    local_gate_before_generation = initial_preflight_call in wrapper and maintenance_preflight_call in wrapper and (generator_call in wrapper) and (guard_call in wrapper) and (wrapper.index(initial_preflight_call) < wrapper.index('git init')) and (wrapper.index(maintenance_preflight_call) < wrapper.index(guard_call)) and (wrapper.index(guard_call) < wrapper.rindex(generator_call))
+    local_preflight_only = '("git", "python3")' in preflight and '"remote_prerequisites_required": False' in preflight and ('git remote get-url origin' not in preflight) and ('gh auth status' not in preflight) and ('api.github.com' not in preflight) and ('git push' not in preflight)
+    with tempfile.TemporaryDirectory() as td:
+        target = Path(td)
+        shutil.copytree(root / 'repo/bootstrap', target / 'repo/bootstrap')
+        env = os.environ.copy()
+        env['HOME'] = str(target / 'empty-home')
+        env['GIT_CONFIG_NOSYSTEM'] = '1'
+        (target / 'empty-home').mkdir()
+        proc = subprocess.run(['./repo/bootstrap/scripts/bootstrap'], cwd=target, text=True, capture_output=True, env=env)
+        missing_prerequisite = {'returncode': proc.returncode, 'clear_error': proc.returncode != 0 and 'FS0 bootstrap prerequisite failed:' in proc.stdout + proc.stderr, 'git_not_initialized': not (target / '.git').exists(), 'output': (proc.stdout + proc.stderr).strip()}
+        missing_prerequisite['ok'] = missing_prerequisite['clear_error'] and missing_prerequisite['git_not_initialized']
+    tracked_proc = subprocess.run(['git', 'ls-files'], cwd=root, text=True, capture_output=True)
+    tracked_files = [line for line in tracked_proc.stdout.splitlines() if line] if tracked_proc.returncode == 0 else []
+    credential_hits = []
+    credential_patterns = (('private-key', re.compile(b'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----')), ('github-token', re.compile(b'\\bgh[pousr]_[A-Za-z0-9_]{20,}\\b')), ('aws-access-key', re.compile(b'\\bAKIA[0-9A-Z]{16}\\b')))
+    for rel in tracked_files:
         try:
-            data = path.read_bytes()
+            data = (root / rel).read_bytes()
         except OSError:
             continue
-        for signature in signatures:
-            if signature in data:
-                secret_hits.append(rel)
-                break
-    secrets_external = not secret_hits
-    checks = {'FS0-ASSERT-FC-011': (no_repo_creation, 'bootstrap preflight requires user-supplied Git/GitHub state and contains no repository initialization, repository creation, or credential-establishment path'), 'FS0-ASSERT-FC-012': (preflight_before_generator and all(probes_present.values()), 'mutating bootstrap invokes live repository, GitHub remote, Git auth/API auth, DNS/TLS, actor, and technical-capability probes before generation'), 'FS0-ASSERT-FC-013': (all(probes_present.values()), 'the installed operating-substrate preflight covers Git operations, authenticated GitHub API, DNS/TLS, maintained-script execution, remote Conformance evidence access, and accepted-state publication capability'), 'FS0-ASSERT-FC-014': (secrets_external, 'tracked repository-maintained state contains no recognized GitHub token or private-key credential material'), 'FS0-ASSERT-FC-016': (all(probes_present.values()), 'preflight verifies repository read/write publication capability, ref reads/publication, issue/PR access, workflow/status reads, event-driven Conformance workflow triggers, and authenticated actor resolution'), 'FS0-ASSERT-FC-046': (preflight_before_generator and check_bypass_is_nonmutating, 'missing live prerequisites terminate mutating bootstrap before generator execution; deterministic --check performs no mutation and does not require live credentials')}
-    evidence = {'wrapper': 'repo/bootstrap/scripts/bootstrap', 'preflight': 'repo/bootstrap/scripts/src/preflight.py', 'probes_present': probes_present, 'tracked_files_scanned_for_credentials': len(tracked_paths), 'tracked_secret_hits': secret_hits}
+        for kind, pattern in credential_patterns:
+            if pattern.search(data):
+                credential_hits.append({'path': rel, 'kind': kind})
+    credential_externality_ok = tracked_proc.returncode == 0 and (not credential_hits) and ('GITHUB_TOKEN=' not in preflight) and ('GH_TOKEN=' not in preflight) and ('private_key' not in preflight.lower())
+    workflow = root / '.github/workflows/fs0-conformance.yml'
+    governance_paths = [root / 'repo/governance/github_binding.py', root / 'repo/governance/accepted_state.py', root / 'repo/governance/publish_accepted.py', root / 'repo/governance/self_change.py', root / 'repo/scripts/validate']
+    installed_substrate = workflow.is_file() and all((path.is_file() for path in governance_paths))
+    workflow_text = workflow.read_text(encoding='utf-8') if workflow.is_file() else ''
+    event_driven = all((marker in workflow_text for marker in ('push:', 'pull_request:', 'workflow_dispatch:')))
+    checks = {'FS0-ASSERT-FC-011': (bootstrap_owns_local_creation and clean_room.get('ok') is True, 'bootstrap initializes an absent local Git repository, constructs the complete candidate, creates exactly one initial local commit, and does not create or publish a GitHub repository'), 'FS0-ASSERT-FC-012': (preflight_before_git_init and local_gate_before_generation and local_preflight_only and (clean_room.get('ok') is True), 'initial bootstrap verifies local Git, commit identity, and execution capability before local repository initialization and candidate generation, without requiring GitHub remote or network capability'), 'FS0-ASSERT-FC-013': (installed_substrate and event_driven, 'the installed candidate contains maintained Git/GitHub Governance, Conformance execution, workflow, and accepted-state publication surfaces required after publication'), 'FS0-ASSERT-FC-014': (credential_externality_ok, 'authentication secrets, tokens, and private keys remain external to Git-tracked maintained state and bootstrap preflight embeds no credential material'), 'FS0-ASSERT-FC-016': (installed_substrate and event_driven, 'the installed candidate contains GitHub binding, accepted-state, publication, self-change, validation, and event-driven workflow implementations for required GitHub object and execution classes'), 'FS0-ASSERT-FC-046': (preflight_before_git_init and missing_prerequisite.get('ok') is True, 'a missing local bootstrap prerequisite terminates with a clear error before even Git repository initialization; deterministic --check remains non-mutating')}
+    evidence = {'wrapper': 'repo/bootstrap/scripts/bootstrap', 'preflight': 'repo/bootstrap/scripts/src/preflight.py', 'bound_assertion_ids': sorted(checks), 'bootstrap_owns_local_creation': bootstrap_owns_local_creation, 'preflight_before_git_init': preflight_before_git_init, 'local_gate_before_generation': local_gate_before_generation, 'local_preflight_only': local_preflight_only, 'clean_room_bootstrap': clean_room, 'missing_prerequisite_regression': missing_prerequisite, 'credential_externality': {'tracked_file_count': len(tracked_files), 'credential_hits': credential_hits}, 'installed_operating_surfaces': [str(path.relative_to(root)) for path in governance_paths], 'event_driven_workflow': event_driven}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
 
 def check_bootstrap_read_surfaces(root, assertion_ids):
@@ -1054,8 +1098,11 @@ def check_post_cutover_mutation_authority(root, assertion_ids):
     binding_source = binding_path.read_text(encoding='utf-8') if binding_path.is_file() else ''
     guard_call = 'repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py'
     gen_call = 'repo/bootstrap/scripts/src/generate.py'
-    guard_before_generator = 'python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null' in wrapper and 'python3 -B repo/bootstrap/scripts/src/preflight.py' in wrapper and ('exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"' in wrapper) and (wrapper.index('python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null') < wrapper.index('python3 -B repo/bootstrap/scripts/src/preflight.py') < wrapper.index('exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"'))
-    check_bypass = 'if [ "${1:-}" != "--check" ]' in wrapper or 'if [[ "${1:-}" != "--check" ]]' in wrapper
+    guard_call = 'python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null'
+    generator_call = 'python3 -B repo/bootstrap/scripts/src/generate.py "$@"'
+    maintenance_preflight_call = 'python3 -B repo/bootstrap/scripts/src/preflight.py'
+    guard_before_generator = guard_call in wrapper and generator_call in wrapper and (maintenance_preflight_call in wrapper) and (wrapper.index(maintenance_preflight_call) < wrapper.index(guard_call)) and (wrapper.index(guard_call) < wrapper.rindex(generator_call))
+    check_bypass = 'if [ "${1:-}" = "--check" ]' in wrapper and 'exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"' in wrapper and (wrapper.index('if [ "${1:-}" = "--check" ]') < wrapper.index('git init'))
     required_guard = ('FS0_GOVERNED_BUILD_ISSUE', 'governed_work_from_issue_body', 'github_issues', 'github_issue_comments_for', 'resolve_governance_work_acceptance', 'accepted_plan_id must resolve to exactly one Governance Plan issue', 'Governance Build scope exceeds accepted Plan build_scope', 'mutation_scope does not authorize bootstrap paths')
     forbidden_guard = ('FS0_GOVERNED_BUILD_FILE', 'repo-spec-acceptance:v1', 'refs/heads/accepted', 'publish_accepted', 'git push')
     guard_semantics = 'FS0_GOVERNED_BUILD_ISSUE' in guard_source and 'governed_work_from_issue_body' in guard_source and ('resolve_plan_issue' in guard_source) and ('resolve_governance_work_acceptance' in guard_source) and ('plan_acceptance.get("status") != "accepted"' in guard_source) and ('Build scope exceeds accepted Plan build_scope' in guard_source) and ('mutation_scope does not authorize' in guard_source) and ('FS0_GOVERNED_BUILD_FILE' not in guard_source) and ('repo-spec-acceptance:v1' not in guard_source) and ('refs/heads/accepted' not in guard_source) and ('publish_accepted' not in guard_source) and ('git push' not in guard_source)

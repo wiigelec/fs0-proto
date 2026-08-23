@@ -65,13 +65,13 @@
     },
     {
       "id": "FS0-FC-011",
-      "statement": "Bootstrap SHALL NOT initialize the target Git repository, create the GitHub repository, or establish user credentials.",
+      "statement": "Bootstrap SHALL initialize the target Git repository when absent and create the first local commit containing the complete initial FS0 candidate; bootstrap SHALL NOT create the GitHub repository, publish remote state, or establish user credentials.",
       "c": "mechanical",
       "a": "none"
     },
     {
       "id": "FS0-FC-012",
-      "statement": "Before mutation, bootstrap SHALL verify the target repository, GitHub remote, Git authentication, GitHub API authentication, network connectivity, and required technical capabilities.",
+      "statement": "Before local bootstrap mutation, bootstrap SHALL verify required local Git and execution capabilities; GitHub remote, authentication, network, and publication capabilities SHALL NOT be prerequisites to construction of the initial local FS0 candidate.",
       "c": "mechanical",
       "a": "none"
     },
