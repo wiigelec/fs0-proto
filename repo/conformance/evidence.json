@@ -221,6 +221,16 @@
         "FS0-CONF-007",
         "FS0-CONF-009"
       ]
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-FRAMEWORK-RECORD-ORIENTATION",
+      "implementation_id": "FS0-IMPL-FRAMEWORK-RECORD-ORIENTATION",
+      "evidence_class": "repository-state",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     }
   ]
 }

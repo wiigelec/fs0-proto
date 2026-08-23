@@ -535,6 +535,27 @@
         "FS0-FC-059",
         "FS0-FC-063"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-FRAMEWORK-RECORD-ORIENTATION",
+      "role": "support",
+      "callable": "framework_record_orientation",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-035",
+        "FS0-ASSERT-FC-036",
+        "FS0-ASSERT-FC-042",
+        "FS0-ASSERT-FC-061",
+        "FS0-ASSERT-FC-062"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-035",
+        "FS0-FC-036",
+        "FS0-FC-042",
+        "FS0-FC-061",
+        "FS0-FC-062"
+      ]
     }
   ]
 }

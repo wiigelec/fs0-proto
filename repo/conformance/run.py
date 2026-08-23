@@ -2508,6 +2508,140 @@ def check_bootstrap_read_surfaces(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+def check_framework_record_and_orientation_contract(root, assertion_ids):
+    authority_names = ("framework", "governance", "conformance", "assurance")
+    authorities = [
+        load(root / "repo/authority" / f"{name}.json")
+        for name in authority_names
+    ]
+    req_registry = load(root / "repo/authority/requirements.json")
+    requirements = req_registry.get("requirements", [])
+    agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+
+    generation_contract = load(
+        root / "repo/bootstrap/data/realization/generation_contract.json"
+    )
+    proposal_sources = []
+    proposal_dir = root / "repo/bootstrap/data/proposals"
+    for path in sorted(proposal_dir.glob("*.json")):
+        proposal_sources.append(load(path))
+
+    authority_required = {
+        "schema_version",
+        "record_type",
+        "authority_id",
+        "title",
+        "owner",
+        "lifecycle_state",
+        "dependencies",
+        "delegates",
+        "requirements",
+        "provenance",
+    }
+    authority_shape_ok = all(
+        authority_required <= set(record)
+        and record.get("schema_version") == "1"
+        and record.get("record_type") == "authority"
+        and isinstance(record.get("authority_id"), str)
+        and bool(record["authority_id"])
+        and isinstance(record.get("title"), str)
+        and bool(record["title"])
+        and isinstance(record.get("owner"), str)
+        and bool(record["owner"])
+        and isinstance(record.get("lifecycle_state"), str)
+        and bool(record["lifecycle_state"])
+        and isinstance(record.get("dependencies"), list)
+        and isinstance(record.get("delegates"), list)
+        and isinstance(record.get("requirements"), list)
+        and isinstance(record.get("provenance"), dict)
+        for record in authorities
+    )
+
+    requirement_required = {
+        "schema_version",
+        "record_type",
+        "requirement_id",
+        "owner_authority_id",
+        "statement",
+        "lifecycle_state",
+        "conformance_applicability",
+        "assurance_applicability",
+    }
+    requirement_shape_ok = all(
+        requirement_required <= set(record)
+        and record.get("schema_version") == "1"
+        and record.get("record_type") == "requirement"
+        and isinstance(record.get("requirement_id"), str)
+        and bool(record["requirement_id"])
+        and isinstance(record.get("owner_authority_id"), str)
+        and bool(record["owner_authority_id"])
+        and isinstance(record.get("statement"), str)
+        and bool(record["statement"])
+        and isinstance(record.get("lifecycle_state"), str)
+        and bool(record["lifecycle_state"])
+        and record.get("conformance_applicability") in {"mechanical", "none"}
+        and record.get("assurance_applicability") in {"required", "none"}
+        and (
+            "lineage" not in record
+            or isinstance(record.get("lineage"), (dict, list))
+        )
+        for record in requirements
+    )
+
+    maintenance_role = generation_contract.get("canonical_source_role")
+    proposal_roles = {
+        record.get("source_role") for record in proposal_sources
+    }
+    source_roles_distinct = (
+        maintenance_role == "canonical-bootstrap-maintenance-data"
+        and proposal_roles == {"successor-design-proposal"}
+        and maintenance_role not in proposal_roles
+    )
+
+    fc061_markers = (
+        "Technical write capability is not authority",
+        "Before mutation, inspect the exact candidate, applicable authority, authorization, and available evidence",
+        "After cutover, persistent framework mutation must route through Governance",
+    )
+    fc062_marker = (
+        "Do not infer that one repository or GitHub state class has another state class's semantics merely because the states coincide."
+    )
+
+    checks = {
+        "FS0-ASSERT-FC-035": (
+            authority_shape_ok,
+            "each installed FS0 authority record contains the required authority identity, ownership, lifecycle, dependency, delegation, requirement, and provenance fields",
+        ),
+        "FS0-ASSERT-FC-036": (
+            requirement_shape_ok,
+            "each installed requirement record contains identity, owner, statement, lifecycle, optional structured lineage where applicable, and Conformance/Assurance applicability",
+        ),
+        "FS0-ASSERT-FC-042": (
+            source_roles_distinct,
+            "canonical FS0 realization maintenance data and successor Design Proposal source data use distinct machine-resolvable source roles",
+        ),
+        "FS0-ASSERT-FC-061": (
+            all(marker in agents for marker in fc061_markers),
+            "the canonical agent-orientation surface denies authority from technical write capability, requires exact candidate/evidence inspection before mutation, and routes post-cutover persistent framework mutation through Governance",
+        ),
+        "FS0-ASSERT-FC-062": (
+            fc062_marker in agents,
+            "the canonical agent-orientation surface prohibits inferring one repository or GitHub state class's semantics merely because states coincide",
+        ),
+    }
+
+    evidence = {
+        "authority_records_checked": len(authorities),
+        "requirement_records_checked": len(requirements),
+        "maintenance_source_role": maintenance_role,
+        "proposal_source_roles": sorted(role for role in proposal_roles if role),
+        "agent_orientation": "AGENTS.md",
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -2832,6 +2966,7 @@ CALLABLES = {
     "requirement_provenance": check_requirement_provenance,
     "operating_substrate_preflight": check_operating_substrate_preflight,
     "bootstrap_read_surfaces": check_bootstrap_read_surfaces,
+    "framework_record_orientation": check_framework_record_and_orientation_contract,
 }
 
 

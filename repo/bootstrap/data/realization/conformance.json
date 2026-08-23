@@ -279,6 +279,17 @@
         "FS0-ASSERT-FC-059",
         "FS0-ASSERT-FC-063"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-FRAMEWORK-RECORD-ORIENTATION",
+      "callable": "framework_record_orientation",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-035",
+        "FS0-ASSERT-FC-036",
+        "FS0-ASSERT-FC-042",
+        "FS0-ASSERT-FC-061",
+        "FS0-ASSERT-FC-062"
+      ]
     }
   ],
   "evidence": [
@@ -390,6 +401,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-READ-SURFACES",
       "implementation_id": "FS0-IMPL-BOOTSTRAP-READ-SURFACES",
+      "evidence_class": "repository-state"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-FRAMEWORK-RECORD-ORIENTATION",
+      "implementation_id": "FS0-IMPL-FRAMEWORK-RECORD-ORIENTATION",
       "evidence_class": "repository-state"
     }
   ],
