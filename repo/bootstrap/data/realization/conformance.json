@@ -184,6 +184,13 @@
         "FS0-ASSERT-GOV-046",
         "FS0-ASSERT-GOV-047"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-PROPOSAL-LINEAGE",
+      "callable": "proposal_lineage",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-041"
+      ]
     }
   ],
   "evidence": [
@@ -255,6 +262,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-GITHUB-GOVERNANCE-BINDING",
       "implementation_id": "FS0-IMPL-GITHUB-GOVERNANCE-BINDING",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-PROPOSAL-LINEAGE",
+      "implementation_id": "FS0-IMPL-PROPOSAL-LINEAGE",
       "evidence_class": "execution-result"
     }
   ],

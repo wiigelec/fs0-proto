@@ -1456,6 +1456,84 @@ def check_github_governance_binding(root, assertion_ids):
     }
     return [result(a,"pass" if checks[a][0] else "fail",checks[a][1]) for a in assertion_ids]
 
+def check_proposal_lineage(root, assertion_ids):
+    path = root / "repo/governance/proposals.py"
+    if not path.is_file():
+        return [
+            result(aid, "fail", "Governance proposal-lineage runtime is missing")
+            for aid in assertion_ids
+        ]
+
+    spec = importlib.util.spec_from_file_location("fs0_governance_proposals", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    registry = load(root / "repo/proposals/registry.json")
+    seed = registry["proposals"][0]
+
+    correction = {
+        "proposal_id": "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT-CORRECTION-1",
+        "predecessor_id": seed["proposal_id"],
+        "bootstrap_provenance": "governance-successor",
+    }
+    valid = (
+        module.validate_seed_correction(seed, correction)["proposal_id"]
+        == correction["proposal_id"]
+    )
+
+    in_place_rejected = False
+    try:
+        module.validate_seed_correction(
+            seed,
+            {
+                "proposal_id": seed["proposal_id"],
+                "predecessor_id": seed["proposal_id"],
+                "bootstrap_provenance": "governance-successor",
+            },
+        )
+    except module.ProposalLineageError:
+        in_place_rejected = True
+
+    missing_lineage_rejected = False
+    try:
+        module.validate_seed_correction(
+            seed,
+            {
+                "proposal_id": "REPO-SPEC-PROPOSAL-CORRECTION-WITHOUT-LINEAGE",
+                "predecessor_id": None,
+                "bootstrap_provenance": "governance-successor",
+            },
+        )
+    except module.ProposalLineageError:
+        missing_lineage_rejected = True
+
+    fake_seed_rejected = False
+    try:
+        module.validate_seed_correction(
+            seed,
+            {
+                "proposal_id": "REPO-SPEC-PROPOSAL-FAKE-SEED",
+                "predecessor_id": seed["proposal_id"],
+                "bootstrap_provenance": "bootstrap-seed",
+            },
+        )
+    except module.ProposalLineageError:
+        fake_seed_rejected = True
+
+    checks = {
+        "FS0-ASSERT-GOV-041": (
+            valid
+            and in_place_rejected
+            and missing_lineage_rejected
+            and fake_seed_rejected,
+            "bootstrap seed correction requires a distinct successor proposal with explicit predecessor lineage",
+        ),
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1])
+        for aid in assertion_ids
+    ]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1772,6 +1850,7 @@ CALLABLES = {
     "successor_proposal_registry": check_successor_proposal_registry,
     "governed_work_kernel": check_governed_work_kernel,
     "github_governance_binding": check_github_governance_binding,
+    "proposal_lineage": check_proposal_lineage,
 }
 
 

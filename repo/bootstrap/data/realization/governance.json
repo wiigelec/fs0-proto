@@ -31,6 +31,11 @@
       "source": "governance/github_binding.py",
       "target": "repo/governance/github_binding.py",
       "mode": "0644"
+    },
+    {
+      "source": "governance/proposals.py",
+      "target": "repo/governance/proposals.py",
+      "mode": "0644"
     }
   ]
 }

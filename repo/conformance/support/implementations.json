@@ -226,6 +226,16 @@
         "FS0-ASSERT-GOV-046",
         "FS0-ASSERT-GOV-047"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-PROPOSAL-LINEAGE",
+      "role": "support",
+      "callable": "proposal_lineage",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-041"
+      ]
     }
   ]
 }
