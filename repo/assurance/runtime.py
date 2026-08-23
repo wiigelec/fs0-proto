@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -25,7 +26,8 @@ def _nonempty(value):
 def validate_case(record):
     required = {
         "schema_version", "record_type", "case_id", "authorizing_authority_id",
-        "review_obligation_id", "reviewed_subject", "evidence", "finding_identity",
+        "review_obligation_id", "review_type", "reviewed_subject", "evidence",
+        "finding_identity",
     }
     if not isinstance(record, dict) or not required <= set(record):
         raise AssuranceError("Assurance case lacks required fields")
@@ -34,6 +36,8 @@ def validate_case(record):
     for key in ("case_id", "authorizing_authority_id", "review_obligation_id", "finding_identity"):
         if not _nonempty(record.get(key)):
             raise AssuranceError(f"{key} must be non-empty")
+    if record.get("review_type") not in REVIEW_TYPES:
+        raise AssuranceError("invalid Assurance review_type")
     if not isinstance(record["reviewed_subject"], dict) or not record["reviewed_subject"]:
         raise AssuranceError("reviewed_subject must be a non-empty object")
     if not isinstance(record["evidence"], list):
@@ -68,6 +72,77 @@ def triggered_obligation_ids(correspondence_records, subject_requirement_ids):
         if record.get("requirement_id") in subject_ids and record.get("applicability") == "required":
             out.extend(record.get("obligation_ids", []))
     return out
+
+
+
+def instantiate_review_cases(
+    work_id,
+    subject_requirement_ids,
+    correspondence_records,
+    obligation_records,
+    authorizing_authority_id,
+    review_type_by_obligation,
+    evidence,
+):
+    if not _nonempty(work_id) or not _nonempty(authorizing_authority_id):
+        raise AssuranceError("work_id and authorizing_authority_id must be non-empty")
+    if not isinstance(review_type_by_obligation, dict):
+        raise AssuranceError("review_type_by_obligation must be an object")
+    if not isinstance(evidence, list):
+        raise AssuranceError("evidence must be a list")
+
+    obligation_by_id = {
+        item.get("obligation_id"): item
+        for item in obligation_records
+        if isinstance(item, dict) and _nonempty(item.get("obligation_id"))
+    }
+    triggered = triggered_obligation_ids(correspondence_records, subject_requirement_ids)
+    cases = []
+    for obligation_id in triggered:
+        obligation = obligation_by_id.get(obligation_id)
+        if obligation is None:
+            raise AssuranceError(f"triggered obligation does not resolve: {obligation_id}")
+        review_type = review_type_by_obligation.get(obligation_id)
+        if review_type not in REVIEW_TYPES:
+            raise AssuranceError(f"triggered obligation lacks supported review type: {obligation_id}")
+        digest = hashlib.sha256(
+            f"{work_id}\\0{obligation_id}".encode("utf-8")
+        ).hexdigest()[:24]
+        case = {
+            "schema_version": "1",
+            "record_type": "assurance-review-case",
+            "case_id": f"FS0-CASE-{digest}",
+            "authorizing_authority_id": authorizing_authority_id,
+            "review_obligation_id": obligation_id,
+            "review_type": review_type,
+            "reviewed_subject": {
+                "work_id": work_id,
+                "requirement_id": obligation.get("requirement_id"),
+            },
+            "evidence": list(evidence),
+            "material_exclusions": [],
+            "finding_identity": f"FS0-FINDING-{digest}-1",
+        }
+        cases.append(validate_case(case))
+    return cases
+
+
+def write_case(root, record):
+    case = validate_case(dict(record))
+    directory = Path(root) / CASES_DIR
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{case['case_id']}.json"
+    path.write_text(json.dumps(case, indent=2) + "\\n", encoding="utf-8")
+    return path
+
+
+def write_finding(root, record):
+    finding = validate_finding(dict(record))
+    directory = Path(root) / FINDINGS_DIR
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{finding['finding_id']}.json"
+    path.write_text(json.dumps(finding, indent=2) + "\\n", encoding="utf-8")
+    return path
 
 
 def resolution_status(case_id, findings):
