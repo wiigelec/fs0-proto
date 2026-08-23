@@ -150,6 +150,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/bootstrap_recovery_authority.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/github_operating_state.json",
       "object_type": "file",
       "presence": "required"

@@ -21,6 +21,21 @@ def load_json(path: Path):
         fail(f"invalid JSON {path}: {exc}")
 
 
+def load_committed_json(root: Path, rel: str):
+    proc = subprocess.run(
+        ["git", "show", f"HEAD:{rel}"],
+        cwd=root,
+        text=True,
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        fail(f"unable to resolve committed authorization record {rel}")
+    try:
+        return json.loads(proc.stdout)
+    except json.JSONDecodeError as exc:
+        fail(f"committed authorization record is invalid JSON {rel}: {exc}")
+
+
 def load_module(path: Path, name: str):
     if not path.is_file():
         fail(f"required Governance realization is missing: {path}")
@@ -30,7 +45,7 @@ def load_module(path: Path, name: str):
     return module
 
 
-def dirty_bootstrap_paths(root: Path):
+def dirty_guarded_paths(root: Path, protected_record: str):
     proc = subprocess.run(
         ["git", "status", "--porcelain", "--untracked-files=all"],
         cwd=root,
@@ -44,7 +59,7 @@ def dirty_bootstrap_paths(root: Path):
         if len(line) < 4:
             continue
         rel = line[3:]
-        if rel.startswith("repo/bootstrap/"):
+        if rel.startswith("repo/bootstrap/") or rel == protected_record:
             paths.append(rel)
     return sorted(set(paths))
 
@@ -81,21 +96,60 @@ def resolve_plan_issue(accepted_state, repo: str, accepted_plan_id: str):
         if work.get("work_id") == accepted_plan_id:
             matches.append((issue, work))
     if len(matches) != 1:
-        fail(
-            "accepted_plan_id must resolve to exactly one Governance Plan issue"
-        )
+        fail("accepted_plan_id must resolve to exactly one Governance Plan issue")
     return matches[0]
 
 
-def authorize(root: Path):
-    state = load_json(root / "repo/state/bootstrap.json")
-    if (
-        state.get("schema_version") != "1"
-        or state.get("record_type") != "bootstrap-state"
-    ):
-        fail("installed bootstrap state has invalid envelope")
+def recovery_authority_required(policy, changed_paths):
+    protected = set(policy.get("protected_paths", []))
+    return bool(protected & set(changed_paths))
 
-    lifecycle = state.get("state")
+
+def recovery_authority_allowed(policy, plan, changed_paths):
+    if not recovery_authority_required(policy, changed_paths):
+        return True
+    purposes = set(policy.get("permitted_authority_purposes", []))
+    return plan.get("authority_purpose") in purposes
+
+
+def validate_policy(policy):
+    if (
+        not isinstance(policy, dict)
+        or policy.get("schema_version") != "1"
+        or policy.get("record_type") != "bootstrap-recovery-authority-policy"
+        or policy.get("authority_stage") != "plan"
+        or policy.get("required_disposition") != "accepted"
+    ):
+        fail("committed bootstrap recovery authority policy is invalid")
+    protected = policy.get("protected_paths")
+    purposes = policy.get("permitted_authority_purposes")
+    if (
+        not isinstance(protected, list)
+        or not protected
+        or not all(isinstance(x, str) and x for x in protected)
+        or not isinstance(purposes, list)
+        or set(purposes) != {"bootstrap-recovery", "bootstrap-reconstruction"}
+    ):
+        fail("committed bootstrap recovery authority policy is incomplete")
+    if policy.get("cutover_record") not in protected:
+        fail("recovery policy does not protect its cutover record")
+    if policy.get("canonical_cutover_source") not in protected:
+        fail("recovery policy does not protect canonical cutover state source")
+    return policy
+
+
+def authorize(root: Path):
+    protected_record = "repo/state/bootstrap.json"
+    committed_state = load_committed_json(root, protected_record)
+    if (
+        committed_state.get("schema_version") != "1"
+        or committed_state.get("record_type") != "bootstrap-state"
+    ):
+        fail("committed bootstrap state has invalid envelope")
+
+    lifecycle = committed_state.get("state")
+    changed = dirty_guarded_paths(root, protected_record)
+
     if lifecycle == "candidate":
         return {
             "schema_version": "1",
@@ -103,12 +157,18 @@ def authorize(root: Path):
             "state": "candidate",
             "authorized": True,
             "governance_work_id": None,
-            "changed_bootstrap_paths": dirty_bootstrap_paths(root),
+            "changed_guarded_paths": changed,
+            "recovery_authority_required": False,
         }
-    if lifecycle != "cutover":
-        fail("installed bootstrap state is neither candidate nor cutover")
 
-    changed = dirty_bootstrap_paths(root)
+    if lifecycle != "cutover":
+        fail("committed bootstrap state is neither candidate nor cutover")
+
+    policy_rel = "repo/bootstrap/data/bootstrap_recovery_authority.json"
+    policy = validate_policy(load_committed_json(root, policy_rel))
+    protected_record = policy["cutover_record"]
+    changed = dirty_guarded_paths(root, protected_record)
+
     if not changed:
         return {
             "schema_version": "1",
@@ -116,7 +176,8 @@ def authorize(root: Path):
             "state": "cutover",
             "authorized": True,
             "governance_work_id": None,
-            "changed_bootstrap_paths": [],
+            "changed_guarded_paths": [],
+            "recovery_authority_required": False,
         }
 
     issue_raw = os.environ.get("FS0_GOVERNED_BUILD_ISSUE")
@@ -130,20 +191,14 @@ def authorize(root: Path):
             "naming the pending Governance Build issue"
         )
 
-    work_module = load_module(
-        root / "repo/governance/work.py",
-        "fs0_governance_work",
-    )
+    work_module = load_module(root / "repo/governance/work.py", "fs0_governance_work")
     accepted_state = load_module(
         root / "repo/governance/accepted_state.py",
         "fs0_accepted_state",
     )
 
     repo = accepted_state.origin_repository(root)
-    build_issue = gh_json(
-        root,
-        f"repos/{repo}/issues/{build_issue_number}",
-    )
+    build_issue = gh_json(root, f"repos/{repo}/issues/{build_issue_number}")
     if not isinstance(build_issue, dict) or "pull_request" in build_issue:
         fail("FS0_GOVERNED_BUILD_ISSUE must identify a GitHub issue")
 
@@ -201,14 +256,17 @@ def authorize(root: Path):
             "accepted Governance record"
         )
 
-    scope = build.get("bounded_authorization", {}).get(
-        "mutation_scope",
-        [],
-    )
+    if not recovery_authority_allowed(policy, plan, changed):
+        fail(
+            "bootstrap cutover record/source mutation requires accepted Plan "
+            "authority_purpose bootstrap-recovery|bootstrap-reconstruction"
+        )
+
+    scope = build.get("bounded_authorization", {}).get("mutation_scope", [])
     missing = [path for path in changed if path not in scope]
     if missing:
         fail(
-            "Governance Build mutation_scope does not authorize bootstrap paths: "
+            "Governance Build mutation_scope does not authorize guarded paths: "
             + ", ".join(missing)
         )
 
@@ -224,8 +282,11 @@ def authorize(root: Path):
         "plan_acceptance_id": (
             plan_acceptance["acceptance_records"][0]["record"]["acceptance_id"]
         ),
-        "changed_bootstrap_paths": changed,
+        "authority_purpose": plan.get("authority_purpose"),
+        "changed_guarded_paths": changed,
+        "recovery_authority_required": recovery_authority_required(policy, changed),
     }
+
 
 
 def main() -> int:
