@@ -1,0 +1,11 @@
+{
+  "schema_version": "1",
+  "record_type": "bootstrap-state",
+  "state": "candidate",
+  "candidate_revision": null,
+  "first_accepted_fs0_revision": null,
+  "bootstrap_provenance_issue": null,
+  "bootstrap_acceptance_record": null,
+  "accepted_ref": "refs/heads/accepted",
+  "cutover_timestamp": null
+}

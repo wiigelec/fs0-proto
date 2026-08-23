@@ -90,6 +90,56 @@ def check_remote_execution(root, assertion_ids):
     evidence = {"workflow": ".github/workflows/fs0-conformance.yml"}
     return [result(aid, "pass" if ok else "fail", "GitHub Actions exposes the canonical FS0 Conformance wrapper for push, pull request, and manual execution", evidence) for aid in assertion_ids]
 
+
+def check_bootstrap_state(root, assertion_ids):
+    path = root / "repo/state/bootstrap.json"
+    if not path.is_file():
+        return [
+            result(aid, "fail", "repo/state/bootstrap.json is missing")
+            for aid in assertion_ids
+        ]
+
+    try:
+        record = load(path)
+    except Exception as exc:
+        return [
+            result(aid, "fail", f"bootstrap state is not valid JSON: {exc}")
+            for aid in assertion_ids
+        ]
+
+    required = {
+        "schema_version",
+        "record_type",
+        "state",
+        "candidate_revision",
+        "first_accepted_fs0_revision",
+        "bootstrap_provenance_issue",
+        "bootstrap_acceptance_record",
+        "accepted_ref",
+        "cutover_timestamp",
+    }
+    ok = (
+        set(record) == required
+        and record.get("schema_version") == "1"
+        and record.get("record_type") == "bootstrap-state"
+        and record.get("state") in {"candidate", "cutover"}
+        and record.get("accepted_ref") == "refs/heads/accepted"
+    )
+    detail = (
+        "repo/state/bootstrap.json contains the required bootstrap-state fields, "
+        "uses candidate|cutover lifecycle state, and identifies refs/heads/accepted"
+    )
+    evidence = {
+        "path": "repo/state/bootstrap.json",
+        "state": record.get("state"),
+        "accepted_ref": record.get("accepted_ref"),
+    }
+    return [
+        result(aid, "pass" if ok else "fail", detail, evidence)
+        for aid in assertion_ids
+    ]
+
+
 def check_governance_state_resolution(root, assertion_ids):
     module_path = root / "repo/governance/accepted_state.py"
     if not module_path.is_file():
@@ -372,6 +422,7 @@ CALLABLES = {
     "generation_correspondence": check_generation_correspondence,
     "canonical_entrypoint": check_canonical_entrypoint,
     "remote_execution": check_remote_execution,
+    "bootstrap_state": check_bootstrap_state,
     "governance_state_resolution": check_governance_state_resolution,
     "accepted_state_publication": check_accepted_state_publication,
 }

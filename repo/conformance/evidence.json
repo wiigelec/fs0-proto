@@ -28,6 +28,11 @@
       "evidence_class": "repository-state"
     },
     {
+      "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-STATE",
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-STATE",
+      "evidence_class": "repository-state"
+    },
+    {
       "evidence_id": "FS0-EVIDENCE-GOVERNANCE-STATE-RESOLUTION",
       "implementation_id": "FS0-IMPL-GOVERNANCE-STATE-RESOLUTION",
       "evidence_class": "execution-result"

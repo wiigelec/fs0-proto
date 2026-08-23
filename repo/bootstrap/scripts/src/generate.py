@@ -279,6 +279,40 @@ def derive_root_surfaces(root: Path):
 
 
 
+
+def derive_bootstrap_state(root: Path):
+    source = root / "repo/bootstrap/data/state/bootstrap.json"
+    record = load_json(source)
+
+    required = {
+        "schema_version",
+        "record_type",
+        "state",
+        "candidate_revision",
+        "first_accepted_fs0_revision",
+        "bootstrap_provenance_issue",
+        "bootstrap_acceptance_record",
+        "accepted_ref",
+        "cutover_timestamp",
+    }
+    if record.get("schema_version") != "1":
+        raise SystemExit("unsupported bootstrap state schema")
+    if record.get("record_type") != "bootstrap-state":
+        raise SystemExit("unexpected bootstrap state record_type")
+    if set(record) != required:
+        missing = sorted(required - set(record))
+        extra = sorted(set(record) - required)
+        raise SystemExit(
+            f"bootstrap state fields mismatch; missing={missing} extra={extra}"
+        )
+    if record.get("state") not in {"candidate", "cutover"}:
+        raise SystemExit("bootstrap state must be candidate|cutover")
+    if record.get("accepted_ref") != "refs/heads/accepted":
+        raise SystemExit("bootstrap accepted_ref must be refs/heads/accepted")
+
+    return {root / "repo/state/bootstrap.json": record}
+
+
 def derive_governance_realization(root: Path):
     data_dir = root / "repo/bootstrap/data/realization"
     config = load_json(data_dir / "governance.json")
@@ -369,6 +403,7 @@ def derive(root: Path):
         "derivation_policy": model["identity"]["obligation"]["derivation_policy"],
         "obligations": obligations,
     }
+    outputs.update(derive_bootstrap_state(root))
     outputs.update(derive_conformance_realization(root, requirements, assertions))
     governance_outputs, _ = derive_governance_realization(root)
     outputs.update(governance_outputs)
