@@ -2172,6 +2172,117 @@ def check_requirement_provenance(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+def check_operating_substrate_preflight(root, assertion_ids):
+    wrapper = root / "repo/bootstrap/scripts/bootstrap"
+    preflight = root / "repo/bootstrap/scripts/src/preflight.py"
+    wrapper_text = wrapper.read_text(encoding="utf-8") if wrapper.is_file() else ""
+    source = preflight.read_text(encoding="utf-8") if preflight.is_file() else ""
+
+    preflight_before_generator = (
+        'python3 -B repo/bootstrap/scripts/src/preflight.py' in wrapper_text
+        and wrapper_text.index('python3 -B repo/bootstrap/scripts/src/preflight.py')
+            < wrapper_text.index('exec python3 -B repo/bootstrap/scripts/src/generate.py')
+    )
+    check_bypass_is_nonmutating = (
+        'if [ "${1:-}" != "--check" ]' in wrapper_text
+        and preflight_before_generator
+    )
+
+    required_probe_tokens = {
+        "git_remote": 'git", "remote", "get-url", "origin',
+        "git_remote_read": 'git", "ls-remote", "origin", "HEAD',
+        "github_auth": 'gh", "auth", "status"',
+        "github_actor": 'gh_json(root, "user")',
+        "dns": 'socket.getaddrinfo("api.github.com", 443',
+        "tls": '"https://api.github.com/meta"',
+        "issues": 'f"repos/{repository}/issues?per_page=1"',
+        "pulls": 'f"repos/{repository}/pulls?per_page=1"',
+        "workflows": 'f"repos/{repository}/actions/runs?per_page=1"',
+        "status": 'f"repos/{repository}/commits/HEAD/status"',
+        "refs": 'f"repos/{repository}/git/ref/heads/',
+        "push_dry_run": '"push", "--dry-run", "origin"',
+        "accepted_publication": '"HEAD:refs/heads/accepted"',
+        "workflow_dispatch": '"workflow_dispatch:"',
+    }
+    probes_present = {
+        name: token in source for name, token in required_probe_tokens.items()
+    }
+
+    no_repo_creation = all(
+        token not in wrapper_text + source
+        for token in ("git init", "gh repo create", "git credential approve")
+    )
+
+    # Scan every tracked repository file for recognizable credential material.
+    # Build signatures at runtime so the scanner does not match its own source.
+    signatures = (
+        ("gh" + "p_").encode(),
+        ("github" + "_pat_").encode(),
+        ("-----BEGIN OPENSSH " + "PRIVATE KEY-----").encode(),
+        ("-----BEGIN RSA " + "PRIVATE KEY-----").encode(),
+    )
+    listed = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=root,
+        capture_output=True,
+    )
+    tracked_paths = [
+        value.decode("utf-8")
+        for value in listed.stdout.split(b"\0")
+        if value
+    ]
+    secret_hits = []
+    for rel in tracked_paths:
+        path = root / rel
+        try:
+            data = path.read_bytes()
+        except OSError:
+            continue
+        for signature in signatures:
+            if signature in data:
+                secret_hits.append(rel)
+                break
+    secrets_external = not secret_hits
+
+    checks = {
+        "FS0-ASSERT-FC-011": (
+            no_repo_creation,
+            "bootstrap preflight requires user-supplied Git/GitHub state and contains no repository initialization, repository creation, or credential-establishment path",
+        ),
+        "FS0-ASSERT-FC-012": (
+            preflight_before_generator and all(probes_present.values()),
+            "mutating bootstrap invokes live repository, GitHub remote, Git auth/API auth, DNS/TLS, actor, and technical-capability probes before generation",
+        ),
+        "FS0-ASSERT-FC-013": (
+            all(probes_present.values()),
+            "the installed operating-substrate preflight covers Git operations, authenticated GitHub API, DNS/TLS, maintained-script execution, remote Conformance evidence access, and accepted-state publication capability",
+        ),
+        "FS0-ASSERT-FC-014": (
+            secrets_external,
+            "tracked repository-maintained state contains no recognized GitHub token or private-key credential material",
+        ),
+        "FS0-ASSERT-FC-016": (
+            all(probes_present.values()),
+            "preflight verifies repository read/write publication capability, ref reads/publication, issue/PR access, workflow/status reads, event-driven Conformance workflow triggers, and authenticated actor resolution",
+        ),
+        "FS0-ASSERT-FC-046": (
+            preflight_before_generator and check_bypass_is_nonmutating,
+            "missing live prerequisites terminate mutating bootstrap before generator execution; deterministic --check performs no mutation and does not require live credentials",
+        ),
+    }
+    evidence = {
+        "wrapper": "repo/bootstrap/scripts/bootstrap",
+        "preflight": "repo/bootstrap/scripts/src/preflight.py",
+        "probes_present": probes_present,
+        "tracked_files_scanned_for_credentials": len(tracked_paths),
+        "tracked_secret_hits": secret_hits,
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -2494,6 +2605,7 @@ CALLABLES = {
     "generation_contract": check_generation_contract,
     "authority_kernel": check_authority_kernel,
     "requirement_provenance": check_requirement_provenance,
+    "operating_substrate_preflight": check_operating_substrate_preflight,
 }
 
 

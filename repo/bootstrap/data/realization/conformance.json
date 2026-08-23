@@ -245,6 +245,18 @@
         "FS0-ASSERT-FC-009",
         "FS0-ASSERT-FC-010"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-OPERATING-SUBSTRATE-PREFLIGHT",
+      "callable": "operating_substrate_preflight",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-011",
+        "FS0-ASSERT-FC-012",
+        "FS0-ASSERT-FC-013",
+        "FS0-ASSERT-FC-014",
+        "FS0-ASSERT-FC-016",
+        "FS0-ASSERT-FC-046"
+      ]
     }
   ],
   "evidence": [
@@ -347,6 +359,11 @@
       "evidence_id": "FS0-EVIDENCE-REQUIREMENT-PROVENANCE",
       "implementation_id": "FS0-IMPL-REQUIREMENT-PROVENANCE",
       "evidence_class": "repository-state"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-OPERATING-SUBSTRATE-PREFLIGHT",
+      "implementation_id": "FS0-IMPL-OPERATING-SUBSTRATE-PREFLIGHT",
+      "evidence_class": "execution-result"
     }
   ],
   "orchestration": {

@@ -469,6 +469,29 @@
         "FS0-FC-009",
         "FS0-FC-010"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-OPERATING-SUBSTRATE-PREFLIGHT",
+      "role": "support",
+      "callable": "operating_substrate_preflight",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-011",
+        "FS0-ASSERT-FC-012",
+        "FS0-ASSERT-FC-013",
+        "FS0-ASSERT-FC-014",
+        "FS0-ASSERT-FC-016",
+        "FS0-ASSERT-FC-046"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-011",
+        "FS0-FC-012",
+        "FS0-FC-013",
+        "FS0-FC-014",
+        "FS0-FC-016",
+        "FS0-FC-046"
+      ]
     }
   ]
 }

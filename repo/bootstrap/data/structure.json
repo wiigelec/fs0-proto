@@ -504,6 +504,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/scripts/src/preflight.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/conformance",
       "object_type": "directory",
       "presence": "required",

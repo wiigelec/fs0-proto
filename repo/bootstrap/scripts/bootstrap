@@ -11,4 +11,8 @@ if [ ! -d .git ]; then
     exit 2
 fi
 
+if [ "${1:-}" != "--check" ]; then
+    python3 -B repo/bootstrap/scripts/src/preflight.py
+fi
+
 exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"
