@@ -299,6 +299,16 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/realization/governance/self-change",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/realization/governance/self_change.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/realization/governance/work.py",
       "object_type": "file",
       "presence": "required"
@@ -441,6 +451,11 @@
     },
     {
       "path": "repo/bootstrap/data/root/index.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/self_change_contract.json",
       "object_type": "file",
       "presence": "required"
     },
@@ -612,6 +627,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/governance/self_change.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/governance/work.py",
       "object_type": "file",
       "presence": "required"
@@ -710,6 +730,11 @@
     },
     {
       "path": "repo/scripts/publish-accepted",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/scripts/self-change",
       "object_type": "file",
       "presence": "required"
     },

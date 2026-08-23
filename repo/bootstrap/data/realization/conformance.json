@@ -364,8 +364,7 @@
       "callable": "self_change_completion",
       "assertion_ids": [
         "FS0-ASSERT-FC-033"
-      ],
-      "pending": true
+      ]
     }
   ],
   "evidence": [

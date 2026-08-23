@@ -1,0 +1,23 @@
+{
+  "schema_version": "1",
+  "record_type": "fs0-self-change-contract",
+  "sequence": [
+    "accepted-authority",
+    "candidate-publication",
+    "conformance",
+    "assurance",
+    "explicit-acceptance",
+    "accepted-state-publication"
+  ],
+  "candidate_ref": "refs/heads/candidate",
+  "accepted_ref": "refs/heads/accepted",
+  "entrypoint": "repo/scripts/self-change",
+  "implementation": "repo/governance/self_change.py",
+  "dependencies": {
+    "work": "repo/governance/work.py",
+    "assurance_runtime": "repo/assurance/runtime.py",
+    "accepted_state": "repo/governance/accepted_state.py",
+    "accepted_publication": "repo/governance/publish_accepted.py",
+    "conformance": "repo/scripts/validate"
+  }
+}

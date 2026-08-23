@@ -41,6 +41,16 @@
       "source": "governance/bootstrap_mutation_guard.py",
       "target": "repo/governance/bootstrap_mutation_guard.py",
       "mode": "0755"
+    },
+    {
+      "source": "governance/self_change.py",
+      "target": "repo/governance/self_change.py",
+      "mode": "0755"
+    },
+    {
+      "source": "governance/self-change",
+      "target": "repo/scripts/self-change",
+      "mode": "0755"
     }
   ]
 }

@@ -173,9 +173,7 @@
     "FS0-ASSERT-GOV-049",
     "FS0-ASSERT-GOV-050"
   ],
-  "pending_assertion_ids": [
-    "FS0-ASSERT-FC-033"
-  ],
+  "pending_assertion_ids": [],
   "role": "orchestration",
   "authority_requirement_ids": [
     "FS0-CONF-008",

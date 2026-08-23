@@ -66,9 +66,50 @@ def check_conformance_closure(root, assertion_ids):
     graph_evidence = {'mechanical_assertion_count': len(mechanical_assertion_ids), 'executable_assertion_count': sum((1 for aid in mechanical_assertion_ids if len(bindings.get(aid, [])) == 1)), 'gating_assertion_count': len(gating_assertion_ids), 'canonical_entrypoint': orchestration.get('entrypoint'), 'canonical_wrapper': orchestration.get('public_wrapper'), 'pending_implementation_assertions': sorted((aid for implementation in impl if implementation.get('pending', False) for aid in implementation.get('assertion_ids', [])))}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], graph_evidence if aid in {'FS0-ASSERT-CONF-002', 'FS0-ASSERT-CONF-008'} else None) for aid in assertion_ids]
 
+def _load_module_for_fc033(path, name):
+    old = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        spec = importlib.util.spec_from_file_location(name, path)
+        if spec is None or spec.loader is None:
+            raise RuntimeError(f'unable to load module: {path}')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    finally:
+        sys.dont_write_bytecode = old
+
 def check_self_change_completion(root, assertion_ids):
-    evidence = {'state': 'pending', 'required_sequence': ['accepted-authority', 'candidate-publication', 'conformance', 'assurance', 'explicit-acceptance', 'accepted-state-publication']}
-    return [result(aid, 'pending', 'bounded post-cutover self-change completion is executable in canonical Conformance but remains pending until the end-to-end governed cycle is implemented and verified', evidence) for aid in assertion_ids]
+    contract_path = root / 'repo/bootstrap/data/self_change_contract.json'
+    module_path = root / 'repo/governance/self_change.py'
+    try:
+        contract = load(contract_path)
+        module = _load_module_for_fc033(module_path, 'fs0_fc033_self_change')
+        sha = 'a' * 40
+        actor = 'authorized-actor'
+        plan = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'plan', 'stage_steps': ['analyze', 'specify', 'accept'], 'work_id': 'FS0-PLAN-SELFCHANGE', 'predecessor_id': 'FS0-DESIGN-SELFCHANGE', 'scope': ['repo/example'], 'material_exclusions': [], 'candidate_result': {'kind': 'self-change'}, 'completion_conditions': ['bounded cycle complete'], 'disposition': 'accepted', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, 'accepted_design_id': 'FS0-DESIGN-SELFCHANGE', 'realization_intent': {'affected_artifacts': ['repo/example'], 'conformance_work': ['FS0-ASSERT-FC-033'], 'assurance_work': ['FS0-OBL-FC-033'], 'dependencies': [], 'sequencing': ['bounded'], 'build_scope': ['repo/example']}}
+        build = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'build', 'stage_steps': ['implement', 'verify', 'accept'], 'work_id': 'FS0-BUILD-SELFCHANGE', 'predecessor_id': plan['work_id'], 'scope': ['repo/example'], 'material_exclusions': [], 'candidate_result': {'candidate_id': sha}, 'completion_conditions': ['cycle complete'], 'disposition': 'pending', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, 'accepted_plan_id': plan['work_id'], 'verification': {'evidence': ['candidate-publication'], 'conformance_status': 'pending'}}
+        case = {'case_id': 'FS0-CASE-SELFCHANGE', 'review_obligation_id': 'FS0-OBL-FC-033'}
+        finding = {'case_id': 'FS0-CASE-SELFCHANGE', 'sequence': 1, 'status': 'satisfied'}
+        acceptance_record = {'schema_version': '1', 'record_type': 'governance-acceptance', 'acceptance_id': 'FS0-ACCEPT-SELFCHANGE', 'stage': 'build', 'work_id': build['work_id'], 'candidate_id': sha, 'disposition': 'accepted', 'actor': actor, 'evidence': ['candidate-publication', 'conformance-pass', 'assurance-satisfied'], 'decision_timestamp': '2026-01-01T00:00:00Z', 'resulting_accepted_state': sha}
+        acceptance_comment = 'repo-spec-acceptance:v1\n```json\n' + json.dumps(acceptance_record) + '\n```'
+        cycle = module.verify_cycle(root, plan, build, {'status': 'published', 'candidate_id': sha, 'candidate_ref': contract['candidate_ref']}, {'status': 'pass', 'candidate_id': sha, 'failed_assertions': []}, ['FS0-OBL-FC-033'], [case], [finding], acceptance_comment, {'status': 'published', 'previous_accepted_revision': None, 'published_revision': sha, 'accepted_ref': contract['accepted_ref']})
+        negative = True
+        try:
+            module.verify_cycle(root, plan, build, {'status': 'published', 'candidate_id': sha, 'candidate_ref': contract['candidate_ref']}, {'status': 'fail', 'candidate_id': sha, 'failed_assertions': ['FS0-ASSERT-TEST']}, ['FS0-OBL-FC-033'], [case], [finding], acceptance_comment, {'status': 'published', 'previous_accepted_revision': None, 'published_revision': sha, 'accepted_ref': contract['accepted_ref']})
+            negative = False
+        except Exception:
+            pass
+        source = module_path.read_text(encoding='utf-8')
+        local_only = all((path.startswith('repo/') for path in contract['dependencies'].values()))
+        candidate_mutation = 'refs/heads/candidate' in json.dumps(contract) and 'git' in source and ('push' in source) and ('changed concurrently' in source) and ('merge-base' in source)
+        accepted_delegation = 'publication_decision' in source and 'parse_acceptance_comment' in source and ('assurance_gate' in source) and ('record_conformance' in source) and ('work.decide' in source)
+        complete = cycle.get('status') == 'complete' and cycle.get('sequence') == contract['sequence'] and negative and local_only and candidate_mutation and accepted_delegation
+        evidence = {'contract': 'repo/bootstrap/data/self_change_contract.json', 'implementation': 'repo/governance/self_change.py', 'entrypoint': 'repo/scripts/self-change', 'cycle_status': cycle.get('status'), 'sequence': cycle.get('sequence'), 'targeted_conformance_failure_rejected': negative, 'repository_local_dependencies': local_only, 'candidate_publication_mutation_present': candidate_mutation, 'existing_authority_components_delegated': accepted_delegation}
+    except Exception as exc:
+        complete = False
+        evidence = {'error': str(exc)}
+    return [result(aid, 'pass' if complete else 'fail', 'bounded post-cutover self-change composes accepted Plan/Build authority, exact candidate publication, Conformance, Assurance-gated Build acceptance, explicit acceptance, and accepted-state publication entirely from retained repository surfaces', evidence) for aid in assertion_ids]
 
 def check_generation_correspondence(root, assertion_ids):
     proc = subprocess.run([str(root / 'repo/bootstrap/scripts/bootstrap'), '--check'], cwd=root, text=True, capture_output=True)
