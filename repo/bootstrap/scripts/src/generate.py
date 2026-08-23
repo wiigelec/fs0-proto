@@ -314,7 +314,29 @@ def derive_bootstrap_state(root: Path):
 
 
 def derive_repository_structure_state(root: Path):
-    config = load_json(root / "repo/bootstrap/data/structure.json")
+    bootstrap_root = root / "repo/bootstrap"
+    matches = []
+    for path in bootstrap_root.rglob("*"):
+        if not path.is_file() or path.is_symlink():
+            continue
+        try:
+            obj = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if (
+            isinstance(obj, dict)
+            and obj.get("schema_version") == "1"
+            and obj.get("record_type") == "repository-structure-configuration"
+        ):
+            matches.append((path, obj))
+
+    if len(matches) != 1:
+        raise SystemExit(
+            "bootstrap payload must contain exactly one "
+            f"repository-structure-configuration record; found {len(matches)}"
+        )
+
+    config_path, config = matches[0]
 
     required = {
         "schema_version",
@@ -329,10 +351,6 @@ def derive_repository_structure_state(root: Path):
             f"repository structure configuration fields mismatch; "
             f"missing={missing} extra={extra}"
         )
-    if config.get("schema_version") != "1":
-        raise SystemExit("unsupported repository structure configuration schema")
-    if config.get("record_type") != "repository-structure-configuration":
-        raise SystemExit("unexpected repository structure configuration record_type")
 
     identity = config.get("configuration_id")
     if not isinstance(identity, str) or not identity:
@@ -372,9 +390,9 @@ def derive_repository_structure_state(root: Path):
             )
         seen.add(rel)
 
-    required_config = "repo/bootstrap/data/structure.json"
+    config_rel = config_path.relative_to(root).as_posix()
     required_binding = "repo/state/repository-structure-binding.json"
-    for rel in (required_config, required_binding):
+    for rel in (config_rel, required_binding):
         if rel not in seen:
             raise SystemExit(
                 f"canonical repository structure configuration does not authorize "

@@ -1091,7 +1091,7 @@ def check_repository_structure(root, assertion_ids):
             "FS0-ASSERT-FC-095": (
                 live_clean
                 and source_uses_only_config_authorization
-                and live["configuration_path"] == "repo/bootstrap/data/structure.json" and live["configuration_self_authorized"],
+                and bool(live["configuration_path"]) and live["configuration_self_authorized"],
                 "bootstrap construction is not itself treated as structural authorization; the resulting candidate is evaluated through the resolved configuration",
                 ev(authorization_path="_evaluate_repository_structure -> resolved configuration"),
             ),
