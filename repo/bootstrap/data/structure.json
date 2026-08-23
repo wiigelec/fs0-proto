@@ -150,6 +150,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/github_operating_state.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/model.json",
       "object_type": "file",
       "presence": "required"
@@ -437,6 +442,11 @@
     },
     {
       "path": "repo/bootstrap/data/state/bootstrap.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/state_classes.json",
       "object_type": "file",
       "presence": "required"
     },

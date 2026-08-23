@@ -1066,6 +1066,43 @@ def check_json_record_envelopes(root, assertion_ids):
     evidence = {'tracked_json_count': len(paths), 'invalid_records': invalid, 'non_object_json_documents': non_objects}
     return [result(aid, 'pass' if ok else 'fail', 'every Git-tracked FS0 JSON document beneath repo/ is an object carrying non-empty schema_version and record_type fields', evidence) for aid in assertion_ids]
 
+def check_state_class_distinction(root, assertion_ids):
+    contract_path = root / 'repo/bootstrap/data/state_classes.json'
+    try:
+        contract = json.loads(contract_path.read_text(encoding='utf-8'))
+    except Exception as exc:
+        return [result(aid, 'fail', 'state-class contract is missing or invalid', {'error': str(exc)}) for aid in assertion_ids]
+    expected = {'repository-content': {'record_type': 'repository-content-state', 'required_fields': ['revision']}, 'desired-github-operating-state': {'record_type': 'desired-github-operating-state', 'required_fields': ['desired_objects']}, 'observed-github-state': {'record_type': 'observed-github-state', 'required_fields': ['observations']}, 'authorized-mutation': {'record_type': 'authorized-mutation', 'required_fields': ['authority_basis', 'mutation_scope']}, 'verified-resulting-state': {'record_type': 'verified-resulting-state', 'required_fields': ['resulting_revision', 'verification_evidence']}}
+    classes = contract.get('state_classes')
+    observed = {}
+    shape_ok = isinstance(classes, list) and len(classes) == 5
+    if shape_ok:
+        for entry in classes:
+            if not isinstance(entry, dict):
+                shape_ok = False
+                break
+            role = entry.get('role')
+            if not isinstance(role, str) or role in observed:
+                shape_ok = False
+                break
+            observed[role] = {'record_type': entry.get('record_type'), 'required_fields': entry.get('required_fields')}
+    distinct_types = {v.get('record_type') for v in observed.values() if isinstance(v.get('record_type'), str)}
+    contract_ok = contract.get('schema_version') == '1' and contract.get('record_type') == 'fs0-state-class-contract' and shape_ok and (set(observed) == set(expected)) and (len(distinct_types) == 5) and all((observed[role]['record_type'] == spec['record_type'] and observed[role]['required_fields'] == spec['required_fields'] for role, spec in expected.items())) and (contract.get('equivalence_policy') == 'no-state-class-implies-or-substitutes-for-another')
+    binding_path = root / 'repo/governance/github_binding.py'
+    binding = binding_path.read_text(encoding='utf-8')
+    binding_roles = {'repository-content': 'revision_under_review' in binding and 'candidate["commit_sha"]' in binding, 'observed-github-state': 'resolve_remote_governance_state' in binding and 'remaining_unauthorized_work' in binding, 'authorized-mutation': 'post_cutover_mutation_allowed' in binding and 'bounded_authorization' in binding, 'verified-resulting-state': 'resulting_accepted_revision' in binding and 'resulting_accepted_state' in binding}
+    desired_source = root / 'repo/bootstrap/data/github_operating_state.json'
+    desired_ok = False
+    if desired_source.is_file():
+        try:
+            desired = json.loads(desired_source.read_text(encoding='utf-8'))
+            desired_ok = desired.get('schema_version') == '1' and desired.get('record_type') == 'desired-github-operating-state' and isinstance(desired.get('desired_objects'), list)
+        except Exception:
+            desired_ok = False
+    ok = contract_ok and all(binding_roles.values()) and desired_ok
+    evidence = {'contract': 'repo/bootstrap/data/state_classes.json', 'distinct_record_types': sorted(distinct_types), 'binding_role_evidence': binding_roles, 'desired_state_source': 'repo/bootstrap/data/github_operating_state.json', 'desired_state_valid': desired_ok}
+    return [result(aid, 'pass' if ok else 'fail', 'FS0 keeps repository content, desired GitHub operating state, observed GitHub state, authorized mutation, and verified resulting state as distinct non-substitutable state classes', evidence) for aid in assertion_ids]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1091,7 +1128,7 @@ def check_repository_structure(root, assertion_ids):
         return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], checks[aid][2]) for aid in assertion_ids]
     except Exception as exc:
         return [result(aid, 'fail', f'repository-structure resolution/evaluation failed: {exc}', {'error': str(exc), 'post_cutover_mutation_binding': check_post_cutover_mutation_binding}) for aid in assertion_ids]
-CALLABLES = {'repository_structure': check_repository_structure, 'requirement_metadata': check_requirement_metadata, 'conformance_closure': check_conformance_closure, 'generation_correspondence': check_generation_correspondence, 'canonical_entrypoint': check_canonical_entrypoint, 'remote_execution': check_remote_execution, 'exact_candidate': check_exact_candidate, 'bootstrap_state': check_bootstrap_state, 'governance_state_resolution': check_governance_state_resolution, 'accepted_state_publication': check_accepted_state_publication, 'assurance_runtime': check_assurance_runtime, 'successor_proposal_registry': check_successor_proposal_registry, 'governed_work_kernel': check_governed_work_kernel, 'github_governance_binding': check_github_governance_binding, 'proposal_lineage': check_proposal_lineage, 'conformance_selftest': check_conformance_selftest, 'conformance_canonicality': check_conformance_canonicality, 'generation_contract': check_generation_contract, 'authority_kernel': check_authority_kernel, 'requirement_provenance': check_requirement_provenance, 'operating_substrate_preflight': check_operating_substrate_preflight, 'bootstrap_read_surfaces': check_bootstrap_read_surfaces, 'framework_record_orientation': check_framework_record_and_orientation_contract, 'bootstrap_independence': check_bootstrap_independence, 'bootstrap_authority_lifecycle': check_bootstrap_authority_lifecycle, 'post_cutover_mutation_authority': check_post_cutover_mutation_authority, 'post_cutover_mutation_binding': check_post_cutover_mutation_binding, 'retained_bootstrap_payload': check_retained_bootstrap_payload, 'json_record_envelopes': check_json_record_envelopes}
+CALLABLES = {'repository_structure': check_repository_structure, 'requirement_metadata': check_requirement_metadata, 'conformance_closure': check_conformance_closure, 'generation_correspondence': check_generation_correspondence, 'canonical_entrypoint': check_canonical_entrypoint, 'remote_execution': check_remote_execution, 'exact_candidate': check_exact_candidate, 'bootstrap_state': check_bootstrap_state, 'governance_state_resolution': check_governance_state_resolution, 'accepted_state_publication': check_accepted_state_publication, 'assurance_runtime': check_assurance_runtime, 'successor_proposal_registry': check_successor_proposal_registry, 'governed_work_kernel': check_governed_work_kernel, 'github_governance_binding': check_github_governance_binding, 'proposal_lineage': check_proposal_lineage, 'conformance_selftest': check_conformance_selftest, 'conformance_canonicality': check_conformance_canonicality, 'generation_contract': check_generation_contract, 'authority_kernel': check_authority_kernel, 'requirement_provenance': check_requirement_provenance, 'operating_substrate_preflight': check_operating_substrate_preflight, 'bootstrap_read_surfaces': check_bootstrap_read_surfaces, 'framework_record_orientation': check_framework_record_and_orientation_contract, 'bootstrap_independence': check_bootstrap_independence, 'bootstrap_authority_lifecycle': check_bootstrap_authority_lifecycle, 'post_cutover_mutation_authority': check_post_cutover_mutation_authority, 'post_cutover_mutation_binding': check_post_cutover_mutation_binding, 'retained_bootstrap_payload': check_retained_bootstrap_payload, 'json_record_envelopes': check_json_record_envelopes, 'state_class_distinction': check_state_class_distinction}
 
 def main():
     root = Path.cwd().resolve()

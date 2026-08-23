@@ -334,6 +334,13 @@
       "assertion_ids": [
         "FS0-ASSERT-FC-034"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-STATE-CLASS-DISTINCTION",
+      "callable": "state_class_distinction",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-041"
+      ]
     }
   ],
   "evidence": [
@@ -480,6 +487,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-JSON-RECORD-ENVELOPES",
       "implementation_id": "FS0-IMPL-JSON-RECORD-ENVELOPES",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-STATE-CLASS-DISTINCTION",
+      "implementation_id": "FS0-IMPL-STATE-CLASS-DISTINCTION",
       "evidence_class": "execution-result"
     }
   ],
