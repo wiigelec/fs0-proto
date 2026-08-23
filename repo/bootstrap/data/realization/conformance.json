@@ -178,7 +178,6 @@
       "callable": "github_governance_binding",
       "assertion_ids": [
         "FS0-ASSERT-GOV-018",
-        "FS0-ASSERT-GOV-020",
         "FS0-ASSERT-GOV-026",
         "FS0-ASSERT-GOV-027",
         "FS0-ASSERT-GOV-038",
@@ -307,6 +306,20 @@
         "FS0-ASSERT-FC-027",
         "FS0-ASSERT-FC-031"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-POST-CUTOVER-MUTATION-AUTHORITY",
+      "callable": "post_cutover_mutation_authority",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-032"
+      ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-POST-CUTOVER-MUTATION-BINDING",
+      "callable": "post_cutover_mutation_binding",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-020"
+      ]
     }
   ],
   "evidence": [
@@ -433,6 +446,16 @@
     {
       "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-AUTHORITY-LIFECYCLE",
       "implementation_id": "FS0-IMPL-BOOTSTRAP-AUTHORITY-LIFECYCLE",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-POST-CUTOVER-MUTATION-AUTHORITY",
+      "implementation_id": "FS0-IMPL-POST-CUTOVER-MUTATION-AUTHORITY",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-POST-CUTOVER-MUTATION-BINDING",
+      "implementation_id": "FS0-IMPL-POST-CUTOVER-MUTATION-BINDING",
       "evidence_class": "execution-result"
     }
   ],

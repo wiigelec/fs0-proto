@@ -259,6 +259,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/realization/governance/github_binding.py",
       "object_type": "file",
       "presence": "required"
@@ -558,6 +563,11 @@
     },
     {
       "path": "repo/governance/accepted_state.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/governance/bootstrap_mutation_guard.py",
       "object_type": "file",
       "presence": "required"
     },

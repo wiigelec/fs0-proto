@@ -115,7 +115,9 @@ def post_cutover_mutation_allowed(bootstrap_state, governed_build):
     return (
         isinstance(governed_build, dict)
         and governed_build.get("stage") == "build"
-        and governed_build.get("disposition") == "accepted"
+        and governed_build.get("disposition") == "pending"
+        and isinstance(governed_build.get("accepted_plan_id"), str)
+        and bool(governed_build.get("accepted_plan_id"))
         and isinstance(governed_build.get("bounded_authorization"), dict)
         and bool(governed_build["bounded_authorization"].get("mutation_scope"))
     )

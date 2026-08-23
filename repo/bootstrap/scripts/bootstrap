@@ -12,6 +12,7 @@ if [ ! -d .git ]; then
 fi
 
 if [ "${1:-}" != "--check" ]; then
+    python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null
     python3 -B repo/bootstrap/scripts/src/preflight.py
 fi
 

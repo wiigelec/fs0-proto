@@ -36,6 +36,11 @@
       "source": "governance/proposals.py",
       "target": "repo/governance/proposals.py",
       "mode": "0644"
+    },
+    {
+      "source": "governance/bootstrap_mutation_guard.py",
+      "target": "repo/governance/bootstrap_mutation_guard.py",
+      "mode": "0755"
     }
   ]
 }

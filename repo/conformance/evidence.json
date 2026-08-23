@@ -251,6 +251,26 @@
         "FS0-CONF-007",
         "FS0-CONF-009"
       ]
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-POST-CUTOVER-MUTATION-AUTHORITY",
+      "implementation_id": "FS0-IMPL-POST-CUTOVER-MUTATION-AUTHORITY",
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-POST-CUTOVER-MUTATION-BINDING",
+      "implementation_id": "FS0-IMPL-POST-CUTOVER-MUTATION-BINDING",
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     }
   ]
 }
