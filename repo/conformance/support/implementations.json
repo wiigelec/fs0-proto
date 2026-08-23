@@ -15,6 +15,14 @@
         "FS0-ASSERT-FC-058",
         "FS0-ASSERT-FC-075",
         "FS0-ASSERT-CONF-024"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-045",
+        "FS0-FC-056",
+        "FS0-FC-057",
+        "FS0-FC-058",
+        "FS0-FC-075",
+        "FS0-CONF-024"
       ]
     },
     {
@@ -29,7 +37,19 @@
         "FS0-ASSERT-CONF-013",
         "FS0-ASSERT-CONF-015",
         "FS0-ASSERT-CONF-018",
-        "FS0-ASSERT-CONF-019"
+        "FS0-ASSERT-CONF-019",
+        "FS0-ASSERT-CONF-003",
+        "FS0-ASSERT-CONF-005"
+      ],
+      "authority_requirement_ids": [
+        "FS0-CONF-001",
+        "FS0-CONF-004",
+        "FS0-CONF-013",
+        "FS0-CONF-015",
+        "FS0-CONF-018",
+        "FS0-CONF-019",
+        "FS0-CONF-003",
+        "FS0-CONF-005"
       ]
     },
     {
@@ -41,6 +61,10 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-022",
         "FS0-ASSERT-CONF-023"
+      ],
+      "authority_requirement_ids": [
+        "FS0-CONF-022",
+        "FS0-CONF-023"
       ]
     },
     {
@@ -51,6 +75,9 @@
       "callable": "canonical_entrypoint",
       "assertion_ids": [
         "FS0-ASSERT-CONF-016"
+      ],
+      "authority_requirement_ids": [
+        "FS0-CONF-016"
       ]
     },
     {
@@ -61,6 +88,9 @@
       "callable": "remote_execution",
       "assertion_ids": [
         "FS0-ASSERT-CONF-010"
+      ],
+      "authority_requirement_ids": [
+        "FS0-CONF-010"
       ]
     },
     {
@@ -71,6 +101,9 @@
       "callable": "exact_candidate",
       "assertion_ids": [
         "FS0-ASSERT-CONF-020"
+      ],
+      "authority_requirement_ids": [
+        "FS0-CONF-020"
       ]
     },
     {
@@ -81,6 +114,9 @@
       "callable": "bootstrap_state",
       "assertion_ids": [
         "FS0-ASSERT-FC-037"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-037"
       ]
     },
     {
@@ -99,6 +135,17 @@
         "FS0-ASSERT-GOV-016",
         "FS0-ASSERT-GOV-017",
         "FS0-ASSERT-GOV-035"
+      ],
+      "authority_requirement_ids": [
+        "FS0-GOV-008",
+        "FS0-GOV-011",
+        "FS0-GOV-012",
+        "FS0-GOV-013",
+        "FS0-GOV-014",
+        "FS0-GOV-015",
+        "FS0-GOV-016",
+        "FS0-GOV-017",
+        "FS0-GOV-035"
       ]
     },
     {
@@ -109,6 +156,9 @@
       "callable": "accepted_state_publication",
       "assertion_ids": [
         "FS0-ASSERT-GOV-037"
+      ],
+      "authority_requirement_ids": [
+        "FS0-GOV-037"
       ]
     },
     {
@@ -147,6 +197,37 @@
         "FS0-ASSERT-CONF-027",
         "FS0-ASSERT-CONF-028",
         "FS0-ASSERT-CONF-029"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-006",
+        "FS0-FC-029",
+        "FS0-FC-030",
+        "FS0-FC-055",
+        "FS0-FC-080",
+        "FS0-FC-081",
+        "FS0-FC-082",
+        "FS0-FC-083",
+        "FS0-FC-084",
+        "FS0-FC-085",
+        "FS0-FC-086",
+        "FS0-FC-087",
+        "FS0-FC-088",
+        "FS0-FC-089",
+        "FS0-FC-090",
+        "FS0-FC-091",
+        "FS0-FC-092",
+        "FS0-FC-093",
+        "FS0-FC-094",
+        "FS0-FC-095",
+        "FS0-FC-096",
+        "FS0-FC-097",
+        "FS0-FC-098",
+        "FS0-FC-099",
+        "FS0-CONF-025",
+        "FS0-CONF-026",
+        "FS0-CONF-027",
+        "FS0-CONF-028",
+        "FS0-CONF-029"
       ]
     },
     {
@@ -167,6 +248,19 @@
         "FS0-ASSERT-ASSUR-012",
         "FS0-ASSERT-ASSUR-013",
         "FS0-ASSERT-ASSUR-014"
+      ],
+      "authority_requirement_ids": [
+        "FS0-ASSUR-001",
+        "FS0-ASSUR-002",
+        "FS0-ASSUR-003",
+        "FS0-ASSUR-004",
+        "FS0-ASSUR-005",
+        "FS0-ASSUR-006",
+        "FS0-ASSUR-008",
+        "FS0-ASSUR-009",
+        "FS0-ASSUR-012",
+        "FS0-ASSUR-013",
+        "FS0-ASSUR-014"
       ]
     },
     {
@@ -182,6 +276,14 @@
         "FS0-ASSERT-GOV-023",
         "FS0-ASSERT-GOV-024",
         "FS0-ASSERT-GOV-025"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-064",
+        "FS0-FC-079",
+        "FS0-GOV-022",
+        "FS0-GOV-023",
+        "FS0-GOV-024",
+        "FS0-GOV-025"
       ]
     },
     {
@@ -204,6 +306,21 @@
         "FS0-ASSERT-GOV-036",
         "FS0-ASSERT-GOV-049",
         "FS0-ASSERT-GOV-050"
+      ],
+      "authority_requirement_ids": [
+        "FS0-GOV-001",
+        "FS0-GOV-002",
+        "FS0-GOV-003",
+        "FS0-GOV-004",
+        "FS0-GOV-005",
+        "FS0-GOV-006",
+        "FS0-GOV-010",
+        "FS0-GOV-028",
+        "FS0-GOV-031",
+        "FS0-GOV-033",
+        "FS0-GOV-036",
+        "FS0-GOV-049",
+        "FS0-GOV-050"
       ]
     },
     {
@@ -225,6 +342,20 @@
         "FS0-ASSERT-GOV-045",
         "FS0-ASSERT-GOV-046",
         "FS0-ASSERT-GOV-047"
+      ],
+      "authority_requirement_ids": [
+        "FS0-GOV-018",
+        "FS0-GOV-020",
+        "FS0-GOV-026",
+        "FS0-GOV-027",
+        "FS0-GOV-038",
+        "FS0-GOV-040",
+        "FS0-GOV-042",
+        "FS0-GOV-043",
+        "FS0-GOV-044",
+        "FS0-GOV-045",
+        "FS0-GOV-046",
+        "FS0-GOV-047"
       ]
     },
     {
@@ -235,6 +366,9 @@
       "callable": "proposal_lineage",
       "assertion_ids": [
         "FS0-ASSERT-GOV-041"
+      ],
+      "authority_requirement_ids": [
+        "FS0-GOV-041"
       ]
     }
   ]

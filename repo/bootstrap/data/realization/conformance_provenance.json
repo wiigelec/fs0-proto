@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "record_type": "conformance-primitive-provenance",
+  "evidence_authority_requirement_ids": [
+    "FS0-CONF-007",
+    "FS0-CONF-009"
+  ],
+  "orchestration_authority_requirement_ids": [
+    "FS0-CONF-008",
+    "FS0-CONF-010",
+    "FS0-CONF-014",
+    "FS0-CONF-016"
+  ]
+}

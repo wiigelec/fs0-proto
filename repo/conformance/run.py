@@ -47,8 +47,13 @@ def check_conformance_closure(root, assertion_ids):
     corr = corr_registry["records"]
     assertions = load(root / "repo/conformance/assertions.json")["assertions"]
     impl = load(root / "repo/conformance/support/implementations.json")["implementations"]
+    evidence = load(root / "repo/conformance/evidence.json")["evidence"]
+    orchestration = load(root / "repo/conformance/orchestration.json")
 
     req_ids = [r["requirement_id"] for r in reqs]
+    accepted_req_ids = {
+        r["requirement_id"] for r in reqs if r.get("lifecycle_state") == "accepted"
+    }
     corr_by_req = {r["requirement_id"]: r for r in corr}
     assertion_by_id = {a["assertion_id"]: a for a in assertions}
     implementation_ids = {i["implementation_id"] for i in impl}
@@ -62,6 +67,37 @@ def check_conformance_closure(root, assertion_ids):
         and all(aid in assertion_by_id for aid in implementation_assertion_ids)
     )
 
+    primitive_roles = (
+        {a.get("role") for a in assertions}
+        | {i.get("role") for i in impl}
+        | {e.get("role") for e in evidence}
+        | {orchestration.get("role")}
+    )
+
+    assertion_provenance_ok = all(
+        a.get("requirement_id") in accepted_req_ids for a in assertions
+    )
+    support_provenance_ok = all(
+        isinstance(i.get("authority_requirement_ids"), list)
+        and i["authority_requirement_ids"]
+        and all(rid in accepted_req_ids for rid in i["authority_requirement_ids"])
+        for i in impl
+    )
+    evidence_provenance_ok = all(
+        isinstance(e.get("authority_requirement_ids"), list)
+        and e["authority_requirement_ids"]
+        and all(rid in accepted_req_ids for rid in e["authority_requirement_ids"])
+        for e in evidence
+    )
+    orchestration_provenance_ok = (
+        isinstance(orchestration.get("authority_requirement_ids"), list)
+        and bool(orchestration["authority_requirement_ids"])
+        and all(
+            rid in accepted_req_ids
+            for rid in orchestration["authority_requirement_ids"]
+        )
+    )
+
     checks = {
         "FS0-ASSERT-CONF-001": (
             req_registry.get("requirements_total") == corr_registry.get("requirements_total")
@@ -69,9 +105,20 @@ def check_conformance_closure(root, assertion_ids):
             and set(corr_by_req) == set(req_ids),
             "every requirement has exactly one Conformance correspondence and registry totals agree",
         ),
+        "FS0-ASSERT-CONF-003": (
+            primitive_roles == {"assertion", "support", "evidence", "orchestration"},
+            "maintained Conformance primitives use exactly assertion, support, evidence, and orchestration roles",
+        ),
         "FS0-ASSERT-CONF-004": (
             all(a["assertion_id"] not in implementation_ids for a in assertions),
             "assertion identities are distinct from implementation identities",
+        ),
+        "FS0-ASSERT-CONF-005": (
+            assertion_provenance_ok
+            and support_provenance_ok
+            and evidence_provenance_ok
+            and orchestration_provenance_ok,
+            "every maintained Conformance primitive resolves to accepted normative authority",
         ),
         "FS0-ASSERT-CONF-013": (
             all({"requirement_id", "applicability", "assertion_ids"} <= set(r) for r in corr),
@@ -102,6 +149,7 @@ def check_conformance_closure(root, assertion_ids):
         result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1])
         for aid in assertion_ids
     ]
+
 
 
 def check_generation_correspondence(root, assertion_ids):

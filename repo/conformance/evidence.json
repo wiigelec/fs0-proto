@@ -5,77 +5,152 @@
     {
       "evidence_id": "FS0-EVIDENCE-REQUIREMENT-METADATA",
       "implementation_id": "FS0-IMPL-REQUIREMENT-METADATA",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-CONFORMANCE-CLOSURE",
       "implementation_id": "FS0-IMPL-CONFORMANCE-CLOSURE",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-GENERATION-CORRESPONDENCE",
       "implementation_id": "FS0-IMPL-GENERATION-CORRESPONDENCE",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-CANONICAL-ENTRYPOINT",
       "implementation_id": "FS0-IMPL-CANONICAL-ENTRYPOINT",
-      "evidence_class": "repository-state"
+      "evidence_class": "repository-state",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-REMOTE-EXECUTION",
       "implementation_id": "FS0-IMPL-REMOTE-EXECUTION",
-      "evidence_class": "repository-state"
+      "evidence_class": "repository-state",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-EXACT-CANDIDATE",
       "implementation_id": "FS0-IMPL-EXACT-CANDIDATE",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-STATE",
       "implementation_id": "FS0-IMPL-BOOTSTRAP-STATE",
-      "evidence_class": "repository-state"
+      "evidence_class": "repository-state",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-GOVERNANCE-STATE-RESOLUTION",
       "implementation_id": "FS0-IMPL-GOVERNANCE-STATE-RESOLUTION",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-ACCEPTED-STATE-PUBLICATION",
       "implementation_id": "FS0-IMPL-ACCEPTED-STATE-PUBLICATION",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-REPOSITORY-STRUCTURE",
       "implementation_id": "FS0-IMPL-REPOSITORY-STRUCTURE",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-ASSURANCE-RUNTIME",
       "implementation_id": "FS0-IMPL-ASSURANCE-RUNTIME",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-SUCCESSOR-PROPOSAL-REGISTRY",
       "implementation_id": "FS0-IMPL-SUCCESSOR-PROPOSAL-REGISTRY",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-GOVERNED-WORK-KERNEL",
       "implementation_id": "FS0-IMPL-GOVERNED-WORK-KERNEL",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-GITHUB-GOVERNANCE-BINDING",
       "implementation_id": "FS0-IMPL-GITHUB-GOVERNANCE-BINDING",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     },
     {
       "evidence_id": "FS0-EVIDENCE-PROPOSAL-LINEAGE",
       "implementation_id": "FS0-IMPL-PROPOSAL-LINEAGE",
-      "evidence_class": "execution-result"
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     }
   ]
 }

@@ -223,6 +223,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/realization/conformance_provenance.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/realization/governance",
       "object_type": "directory",
       "presence": "required",

@@ -18,7 +18,9 @@
     "FS0-ASSERT-ASSUR-013",
     "FS0-ASSERT-ASSUR-014",
     "FS0-ASSERT-CONF-001",
+    "FS0-ASSERT-CONF-003",
     "FS0-ASSERT-CONF-004",
+    "FS0-ASSERT-CONF-005",
     "FS0-ASSERT-CONF-010",
     "FS0-ASSERT-CONF-013",
     "FS0-ASSERT-CONF-015",
@@ -109,8 +111,6 @@
   ],
   "pending_assertion_ids": [
     "FS0-ASSERT-CONF-002",
-    "FS0-ASSERT-CONF-003",
-    "FS0-ASSERT-CONF-005",
     "FS0-ASSERT-CONF-007",
     "FS0-ASSERT-CONF-008",
     "FS0-ASSERT-CONF-009",
@@ -174,5 +174,12 @@
     "FS0-ASSERT-FC-073",
     "FS0-ASSERT-FC-077",
     "FS0-ASSERT-FC-078"
+  ],
+  "role": "orchestration",
+  "authority_requirement_ids": [
+    "FS0-CONF-008",
+    "FS0-CONF-010",
+    "FS0-CONF-014",
+    "FS0-CONF-016"
   ]
 }
