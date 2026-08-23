@@ -326,11 +326,11 @@ Before generating bootstrap scripts, this proposal should be audited for:
 32. whether post-cutover authoritative determination is independent of reading the bootstrap payload.
 33. whether retained bootstrap source remains non-authoritative while supporting Governance-authorized FS0 maintenance;
 34. whether canonical bootstrap source contracts distinguish FS0 realization input from successor proposal input without relying on filesystem location;
-35. whether the installed successor proposal tree is registry-driven rather than hard-coded to a fixed filename list; and
+35. whether installed successor proposals are registry-driven rather than hard-coded to a fixed filename list; and
 36. whether installed proposal read surfaces are deterministically derived from bootstrap maintenance source and cannot become independent maintenance sources.
 37. whether exactly one canonical bootstrap invocation surface is machine-resolvable from repository state;
-38. whether that entry point is a thin executable shell wrapper; and
+38. whether the canonical bootstrap invocation surface contains only invocation concerns and delegates substantive behavior to separately identified implementation; and
 39. whether substantive bootstrap implementation is machine-resolvably distinct from the canonical invocation surface without Design prescribing filesystem placement.
 40. whether acceptance-record marker, fields, record types, stage values, and dispositions are defined by Design rather than invented by implementation;
-41. whether bootstrap candidate construction explicitly consumes both bootstrap Design input and canonical bootstrap templates; and
+41. whether bootstrap candidate construction explicitly consumes both bootstrap Design input and canonical bootstrap realization inputs; and
 42. whether the bounded FS0 generation mechanism is distinguished from a deferred generalized successor-framework projection architecture.

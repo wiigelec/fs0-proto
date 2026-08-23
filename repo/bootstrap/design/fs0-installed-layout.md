@@ -48,15 +48,17 @@ The canonical configuration shall itself be subject to repository-structure auth
 
 ## Configuration Resolution
 
-The operating substrate shall present exactly one candidate repository-structure configuration identity to Conformance through a location-independent resolution mechanism.
+Governed repository state shall determine exactly one canonical repository-structure configuration identity for the validation subject.
 
-The mechanism shall identify which configuration is canonical for the validation operation without granting permission to the filesystem object that carries it.
+The operating substrate shall resolve that governed identity to exactly one configuration object through a location-independent resolution mechanism.
+
+The operating substrate shall not select the governing configuration by caller preference, environment convention, implementation default, filename convention, search order, or fallback location.
+
+Identity determination, object resolution, and structural authorization are distinct operations.
 
 After loading the configuration, Conformance shall require that the configuration's own filesystem object is positively authorized by that configuration.
 
-Failure to resolve exactly one candidate configuration shall fail repository-structure Conformance.
-
-No fixed filesystem path, implicit filename, search order, or implementation fallback may substitute for canonical resolution.
+Failure to determine exactly one governed configuration identity or to resolve that identity to exactly one configuration object shall fail repository-structure Conformance.
 
 ---
 
@@ -81,6 +83,8 @@ Its descendants shall require additional applicable authorization unless the dir
 Complete-subtree permission shall authorize descendant filesystem objects without requiring additional structural configuration for those descendants.
 
 Complete-subtree permission remains positive authorization and shall not be treated as an ungoverned exception.
+
+Complete-subtree permission removes the need for descendant path declarations but shall not override repository-wide structural invariants, including object-type admissibility.
 
 FS0 structural authorization shall explicitly distinguish ordinary files, directories, and symbolic links.
 
@@ -159,7 +163,7 @@ Implementation shall not invent structural permission absent from configuration.
 
 At minimum, repository-structure Conformance shall verify that:
 
-- exactly one canonical repository-structure configuration is resolved without relying on a fixed filesystem path or implicit search convention;
+- governed repository state determines exactly one canonical repository-structure configuration identity and the operating substrate resolves it without caller-selected policy or implicit search convention;
 - the resolved configuration authorizes its own filesystem object;
 - every filesystem object beneath repository root has applicable positive authorization;
 - every required configured object exists;

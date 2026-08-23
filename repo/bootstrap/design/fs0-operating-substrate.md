@@ -181,7 +181,7 @@ Generated artifacts shall remain semantically distinct from non-authoritative bo
 
 The bootstrap payload shall not contain requirements, design discussion, or implementation assumptions for the future developed repo-spec product except where strictly necessary to define the bootstrap output required for FS0 self-hosting.
 
-The shell wrapper shall contain no substantive bootstrap semantics. Substantive transformation, validation, installation, verification, and cutover logic shall reside in the separately identified substantive bootstrap implementation and shall not embed successor semantics that belong in canonical realization input.
+The canonical bootstrap invocation surface shall contain only invocation concerns. Substantive transformation, validation, installation, verification, and cutover behavior shall reside in separately identified bootstrap implementation and shall not embed successor semantics that belong in canonical realization input.
 
 After the complete bootstrap payload is present in a compliant target repository, bootstrap shall require no semantic, template, or script input from the originating repository.
 

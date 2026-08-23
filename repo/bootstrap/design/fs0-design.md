@@ -31,7 +31,7 @@ The chunks collectively form one non-authoritative FS0 Design Proposal. No chunk
 | `fs0-conformance-assurance.md` | mechanical Conformance and semantic Assurance kernels |
 | `fs0-operating-substrate.md` | bootstrap boundary, user prerequisites, operating substrate, bootstrap implementation |
 | `fs0-github.md` | GitHub capability contract, fixed GitHub binding, cutover |
-| `fs0-installed-layout.md` | concrete installed FS0 tree and structure enforcement |
+| `fs0-installed-layout.md` | repository-structure governance methodology and structural Conformance semantics |
 | `fs0-self-hosting.md` | installed state, exclusions, self-hosting demonstration, acceptance and audit |
 
 ## Loading Rule
@@ -139,16 +139,18 @@ Post-cutover FS0 shall require no semantic, template, generator, or script input
 
 ## Repository-Structure Configuration Resolution
 
-FS0 shall define a location-independent mechanism by which the operating substrate presents exactly one candidate repository-structure configuration identity to Conformance.
+Governed repository state shall determine exactly one canonical repository-structure configuration identity for the validation subject.
 
-The resolution mechanism shall identify the configuration without granting structural permission to its filesystem object.
+The operating substrate shall resolve that governed identity to the corresponding configuration object through a location-independent mechanism.
 
-Configuration discovery and configuration authorization are distinct operations.
+The operating substrate resolves configuration identity; it shall not select among candidate configurations.
+
+Configuration identity determination, configuration object resolution, and configuration authorization are distinct operations.
 
 After resolution, the configuration shall authorize its own filesystem object under the same structural rules that govern every other object.
 
-Failure to resolve exactly one configuration shall cause repository-structure Conformance failure.
+Failure to determine exactly one governed configuration identity or to resolve that identity to exactly one configuration object shall cause repository-structure Conformance failure.
 
-Implementation shall not substitute a built-in filesystem path, search-order convention, filename convention, or fallback location for this resolution mechanism.
+Caller preference, environment convention, implementation default, search order, filename convention, or fallback location shall not determine the canonical configuration identity.
 
 ---
