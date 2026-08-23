@@ -62,11 +62,13 @@
       "callable": "generation_correspondence",
       "assertion_ids": [
         "FS0-ASSERT-CONF-022",
-        "FS0-ASSERT-CONF-023"
+        "FS0-ASSERT-CONF-023",
+        "FS0-ASSERT-CONF-021"
       ],
       "authority_requirement_ids": [
         "FS0-CONF-022",
-        "FS0-CONF-023"
+        "FS0-CONF-023",
+        "FS0-CONF-021"
       ]
     },
     {
@@ -375,6 +377,32 @@
       ],
       "authority_requirement_ids": [
         "FS0-GOV-041"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-CONFORMANCE-SELFTEST",
+      "role": "support",
+      "callable": "conformance_selftest",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-009"
+      ],
+      "authority_requirement_ids": [
+        "FS0-CONF-009"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-CONFORMANCE-CANONICALITY",
+      "role": "support",
+      "callable": "conformance_canonicality",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-017"
+      ],
+      "authority_requirement_ids": [
+        "FS0-CONF-017"
       ]
     }
   ]

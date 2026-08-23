@@ -151,6 +151,26 @@
         "FS0-CONF-007",
         "FS0-CONF-009"
       ]
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-CONFORMANCE-SELFTEST",
+      "implementation_id": "FS0-IMPL-CONFORMANCE-SELFTEST",
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-CONFORMANCE-CANONICALITY",
+      "implementation_id": "FS0-IMPL-CONFORMANCE-CANONICALITY",
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     }
   ]
 }

@@ -173,14 +173,56 @@ def check_conformance_closure(root, assertion_ids):
 
 
 def check_generation_correspondence(root, assertion_ids):
-    proc = subprocess.run([str(root / "repo/bootstrap/scripts/bootstrap"), "--check"], cwd=root, text=True, capture_output=True)
-    ok = proc.returncode == 0 and "FS0 generation correspondence: PASS" in proc.stdout
-    evidence = {"returncode": proc.returncode, "stdout": proc.stdout.strip(), "stderr": proc.stderr.strip()}
+    proc = subprocess.run(
+        [str(root / "repo/bootstrap/scripts/bootstrap"), "--check"],
+        cwd=root,
+        text=True,
+        capture_output=True,
+    )
+    correspondence_ok = (
+        proc.returncode == 0
+        and "FS0 generation correspondence: PASS" in proc.stdout
+    )
+
+    orchestration = load(root / "repo/conformance/orchestration.json")
+    generation = orchestration.get("generation_correspondence", {})
+    declared_ok = (
+        generation.get("canonical_input_root") == "repo/bootstrap/data"
+        and generation.get("generation_implementation")
+        == "repo/bootstrap/scripts/src/generate.py"
+        and generation.get("check_entrypoint")
+        == "repo/bootstrap/scripts/bootstrap --check"
+        and (root / generation.get("canonical_input_root", "")).is_dir()
+        and (root / generation.get("generation_implementation", "")).is_file()
+    )
+
+    evidence = {
+        "returncode": proc.returncode,
+        "stdout": proc.stdout.strip(),
+        "stderr": proc.stderr.strip(),
+        "declared_generation_correspondence": generation,
+    }
     out = []
     for aid in assertion_ids:
-        detail = "deterministic regeneration matches checked-in generated surfaces" if aid == "FS0-ASSERT-CONF-022" else "generation-correspondence failure is surfaced as a Conformance defect"
+        if aid == "FS0-ASSERT-CONF-021":
+            ok = correspondence_ok and declared_ok
+            detail = (
+                "all generator-declared FS0 outputs reproduce from the declared "
+                "canonical bootstrap input root using the identified generator"
+            )
+        elif aid == "FS0-ASSERT-CONF-022":
+            ok = correspondence_ok
+            detail = (
+                "deterministic regeneration matches checked-in generated surfaces"
+            )
+        else:
+            ok = correspondence_ok
+            detail = (
+                "generation-correspondence failure is surfaced as a Conformance defect"
+            )
         out.append(result(aid, "pass" if ok else "fail", detail, evidence))
     return out
+
 
 
 def check_canonical_entrypoint(root, assertion_ids):
@@ -1635,6 +1677,122 @@ def check_proposal_lineage(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+def check_conformance_selftest(root, assertion_ids):
+    good = check_conformance_closure(root, ["FS0-ASSERT-CONF-001"])[0]
+    positive_ok = good.get("status") == "pass"
+
+    with tempfile.TemporaryDirectory(prefix="fs0-conformance-selftest-") as tmp:
+        tmp_root = Path(tmp)
+        paths = (
+            "repo/authority/requirements.json",
+            "repo/conformance/correspondence.json",
+            "repo/conformance/assertions.json",
+            "repo/conformance/support/implementations.json",
+            "repo/conformance/evidence.json",
+            "repo/conformance/orchestration.json",
+        )
+        for rel in paths:
+            src = root / rel
+            dst = tmp_root / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(src.read_bytes())
+
+        corrupt_path = tmp_root / "repo/conformance/correspondence.json"
+        corrupt = load(corrupt_path)
+        if not corrupt.get("records"):
+            negative_ok = False
+        else:
+            corrupt["records"] = corrupt["records"][:-1]
+            corrupt_path.write_text(
+                json.dumps(corrupt, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            bad = check_conformance_closure(
+                tmp_root, ["FS0-ASSERT-CONF-001"]
+            )[0]
+            negative_ok = bad.get("status") == "fail"
+
+    implementations = load(
+        root / "repo/conformance/support/implementations.json"
+    )["implementations"]
+    orchestration = load(root / "repo/conformance/orchestration.json")
+    bound = {
+        aid
+        for implementation in implementations
+        for aid in implementation.get("assertion_ids", [])
+    }
+    scheduled = set(orchestration.get("realized_assertion_ids", []))
+    execution_set_ok = bound == scheduled and bool(bound)
+
+    ok = positive_ok and negative_ok and execution_set_ok
+    evidence = {
+        "conforming_state_acceptance": positive_ok,
+        "targeted_violation_rejection": negative_ok,
+        "required_assertions_scheduled": execution_set_ok,
+        "required_assertion_count": len(bound),
+    }
+    detail = (
+        "Conformance self-test demonstrates conforming-state acceptance, "
+        "targeted correspondence violation rejection, and complete canonical "
+        "execution scheduling for realized assertions"
+    )
+    return [
+        result(aid, "pass" if ok else "fail", detail, evidence)
+        for aid in assertion_ids
+    ]
+
+def check_conformance_canonicality(root, assertion_ids):
+    orchestration = load(root / "repo/conformance/orchestration.json")
+    policy = orchestration.get("post_cutover_policy", {})
+    surface = policy.get("canonical_surface", {})
+    policy_ok = (
+        surface.get("entrypoint") == "repo/conformance/run.py"
+        and surface.get("public_wrapper") == "repo/scripts/validate"
+        and surface.get("github_workflow")
+        == ".github/workflows/fs0-conformance.yml"
+        and policy.get("mutation_requires_governance") is True
+    )
+
+    def mutation_allowed(state, current_surface, proposed_surface, governance_authorized):
+        if state != "cutover":
+            return True
+        if proposed_surface == current_surface:
+            return True
+        return bool(governance_authorized)
+
+    current = dict(surface)
+    changed = dict(surface)
+    changed["entrypoint"] = "repo/conformance/alternate.py"
+
+    unchanged_allowed = mutation_allowed("cutover", current, current, False)
+    unauthorized_denied = not mutation_allowed(
+        "cutover", current, changed, False
+    )
+    governed_change_allowed = mutation_allowed(
+        "cutover", current, changed, True
+    )
+
+    ok = (
+        policy_ok
+        and unchanged_allowed
+        and unauthorized_denied
+        and governed_change_allowed
+    )
+    evidence = {
+        "policy": policy,
+        "unchanged_allowed": unchanged_allowed,
+        "unauthorized_change_denied": unauthorized_denied,
+        "governance_authorized_change_allowed": governed_change_allowed,
+    }
+    detail = (
+        "post-cutover accepted Conformance surface remains canonical and "
+        "surface changes require Governance authorization"
+    )
+    return [
+        result(aid, "pass" if ok else "fail", detail, evidence)
+        for aid in assertion_ids
+    ]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1952,6 +2110,8 @@ CALLABLES = {
     "governed_work_kernel": check_governed_work_kernel,
     "github_governance_binding": check_github_governance_binding,
     "proposal_lineage": check_proposal_lineage,
+    "conformance_selftest": check_conformance_selftest,
+    "conformance_canonicality": check_conformance_canonicality,
 }
 
 

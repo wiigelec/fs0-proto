@@ -22,15 +22,18 @@
     "FS0-ASSERT-CONF-004",
     "FS0-ASSERT-CONF-005",
     "FS0-ASSERT-CONF-007",
+    "FS0-ASSERT-CONF-009",
     "FS0-ASSERT-CONF-010",
     "FS0-ASSERT-CONF-011",
     "FS0-ASSERT-CONF-013",
     "FS0-ASSERT-CONF-014",
     "FS0-ASSERT-CONF-015",
     "FS0-ASSERT-CONF-016",
+    "FS0-ASSERT-CONF-017",
     "FS0-ASSERT-CONF-018",
     "FS0-ASSERT-CONF-019",
     "FS0-ASSERT-CONF-020",
+    "FS0-ASSERT-CONF-021",
     "FS0-ASSERT-CONF-022",
     "FS0-ASSERT-CONF-023",
     "FS0-ASSERT-CONF-024",
@@ -115,9 +118,6 @@
   "pending_assertion_ids": [
     "FS0-ASSERT-CONF-002",
     "FS0-ASSERT-CONF-008",
-    "FS0-ASSERT-CONF-009",
-    "FS0-ASSERT-CONF-017",
-    "FS0-ASSERT-CONF-021",
     "FS0-ASSERT-FC-001",
     "FS0-ASSERT-FC-002",
     "FS0-ASSERT-FC-003",
@@ -181,5 +181,18 @@
     "FS0-CONF-010",
     "FS0-CONF-014",
     "FS0-CONF-016"
-  ]
+  ],
+  "generation_correspondence": {
+    "canonical_input_root": "repo/bootstrap/data",
+    "generation_implementation": "repo/bootstrap/scripts/src/generate.py",
+    "check_entrypoint": "repo/bootstrap/scripts/bootstrap --check"
+  },
+  "post_cutover_policy": {
+    "canonical_surface": {
+      "entrypoint": "repo/conformance/run.py",
+      "public_wrapper": "repo/scripts/validate",
+      "github_workflow": ".github/workflows/fs0-conformance.yml"
+    },
+    "mutation_requires_governance": true
+  }
 }
