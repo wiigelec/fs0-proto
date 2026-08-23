@@ -11,9 +11,13 @@ permissions:
 jobs:
   conformance:
     runs-on: ubuntu-latest
+    env:
+      FS0_CANDIDATE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
     steps:
-      - name: Check out repository
+      - name: Check out exact candidate
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.FS0_CANDIDATE_SHA }}
 
       - name: Set up Python
         uses: actions/setup-python@v5

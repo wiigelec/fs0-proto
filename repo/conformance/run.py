@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -89,6 +90,64 @@ def check_remote_execution(root, assertion_ids):
     ok = workflow.is_file() and all(item in text for item in required)
     evidence = {"workflow": ".github/workflows/fs0-conformance.yml"}
     return [result(aid, "pass" if ok else "fail", "GitHub Actions exposes the canonical FS0 Conformance wrapper for push, pull request, and manual execution", evidence) for aid in assertion_ids]
+
+
+
+def check_exact_candidate(root, assertion_ids):
+    workflow = root / ".github/workflows/fs0-conformance.yml"
+    text = workflow.read_text(encoding="utf-8") if workflow.is_file() else ""
+
+    expected_env = (
+        "FS0_CANDIDATE_SHA: ${{ github.event_name == 'pull_request' "
+        "&& github.event.pull_request.head.sha || github.sha }}"
+    )
+    expected_ref = "ref: ${{ env.FS0_CANDIDATE_SHA }}"
+    structural_ok = (
+        workflow.is_file()
+        and expected_env in text
+        and expected_ref in text
+        and "uses: actions/checkout@v4" in text
+        and "./repo/scripts/validate --verbose" in text
+    )
+
+    runtime = os.environ.get("GITHUB_ACTIONS") == "true"
+    evidence = {
+        "workflow": ".github/workflows/fs0-conformance.yml",
+        "binding": "FS0_CANDIDATE_SHA",
+        "runtime": runtime,
+    }
+    runtime_ok = True
+    if runtime:
+        candidate = os.environ.get("FS0_CANDIDATE_SHA", "").lower()
+        try:
+            head = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                text=True,
+                capture_output=True,
+                check=True,
+            ).stdout.strip().lower()
+        except Exception as exc:
+            head = ""
+            runtime_ok = False
+            evidence["git_error"] = str(exc)
+
+        candidate_ok = (
+            len(candidate) == 40
+            and all(ch in "0123456789abcdef" for ch in candidate)
+        )
+        runtime_ok = runtime_ok and candidate_ok and head == candidate
+        evidence["candidate_sha"] = candidate
+        evidence["checked_out_head"] = head
+    else:
+        evidence["mode"] = "local-structural-verification"
+
+    ok = structural_ok and runtime_ok
+    detail = (
+        "workflow resolves an exact event candidate SHA, checks out that SHA, "
+        "and GitHub Actions execution verifies checked-out HEAD equals the declared candidate"
+    )
+    return [result(aid, "pass" if ok else "fail", detail, evidence) for aid in assertion_ids]
 
 
 def check_bootstrap_state(root, assertion_ids):
@@ -422,6 +481,7 @@ CALLABLES = {
     "generation_correspondence": check_generation_correspondence,
     "canonical_entrypoint": check_canonical_entrypoint,
     "remote_execution": check_remote_execution,
+    "exact_candidate": check_exact_candidate,
     "bootstrap_state": check_bootstrap_state,
     "governance_state_resolution": check_governance_state_resolution,
     "accepted_state_publication": check_accepted_state_publication,

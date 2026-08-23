@@ -49,6 +49,13 @@
       ]
     },
     {
+      "implementation_id": "FS0-IMPL-EXACT-CANDIDATE",
+      "callable": "exact_candidate",
+      "assertion_ids": [
+        "FS0-ASSERT-CONF-020"
+      ]
+    },
+    {
       "implementation_id": "FS0-IMPL-BOOTSTRAP-STATE",
       "callable": "bootstrap_state",
       "assertion_ids": [
@@ -103,6 +110,11 @@
       "evidence_id": "FS0-EVIDENCE-REMOTE-EXECUTION",
       "implementation_id": "FS0-IMPL-REMOTE-EXECUTION",
       "evidence_class": "repository-state"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-EXACT-CANDIDATE",
+      "implementation_id": "FS0-IMPL-EXACT-CANDIDATE",
+      "evidence_class": "execution-result"
     },
     {
       "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-STATE",
