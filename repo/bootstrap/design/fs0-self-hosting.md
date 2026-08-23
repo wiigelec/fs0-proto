@@ -10,11 +10,11 @@ Read `fs0-design.md` first. This chunk does not independently create authority.
 
 # Minimum Installed FS0 State
 
-The bootstrap installed tree is fixed by `fs0-installed-layout.md` for FS0.
+The bootstrap-installed candidate shall be structurally governed by its canonical repository-structure configuration.
 
-That bootstrap layout may later change only through accepted FS0 Governance.
+FS0 Design defines the required capabilities and semantic roles of the installed state but does not define concrete repository filesystem structure.
 
-The installed FS0 state must contain enough maintained artifacts, seed inputs, and operating surfaces to represent and operate:
+The installed FS0 state must contain enough authorized artifacts, seed inputs, and operating surfaces to represent and operate:
 
 ```text
 Framework Contract authority
@@ -32,9 +32,8 @@ GitHub bootstrap operating realization
 acceptance-record resolution rules
 accepted Git ref resolution
 bootstrap cutover record
-root README.md
-root AGENTS.md
-root LICENSE
+repository orientation surfaces
+repository license surface
 Git/GitHub operating substrate
 bounded privileged-mutation capability
 authenticated network operation
@@ -52,7 +51,7 @@ Bootstrap Design shall prefer the smallest representation satisfying those respo
 
 The following are outside FS0 unless later audit proves one is strictly required for the first self-hosted FS1 cycle:
 
-- complete repository structure specification;
+- rich repository-structure specification beyond the minimum closed-repository/default-deny kernel;
 - complete artifact taxonomy;
 - complete manifest framework;
 - product Level 0–3 model;
@@ -97,13 +96,13 @@ FS0 is not accepted merely because its own files exist or its bootstrap tests pa
 
 The decisive proof is construction of a successor functional set.
 
-The initial demonstration target should be a deliberately deferred capability, tentatively:
+The initial demonstration target should be a deliberately deferred capability that extends, rather than establishes, one of FS0's minimal kernels.
 
-**FS1 — Repository Structure**
+A later functional set may enrich Repository Structure with advanced classification, patterns, profiles, conditional policy, inheritance, or other generalized capabilities.
 
-The exact FS1 definition remains outside this proposal.
+The exact successor functional-set definition remains outside this proposal.
 
-Artifact classification is intentionally deferred to a later functional set so the first self-hosting proof exercises one bounded semantic domain rather than two coupled domains.
+The minimum closed-repository/default-deny structural kernel is not deferred because FS0 itself requires it for candidate conformance and self-hosting.
 
 ## Required Demonstration
 
@@ -111,7 +110,7 @@ Starting from the accepted FS0 GitHub revision:
 
 ### 1. Create FS1 Design Proposal
 
-Select the next applicable bootstrap-installed non-authoritative successor Design Proposal from `repo/governance/proposals/index.json`, load its canonical JSON chunks, and initiate FS1 Design work from that seed input.
+Select the next applicable bootstrap-installed non-authoritative successor Design Proposal through the canonical successor-proposal registry, load its canonical structured representation, and initiate successor Design work from that seed input.
 
 ### 2. Execute Design
 
@@ -159,11 +158,16 @@ Without invoking bootstrap authority, the resulting repository shall be capable 
 
 FS0 bootstrap is complete only when all of the following are true, including installation of the complete non-authoritative successor Design Proposal seed set required to build the remainder of repo-spec without additional bootstrap-supplied semantics.
 
-## Installed Structure
+## Repository Structure
 
-- The target repository conforms to `fs0-installed-layout.md`.
-- Required FS0 paths are mechanically enforced.
-- Unknown maintained artifacts inside governed FS0 roots are rejected unless explicitly authorized.
+- The repository root is treated as a closed structural governance boundary.
+- Exactly one canonical repository-structure configuration provides concrete filesystem permission.
+- Every filesystem object beneath repository root is positively authorized.
+- Unauthorized filesystem objects are mechanically rejected.
+- Every structurally required object is mechanically required to exist.
+- Directory authorization does not authorize descendants unless complete-subtree authorization is explicit.
+- No filesystem class receives an implicit exemption.
+- Design does not define concrete repository layout.
 - The bootstrap source repository remains separate from the installed target repository.
 
 ## Authority
@@ -178,7 +182,7 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 ## Proposal Seed
 
 - The complete successor Design Proposal seed set defined by the bootstrap proposal template registry is installed before cutover.
-- `repo/governance/proposals/index.json` enumerates every installed seed proposal and reconstruction dependency.
+- the canonical successor-proposal registry enumerates every installed seed proposal and reconstruction dependency.
 - Each installed proposal contains a canonical structured read representation and a generated Markdown projection.
 - Generated proposal Markdown is subordinate to the installed structured proposal read representation.
 - Every bootstrap seed proposal has `authority state = none`.
@@ -213,8 +217,8 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 
 ## GitHub Operation
 
-- A fresh AI-agent session can orient from bootstrap-generated root `README.md` and `AGENTS.md` without relying on chat history.
-- A clean bootstrap run started from repository root through `./repo/bootstrap/scripts/bootstrap` generates `README.md`, `AGENTS.md`, and `LICENSE`; pre-existing copies are not required.
+- A fresh AI-agent session can orient from the canonical bootstrap-generated repository-orientation surfaces without relying on chat history.
+- A clean bootstrap run started from repository root through the canonical bootstrap invocation surface generates all required orientation and licensing surfaces; pre-existing copies are not required.
 - FS0 has authenticated network and Git/GitHub capability sufficient for its full governed lifecycle.
 - Technical write credentials remain distinct from Governance authorization.
 - FS0 can be operated without contributor-local filesystem access.
@@ -306,27 +310,27 @@ Before generating bootstrap scripts, this proposal should be audited for:
 16. whether pre-cutover verification is clearly distinguished from governed FS0 Conformance and Assurance.
 17. whether the installed FS0 operating substrate is sufficient for complete self-hosting without the external bootstrap environment;
 18. whether authenticated GitHub write capability is cleanly separated from bounded Governance authorization;
-19. whether `README.md` and `AGENTS.md` provide enough context for a fresh AI agent without becoming competing authority; and
+19. whether the canonical repository-orientation surfaces provide enough context for a fresh AI agent without becoming competing authority; and
 20. whether any network, Git, GitHub API, or execution capability required to build FS1 is still missing from FS0.
-21. whether the bootstrap implementation generates `README.md`, `AGENTS.md`, and `LICENSE` into a clean target repository;
-22. whether `fs0-installed-layout.md` eliminates builder invention of maintained paths and artifact roles;
-23. whether structure enforcement is default-deny inside governed FS0 roots while permitting unrelated user project content outside those roots;
+21. whether the bootstrap implementation generates all required repository-orientation and licensing surfaces into a clean target repository;
+22. whether repository-structure methodology prevents Design or implementation from inventing concrete filesystem permission outside the canonical repository-structure configuration;
+23. whether the repository root is a closed default-deny filesystem namespace in which every object is positively authorized by exactly one canonical repository-structure configuration and no unconfigured namespace or implicit exemption remains;
 24. whether Git/GitHub repository creation and credentials remain user prerequisites rather than bootstrap responsibilities; and
 25. whether the copied bootstrap payload is self-contained and free of future-product requirements not necessary to construct and cut over FS0.
 26. whether the complete successor Design Proposal seed set is installed before cutover and can drive the remainder of repo-spec without later bootstrap semantics;
 27. whether every seed proposal is explicitly non-authoritative and machine-enumerable through the proposal registry;
 28. whether the minimum structured record contracts are sufficient for the bootstrap implementation to avoid inventing authority, requirement, correspondence, state, or proposal fields; and
 29. whether bootstrap acceptance is unambiguously located as a structured comment on the dedicated bootstrap provenance issue.
-30. whether `repo/bootstrap/` contains only bootstrap Design input, canonical templates, and bootstrap implementation required for FS0 construction and maintenance;
-31. whether all generated artifacts are written outside `repo/bootstrap/`; and
+30. whether the retained bootstrap payload contains only bootstrap Design input, canonical realization inputs, and bootstrap implementation required for FS0 construction and maintenance;
+31. whether generated artifacts remain semantically distinct from non-authoritative bootstrap maintenance source; and
 32. whether post-cutover authoritative determination is independent of reading the bootstrap payload.
 33. whether retained bootstrap source remains non-authoritative while supporting Governance-authorized FS0 maintenance;
-34. whether `repo/bootstrap/templates/` has a fixed internal source contract separating FS0 realization input from successor proposal input;
+34. whether canonical bootstrap source contracts distinguish FS0 realization input from successor proposal input without relying on filesystem location;
 35. whether the installed successor proposal tree is registry-driven rather than hard-coded to a fixed filename list; and
 36. whether installed proposal read surfaces are deterministically derived from bootstrap maintenance source and cannot become independent maintenance sources.
-37. whether the only canonical bootstrap invocation is `./repo/bootstrap/scripts/bootstrap` from repository root;
+37. whether exactly one canonical bootstrap invocation surface is machine-resolvable from repository state;
 38. whether that entry point is a thin executable shell wrapper; and
-39. whether all substantive bootstrap implementation is confined to `repo/bootstrap/scripts/src/`.
+39. whether substantive bootstrap implementation is machine-resolvably distinct from the canonical invocation surface without Design prescribing filesystem placement.
 40. whether acceptance-record marker, fields, record types, stage values, and dispositions are defined by Design rather than invented by implementation;
 41. whether bootstrap candidate construction explicitly consumes both bootstrap Design input and canonical bootstrap templates; and
 42. whether the bounded FS0 generation mechanism is distinguished from a deferred generalized successor-framework projection architecture.

@@ -73,9 +73,31 @@ Every executable assertion shall have the evidence required by FS0 Conformance a
 
 Every gating assertion shall be reachable from authorized canonical Conformance execution.
 
+### Repository-Structure Closure
+
+Every filesystem object beneath the repository root shall resolve to applicable positive authorization in the canonical repository-structure configuration.
+
+A filesystem object for which no authorization resolves shall cause Conformance failure.
+
+A directory shall not authorize descendants unless its applicable authorization explicitly grants complete-subtree permission.
+
+Every configuration entry that requires an object to exist shall resolve to a corresponding filesystem object.
+
+Repository-structure Conformance shall evaluate the actual filesystem namespace rather than only version-controlled, maintained, generated, or otherwise preclassified objects.
+
+Each observed filesystem object shall have a mechanically identified object type.
+
+FS0 shall support ordinary files, directories, and symbolic links as explicit structural object types.
+
+Any filesystem object type not supported by the canonical repository-structure configuration semantics shall be denied.
+
+A symbolic link shall be evaluated as the link object itself.
+
+Repository-structure traversal shall not follow a symbolic-link target to discover descendants, and a symbolic-link target outside the repository root shall not extend the structural governance boundary.
+
 ### Generation Correspondence Closure
 
-Every generated FS0 read surface shall resolve through `repo/bootstrap/templates/fs0/index.json` to a canonical bootstrap source definition.
+Every generated FS0 read surface shall resolve through the canonical generation-source registry to a canonical bootstrap source definition.
 
 Canonical Conformance shall mechanically verify generated read surfaces against deterministic regeneration from their declared source inputs.
 

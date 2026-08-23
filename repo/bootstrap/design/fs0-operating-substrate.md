@@ -8,72 +8,17 @@ Read `fs0-design.md` first. This chunk does not independently create authority.
 
 ---
 
-# Bootstrap Repository
+# Bootstrap Repository Methodology
 
-The disposable bootstrap repository is initially expected to contain:
+The disposable bootstrap environment supplies the Design input, canonical realization inputs, and bootstrap implementation required to construct the first FS0 candidate.
 
-```text
-fs0-proto/
-└── repo/
-    └── bootstrap/
-        ├── design/
-        ├── templates/
-        └── scripts/
-```
+The bootstrap repository and candidate repository may use concrete paths chosen by their configuration and realization, but this Design does not define those repository-specific filesystem paths.
 
-Before bootstrap execution, this payload is only bootstrap construction state.
+Bootstrap shall expose one canonical invocation surface and shall keep invocation concerns separate from substantive bootstrap implementation.
 
-The initial FS0 Design Proposal belongs at:
+The bootstrap payload retained after cutover remains non-authoritative maintenance source and generation machinery.
 
-```text
-repo/bootstrap/design/fs0-design.md
-```
-
-Canonical bootstrap templates belong at:
-
-```text
-repo/bootstrap/templates/
-```
-
-Bootstrap construction scripts belong at:
-
-```text
-repo/bootstrap/scripts/
-```
-
-The canonical bootstrap entry point is the executable shell wrapper:
-
-```text
-repo/bootstrap/scripts/bootstrap
-```
-
-It shall be invoked from the target repository root as:
-
-```bash
-./repo/bootstrap/scripts/bootstrap
-```
-
-The wrapper shall remain thin.
-
-Its responsibilities are limited to invocation concerns such as validating repository-root execution context, resolving its own implementation path, and delegating to the substantive bootstrap implementation.
-
-All substantive bootstrap implementation shall live under:
-
-```text
-repo/bootstrap/scripts/src/
-```
-
-`scripts/bootstrap` defines invocation.
-
-`scripts/src/` defines implementation.
-
-These bootstrap paths are retained FS0 maintenance-source and generation surfaces after cutover.
-
-They do not gain normative authority from that role.
-
-Their retention does not require later functional sets or the final successor framework to use the same namespace or mechanism.
-
----
+Its retention does not grant structural permission; retained filesystem objects must be authorized by the canonical repository-structure configuration of the candidate or accepted repository.
 
 ---
 
@@ -214,179 +159,56 @@ GitHub-specific semantics remain subordinate to portable FS0 authority.
 
 ## Bootstrap-Generated Repository Orientation Surfaces
 
-The bootstrap implementation shall generate the following files in the root of the installed FS0 repository:
+Bootstrap may generate repository-orientation, licensing, workflow, authority, state, or other required operating surfaces.
 
-```text
-README.md
-AGENTS.md
-LICENSE
-```
+Design may define required semantic roles and content responsibilities for those surfaces where necessary for FS0 self-hosting.
 
-## Bootstrap Output Generation Rule
+Design shall not define their concrete repository paths.
 
-`README.md`, `AGENTS.md`, and `LICENSE` are installed FS0 outputs.
+Every generated filesystem object shall be positively authorized by the canonical repository-structure configuration.
 
-They are not files that belong in the `fs0-proto` source root and they are not prerequisites for running the bootstrap implementation.
+Generation does not itself grant structural permission.
 
-A clean bootstrap run against a compliant target repository that lacks these files shall create them.
-
-Their contents shall be deterministic for the same bootstrap Design and canonical bootstrap implementation revision, except for explicitly variable installation-state fields.
-
-Bootstrap verification shall fail if any required generated root surface is absent.
-
-After cutover, later modifications to these maintained files shall occur only through FS0 Governance.
-
-### `README.md`
-
-`README.md` shall provide a concise human-readable entry point containing:
-
-- repository purpose;
-- current bootstrap/cutover status;
-- Design Proposal index;
-- accepted-state discovery guidance;
-- basic repository operation guidance; and
-- a clear statement that implementation and GitHub state do not independently create authority.
-
-### `AGENTS.md`
-
-`AGENTS.md` shall provide a concise AI-agent initialization contract containing:
-
-- required initial reading order;
-- how to locate the relevant Design chunk;
-- how to determine whether the repository is pre-cutover or post-cutover;
-- how to resolve accepted state after cutover;
-- the prohibition against treating technical write capability as authority;
-- the requirement to inspect exact GitHub candidate/evidence state before mutation; and
-- the rule that after cutover all persistent framework mutation routes through FS0 Governance.
-
-`AGENTS.md` is an operational orientation surface.
-
-It shall remain subordinate to accepted authority and shall not become a second semantic owner.
-
-### `LICENSE`
-
-FS0 shall carry an explicit repository license from the initial published prototype state.
-
-The bootstrap prototype shall use GNU General Public License version 3, matching the originating repo-spec project, unless later accepted Governance changes the licensing decision where legally permitted.
+The generated destination of any artifact is realization/configuration state rather than Design-defined repository structure.
 
 ## Bootstrap Payload Scope
 
-`repo/bootstrap/` shall contain only material required to construct, verify, accept, cut over, and maintain FS0.
+The retained bootstrap payload shall contain only material required to construct, verify, accept, cut over, and maintain FS0.
 
-Its allowed source roles are:
+Its allowed source roles are non-authoritative bootstrap Design input, canonical bootstrap realization input, and bootstrap invocation/implementation.
 
-```text
-design/     non-authoritative bootstrap Design input
-templates/  canonical bootstrap realization inputs
-scripts/    canonical shell entry point plus bootstrap implementation under `scripts/src/`
-```
-
-Generated artifacts shall not be written under `repo/bootstrap/`.
+Generated artifacts shall remain semantically distinct from non-authoritative bootstrap maintenance source and shall not be classified as bootstrap maintenance-source artifacts merely by generation.
 
 The bootstrap payload shall not contain requirements, design discussion, or implementation assumptions for the future developed repo-spec product except where strictly necessary to define the bootstrap output required for FS0 self-hosting.
 
-The shell wrapper shall contain no substantive bootstrap semantics. Substantive transformation, validation, installation, verification, and cutover logic shall live under `repo/bootstrap/scripts/src/` and shall not embed successor semantics that belong in canonical template input.
+The shell wrapper shall contain no substantive bootstrap semantics. Substantive transformation, validation, installation, verification, and cutover logic shall reside in the separately identified substantive bootstrap implementation and shall not embed successor semantics that belong in canonical realization input.
 
-After `repo/bootstrap/` is present in a compliant target repository, bootstrap shall require no semantic, template, or script input from the originating repository.
+After the complete bootstrap payload is present in a compliant target repository, bootstrap shall require no semantic, template, or script input from the originating repository.
 
 ## Bootstrap Data, Template, and Generator Model
 
-For bootstrap-created maintained artifacts, the canonical maintenance model is:
+For bootstrap-created maintained artifacts, the canonical maintenance methodology is:
 
 ```text
 structured source data
-+ layout template
++ applicable transformation or template
 + generator
-→ generated artifact outside repo/bootstrap/
+-> generated artifact
 ```
 
-Each generated artifact shall have a machine-resolvable source definition identifying its canonical source data, applicable template or layout, generator, and generated destination.
+Each generated artifact shall have machine-resolvable provenance identifying its canonical source material, transformation/generation mechanism, and destination.
 
-The canonical FS0 generation source registry shall be:
+Those provenance and generation records are maintenance metadata and shall not become independent normative authority.
 
-```text
-repo/bootstrap/templates/fs0/index.json
-```
+Concrete source-tree layout, template-tree layout, implementation-module layout, and generated destinations shall be defined by repository configuration and realization rather than by Design.
 
-Each registry entry shall identify at least:
+Bootstrap implementation shall keep invocation concerns separate from substantive transformation, validation, installation, verification, and cutover logic.
 
-```text
-source_id
-content_source
-template_or_layout
-generator
-destination
-```
-
-`content_source` and `template_or_layout` shall be separately resolvable when both roles are required.
-
-The registry is maintenance metadata only and shall not become an authoritative read surface.
-
-The same general model shall be used for the complete successor repo-spec Design Proposal seed set.
-
-Generated artifacts are read or operating surfaces and shall not become independent maintenance sources.
-
-## Bootstrap Template Source Tree
-
-The canonical bootstrap template source tree shall be:
-
-```text
-repo/bootstrap/templates/
-|-- fs0/
-|   |-- index.json
-|   |-- authority/
-|   |-- requirements/
-|   |-- conformance/
-|   |-- assurance/
-|   |-- orientation/
-|   `-- github/
-`-- proposals/
-    |-- index.json
-    `-- <proposal-id>/
-        |-- proposal.json
-        `-- chunks/
-            `-- <ordered-chunk>.json
-```
-
-`templates/fs0/index.json` is the canonical machine-resolvable registry for FS0 generated-artifact source definitions.
-
-`templates/fs0/` contains canonical structured inputs used to construct and maintain FS0.
-
-`templates/proposals/` contains canonical structured non-authoritative successor Design Proposal inputs.
-
-The two classes shall remain distinct because their authority status differs:
-
-```text
-templates/fs0/        bootstrap realization input for initial accepted FS0 candidate
-templates/proposals/  non-authoritative seed input for later FS0 Governance Design
-```
-
-Template content shall be structured and machine-resolvable.
-
-Generated Markdown shall not be stored under `repo/bootstrap/templates/`.
-
-## Bootstrap Script Layout
-
-The bootstrap script tree shall be:
-
-```text
-repo/bootstrap/scripts/
-|-- bootstrap
-`-- src/
-    `-- ...
-```
-
-`bootstrap` shall be a shell script with an executable bit and a shell shebang.
-
-It is the only canonical bootstrap invocation surface.
-
-Substantive implementation files shall be located under `src/`.
-
-Implementation language and internal module structure may evolve during realization so long as the canonical entry point and wrapper/implementation separation remain unchanged.
+Successor Design Proposal source and FS0 realization source shall remain semantically distinguishable where their authority status differs, without requiring Design to prescribe concrete filesystem layout.
 
 ## Bootstrap Independence
 
-After cutover, authoritative determination shall not require reading `repo/bootstrap/`.
+After cutover, authoritative determination shall not require reading non-authoritative bootstrap maintenance source.
 
 FS0 maintenance may use the accepted repository's retained bootstrap source and generation machinery when authorized by FS0 Governance.
 
@@ -396,7 +218,7 @@ Post-cutover operation shall require no semantic, template, generator, or script
 
 FS0 operating substrate is sufficient only if an authorized agent operating through the GitHub remote can:
 
-1. discover repository purpose and operating rules from `README.md` and `AGENTS.md`;
+1. discover repository purpose and operating rules from the canonical repository-orientation surfaces;
 2. resolve current accepted state;
 3. inspect controlling authority and governed work;
 4. create bounded candidate work;

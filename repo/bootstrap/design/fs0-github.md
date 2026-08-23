@@ -174,7 +174,7 @@ Create the one accepted FS0 state from which all later framework evolution becom
 The bootstrap sequence shall be:
 
 1. verify the user-supplied target Git repository, GitHub remote, authentication, and required technical capabilities;
-2. construct the FS0 candidate from this non-authoritative bootstrap Design input and the canonical bootstrap templates under `repo/bootstrap/templates/`;
+2. construct the FS0 candidate from this non-authoritative bootstrap Design input and the canonical bootstrap realization inputs resolved from repository state;
 3. install candidate FS0 maintained artifacts;
 4. generate required root orientation and license surfaces;
 5. install the minimum candidate GitHub operating profile;
@@ -215,7 +215,7 @@ There is no transition from `cutover` back to bootstrap candidate mode.
 After `cutover`:
 
 - bootstrap authority shall remain exhausted;
-- authoritative determination shall use accepted read surfaces outside `repo/bootstrap/`;
+- authoritative determination shall use accepted authoritative read surfaces rather than non-authoritative bootstrap maintenance source;
 - bootstrap maintenance machinery may be used only within FS0 Governance-authorized work;
 - bootstrap maintenance machinery shall not independently create acceptance; and
 - ordinary framework evolution shall occur only through FS0 Governance.

@@ -163,15 +163,18 @@ Provide the minimum accepted framework authority necessary to authorize and boun
 
 FS0 shall establish:
 
-- one authoritative framework namespace under `repo/`;
+- one machine-resolvable authoritative framework namespace whose concrete filesystem placement is configuration-defined;
 - one foundational Framework Contract;
 - Governance, Conformance, and Assurance as the only authority-bearing keystones;
 - explicit delegation from the Framework Contract to each keystone;
 - stable machine-resolvable identities for accepted normative authority;
 - stable machine-resolvable identities for normative requirements;
 - one controlling semantic owner for each independently governed semantic invariant;
-- default-deny maintained governed framework state;
-- explicitly governed extension points;
+- repository-wide default-deny filesystem authorization rooted at the repository root;
+- exactly one canonical repository-structure configuration as the source of filesystem permission;
+- positive authorization for every filesystem object beneath the repository root;
+- directory authorization that does not authorize descendants unless complete-subtree authorization is explicit;
+- explicitly governed structural extension semantics;
 - prohibition of implicit authority;
 - prohibition of normative authority arising from implementation, validation, review findings, generated artifacts, workflow convention, historical state, or product behavior;
 - acyclic normative authority dependency; and
@@ -202,8 +205,11 @@ FS0 shall defer:
 - complete manifest architecture;
 - generalized product authority model;
 - final extension registry model;
-- final generated projection model; and
-- final repository structure beyond what FS0 itself requires.
+- final generated projection model;
+- rich repository-structure policy languages beyond the minimum closed-repository authorization semantics;
+- reusable structure profiles;
+- conditional structural policy; and
+- advanced pattern or inheritance systems.
 
 ---
 

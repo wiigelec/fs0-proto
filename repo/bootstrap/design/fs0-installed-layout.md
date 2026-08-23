@@ -1,4 +1,4 @@
-# FS0 Installed Layout
+# FS0 Repository-Structure Governance
 
 ## Status
 
@@ -8,418 +8,171 @@ Read `fs0-design.md` first. This chunk does not independently create authority.
 
 ---
 
-# Installed Layout Contract
+# Purpose
 
-FS0 requires one concrete bootstrap installation layout.
+This Design chunk defines only the methodology by which repository filesystem structure is authorized and mechanically evaluated.
 
-This layout is intentionally minimal and may later be changed through accepted FS0 Governance.
+It shall not define a concrete repository layout.
 
-The bootstrap implementation shall create and enforce the following installed structure:
+Concrete repository paths, directory trees, filenames, and repository-specific structural permissions belong exclusively to the canonical repository-structure configuration.
 
-```text
-<target-repo>/
-|-- README.md
-|-- AGENTS.md
-|-- LICENSE
-|-- .github/
-|   `-- workflows/
-|       `-- fs0-conformance.yml
-`-- repo/
-    |-- authority/
-    |   |-- framework.json
-    |   |-- governance.json
-    |   |-- conformance.json
-    |   |-- assurance.json
-    |   `-- requirements.json
-    |-- governance/
-    |   |-- proposals/
-    |   |   |-- index.json
-    |   |   `-- <proposal-id>/
-    |   |       |-- proposal.json
-    |   |       |-- chunks/
-    |   |       |   `-- <ordered-chunk>.json
-    |   |       `-- proposal.md
-    |   |-- work/
-    |   `-- acceptance/
-    |-- conformance/
-    |   |-- correspondence.json
-    |   |-- assertions/
-    |   |-- support/
-    |   `-- run.py
-    |-- assurance/
-    |   |-- correspondence.json
-    |   |-- obligations/
-    |   |-- cases/
-    |   `-- findings/
-    |-- state/
-    |   `-- bootstrap.json
-    `-- bootstrap/
-        |-- design/
-        |-- templates/
-        `-- scripts/
-            |-- bootstrap
-            `-- src/
-```
+---
 
-## Layout Semantics
+# Closed Repository Boundary
 
-### `repo/authority/`
+The repository root is the complete filesystem-structure governance boundary.
 
-Contains accepted FS0 normative authority read surfaces and requirement identity/state.
+Every filesystem object beneath the repository root is subject to repository-structure governance.
 
-`framework.json`, `governance.json`, `conformance.json`, and `assurance.json` are the four initial normative authority documents.
+No filesystem object is exempt because it is version-control state, ignored state, generated state, cached state, temporary state, editor state, build output, tool output, runtime state, or otherwise conventionally treated as incidental.
 
-`requirements.json` is the canonical machine-readable requirement registry for FS0.
+A filesystem object may exist only when positive structural authorization applies.
 
-These authoritative read surfaces are generated from canonical non-authoritative bootstrap maintenance source.
+Absence of applicable authorization means deny.
 
-### `repo/governance/`
+---
 
-Contains maintained Governance realization artifacts and the complete bootstrap-installed successor Design Proposal seed set.
+# Canonical Structural Permission Source
 
-`proposals/` contains non-authoritative Design Proposal inputs available to FS0 after cutover.
+Exactly one canonical repository-structure configuration shall govern filesystem permission for the repository.
 
-`proposals/index.json` is the canonical proposal registry.
+That configuration is the sole instance-level source of permission for filesystem objects beneath the repository root.
 
-The bootstrap implementation shall generate the complete successor Design Proposal seed set required to construct the remainder of repo-spec without receiving additional bootstrap-supplied semantics after cutover.
+Design defines the semantics of structural authorization.
 
-The complete seed set shall be defined by `repo/bootstrap/templates/proposals/index.json` and shall include every successor Design Proposal required to reconstruct repo-spec after cutover.
+Configuration defines the concrete repository structure authorized under those semantics.
 
-Proposal presence shall never imply normative acceptance.
+Implementation, source-code defaults, generated output lists, version-control ignore rules, workflow conventions, historical presence, or successful prior validation shall not independently authorize filesystem structure.
 
-`work/` contains repository-resident governed-work support artifacts where needed.
+The canonical configuration shall itself be subject to repository-structure authorization.
 
-`acceptance/` contains only maintained support or derived representations needed by FS0; canonical remote acceptance remains the structured GitHub record defined by the GitHub binding.
+## Configuration Resolution
 
-### `repo/conformance/`
+The operating substrate shall present exactly one candidate repository-structure configuration identity to Conformance through a location-independent resolution mechanism.
 
-Contains the minimal Conformance implementation.
+The mechanism shall identify which configuration is canonical for the validation operation without granting permission to the filesystem object that carries it.
 
-`correspondence.json` is the canonical per-requirement Conformance correspondence.
+After loading the configuration, Conformance shall require that the configuration's own filesystem object is positively authorized by that configuration.
 
-`assertions/` contains assertion implementations.
+Failure to resolve exactly one candidate configuration shall fail repository-structure Conformance.
 
-`support/` contains shared supporting primitives.
+No fixed filesystem path, implicit filename, search order, or implementation fallback may substitute for canonical resolution.
 
-`run.py` is the canonical local execution entry point invoked by GitHub Actions.
+---
 
-### `repo/assurance/`
+# Structural Authorization Semantics
 
-Contains the minimal Assurance implementation and maintained semantic-review artifacts.
+FS0 shall support authorization of files and directories.
 
-`correspondence.json` is the canonical per-requirement Assurance correspondence.
+An authorization may distinguish required presence from permitted presence.
 
-`obligations/`, `cases/`, and `findings/` contain the governed Assurance lifecycle artifacts.
+A required object shall cause Conformance failure when absent.
 
-### `repo/state/bootstrap.json`
+A permitted object may be absent without causing failure.
 
-Contains the machine-resolvable bootstrap lifecycle state and cutover marker.
+A present object without applicable authorization shall cause Conformance failure.
 
-Before cutover it records bootstrap candidate state.
+Directory authorization shall be closed by default.
 
-After cutover it records the immutable fact that bootstrap cutover occurred and identifies the first accepted FS0 revision and bootstrap acceptance record.
+Authorizing a directory shall authorize that directory object only.
 
-### `repo/bootstrap/`
+Its descendants shall require additional applicable authorization unless the directory authorization explicitly grants complete-subtree permission.
 
-Contains retained non-authoritative FS0 maintenance source, templates, and generation implementation.
+Complete-subtree permission shall authorize descendant filesystem objects without requiring additional structural configuration for those descendants.
 
-After cutover it remains available for Governance-authorized FS0 maintenance.
+Complete-subtree permission remains positive authorization and shall not be treated as an ungoverned exception.
 
-It is not an authoritative read surface.
+FS0 structural authorization shall explicitly distinguish ordinary files, directories, and symbolic links.
 
-### `.github/workflows/fs0-conformance.yml`
+An object type unsupported by the canonical configuration semantics shall be denied by default.
 
-Provides the canonical remote execution adapter for FS0 Conformance and invokes `repo/conformance/run.py`.
+A symbolic link shall be authorized as the link object itself.
 
-The workflow is an execution adapter and does not independently define Conformance semantics.
+Structural traversal shall not follow a symbolic-link target to discover descendants.
 
-### Root generated files
+A symbolic-link target outside the repository root shall not enlarge the repository-structure governance boundary.
 
-`README.md`, `AGENTS.md`, and `LICENSE` are generated by the bootstrap implementation.
+---
 
-They are installed operational surfaces, not bootstrap-source files in `fs0-proto`.
+# Structural Resolution
 
-## Proposal Projection Contract
+For every observed filesystem object beneath the repository root, Conformance shall resolve applicable structural authorization.
 
-Bootstrap shall install each successor Design Proposal from canonical structured template input.
-
-For each proposal:
+Resolution shall produce one of two outcomes:
 
 ```text
-repo/bootstrap/templates/proposals/<proposal-id>/
-        |
-        | validate + install
-        v
-repo/governance/proposals/<proposal-id>/
+authorized
+denied
 ```
 
-The installed proposal directory shall contain:
+No implicit, ignored, unknown, or outside-scope structural outcome exists beneath the repository root.
+
+For every configuration entry requiring presence, Conformance shall verify that the required object exists.
+
+Repository-structure closure therefore requires both:
 
 ```text
-proposal.json
-chunks/<ordered-chunk>.json
-proposal.md
+observed object -> authorization
+required authorization -> observed object
 ```
 
-`proposal.json` and `chunks/*.json` are the canonical installed proposal read representation.
+---
 
-`proposal.md` is a deterministic generated projection for human and AI-agent reading.
+# Bootstrap Methodology
 
-Generated Markdown shall not be an independent semantic owner.
+Before the first FS0 candidate exists, repository construction occurs under the explicit external bootstrap boundary defined by FS0 Bootstrap Design.
 
-A semantic change shall modify the applicable bootstrap maintenance source and regenerate the installed proposal read surfaces.
+Bootstrap shall establish a canonical repository-structure configuration as part of constructing the candidate FS0 state.
 
-The installed proposal registry shall enumerate proposal identity, order, installed path, lifecycle state, provenance, authority state, and reconstruction dependencies where applicable.
+The candidate shall not be conforming merely because bootstrap created its files.
 
-## Proposal Seed Contract
+Before candidate acceptance, Conformance shall evaluate the complete filesystem namespace beneath the repository root against the candidate configuration.
 
-Bootstrap shall install the complete repo-spec successor Design Proposal seed set before cutover.
+After candidate construction, no bootstrap convention, hard-coded implementation path, generator destination list, or tool-specific default may substitute for structural authorization.
 
-Every proposal registry record shall contain at least:
+---
+
+# Design / Configuration / Implementation Separation
+
+The layers are:
 
 ```text
-proposal identity
-proposal path
-lifecycle state
-bootstrap provenance
-authority state
-predecessor proposal identity where applicable
-successor proposal identity where applicable
+Design
+  defines structural governance methodology and authorization semantics
+
+Configuration
+  defines concrete repository filesystem permissions
+
+Implementation
+  evaluates the actual filesystem against configuration
 ```
 
-For bootstrap-installed seed proposals:
+Design shall not enumerate repository-specific filesystem structure.
 
-```text
-lifecycle state = available
-bootstrap provenance = bootstrap-seed
-authority state = none
-```
+Configuration shall not redefine the governing methodology.
 
-`authority state = none` is mandatory.
+Implementation shall not invent structural permission absent from configuration.
 
-A proposal becomes accepted normative authority only through FS0 Governance Design.
+---
 
-The proposal registry shall be machine-resolvable and shall allow a fresh AI agent to enumerate available unprocessed successor Design Proposals without relying on chat history.
+# Minimum Conformance Obligations
 
-Bootstrap shall not mutate a seed proposal in place after cutover.
+At minimum, repository-structure Conformance shall verify that:
 
-A later correction shall occur through a new or successor proposal with explicit lineage.
+- exactly one canonical repository-structure configuration is resolved without relying on a fixed filesystem path or implicit search convention;
+- the resolved configuration authorizes its own filesystem object;
+- every filesystem object beneath repository root has applicable positive authorization;
+- every required configured object exists;
+- directory descendants are denied unless individually authorized or covered by explicit complete-subtree authorization;
+- no implicit exemptions are applied;
+- the configuration itself is authorized;
+- filesystem evaluation is performed against the actual repository-root namespace; and
+- validation failure identifies unauthorized or missing objects sufficiently for correction.
 
-## Minimal Structured Record Contracts
+---
 
-FS0 does not require final rich schemas, but bootstrap shall generate machine-resolvable JSON records with the following minimum contracts.
+# Deferred Structure Features
 
-All JSON records shall contain:
+FS0 may defer richer repository-structure capabilities not required for the initial closed-repository model, including advanced pattern languages, reusable profiles, conditional policies, structural inheritance, generalized artifact taxonomy, and richer classification systems.
 
-```text
-schema_version
-record_type
-```
-
-### Authority document record
-
-Each authority document shall contain at least:
-
-```text
-schema_version
-record_type = authority
-authority_id
-title
-owner
-lifecycle_state
-dependencies
-delegates
-requirements
-provenance
-```
-
-`lifecycle_state` shall support at least:
-
-```text
-accepted
-superseded
-withdrawn
-```
-
-`dependencies` and `delegates` shall contain stable authority identities.
-
-`requirements` shall contain stable requirement identities owned by that authority record.
-
-### Requirement registry
-
-`repo/authority/requirements.json` shall contain records with at least:
-
-```text
-requirement_id
-owner_authority_id
-statement
-lifecycle_state
-predecessor_requirement_id where applicable
-successor_requirement_id where applicable
-conformance_applicability
-assurance_applicability
-```
-
-Allowed applicability values are:
-
-```text
-conformance_applicability = mechanical | none
-assurance_applicability = required | none
-```
-
-### Conformance correspondence
-
-`repo/conformance/correspondence.json` shall contain one canonical record per active requirement:
-
-```text
-requirement_id
-applicability
-assertion_ids
-```
-
-For `applicability = mechanical`, `assertion_ids` shall contain at least one stable assertion identity.
-
-For `applicability = none`, `assertion_ids` shall be empty.
-
-### Assurance correspondence
-
-`repo/assurance/correspondence.json` shall contain one canonical record per active requirement:
-
-```text
-requirement_id
-applicability
-obligation_ids
-```
-
-For `applicability = required`, `obligation_ids` shall contain at least one stable review-obligation identity.
-
-For `applicability = none`, `obligation_ids` shall be empty.
-
-### Bootstrap state record
-
-`repo/state/bootstrap.json` shall contain at least:
-
-```text
-schema_version
-record_type = bootstrap-state
-state
-candidate_revision where applicable
-first_accepted_fs0_revision where applicable
-bootstrap_provenance_issue where applicable
-bootstrap_acceptance_record where applicable
-accepted_ref
-cutover_timestamp where applicable
-```
-
-Allowed bootstrap `state` values are:
-
-```text
-candidate
-cutover
-```
-
-After `cutover`, the record shall be immutable except through explicitly authorized disaster-recovery or reconstruction semantics established by later accepted authority.
-
-### Proposal registry
-
-`repo/governance/proposals/index.json` shall contain proposal records defined by the Proposal Seed Contract.
-
-These minimum contracts are normative for FS0 bootstrap realization.
-
-A later FS0-governed functional set may replace them with richer schema architecture.
-
-## Structure Enforcement
-
-FS0 shall mechanically enforce this bootstrap installation layout.
-
-At minimum, Conformance shall verify:
-
-- every required path exists;
-- required files have the expected artifact role;
-- no unrecognized maintained artifact exists inside the FS0 governed roots unless authorized by an explicit extension point;
-- required authority documents resolve and satisfy the minimum authority record contract;
-- the requirement registry satisfies the minimum requirement contract;
-- required correspondence files resolve and satisfy their minimum correspondence contracts;
-- the proposal registry resolves the complete bootstrap-installed successor Design Proposal seed set with `authority state = none`;
-- every installed proposal read representation is deterministically derived from bootstrap maintenance source and its Markdown projection is deterministic from that installed read representation;
-- the retained `repo/bootstrap/` tree contains only `design/`, `templates/`, and `scripts/` bootstrap source roles and no generated material;
-- `repo/bootstrap/scripts/bootstrap` exists, is executable, is a shell wrapper, and substantive bootstrap implementation is confined to `repo/bootstrap/scripts/src/`;
-- the canonical Conformance runner exists;
-- the canonical GitHub Actions workflow exists;
-- the bootstrap state file exists and has a valid lifecycle state; and
-- generated root surfaces exist after installation.
-
-Default-deny structure applies to the governed FS0 roots defined by this layout.
-
-The user repository may contain unrelated project content outside the governed FS0 roots unless later accepted repository-structure authority says otherwise.
-
-## Bootstrap Source vs Installed Target
-
-The `fs0-proto` source repository is intentionally not an installed FS0 repository.
-
-Its expected source structure is:
-
-```text
-fs0-proto/
-`-- repo/
-    `-- bootstrap/
-        |-- design/
-        |-- templates/
-        `-- scripts/
-```
-
-## Bootstrap Payload Source Contract
-
-The bootstrap source payload is closed and self-contained.
-
-`repo/bootstrap/design/` contains only bootstrap Design input.
-
-`repo/bootstrap/templates/` contains only canonical input material and source-definition metadata required to construct and maintain FS0 and install the complete non-authoritative successor Design Proposal seed set.
-
-`repo/bootstrap/scripts/` contains only the canonical shell entry point and substantive bootstrap implementation.
-
-The canonical entry point is `repo/bootstrap/scripts/bootstrap`.
-
-All substantive implementation resides under `repo/bootstrap/scripts/src/`.
-
-No generated FS0 authority, generated proposal Markdown, generated orientation surface, generated workflow output, temporary build output, cache, or runtime state belongs under `repo/bootstrap/`.
-
-Bootstrap-generated material shall be written only to its installed target location outside `repo/bootstrap/`.
-
-After cutover, authoritative determination shall not depend on reading from `repo/bootstrap/`.
-
-## Bootstrap Execution Contract
-
-Bootstrap shall be started from the target repository root with:
-
-```bash
-./repo/bootstrap/scripts/bootstrap
-```
-
-The wrapper shall fail clearly if invoked from an invalid repository context rather than silently guessing another target.
-
-The wrapper shall resolve and delegate to implementation under `repo/bootstrap/scripts/src/`.
-
-No file directly under `repo/bootstrap/scripts/` other than the canonical wrapper is required to carry substantive implementation.
-
-## Bootstrap Payload Retention
-
-The copied `repo/bootstrap/` payload shall remain intact after successful installation and cutover unless later accepted authority explicitly governs its removal.
-
-Retention does not grant authority.
-
-After cutover:
-
-```text
-repo/bootstrap/design/      non-authoritative bootstrap Design provenance
-repo/bootstrap/templates/   retained non-authoritative FS0 maintenance source
-repo/bootstrap/scripts/     retained FS0 generation and maintenance implementation
-```
-
-may support FS0 Governance-authorized maintenance.
-
-Authoritative determination shall use accepted read surfaces outside `repo/bootstrap/`.
-
-The bootstrap implementation reads its local bootstrap Design and template inputs and creates or regenerates the installed FS0 layout in the containing target repository.
-
-The prototype source tree shall not be used as evidence that installed FS0 structure exists.
+Deferral of those capabilities shall not weaken the FS0 invariant that every filesystem object beneath repository root requires positive authorization.

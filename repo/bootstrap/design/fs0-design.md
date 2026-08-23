@@ -91,26 +91,64 @@ These groups are capability boundaries, not necessarily final specification or d
 
 ---
 
+# Repository-Structure Methodology Boundary
+
+FS0 Design defines repository-structure governance methodology and validation semantics.
+
+FS0 Design shall not define repository-specific filesystem structure.
+
+One canonical repository-structure configuration shall be the sole instance-level source of permission for filesystem objects beneath the repository root.
+
+The repository root is a closed structural governance boundary.
+
+Every filesystem object beneath that boundary shall require positive authorization from the canonical repository-structure configuration.
+
+Absence of applicable authorization shall mean deny.
+
+No filesystem object, directory class, tool-created state, generated state, ignored state, temporary state, or implementation convention shall receive implicit structural permission.
+
+A directory authorization shall apply only to the directory itself unless that authorization explicitly grants permission to the complete descendant subtree.
+
+Design may define the semantics by which the configuration expresses required or permitted presence, exact object authorization, directory authorization, and whole-subtree authorization, but concrete repository paths and concrete repository layout belong to configuration rather than Design.
+
+Conformance shall mechanically evaluate the actual filesystem namespace beneath the repository root against that configuration.
+
+Bootstrap may construct the initial configuration as part of candidate creation, but after the candidate exists no bootstrap convention or implementation default shall substitute for configuration authorization.
+
+---
+
 # FS0 Maintenance and Read-Surface Boundary
 
-`repo/bootstrap/` is the canonical non-authoritative maintenance source and generation implementation for FS0.
+FS0 shall distinguish non-authoritative maintenance source, generation implementation, generated read surfaces, and accepted authoritative read surfaces by machine-resolvable semantic role rather than filesystem location.
 
-After cutover, authoritative determination shall use accepted read surfaces outside `repo/bootstrap/`.
+After cutover, authoritative determination shall use accepted authoritative read surfaces and shall not use non-authoritative maintenance source as fallback authority when source and generated read surfaces disagree.
 
-Bootstrap source shall not become fallback authority when source and generated read surfaces disagree.
+Post-cutover maintenance may modify retained bootstrap maintenance source only through FS0 Governance-authorized work.
 
-Post-cutover FS0 maintenance may modify bootstrap source only through FS0 Governance-authorized work.
-
-Generated FS0 read surfaces shall be produced from canonical bootstrap data, templates, and generators.
+Generated FS0 read surfaces shall be produced from canonical maintenance inputs and generation implementation.
 
 Generated FS0 read surfaces shall not be independently maintained as canonical source.
 
 Generation shall be deterministic for identical canonical inputs and explicitly declared variable inputs.
 
-Conformance shall mechanically verify correspondence between canonical bootstrap source and generated FS0 read surfaces.
+Conformance shall mechanically verify correspondence between canonical maintenance source and generated FS0 read surfaces.
 
 A source/read-surface mismatch is a Conformance defect.
 
 Post-cutover FS0 shall require no semantic, template, generator, or script input from outside the accepted repository state.
+
+## Repository-Structure Configuration Resolution
+
+FS0 shall define a location-independent mechanism by which the operating substrate presents exactly one candidate repository-structure configuration identity to Conformance.
+
+The resolution mechanism shall identify the configuration without granting structural permission to its filesystem object.
+
+Configuration discovery and configuration authorization are distinct operations.
+
+After resolution, the configuration shall authorize its own filesystem object under the same structural rules that govern every other object.
+
+Failure to resolve exactly one configuration shall cause repository-structure Conformance failure.
+
+Implementation shall not substitute a built-in filesystem path, search-order convention, filename convention, or fallback location for this resolution mechanism.
 
 ---
