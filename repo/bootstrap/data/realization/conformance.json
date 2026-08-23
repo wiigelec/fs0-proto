@@ -26,7 +26,9 @@
         "FS0-ASSERT-CONF-019",
         "FS0-ASSERT-CONF-003",
         "FS0-ASSERT-CONF-005",
-        "FS0-ASSERT-CONF-007"
+        "FS0-ASSERT-CONF-007",
+        "FS0-ASSERT-CONF-002",
+        "FS0-ASSERT-CONF-008"
       ]
     },
     {
@@ -356,6 +358,14 @@
         "FS0-ASSERT-FC-069",
         "FS0-ASSERT-FC-070"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-SELF-CHANGE-COMPLETION",
+      "callable": "self_change_completion",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-033"
+      ],
+      "pending": true
     }
   ],
   "evidence": [
@@ -517,6 +527,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-CANONICAL-GENERATION-SEMANTICS",
       "implementation_id": "FS0-IMPL-CANONICAL-GENERATION-SEMANTICS",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-SELF-CHANGE-COMPLETION",
+      "implementation_id": "FS0-IMPL-SELF-CHANGE-COMPLETION",
       "evidence_class": "execution-result"
     }
   ],

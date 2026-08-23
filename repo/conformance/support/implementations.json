@@ -16,6 +16,7 @@
         "FS0-ASSERT-FC-075",
         "FS0-ASSERT-CONF-024"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-045",
         "FS0-FC-056",
@@ -40,8 +41,11 @@
         "FS0-ASSERT-CONF-019",
         "FS0-ASSERT-CONF-003",
         "FS0-ASSERT-CONF-005",
-        "FS0-ASSERT-CONF-007"
+        "FS0-ASSERT-CONF-007",
+        "FS0-ASSERT-CONF-002",
+        "FS0-ASSERT-CONF-008"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-CONF-001",
         "FS0-CONF-004",
@@ -51,7 +55,9 @@
         "FS0-CONF-019",
         "FS0-CONF-003",
         "FS0-CONF-005",
-        "FS0-CONF-007"
+        "FS0-CONF-007",
+        "FS0-CONF-002",
+        "FS0-CONF-008"
       ]
     },
     {
@@ -65,6 +71,7 @@
         "FS0-ASSERT-CONF-023",
         "FS0-ASSERT-CONF-021"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-CONF-022",
         "FS0-CONF-023",
@@ -80,6 +87,7 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-016"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-CONF-016"
       ]
@@ -94,6 +102,7 @@
         "FS0-ASSERT-CONF-010",
         "FS0-ASSERT-CONF-014"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-CONF-010",
         "FS0-CONF-014"
@@ -108,6 +117,7 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-020"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-CONF-020"
       ]
@@ -122,6 +132,7 @@
         "FS0-ASSERT-FC-037",
         "FS0-ASSERT-CONF-011"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-037",
         "FS0-CONF-011"
@@ -144,6 +155,7 @@
         "FS0-ASSERT-GOV-017",
         "FS0-ASSERT-GOV-035"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-GOV-008",
         "FS0-GOV-011",
@@ -165,6 +177,7 @@
       "assertion_ids": [
         "FS0-ASSERT-GOV-037"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-GOV-037"
       ]
@@ -206,6 +219,7 @@
         "FS0-ASSERT-CONF-028",
         "FS0-ASSERT-CONF-029"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-006",
         "FS0-FC-029",
@@ -257,6 +271,7 @@
         "FS0-ASSERT-ASSUR-013",
         "FS0-ASSERT-ASSUR-014"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-ASSUR-001",
         "FS0-ASSUR-002",
@@ -285,6 +300,7 @@
         "FS0-ASSERT-GOV-024",
         "FS0-ASSERT-GOV-025"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-064",
         "FS0-FC-079",
@@ -315,6 +331,7 @@
         "FS0-ASSERT-GOV-049",
         "FS0-ASSERT-GOV-050"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-GOV-001",
         "FS0-GOV-002",
@@ -350,6 +367,7 @@
         "FS0-ASSERT-GOV-046",
         "FS0-ASSERT-GOV-047"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-GOV-018",
         "FS0-GOV-026",
@@ -373,6 +391,7 @@
       "assertion_ids": [
         "FS0-ASSERT-GOV-041"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-GOV-041"
       ]
@@ -386,6 +405,7 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-009"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-CONF-009"
       ]
@@ -399,6 +419,7 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-017"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-CONF-017"
       ]
@@ -418,6 +439,7 @@
         "FS0-ASSERT-FC-077",
         "FS0-ASSERT-FC-078"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-065",
         "FS0-FC-066",
@@ -443,6 +465,7 @@
         "FS0-ASSERT-FC-008",
         "FS0-ASSERT-FC-043"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-001",
         "FS0-FC-002",
@@ -463,6 +486,7 @@
         "FS0-ASSERT-FC-009",
         "FS0-ASSERT-FC-010"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-009",
         "FS0-FC-010"
@@ -482,6 +506,7 @@
         "FS0-ASSERT-FC-016",
         "FS0-ASSERT-FC-046"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-011",
         "FS0-FC-012",
@@ -515,6 +540,7 @@
         "FS0-ASSERT-FC-059",
         "FS0-ASSERT-FC-063"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-017",
         "FS0-FC-019",
@@ -547,6 +573,7 @@
         "FS0-ASSERT-FC-061",
         "FS0-ASSERT-FC-062"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-035",
         "FS0-FC-036",
@@ -566,6 +593,7 @@
         "FS0-ASSERT-FC-028",
         "FS0-ASSERT-FC-054"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-024",
         "FS0-FC-028",
@@ -582,6 +610,7 @@
         "FS0-ASSERT-FC-027",
         "FS0-ASSERT-FC-031"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-027",
         "FS0-FC-031"
@@ -596,6 +625,7 @@
       "assertion_ids": [
         "FS0-ASSERT-FC-032"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-032"
       ]
@@ -609,6 +639,7 @@
       "assertion_ids": [
         "FS0-ASSERT-GOV-020"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-GOV-020"
       ]
@@ -622,6 +653,7 @@
       "assertion_ids": [
         "FS0-ASSERT-FC-020"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-020"
       ]
@@ -635,6 +667,7 @@
       "assertion_ids": [
         "FS0-ASSERT-FC-034"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-034"
       ]
@@ -648,6 +681,7 @@
       "assertion_ids": [
         "FS0-ASSERT-FC-041"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-041"
       ]
@@ -661,6 +695,7 @@
       "assertion_ids": [
         "FS0-ASSERT-FC-060"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-060"
       ]
@@ -675,9 +710,24 @@
         "FS0-ASSERT-FC-069",
         "FS0-ASSERT-FC-070"
       ],
+      "pending": false,
       "authority_requirement_ids": [
         "FS0-FC-069",
         "FS0-FC-070"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-SELF-CHANGE-COMPLETION",
+      "role": "support",
+      "callable": "self_change_completion",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-033"
+      ],
+      "pending": true,
+      "authority_requirement_ids": [
+        "FS0-FC-033"
       ]
     }
   ]
