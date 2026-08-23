@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "record_type": "repository-structure-configuration",
+  "record_type": "repository-structure-bootstrap-source",
   "configuration_id": "FS0-REPOSITORY-STRUCTURE",
   "objects": [
     {
