@@ -166,6 +166,24 @@
         "FS0-ASSERT-GOV-049",
         "FS0-ASSERT-GOV-050"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-GITHUB-GOVERNANCE-BINDING",
+      "callable": "github_governance_binding",
+      "assertion_ids": [
+        "FS0-ASSERT-GOV-018",
+        "FS0-ASSERT-GOV-020",
+        "FS0-ASSERT-GOV-026",
+        "FS0-ASSERT-GOV-027",
+        "FS0-ASSERT-GOV-038",
+        "FS0-ASSERT-GOV-040",
+        "FS0-ASSERT-GOV-042",
+        "FS0-ASSERT-GOV-043",
+        "FS0-ASSERT-GOV-044",
+        "FS0-ASSERT-GOV-045",
+        "FS0-ASSERT-GOV-046",
+        "FS0-ASSERT-GOV-047"
+      ]
     }
   ],
   "evidence": [
@@ -232,6 +250,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-GOVERNED-WORK-KERNEL",
       "implementation_id": "FS0-IMPL-GOVERNED-WORK-KERNEL",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-GITHUB-GOVERNANCE-BINDING",
+      "implementation_id": "FS0-IMPL-GITHUB-GOVERNANCE-BINDING",
       "evidence_class": "execution-result"
     }
   ],

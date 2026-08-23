@@ -1366,6 +1366,96 @@ def check_governed_work_kernel(root, assertion_ids):
     return [result(a,"pass" if checks[a][0] else "fail",checks[a][1]) for a in assertion_ids]
 
 
+def check_github_governance_binding(root, assertion_ids):
+    path = root / "repo/governance/github_binding.py"
+    if not path.is_file():
+        return [result(a, "fail", "GitHub Governance binding runtime is missing") for a in assertion_ids]
+    spec = importlib.util.spec_from_file_location("fs0_github_binding", path)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    design_work = {
+        "stage":"design","work_id":"D1","predecessor_id":"REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
+        "initiating_proposal_id":"REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
+        "normative_delta":{"created":["FS1-X"]},"candidate_result":{"authority_delta":"FS1-X"},
+        "disposition":"accepted",
+    }
+    plan_work = {
+        "stage":"plan","work_id":"P1","predecessor_id":"D1",
+        "candidate_result":{"build_scope":["repo/governance/github_binding.py"]},
+        "disposition":"accepted",
+    }
+    build_work = {
+        "stage":"build","work_id":"B1","predecessor_id":"P1",
+        "candidate_result":{"candidate_id":"a"*40},"disposition":"pending",
+        "bounded_authorization":{"acceptance_actor":"tester","mutation_scope":["repo/governance/github_binding.py"]},
+    }
+    snap = {
+        "design_issue":{"kind":"issue","number":101,"governed_work":design_work},
+        "plan_issue":{"kind":"issue","number":102,"governed_work":plan_work},
+        "build_issue":{"kind":"issue","number":103,"governed_work":build_work},
+        "candidate":{"branch":"fs1/build-B1","commit_sha":"a"*40},
+        "pull_request":{"kind":"pull_request","number":104,"head_branch":"fs1/build-B1","head_sha":"a"*40},
+        "acceptance":{"disposition":"pending"},
+        "remaining_unauthorized_work":["FS2"],
+    }
+    resolved = m.resolve_remote_governance_state(snap)
+
+    same_issue_rejected = False
+    bad = dict(snap)
+    bad["plan_issue"] = {"kind":"issue","number":101,"governed_work":plan_work}
+    try:
+        m.resolve_remote_governance_state(bad)
+    except m.GitHubBindingError:
+        same_issue_rejected = True
+
+    bad_candidate_rejected = False
+    try:
+        m.validate_candidate({"branch":"x","commit_sha":"abc"})
+    except m.GitHubBindingError:
+        bad_candidate_rejected = True
+
+    bad_pr_rejected = False
+    try:
+        m.validate_review_surface(
+            {"kind":"pull_request","number":9,"head_branch":"other","head_sha":"a"*40},
+            snap["candidate"],
+        )
+    except m.GitHubBindingError:
+        bad_pr_rejected = True
+
+    bootstrap_issue = {
+        "kind":"issue","number":100,
+        "bootstrap_authorization":{"acceptance_actor":"tester"},
+    }
+    bootstrap_ok = m.validate_bootstrap_provenance_issue(bootstrap_issue)["number"] == 100
+    bootstrap_as_work_rejected = False
+    try:
+        m.validate_bootstrap_provenance_issue({**bootstrap_issue,"governed_work":design_work})
+    except m.GitHubBindingError:
+        bootstrap_as_work_rejected = True
+
+    post_cutover_denied = not m.post_cutover_mutation_allowed({"state":"cutover"}, None)
+    post_cutover_governed = m.post_cutover_mutation_allowed(
+        {"state":"cutover"},{**build_work,"disposition":"accepted"}
+    )
+
+    checks = {
+        "FS0-ASSERT-GOV-018": (bootstrap_ok, "bootstrap provenance uses a dedicated GitHub issue with acceptance_actor"),
+        "FS0-ASSERT-GOV-020": (post_cutover_denied and post_cutover_governed, "post-cutover persistent mutation requires accepted governed Build authorization"),
+        "FS0-ASSERT-GOV-026": (snap["design_issue"]["kind"]=="issue" and resolved["active_design_work_id"]=="D1", "Design governed work uses a GitHub issue"),
+        "FS0-ASSERT-GOV-027": (resolved["active_design_work_id"]=="D1" and resolved["accepted_realization_intent"]==plan_work["candidate_result"], "current governed work and accepted realization intent resolve from repository/GitHub state"),
+        "FS0-ASSERT-GOV-038": (bootstrap_ok and bootstrap_as_work_rejected, "bootstrap provenance issue cannot masquerade as governed work"),
+        "FS0-ASSERT-GOV-040": (post_cutover_denied, "bootstrap-only mutation cannot create post-cutover accepted state"),
+        "FS0-ASSERT-GOV-042": (snap["plan_issue"]["kind"]=="issue" and snap["plan_issue"]["number"]!=snap["design_issue"]["number"], "Plan uses a separate GitHub issue"),
+        "FS0-ASSERT-GOV-043": (len({snap["design_issue"]["number"],snap["plan_issue"]["number"],snap["build_issue"]["number"]})==3 and same_issue_rejected, "Build uses a separate GitHub issue"),
+        "FS0-ASSERT-GOV-044": (resolved["candidate_branch"]=="fs1/build-B1" and resolved["revision_under_review"]=="a"*40 and bad_candidate_rejected, "candidate state requires branch plus exact commit SHA"),
+        "FS0-ASSERT-GOV-045": (resolved["pull_request_number"]==104 and bad_pr_rejected, "candidate review surface is a PR bound to candidate branch and SHA"),
+        "FS0-ASSERT-GOV-046": (resolved["active_design_work_id"]=="D1" and resolved["initiating_proposal_id"]=="REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT" and resolved["normative_delta"]=={"created":["FS1-X"]}, "active Design work proposal and normative delta are machine-resolvable"),
+        "FS0-ASSERT-GOV-047": (resolved["revision_under_review"]=="a"*40 and resolved["acceptance_status"]=="pending" and resolved["resulting_accepted_revision"] is None and resolved["remaining_unauthorized_work"]==["FS2"], "review revision acceptance result and unauthorized work are machine-resolvable"),
+    }
+    return [result(a,"pass" if checks[a][0] else "fail",checks[a][1]) for a in assertion_ids]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1681,6 +1771,7 @@ CALLABLES = {
     "assurance_runtime": check_assurance_runtime,
     "successor_proposal_registry": check_successor_proposal_registry,
     "governed_work_kernel": check_governed_work_kernel,
+    "github_governance_binding": check_github_governance_binding,
 }
 
 

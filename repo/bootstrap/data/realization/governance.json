@@ -26,6 +26,11 @@
       "source": "governance/work.py",
       "target": "repo/governance/work.py",
       "mode": "0644"
+    },
+    {
+      "source": "governance/github_binding.py",
+      "target": "repo/governance/github_binding.py",
+      "mode": "0644"
     }
   ]
 }

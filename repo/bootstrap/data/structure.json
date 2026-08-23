@@ -244,6 +244,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/realization/governance/github_binding.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/realization/governance/publish-accepted",
       "object_type": "file",
       "presence": "required"
@@ -528,6 +533,11 @@
     },
     {
       "path": "repo/governance/accepted_state.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/governance/github_binding.py",
       "object_type": "file",
       "presence": "required"
     },

@@ -66,6 +66,11 @@
       "evidence_id": "FS0-EVIDENCE-GOVERNED-WORK-KERNEL",
       "implementation_id": "FS0-IMPL-GOVERNED-WORK-KERNEL",
       "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-GITHUB-GOVERNANCE-BINDING",
+      "implementation_id": "FS0-IMPL-GITHUB-GOVERNANCE-BINDING",
+      "evidence_class": "execution-result"
     }
   ]
 }
