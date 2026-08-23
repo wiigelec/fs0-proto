@@ -429,6 +429,31 @@
         "FS0-FC-077",
         "FS0-FC-078"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-AUTHORITY-KERNEL",
+      "role": "support",
+      "callable": "authority_kernel",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-001",
+        "FS0-ASSERT-FC-002",
+        "FS0-ASSERT-FC-003",
+        "FS0-ASSERT-FC-004",
+        "FS0-ASSERT-FC-005",
+        "FS0-ASSERT-FC-008",
+        "FS0-ASSERT-FC-043"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-001",
+        "FS0-FC-002",
+        "FS0-FC-003",
+        "FS0-FC-004",
+        "FS0-FC-005",
+        "FS0-FC-008",
+        "FS0-FC-043"
+      ]
     }
   ]
 }

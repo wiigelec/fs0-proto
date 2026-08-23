@@ -224,6 +224,19 @@
         "FS0-ASSERT-FC-077",
         "FS0-ASSERT-FC-078"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-AUTHORITY-KERNEL",
+      "callable": "authority_kernel",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-001",
+        "FS0-ASSERT-FC-002",
+        "FS0-ASSERT-FC-003",
+        "FS0-ASSERT-FC-004",
+        "FS0-ASSERT-FC-005",
+        "FS0-ASSERT-FC-008",
+        "FS0-ASSERT-FC-043"
+      ]
     }
   ],
   "evidence": [
@@ -315,6 +328,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-GENERATION-CONTRACT",
       "implementation_id": "FS0-IMPL-GENERATION-CONTRACT",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-AUTHORITY-KERNEL",
+      "implementation_id": "FS0-IMPL-AUTHORITY-KERNEL",
       "evidence_class": "execution-result"
     }
   ],

@@ -1955,6 +1955,122 @@ def check_generation_contract(root, assertion_ids):
 
 
 
+def check_authority_kernel(root, assertion_ids):
+    names = ("framework", "governance", "conformance", "assurance")
+    authorities = {
+        name: load(root / "repo/authority" / f"{name}.json")
+        for name in names
+    }
+    requirements = load(root / "repo/authority/requirements.json")["requirements"]
+    structure = load(root / "repo/bootstrap/data/structure.json")
+
+    ids = [record.get("authority_id") for record in authorities.values()]
+    id_set = set(ids)
+    framework = authorities["framework"]
+    framework_id = framework.get("authority_id")
+    expected_keystones = {
+        "FS0-AUTH-GOVERNANCE",
+        "FS0-AUTH-CONFORMANCE",
+        "FS0-AUTH-ASSURANCE",
+    }
+
+    structure_records = {
+        record.get("path"): record
+        for record in structure.get("objects", [])
+        if isinstance(record, dict)
+    }
+    framework_path = structure_records.get("repo/authority/framework.json")
+
+    graph = {
+        record.get("authority_id"): list(record.get("dependencies", []))
+        for record in authorities.values()
+    }
+
+    def acyclic():
+        visiting = set()
+        visited = set()
+
+        def visit(node):
+            if node in visited:
+                return True
+            if node in visiting:
+                return False
+            visiting.add(node)
+            for dep in graph.get(node, []):
+                if dep not in graph or not visit(dep):
+                    return False
+            visiting.remove(node)
+            visited.add(node)
+            return True
+
+        return all(visit(node) for node in graph)
+
+    requirement_ownership_ok = all(
+        isinstance(record.get("owner_authority_id"), str)
+        and record["owner_authority_id"] in id_set
+        for record in requirements
+    )
+
+    delegated = set(framework.get("delegates", []))
+    delegated_records_ok = all(
+        authorities[name].get("owner") == framework_id
+        and authorities[name].get("dependencies") == [framework_id]
+        for name in ("governance", "conformance", "assurance")
+    )
+
+    checks = {
+        "FS0-ASSERT-FC-001": (
+            framework_id == "FS0-AUTH-FRAMEWORK"
+            and ids.count(framework_id) == 1
+            and isinstance(framework_path, dict)
+            and framework_path.get("object_type") == "file"
+            and framework_path.get("presence") == "required",
+            "the Framework namespace has one machine-resolvable authority identity and its concrete read-surface placement is positively authorized by repository configuration",
+        ),
+        "FS0-ASSERT-FC-002": (
+            ids.count("FS0-AUTH-FRAMEWORK") == 1
+            and framework.get("dependencies") == [],
+            "exactly one foundational Framework Contract authority exists and it has no authority dependency",
+        ),
+        "FS0-ASSERT-FC-003": (
+            delegated == expected_keystones and delegated_records_ok,
+            "Framework explicitly delegates to exactly Governance, Conformance, and Assurance, whose authority records bind back to Framework",
+        ),
+        "FS0-ASSERT-FC-004": (
+            len(ids) == len(id_set)
+            and all(isinstance(value, str) and value for value in ids),
+            "every accepted authority has a unique non-empty machine-resolvable authority identity",
+        ),
+        "FS0-ASSERT-FC-005": (
+            requirement_ownership_ok,
+            "every accepted normative requirement has exactly one owner_authority_id resolving to one accepted authority identity",
+        ),
+        "FS0-ASSERT-FC-008": (
+            acyclic(),
+            "the accepted normative authority dependency graph is acyclic",
+        ),
+        "FS0-ASSERT-FC-043": (
+            delegated == expected_keystones
+            and all(
+                not authorities[name].get("delegates")
+                for name in ("governance", "conformance", "assurance")
+            ),
+            "Governance, Conformance, and Assurance are the only authority-bearing keystones delegated by Framework",
+        ),
+    }
+
+    evidence = {
+        "authority_ids": ids,
+        "framework_delegates": sorted(delegated),
+        "dependency_graph": graph,
+        "framework_path_authorization": framework_path,
+        "requirements_checked": len(requirements),
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -2275,6 +2391,7 @@ CALLABLES = {
     "conformance_selftest": check_conformance_selftest,
     "conformance_canonicality": check_conformance_canonicality,
     "generation_contract": check_generation_contract,
+    "authority_kernel": check_authority_kernel,
 }
 
 
