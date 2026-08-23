@@ -50,13 +50,39 @@ def derived_id(requirement_id: str, requirement_prefix: str, derived_prefix: str
     return f"{derived_prefix}{suffix(requirement_id, requirement_prefix)}"
 
 
-def load_source(root: Path):
-    data = root / "repo/bootstrap/data"
-    model = load_json(data / "model.json")
 
-    if model.get("schema_version") != "1":
+def load_generation_contract(root: Path):
+    path = root / "repo/bootstrap/data/generation_contract.json"
+    contract = load_json(path)
+    required = {
+        "schema_version", "record_type", "record_schema_version", "record_types",
+        "roles", "source_paths", "output_paths", "required_fields",
+        "enumerations", "bootstrap_lifecycle", "default_artifact_mode",
+    }
+    if not isinstance(contract, dict) or set(contract) != required:
+        raise SystemExit("canonical generation contract fields mismatch")
+    for key in ("record_schema_version", "default_artifact_mode"):
+        if not isinstance(contract.get(key), str) or not contract[key]:
+            raise SystemExit(f"canonical generation contract {key} is invalid")
+    for key in (
+        "record_types", "roles", "source_paths", "output_paths",
+        "required_fields", "enumerations", "bootstrap_lifecycle",
+    ):
+        if not isinstance(contract.get(key), dict) or not contract[key]:
+            raise SystemExit(f"canonical generation contract {key} is invalid")
+    return contract
+
+
+def load_source(root: Path):
+    contract = load_generation_contract(root)
+    data = root / "repo/bootstrap/data"
+    model = load_json(root / contract["source_paths"]["model"])
+    schema = contract["record_schema_version"]
+    record_types = contract["record_types"]
+
+    if model.get("schema_version") != schema:
         raise SystemExit("unsupported bootstrap model schema")
-    if model.get("record_type") != "fs0-bootstrap-model":
+    if model.get("record_type") != record_types["model"]:
         raise SystemExit("unexpected bootstrap model record_type")
 
     authority_order = model.get("authority_order")
@@ -130,8 +156,8 @@ def load_source(root: Path):
                     raise SystemExit(f"{rid}: missing lifecycle state")
 
                 expanded = {
-                    "schema_version": "1",
-                    "record_type": "requirement",
+                    "schema_version": schema,
+                    "record_type": record_types["requirement"],
                     "requirement_id": rid,
                     "owner_authority_id": aid,
                     "statement": statement,
@@ -151,8 +177,8 @@ def load_source(root: Path):
         requirements_by_authority[authority_name] = local
 
         authority = {
-            "schema_version": "1",
-            "record_type": "authority",
+            "schema_version": schema,
+            "record_type": record_types["authority"],
             "authority_id": aid,
             "title": src["title"],
             "owner": src.get("owner", aid),
@@ -168,14 +194,18 @@ def load_source(root: Path):
             authority["provenance"] = src["provenance"]
         authorities[authority_name] = authority
 
-    return model, authority_order, authorities, requirements, requirements_by_authority
+    return contract, model, authority_order, authorities, requirements, requirements_by_authority
 
 
-def derive_identity_surfaces(model, requirements):
+
+
+def derive_identity_surfaces(contract, model, requirements):
     identity = model.get("identity", {})
     req_prefix = identity.get("requirement_prefix")
     assertion = identity.get("assertion", {})
     obligation = identity.get("obligation", {})
+    schema = contract["record_schema_version"]
+    record_types = contract["record_types"]
 
     assertion_prefix = assertion.get("prefix")
     obligation_prefix = obligation.get("prefix")
@@ -197,19 +227,19 @@ def derive_identity_surfaces(model, requirements):
         oid = derived_id(rid, req_prefix, obligation_prefix)
 
         conformance_records.append({
-            "schema_version": "1",
-            "record_type": "conformance-correspondence",
+            "schema_version": schema,
+            "record_type": record_types["conformance_correspondence"],
             "requirement_id": rid,
             "applicability": c,
             "assertion_ids": [aid] if c == "mechanical" else [],
         })
         if c == "mechanical":
             assertions.append({
-                "schema_version": "1",
-                "record_type": "assertion-definition",
+                "schema_version": schema,
+                "record_type": record_types["assertion_definition"],
                 "assertion_id": aid,
                 "requirement_id": rid,
-                "role": "assertion",
+                "role": contract["roles"]["assertion"],
                 "derivation": {
                     "kind": assertion["derivation_kind"],
                     "requirement_id": rid,
@@ -217,8 +247,8 @@ def derive_identity_surfaces(model, requirements):
             })
 
         assurance_records.append({
-            "schema_version": "1",
-            "record_type": "assurance-correspondence",
+            "schema_version": schema,
+            "record_type": record_types["assurance_correspondence"],
             "requirement_id": rid,
             "applicability": a,
             "obligation_ids": [oid] if a == "required" else [],
@@ -228,8 +258,8 @@ def derive_identity_surfaces(model, requirements):
                 requirement_id=rid
             )
             obligations.append({
-                "schema_version": "1",
-                "record_type": "assurance-obligation-definition",
+                "schema_version": schema,
+                "record_type": record_types["assurance_obligation_definition"],
                 "obligation_id": oid,
                 "requirement_id": rid,
                 "authorizing_authority_id": owner,
@@ -243,14 +273,16 @@ def derive_identity_surfaces(model, requirements):
     return conformance_records, assertions, assurance_records, obligations
 
 
-def derive_root_surfaces(root: Path):
-    data_dir = root / "repo/bootstrap/data/root"
-    index = load_json(data_dir / "index.json")
-    if index.get("schema_version") != "1":
+
+
+def derive_root_surfaces(root: Path, contract):
+    index = load_json(root / contract["source_paths"]["root_surface_index"])
+    if index.get("schema_version") != contract["record_schema_version"]:
         raise SystemExit("unsupported generated root surface index schema")
-    if index.get("record_type") != "generated-root-surface-index":
+    if index.get("record_type") != contract["record_types"]["root_surface_index"]:
         raise SystemExit("unexpected generated root surface index record_type")
 
+    data_dir = (root / contract["source_paths"]["root_surface_index"]).parent
     records = index.get("artifacts")
     if not isinstance(records, list) or not records:
         raise SystemExit("generated root surface index must contain artifacts")
@@ -286,82 +318,155 @@ def derive_root_surfaces(root: Path):
 
 
 
-def derive_successor_proposals(root: Path):
-    semantics = load_json(root / "repo/bootstrap/data/realization/generation_semantics.json")
+
+
+def derive_successor_proposals(root: Path, contract):
+    semantics = load_json(root / contract["source_paths"]["generation_semantics"])
     proposal_policy = semantics["successor_proposals"]
-    source_dir = root / "repo/bootstrap/data/proposals"
+    source_dir = root / contract["source_paths"]["successor_proposal_directory"]
     source_paths = sorted(source_dir.glob("*.json")) if source_dir.is_dir() else []
     if not source_paths:
         raise SystemExit("successor proposal source directory is empty")
-    required = {"schema_version","record_type","source_role","proposal_id","slug","title","order","lifecycle_state","bootstrap_provenance","authority_state","reconstruction_dependencies","predecessor_id","successor_id","source_provenance","content"}
+
+    required = set(contract["required_fields"]["successor_proposal_source"])
+    provenance_fields = tuple(
+        contract["required_fields"]["successor_source_provenance"]
+    )
+    schema = contract["record_schema_version"]
+    record_types = contract["record_types"]
+    output_root = contract["output_paths"]["successor_proposal_directory"]
+
     sources, ids, orders, slugs = [], set(), set(), set()
     for path in source_paths:
         record = load_json(path)
         if set(record) != required:
             raise SystemExit(f"{path}: proposal source fields mismatch")
-        if record["schema_version"] != "1" or record["record_type"] != "successor-design-proposal-source" or record["source_role"] != proposal_policy["source_role"]:
+        if (
+            record["schema_version"] != schema
+            or record["record_type"] != record_types["successor_proposal_source"]
+            or record["source_role"] != proposal_policy["source_role"]
+        ):
             raise SystemExit(f"{path}: invalid successor proposal source envelope")
         pid, slug, order = record["proposal_id"], record["slug"], record["order"]
-        if not isinstance(pid,str) or not pid or pid in ids: raise SystemExit(f"{path}: duplicate proposal_id")
-        if not isinstance(slug,str) or not slug or slug in slugs or path.name != f"{slug}.json": raise SystemExit(f"{path}: invalid proposal slug")
-        if not isinstance(order,int) or order < 1 or order in orders: raise SystemExit(f"{path}: invalid proposal order")
-        if record["lifecycle_state"] != proposal_policy["required_lifecycle_state"] or record["bootstrap_provenance"] != proposal_policy["required_bootstrap_provenance"] or record["authority_state"] != proposal_policy["required_authority_state"]: raise SystemExit(f"{path}: invalid bootstrap seed state")
-        if not isinstance(record["reconstruction_dependencies"], list): raise SystemExit(f"{path}: dependencies must be a list")
-        if not isinstance(record["content"], str) or not record["content"]: raise SystemExit(f"{path}: content must be non-empty")
+        if not isinstance(pid, str) or not pid or pid in ids:
+            raise SystemExit(f"{path}: duplicate proposal_id")
+        if (
+            not isinstance(slug, str) or not slug or slug in slugs
+            or path.name != f"{slug}.json"
+        ):
+            raise SystemExit(f"{path}: invalid proposal slug")
+        if not isinstance(order, int) or order < 1 or order in orders:
+            raise SystemExit(f"{path}: invalid proposal order")
+        if (
+            record["lifecycle_state"] != proposal_policy["required_lifecycle_state"]
+            or record["bootstrap_provenance"] != proposal_policy["required_bootstrap_provenance"]
+            or record["authority_state"] != proposal_policy["required_authority_state"]
+        ):
+            raise SystemExit(f"{path}: invalid bootstrap seed state")
+        if not isinstance(record["reconstruction_dependencies"], list):
+            raise SystemExit(f"{path}: dependencies must be a list")
+        if not isinstance(record["content"], str) or not record["content"]:
+            raise SystemExit(f"{path}: content must be non-empty")
         provenance = record["source_provenance"]
-        if not isinstance(provenance, dict) or not all(isinstance(provenance.get(k),str) and provenance[k] for k in ("repository","revision","path","blob_sha")):
+        if (
+            not isinstance(provenance, dict)
+            or not all(
+                isinstance(provenance.get(k), str) and provenance[k]
+                for k in provenance_fields
+            )
+        ):
             raise SystemExit(f"{path}: invalid source_provenance")
-        ids.add(pid); slugs.add(slug); orders.add(order); sources.append(record)
+        ids.add(pid)
+        slugs.add(slug)
+        orders.add(order)
+        sources.append(record)
+
     for record in sources:
-        unresolved = [d for d in record["reconstruction_dependencies"] if d not in ids]
-        if unresolved: raise SystemExit(f"{record['proposal_id']}: unresolved dependencies: {unresolved}")
+        unresolved = [
+            d for d in record["reconstruction_dependencies"] if d not in ids
+        ]
+        if unresolved:
+            raise SystemExit(
+                f"{record['proposal_id']}: unresolved dependencies: {unresolved}"
+            )
+
     outputs, registry_records = {}, []
     for record in sorted(sources, key=lambda x: x["order"]):
         slug = record["slug"]
-        installed_json = f"repo/proposals/{slug}.json"
-        installed_md = f"repo/proposals/{slug}.md"
-        read = {"schema_version":"1","record_type":"successor-design-proposal","source_role":record["source_role"],"proposal_id":record["proposal_id"],"slug":slug,"title":record["title"],"order":record["order"],"lifecycle_state":record["lifecycle_state"],"bootstrap_provenance":record["bootstrap_provenance"],"authority_state":record["authority_state"],"reconstruction_dependencies":record["reconstruction_dependencies"],"predecessor_id":record["predecessor_id"],"successor_id":record["successor_id"],"source_provenance":record["source_provenance"],"markdown_projection":installed_md,"content":record["content"]}
+        installed_json = f"{output_root}/{slug}.json"
+        installed_md = f"{output_root}/{slug}.md"
+        read = {
+            "schema_version": schema,
+            "record_type": record_types["successor_proposal"],
+            "source_role": record["source_role"],
+            "proposal_id": record["proposal_id"],
+            "slug": slug,
+            "title": record["title"],
+            "order": record["order"],
+            "lifecycle_state": record["lifecycle_state"],
+            "bootstrap_provenance": record["bootstrap_provenance"],
+            "authority_state": record["authority_state"],
+            "reconstruction_dependencies": record["reconstruction_dependencies"],
+            "predecessor_id": record["predecessor_id"],
+            "successor_id": record["successor_id"],
+            "source_provenance": record["source_provenance"],
+            "markdown_projection": installed_md,
+            "content": record["content"],
+        }
         outputs[root / installed_json] = read
         outputs[root / installed_md] = record["content"]
-        registry_records.append({"proposal_id":record["proposal_id"],"order":record["order"],"installed_path":installed_json,"markdown_projection":installed_md,"lifecycle_state":record["lifecycle_state"],"bootstrap_provenance":record["bootstrap_provenance"],"authority_state":record["authority_state"],"reconstruction_dependencies":record["reconstruction_dependencies"],"predecessor_id":record["predecessor_id"],"successor_id":record["successor_id"]})
-    outputs[root / "repo/proposals/registry.json"] = {"schema_version":"1","record_type":"successor-proposal-registry","selection_policy":proposal_policy["selection_policy"],"proposals":registry_records}
+        registry_records.append({
+            "proposal_id": record["proposal_id"],
+            "order": record["order"],
+            "installed_path": installed_json,
+            "markdown_projection": installed_md,
+            "lifecycle_state": record["lifecycle_state"],
+            "bootstrap_provenance": record["bootstrap_provenance"],
+            "authority_state": record["authority_state"],
+            "reconstruction_dependencies": record["reconstruction_dependencies"],
+            "predecessor_id": record["predecessor_id"],
+            "successor_id": record["successor_id"],
+        })
+
+    outputs[root / contract["output_paths"]["successor_proposal_registry"]] = {
+        "schema_version": schema,
+        "record_type": record_types["successor_proposal_registry"],
+        "selection_policy": proposal_policy["selection_policy"],
+        "proposals": registry_records,
+    }
     return outputs
 
-def validate_bootstrap_transition(current_state, desired_state, allowed_states):
+
+
+def validate_bootstrap_transition(current_state, desired_state, lifecycle):
+    initial = lifecycle["initial_state"]
+    transitions = lifecycle["transitions"]
+    allowed_states = set(transitions)
     if desired_state not in allowed_states:
         raise SystemExit("desired bootstrap state is not allowed")
     if current_state is None:
-        if desired_state != "candidate":
-            raise SystemExit("initial bootstrap state must be candidate")
+        if desired_state != initial:
+            raise SystemExit("initial bootstrap state is not the canonical initial state")
         return
     if current_state not in allowed_states:
         raise SystemExit("installed bootstrap state is not allowed")
-    if current_state == "cutover" and desired_state != "cutover":
-        raise SystemExit("bootstrap lifecycle cannot transition from cutover to candidate")
-    if current_state == "candidate" and desired_state not in {"candidate", "cutover"}:
-        raise SystemExit("invalid bootstrap lifecycle transition")
+    if desired_state not in transitions[current_state]:
+        raise SystemExit("bootstrap lifecycle transition is not canonically allowed")
 
 
-def derive_bootstrap_state(root: Path):
-    semantics = load_json(root / "repo/bootstrap/data/realization/generation_semantics.json")
+
+
+def derive_bootstrap_state(root: Path, contract):
+    semantics = load_json(root / contract["source_paths"]["generation_semantics"])
     bootstrap_policy = semantics["bootstrap_state"]
-    source = root / "repo/bootstrap/data/state/bootstrap.json"
-    record = load_json(source)
+    record = load_json(root / contract["source_paths"]["bootstrap_state"])
 
-    required = {
-        "schema_version",
-        "record_type",
-        "state",
-        "candidate_revision",
-        "first_accepted_fs0_revision",
-        "bootstrap_provenance_issue",
-        "bootstrap_acceptance_record",
-        "accepted_ref",
-        "cutover_timestamp",
-    }
-    if record.get("schema_version") != "1":
+    required = set(contract["required_fields"]["bootstrap_state"])
+    schema = contract["record_schema_version"]
+    record_type = contract["record_types"]["bootstrap_state"]
+    if record.get("schema_version") != schema:
         raise SystemExit("unsupported bootstrap state schema")
-    if record.get("record_type") != "bootstrap-state":
+    if record.get("record_type") != record_type:
         raise SystemExit("unexpected bootstrap state record_type")
     if set(record) != required:
         missing = sorted(required - set(record))
@@ -375,7 +480,7 @@ def derive_bootstrap_state(root: Path):
     if record.get("accepted_ref") != bootstrap_policy["accepted_ref"]:
         raise SystemExit("bootstrap accepted_ref differs from canonical generation semantics")
 
-    target = root / "repo/state/bootstrap.json"
+    target = root / contract["output_paths"]["bootstrap_state"]
     current_state = None
     if target.is_file():
         try:
@@ -384,18 +489,27 @@ def derive_bootstrap_state(root: Path):
             raise SystemExit(f"installed bootstrap state is invalid JSON: {exc}")
         if (
             not isinstance(installed, dict)
-            or installed.get("schema_version") != "1"
-            or installed.get("record_type") != "bootstrap-state"
+            or installed.get("schema_version") != schema
+            or installed.get("record_type") != record_type
         ):
             raise SystemExit("installed bootstrap state has invalid envelope")
         current_state = installed.get("state")
 
-    validate_bootstrap_transition(current_state, record.get("state"), allowed_states)
+    validate_bootstrap_transition(
+        current_state,
+        record.get("state"),
+        contract["bootstrap_lifecycle"],
+    )
     return {target: record}
 
 
-def derive_repository_structure_state(root: Path):
+
+
+def derive_repository_structure_state(root: Path, contract):
     bootstrap_root = root / "repo/bootstrap"
+    schema = contract["record_schema_version"]
+    config_type = contract["record_types"]["repository_structure_configuration"]
+    binding_type = contract["record_types"]["repository_structure_binding"]
     matches = []
     for path in bootstrap_root.rglob("*"):
         if not path.is_file() or path.is_symlink():
@@ -406,25 +520,21 @@ def derive_repository_structure_state(root: Path):
             continue
         if (
             isinstance(obj, dict)
-            and obj.get("schema_version") == "1"
-            and obj.get("record_type") == "repository-structure-configuration"
+            and obj.get("schema_version") == schema
+            and obj.get("record_type") == config_type
         ):
             matches.append((path, obj))
 
     if len(matches) != 1:
         raise SystemExit(
             "bootstrap payload must contain exactly one "
-            f"repository-structure-configuration record; found {len(matches)}"
+            f"repository structure configuration record; found {len(matches)}"
         )
 
     config_path, config = matches[0]
-
-    required = {
-        "schema_version",
-        "record_type",
-        "configuration_id",
-        "objects",
-    }
+    required = set(
+        contract["required_fields"]["repository_structure_configuration"]
+    )
     if set(config) != required:
         missing = sorted(required - set(config))
         extra = sorted(set(config) - required)
@@ -440,6 +550,12 @@ def derive_repository_structure_state(root: Path):
     objects = config.get("objects")
     if not isinstance(objects, list):
         raise SystemExit("repository structure configuration objects must be a list")
+
+    object_types = set(contract["enumerations"]["repository_structure_object_type"])
+    presence_values = set(contract["enumerations"]["repository_structure_presence"])
+    descendants_values = set(
+        contract["enumerations"]["repository_structure_descendants"]
+    )
 
     seen = set()
     for rec in objects:
@@ -459,11 +575,11 @@ def derive_repository_structure_state(root: Path):
             raise SystemExit(f"repository structure path is not normalized: {rel}")
         if rel in seen:
             raise SystemExit(f"duplicate repository structure path: {rel}")
-        if obj_type not in {"file", "directory", "symlink"}:
+        if obj_type not in object_types:
             raise SystemExit(f"invalid repository structure object type: {rel}")
-        if presence not in {"required", "permitted"}:
+        if presence not in presence_values:
             raise SystemExit(f"invalid repository structure presence: {rel}")
-        if descendants not in {"closed", "complete-subtree"}:
+        if descendants not in descendants_values:
             raise SystemExit(f"invalid repository structure descendants mode: {rel}")
         if obj_type != "directory" and descendants != "closed":
             raise SystemExit(
@@ -472,7 +588,7 @@ def derive_repository_structure_state(root: Path):
         seen.add(rel)
 
     config_rel = config_path.relative_to(root).as_posix()
-    required_binding = "repo/state/repository-structure-binding.json"
+    required_binding = contract["output_paths"]["repository_structure_binding"]
     for rel in (config_rel, required_binding):
         if rel not in seen:
             raise SystemExit(
@@ -481,20 +597,21 @@ def derive_repository_structure_state(root: Path):
             )
 
     binding = {
-        "schema_version": "1",
-        "record_type": "repository-structure-binding",
+        "schema_version": schema,
+        "record_type": binding_type,
         "configuration_identity": identity,
     }
-    return {
-        root / "repo/state/repository-structure-binding.json": binding,
-    }
+    return {root / required_binding: binding}
 
-def derive_assurance_realization(root: Path):
-    data_dir = root / "repo/bootstrap/data/realization"
-    config = load_json(data_dir / "assurance.json")
-    if config.get("schema_version") != "1":
+
+
+def derive_assurance_realization(root: Path, contract):
+    config_path = root / contract["source_paths"]["assurance_realization"]
+    data_dir = config_path.parent
+    config = load_json(config_path)
+    if config.get("schema_version") != contract["record_schema_version"]:
         raise SystemExit("unsupported Assurance realization data schema")
-    if config.get("record_type") != "assurance-realization-data":
+    if config.get("record_type") != contract["record_types"]["assurance_realization_data"]:
         raise SystemExit("unexpected Assurance realization data record_type")
     artifacts = config.get("artifacts")
     if not isinstance(artifacts, list) or not artifacts:
@@ -517,12 +634,15 @@ def derive_assurance_realization(root: Path):
         modes[target_rel] = mode
     return outputs, modes
 
-def derive_governance_realization(root: Path):
-    data_dir = root / "repo/bootstrap/data/realization"
-    config = load_json(data_dir / "governance.json")
-    if config.get("schema_version") != "1":
+
+
+def derive_governance_realization(root: Path, contract):
+    config_path = root / contract["source_paths"]["governance_realization"]
+    data_dir = config_path.parent
+    config = load_json(config_path)
+    if config.get("schema_version") != contract["record_schema_version"]:
         raise SystemExit("unsupported Governance realization data schema")
-    if config.get("record_type") != "governance-realization-data":
+    if config.get("record_type") != contract["record_types"]["governance_realization_data"]:
         raise SystemExit("unexpected Governance realization data record_type")
 
     artifacts = config.get("artifacts")
@@ -563,12 +683,17 @@ def derive_governance_realization(root: Path):
     return outputs, modes
 
 
+
+
 def derive(root: Path):
-    model, authority_order, authority, requirements, _ = load_source(root)
+    contract, model, authority_order, authority, requirements, _ = load_source(root)
     c_records, assertions, a_records, obligations = derive_identity_surfaces(
-        model, requirements
+        contract, model, requirements
     )
 
+    schema = contract["record_schema_version"]
+    record_types = contract["record_types"]
+    paths = contract["output_paths"]
     authority_ids = [authority[name]["authority_id"] for name in authority_order]
     total = len(requirements)
 
@@ -576,69 +701,76 @@ def derive(root: Path):
         root / "repo/authority" / f"{name}.json": authority[name]
         for name in authority_order
     }
-    outputs[root / "repo/authority/requirements.json"] = {
-        "schema_version": "1",
-        "record_type": "requirement-registry",
+    outputs[root / paths["requirements_registry"]] = {
+        "schema_version": schema,
+        "record_type": record_types["requirement_registry"],
         "requirements_total": total,
         "authority_order": authority_ids,
         "requirements": requirements,
     }
-    outputs[root / "repo/conformance/correspondence.json"] = {
-        "schema_version": "1",
-        "record_type": "conformance-correspondence-registry",
+    outputs[root / paths["conformance_correspondence"]] = {
+        "schema_version": schema,
+        "record_type": record_types["conformance_correspondence_registry"],
         "requirements_total": total,
         "records": c_records,
     }
-    outputs[root / "repo/conformance/assertions.json"] = {
-        "schema_version": "1",
-        "record_type": "assertion-definition-registry",
+    outputs[root / paths["conformance_assertions"]] = {
+        "schema_version": schema,
+        "record_type": record_types["assertion_definition_registry"],
         "derivation_policy": model["identity"]["assertion"]["derivation_policy"],
         "assertions": assertions,
     }
-    outputs[root / "repo/assurance/correspondence.json"] = {
-        "schema_version": "1",
-        "record_type": "assurance-correspondence-registry",
+    outputs[root / paths["assurance_correspondence"]] = {
+        "schema_version": schema,
+        "record_type": record_types["assurance_correspondence_registry"],
         "requirements_total": total,
         "records": a_records,
     }
-    outputs[root / "repo/assurance/obligations.json"] = {
-        "schema_version": "1",
-        "record_type": "assurance-obligation-registry",
+    outputs[root / paths["assurance_obligations"]] = {
+        "schema_version": schema,
+        "record_type": record_types["assurance_obligation_registry"],
         "derivation_policy": model["identity"]["obligation"]["derivation_policy"],
         "obligations": obligations,
     }
-    outputs.update(derive_successor_proposals(root))
-    outputs.update(derive_bootstrap_state(root))
-    outputs.update(derive_repository_structure_state(root))
+    outputs.update(derive_successor_proposals(root, contract))
+    outputs.update(derive_bootstrap_state(root, contract))
+    outputs.update(derive_repository_structure_state(root, contract))
     outputs.update(derive_conformance_realization(root, requirements, assertions))
-    assurance_outputs, _ = derive_assurance_realization(root)
+    assurance_outputs, _ = derive_assurance_realization(root, contract)
     outputs.update(assurance_outputs)
-    governance_outputs, _ = derive_governance_realization(root)
+    governance_outputs, _ = derive_governance_realization(root, contract)
     outputs.update(governance_outputs)
-    outputs.update(derive_root_surfaces(root))
+    outputs.update(derive_root_surfaces(root, contract))
     return outputs
 
 
+
+
 def artifact_modes(root: Path):
+    contract = load_generation_contract(root)
     realization = load_json(
-        root / "repo/bootstrap/data/realization/conformance.json"
+        root / contract["source_paths"]["conformance_realization"]
     )
     modes = dict(realization.get("artifact_modes", {}))
     if not isinstance(modes, dict):
         raise SystemExit("artifact_modes must be an object")
-    _, governance_modes = derive_governance_realization(root)
+    _, governance_modes = derive_governance_realization(root, contract)
     modes.update(governance_modes)
     return modes
 
 
+
+
 def required_mode(root: Path, target: Path, modes) -> int:
+    contract = load_generation_contract(root)
     rel = str(target.relative_to(root))
-    raw = modes.get(rel, "0644")
+    raw = modes.get(rel, contract["default_artifact_mode"])
     if not isinstance(raw, str) or len(raw) != 4 or any(
         ch not in "01234567" for ch in raw
     ):
         raise SystemExit(f"invalid generated artifact mode for {rel}: {raw}")
     return int(raw, 8)
+
 
 
 def main():

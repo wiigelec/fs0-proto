@@ -664,6 +664,21 @@
       "authority_requirement_ids": [
         "FS0-FC-060"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-CANONICAL-GENERATION-SEMANTICS",
+      "role": "support",
+      "callable": "generation_semantics_canonical",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-069",
+        "FS0-ASSERT-FC-070"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-069",
+        "FS0-FC-070"
+      ]
     }
   ]
 }

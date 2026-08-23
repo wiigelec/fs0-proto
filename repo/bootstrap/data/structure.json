@@ -155,6 +155,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/generation_contract.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/github_operating_state.json",
       "object_type": "file",
       "presence": "required"

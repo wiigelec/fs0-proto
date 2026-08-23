@@ -7,6 +7,7 @@ import sys
 import stat
 import tempfile
 from pathlib import Path
+import ast
 sys.dont_write_bytecode = True
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 
@@ -920,30 +921,30 @@ def check_bootstrap_authority_lifecycle(root, assertion_ids):
                 pass
     allowed = {'candidate', 'cutover'}
     legal = [('candidate', 'candidate'), ('candidate', 'cutover'), ('cutover', 'cutover')]
-    legal_ok = all((generator.validate_bootstrap_transition(current, desired, allowed) is None for current, desired in legal))
+    legal_ok = all((generator.validate_bootstrap_transition(current, desired, generator.load_generation_contract(root)['bootstrap_lifecycle']) is None for current, desired in legal))
     reverse_rejected = False
     try:
-        generator.validate_bootstrap_transition('cutover', 'candidate', allowed)
+        generator.validate_bootstrap_transition('cutover', 'candidate', generator.load_generation_contract(root)['bootstrap_lifecycle'])
     except SystemExit:
         reverse_rejected = True
     invalid_rejected = True
     for current, desired in (('unknown', 'candidate'), ('candidate', 'unknown')):
         try:
-            generator.validate_bootstrap_transition(current, desired, allowed)
+            generator.validate_bootstrap_transition(current, desired, generator.load_generation_contract(root)['bootstrap_lifecycle'])
         except SystemExit:
             continue
         invalid_rejected = False
-    fresh_candidate_ok = generator.validate_bootstrap_transition(None, 'candidate', allowed) is None
+    fresh_candidate_ok = generator.validate_bootstrap_transition(None, 'candidate', generator.load_generation_contract(root)['bootstrap_lifecycle']) is None
     fresh_cutover_rejected = False
     try:
-        generator.validate_bootstrap_transition(None, 'cutover', allowed)
+        generator.validate_bootstrap_transition(None, 'cutover', generator.load_generation_contract(root)['bootstrap_lifecycle'])
     except SystemExit:
         fresh_cutover_rejected = True
     generator_source = generator_path.read_text(encoding='utf-8')
-    transition_is_wired = 'validate_bootstrap_transition(current_state, record.get("state"), allowed_states)' in generator_source and 'target = root / "repo/state/bootstrap.json"' in generator_source
+    transition_is_wired = 'contract["bootstrap_lifecycle"]' in generator_source and 'validate_bootstrap_transition(' in generator_source and ('contract["output_paths"]["bootstrap_state"]' in generator_source) and ('contract["source_paths"]["bootstrap_state"]' in generator_source)
     lifecycle_ok = legal_ok and reverse_rejected and invalid_rejected and fresh_candidate_ok and fresh_cutover_rejected and transition_is_wired
     checks = {'FS0-ASSERT-FC-027': (accepted_resolution_ok, 'accepted-state determination resolves from the accepted ref and explicit acceptance records and does not fall back to non-authoritative bootstrap maintenance source'), 'FS0-ASSERT-FC-031': (lifecycle_ok, 'bootstrap generation enforces first installation as candidate, permits candidate to cutover, permits stable states, and rejects cutover to candidate reversal')}
-    evidence = {'accepted_state_resolver': 'repo/governance/accepted_state.py', 'unpublished_status': unpublished.get('status'), 'unbacked_status': unbacked.get('status'), 'bootstrap_transition_generator': 'repo/bootstrap/scripts/src/generate.py', 'legal_transitions': legal, 'reverse_rejected': reverse_rejected, 'fresh_cutover_rejected': fresh_cutover_rejected}
+    evidence = {'accepted_state_resolver': 'repo/governance/accepted_state.py', 'unpublished_status': unpublished.get('status'), 'unbacked_status': unbacked.get('status'), 'bootstrap_transition_generator': 'repo/bootstrap/scripts/src/generate.py', 'legal_transitions': legal, 'reverse_rejected': reverse_rejected, 'fresh_cutover_rejected': fresh_cutover_rejected, 'transition_is_wired': transition_is_wired, 'legal_transition_behavior': legal_ok, 'invalid_state_rejected': invalid_rejected, 'fresh_candidate_allowed': fresh_candidate_ok}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
 
 def check_post_cutover_mutation_authority(root, assertion_ids):
@@ -1135,6 +1136,36 @@ def check_cutover_record_immutability(root, assertion_ids):
     evidence = {'policy': 'repo/bootstrap/data/bootstrap_recovery_authority.json', 'guard': 'repo/governance/bootstrap_mutation_guard.py', 'committed_baseline_authority': baseline_ok, 'ordinary_bootstrap_maintenance_allowed': ordinary_bootstrap, 'ordinary_cutover_record_mutation_allowed': ordinary_cutover, 'ordinary_cutover_source_mutation_allowed': ordinary_source, 'recovery_cutover_record_mutation_allowed': recovery_cutover, 'reconstruction_cutover_source_mutation_allowed': reconstruction_source}
     return [result(aid, 'pass' if ok else 'fail', 'after cutover the committed bootstrap cutover record and its canonical source are immutable under ordinary maintenance and may change only through an explicitly accepted Plan whose authority purpose is bootstrap recovery or reconstruction', evidence) for aid in assertion_ids]
 
+def check_generation_semantics_canonical(root, assertion_ids):
+    contract_path = root / 'repo/bootstrap/data/generation_contract.json'
+    generator_path = root / 'repo/bootstrap/scripts/src/generate.py'
+    try:
+        contract = load(contract_path)
+    except Exception as exc:
+        return [result(aid, 'fail', 'canonical generation contract is missing or invalid', {'error': str(exc)}) for aid in assertion_ids]
+    required_top = {'schema_version', 'record_type', 'record_schema_version', 'record_types', 'roles', 'source_paths', 'output_paths', 'required_fields', 'enumerations', 'bootstrap_lifecycle', 'default_artifact_mode'}
+    contract_ok = isinstance(contract, dict) and set(contract) == required_top and (contract.get('schema_version') == '1') and (contract.get('record_type') == 'fs0-generation-contract') and isinstance(contract.get('record_types'), dict) and (len(contract['record_types']) >= 20) and isinstance(contract.get('source_paths'), dict) and isinstance(contract.get('output_paths'), dict) and isinstance(contract.get('required_fields'), dict) and isinstance(contract.get('enumerations'), dict) and isinstance(contract.get('bootstrap_lifecycle'), dict)
+    source = generator_path.read_text(encoding='utf-8')
+    tree = ast.parse(source)
+    names = {node.name for node in tree.body if isinstance(node, ast.FunctionDef)}
+    required_functions = {'load_generation_contract', 'load_source', 'derive_identity_surfaces', 'derive_successor_proposals', 'derive_bootstrap_state', 'derive_repository_structure_state', 'derive', 'required_mode'}
+    wiring_ok = required_functions <= names
+    semantic_values = set(contract['record_types'].values())
+    semantic_values.update(contract['output_paths'].values())
+    semantic_values.update((value for values in contract['enumerations'].values() for value in values))
+    semantic_values.add(contract['default_artifact_mode'])
+    string_literals = {node.value for node in ast.walk(tree) if isinstance(node, ast.Constant) and isinstance(node.value, str)}
+    allowed_algorithm_literals = {'directory', 'closed', 'authority', 'required', 'requirement'}
+    duplicated = sorted((value for value in semantic_values if value in string_literals and value not in allowed_algorithm_literals))
+    data_driven_markers = 'contract["record_schema_version"]' in source and 'contract["record_types"]' in source and ('contract["output_paths"]' in source) and ('contract["required_fields"]' in source) and ('contract["enumerations"]' in source) and ('contract["bootstrap_lifecycle"]' in source) and ('contract["default_artifact_mode"]' in source)
+    generation_check = subprocess.run([str(root / 'repo/bootstrap/scripts/bootstrap'), '--check'], cwd=root, text=True, capture_output=True)
+    deterministic_ok = generation_check.returncode == 0 and 'FS0 generation correspondence: PASS' in generation_check.stdout
+    fc069_ok = contract_ok and wiring_ok and data_driven_markers and deterministic_ok
+    fc070_ok = fc069_ok and (not duplicated)
+    checks = {'FS0-ASSERT-FC-069': (fc069_ok, 'semantic and realization choices required by generation are represented in canonical maintenance data and consumed by the generator'), 'FS0-ASSERT-FC-070': (fc070_ok, "generator mechanics consume canonical generation semantics without independently duplicating the contract's normative output values")}
+    evidence = {'contract': 'repo/bootstrap/data/generation_contract.json', 'generator': 'repo/bootstrap/scripts/src/generate.py', 'contract_record_type_count': len(contract.get('record_types', {})), 'required_generator_functions_present': wiring_ok, 'data_driven_markers_present': data_driven_markers, 'duplicated_contract_semantic_literals': duplicated, 'generation_check_returncode': generation_check.returncode}
+    return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1160,7 +1191,7 @@ def check_repository_structure(root, assertion_ids):
         return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], checks[aid][2]) for aid in assertion_ids]
     except Exception as exc:
         return [result(aid, 'fail', f'repository-structure resolution/evaluation failed: {exc}', {'error': str(exc), 'post_cutover_mutation_binding': check_post_cutover_mutation_binding}) for aid in assertion_ids]
-CALLABLES = {'repository_structure': check_repository_structure, 'requirement_metadata': check_requirement_metadata, 'conformance_closure': check_conformance_closure, 'generation_correspondence': check_generation_correspondence, 'canonical_entrypoint': check_canonical_entrypoint, 'remote_execution': check_remote_execution, 'exact_candidate': check_exact_candidate, 'bootstrap_state': check_bootstrap_state, 'governance_state_resolution': check_governance_state_resolution, 'accepted_state_publication': check_accepted_state_publication, 'assurance_runtime': check_assurance_runtime, 'successor_proposal_registry': check_successor_proposal_registry, 'governed_work_kernel': check_governed_work_kernel, 'github_governance_binding': check_github_governance_binding, 'proposal_lineage': check_proposal_lineage, 'conformance_selftest': check_conformance_selftest, 'conformance_canonicality': check_conformance_canonicality, 'generation_contract': check_generation_contract, 'authority_kernel': check_authority_kernel, 'requirement_provenance': check_requirement_provenance, 'operating_substrate_preflight': check_operating_substrate_preflight, 'bootstrap_read_surfaces': check_bootstrap_read_surfaces, 'framework_record_orientation': check_framework_record_and_orientation_contract, 'bootstrap_independence': check_bootstrap_independence, 'bootstrap_authority_lifecycle': check_bootstrap_authority_lifecycle, 'post_cutover_mutation_authority': check_post_cutover_mutation_authority, 'post_cutover_mutation_binding': check_post_cutover_mutation_binding, 'retained_bootstrap_payload': check_retained_bootstrap_payload, 'json_record_envelopes': check_json_record_envelopes, 'state_class_distinction': check_state_class_distinction, 'cutover_record_immutability': check_cutover_record_immutability}
+CALLABLES = {'repository_structure': check_repository_structure, 'requirement_metadata': check_requirement_metadata, 'conformance_closure': check_conformance_closure, 'generation_correspondence': check_generation_correspondence, 'canonical_entrypoint': check_canonical_entrypoint, 'remote_execution': check_remote_execution, 'exact_candidate': check_exact_candidate, 'bootstrap_state': check_bootstrap_state, 'governance_state_resolution': check_governance_state_resolution, 'accepted_state_publication': check_accepted_state_publication, 'assurance_runtime': check_assurance_runtime, 'successor_proposal_registry': check_successor_proposal_registry, 'governed_work_kernel': check_governed_work_kernel, 'github_governance_binding': check_github_governance_binding, 'proposal_lineage': check_proposal_lineage, 'conformance_selftest': check_conformance_selftest, 'conformance_canonicality': check_conformance_canonicality, 'generation_contract': check_generation_contract, 'authority_kernel': check_authority_kernel, 'requirement_provenance': check_requirement_provenance, 'operating_substrate_preflight': check_operating_substrate_preflight, 'bootstrap_read_surfaces': check_bootstrap_read_surfaces, 'framework_record_orientation': check_framework_record_and_orientation_contract, 'bootstrap_independence': check_bootstrap_independence, 'bootstrap_authority_lifecycle': check_bootstrap_authority_lifecycle, 'post_cutover_mutation_authority': check_post_cutover_mutation_authority, 'post_cutover_mutation_binding': check_post_cutover_mutation_binding, 'retained_bootstrap_payload': check_retained_bootstrap_payload, 'json_record_envelopes': check_json_record_envelopes, 'state_class_distinction': check_state_class_distinction, 'cutover_record_immutability': check_cutover_record_immutability, 'generation_semantics_canonical': check_generation_semantics_canonical}
 
 def main():
     root = Path.cwd().resolve()
