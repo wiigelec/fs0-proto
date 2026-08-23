@@ -10,6 +10,9 @@ import stat
 import tempfile
 from pathlib import Path
 
+sys.dont_write_bytecode = True
+os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
+
 
 def load(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
