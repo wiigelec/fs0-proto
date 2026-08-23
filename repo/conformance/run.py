@@ -770,18 +770,44 @@ def _exercise_structure_semantics():
         _write_test_json(root / "policy.bin", _test_config(objects))
 
     run_case("conforming_state", lambda r: base(r), expect_ok=True)
+
+    run_case(
+        "ordinary_file_accepted",
+        lambda r: (
+            (r / "ordinary").write_text("x", encoding="utf-8"),
+            base(r, [{"path": "ordinary", "object_type": "file", "presence": "required"}]),
+        ),
+        expect_ok=True,
+    )
+
+    run_case(
+        "directory_object_accepted",
+        lambda r: (
+            (r / "directory").mkdir(),
+            base(r, [{
+                "path": "directory",
+                "object_type": "directory",
+                "presence": "required",
+                "descendants": "closed",
+            }]),
+        ),
+        expect_ok=True,
+    )
+
     run_case(
         "unknown_file_rejected",
         lambda r: (base(r), (r / "unknown").write_text("x", encoding="utf-8")),
         expect_ok=False,
         inspect=lambda x: "unknown" in x["unauthorized"],
     )
+
     run_case(
         "unknown_directory_rejected",
         lambda r: (base(r), (r / "unknown-dir").mkdir()),
         expect_ok=False,
         inspect=lambda x: "unknown-dir" in x["unauthorized"],
     )
+
     run_case(
         "closed_directory_rejects_descendant",
         lambda r: (
@@ -792,6 +818,7 @@ def _exercise_structure_semantics():
         expect_ok=False,
         inspect=lambda x: "closed/child" in x["unauthorized"],
     )
+
     run_case(
         "complete_subtree_accepts_descendant",
         lambda r: (
@@ -806,6 +833,7 @@ def _exercise_structure_semantics():
         ),
         expect_ok=True,
     )
+
     if hasattr(os, "mkfifo"):
         run_case(
             "unsupported_fifo_rejected_under_subtree",
@@ -822,17 +850,20 @@ def _exercise_structure_semantics():
             expect_ok=False,
             inspect=lambda x: "tree/fifo" in x["unsupported"],
         )
+
     run_case(
         "required_missing_rejected",
         lambda r: base(r, [{"path": "must-exist", "object_type": "file", "presence": "required"}]),
         expect_ok=False,
         inspect=lambda x: "must-exist" in x["missing"],
     )
+
     run_case(
         "permitted_missing_accepted",
         lambda r: base(r, [{"path": "optional", "object_type": "file", "presence": "permitted"}]),
         expect_ok=True,
     )
+
     run_case(
         "type_mismatch_rejected",
         lambda r: (
@@ -842,6 +873,7 @@ def _exercise_structure_semantics():
         expect_ok=False,
         inspect=lambda x: any(i["path"] == "thing" for i in x["type_mismatches"]),
     )
+
     run_case(
         "authorized_symlink_is_link_object",
         lambda r: (
@@ -854,6 +886,7 @@ def _exercise_structure_semantics():
         ),
         expect_ok=True,
     )
+
     run_case(
         "external_symlink_target_not_traversed",
         lambda r: (
@@ -862,6 +895,7 @@ def _exercise_structure_semantics():
         ),
         expect_ok=True,
     )
+
     run_case(
         "configuration_self_authorization_required",
         lambda r: (
@@ -873,6 +907,7 @@ def _exercise_structure_semantics():
         expect_ok=False,
         inspect=lambda x: not x["configuration_self_authorized"],
     )
+
     run_case(
         "missing_binding_rejected",
         lambda r: _write_test_json(r / "policy.bin", _test_config([
@@ -880,6 +915,7 @@ def _exercise_structure_semantics():
         ])),
         expect_error=True,
     )
+
     run_case(
         "ambiguous_binding_rejected",
         lambda r: (
@@ -893,11 +929,55 @@ def _exercise_structure_semantics():
         ),
         expect_error=True,
     )
+
     run_case(
         "unresolved_identity_rejected",
         lambda r: _write_test_json(r / "state.bin", _test_binding("NO-SUCH-CONFIG")),
         expect_error=True,
     )
+
+    run_case(
+        "duplicate_matching_configuration_rejected",
+        lambda r: (
+            _write_test_json(r / "state.bin", _test_binding()),
+            _write_test_json(r / "policy-a.bin", _test_config([
+                {"path": "state.bin", "object_type": "file", "presence": "required"},
+                {"path": "policy-a.bin", "object_type": "file", "presence": "required"},
+                {"path": "policy-b.bin", "object_type": "file", "presence": "required"},
+            ])),
+            _write_test_json(r / "policy-b.bin", _test_config([
+                {"path": "state.bin", "object_type": "file", "presence": "required"},
+                {"path": "policy-a.bin", "object_type": "file", "presence": "required"},
+                {"path": "policy-b.bin", "object_type": "file", "presence": "required"},
+            ])),
+        ),
+        expect_error=True,
+    )
+
+    run_case(
+        "relocated_configuration_resolves",
+        lambda r: (
+            (r / "policies").mkdir(),
+            _write_test_json(r / "state.bin", _test_binding()),
+            _write_test_json(r / "policies" / "renamed-config.bin", _test_config([
+                {"path": "state.bin", "object_type": "file", "presence": "required"},
+                {
+                    "path": "policies",
+                    "object_type": "directory",
+                    "presence": "required",
+                    "descendants": "closed",
+                },
+                {
+                    "path": "policies/renamed-config.bin",
+                    "object_type": "file",
+                    "presence": "required",
+                },
+            ])),
+        ),
+        expect_ok=True,
+        inspect=lambda x: x["configuration_path"] == "policies/renamed-config.bin",
+    )
+
     return {"ok": all(cases.values()), "cases": cases}
 
 
@@ -1010,13 +1090,15 @@ def check_repository_structure(root, assertion_ids):
                 live_clean
                 and cases["missing_binding_rejected"]
                 and cases["ambiguous_binding_rejected"]
-                and cases["unresolved_identity_rejected"],
+                and cases["unresolved_identity_rejected"]
+                and cases["duplicate_matching_configuration_rejected"],
                 "missing, ambiguous, or unresolved governed configuration identity is rejected rather than replaced by a default, fallback, or search-order choice",
                 ev(
                     semantic_tests={
                         "missing_binding_rejected": cases["missing_binding_rejected"],
                         "ambiguous_binding_rejected": cases["ambiguous_binding_rejected"],
                         "unresolved_identity_rejected": cases["unresolved_identity_rejected"],
+                        "duplicate_matching_configuration_rejected": cases["duplicate_matching_configuration_rejected"],
                     }
                 ),
             ),
@@ -1059,11 +1141,18 @@ def check_repository_structure(root, assertion_ids):
             ),
             "FS0-ASSERT-FC-090": (
                 live_clean
-                and cases["authorized_symlink_is_link_object"]
-                and "file" in {"file", "directory", "symlink"}
-                and "directory" in {"file", "directory", "symlink"},
-                "ordinary files, directories, and symbolic links are the explicitly supported structural object types",
-                ev(supported_object_types=["file", "directory", "symlink"]),
+                and cases["ordinary_file_accepted"]
+                and cases["directory_object_accepted"]
+                and cases["authorized_symlink_is_link_object"],
+                "ordinary files, directories, and symbolic links are explicitly accepted as configured structural object types",
+                ev(
+                    supported_object_types=["file", "directory", "symlink"],
+                    semantic_tests={
+                        "ordinary_file_accepted": cases["ordinary_file_accepted"],
+                        "directory_object_accepted": cases["directory_object_accepted"],
+                        "authorized_symlink_is_link_object": cases["authorized_symlink_is_link_object"],
+                    },
+                ),
             ),
             "FS0-ASSERT-FC-091": (
                 live_clean and cases.get("unsupported_fifo_rejected_under_subtree", True),
@@ -1101,9 +1190,15 @@ def check_repository_structure(root, assertion_ids):
                 ev(independent_authorization_sources=[]),
             ),
             "FS0-ASSERT-FC-097": (
-                live_clean and exact_one_resolution and source_location_independent,
-                "the operating substrate resolves the canonical structure configuration through a location-independent semantic-record mechanism",
-                ev(resolution="record_type plus governed configuration identity"),
+                live_clean
+                and exact_one_resolution
+                and source_location_independent
+                and cases["relocated_configuration_resolves"],
+                "the operating substrate resolves the canonical structure configuration through a location-independent semantic-record mechanism, including after configuration relocation",
+                ev(
+                    resolution="record_type plus governed configuration identity",
+                    semantic_test=cases["relocated_configuration_resolves"],
+                ),
             ),
             "FS0-ASSERT-FC-098": (
                 live_clean and cases["permitted_missing_accepted"],
@@ -1138,13 +1233,15 @@ def check_repository_structure(root, assertion_ids):
                 and exact_one_resolution
                 and cases["missing_binding_rejected"]
                 and cases["ambiguous_binding_rejected"]
-                and cases["unresolved_identity_rejected"],
+                and cases["unresolved_identity_rejected"]
+                and cases["duplicate_matching_configuration_rejected"],
                 "Conformance fails when governed state does not determine exactly one identity or that identity does not resolve exactly one configuration object",
                 ev(
                     semantic_tests={
                         "missing_binding_rejected": cases["missing_binding_rejected"],
                         "ambiguous_binding_rejected": cases["ambiguous_binding_rejected"],
                         "unresolved_identity_rejected": cases["unresolved_identity_rejected"],
+                        "duplicate_matching_configuration_rejected": cases["duplicate_matching_configuration_rejected"],
                     }
                 ),
             ),
