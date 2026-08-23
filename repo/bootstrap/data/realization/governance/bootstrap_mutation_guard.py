@@ -138,8 +138,68 @@ def validate_policy(policy):
     return policy
 
 
+def committed_head_exists(root: Path) -> bool:
+    proc = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD^{commit}"],
+        cwd=root,
+        text=True,
+        capture_output=True,
+    )
+    return proc.returncode == 0
+
+
+def committed_object_exists(root: Path, rel: str) -> bool:
+    if not committed_head_exists(root):
+        return False
+    proc = subprocess.run(
+        ["git", "cat-file", "-e", f"HEAD:{rel}"],
+        cwd=root,
+        text=True,
+        capture_output=True,
+    )
+    return proc.returncode == 0
+
+
+def authorize_preinstallation(root: Path, protected_record: str):
+    canonical_rel = "repo/bootstrap/data/state/bootstrap.json"
+    canonical = load_json(root / canonical_rel)
+    if (
+        canonical.get("schema_version") != "1"
+        or canonical.get("record_type") != "bootstrap-state"
+        or canonical.get("state") != "candidate"
+    ):
+        fail(
+            "retained bootstrap pre-installation state must be a canonical candidate"
+        )
+
+    # If committed FS0 bootstrap material exists, absence of the committed
+    # installed state is an inconsistent existing installation, not a fresh target.
+    if committed_object_exists(root, "repo/bootstrap"):
+        fail(
+            "committed FS0 bootstrap material exists without committed "
+            "repo/state/bootstrap.json"
+        )
+
+    changed = dirty_guarded_paths(root, protected_record)
+    return {
+        "schema_version": "1",
+        "record_type": "bootstrap-mutation-authorization",
+        "state": "candidate",
+        "authorized": True,
+        "governance_work_id": None,
+        "changed_guarded_paths": changed,
+        "recovery_authority_required": False,
+        "authority_source": canonical_rel,
+        "preinstallation": True,
+    }
+
+
 def authorize(root: Path):
     protected_record = "repo/state/bootstrap.json"
+
+    if not committed_object_exists(root, protected_record):
+        return authorize_preinstallation(root, protected_record)
+
     committed_state = load_committed_json(root, protected_record)
     if (
         committed_state.get("schema_version") != "1"
@@ -159,6 +219,8 @@ def authorize(root: Path):
             "governance_work_id": None,
             "changed_guarded_paths": changed,
             "recovery_authority_required": False,
+            "authority_source": f"HEAD:{protected_record}",
+            "preinstallation": False,
         }
 
     if lifecycle != "cutover":
@@ -178,6 +240,8 @@ def authorize(root: Path):
             "governance_work_id": None,
             "changed_guarded_paths": [],
             "recovery_authority_required": False,
+            "authority_source": f"HEAD:{protected_record}",
+            "preinstallation": False,
         }
 
     issue_raw = os.environ.get("FS0_GOVERNED_BUILD_ISSUE")
@@ -191,14 +255,20 @@ def authorize(root: Path):
             "naming the pending Governance Build issue"
         )
 
-    work_module = load_module(root / "repo/governance/work.py", "fs0_governance_work")
+    work_module = load_module(
+        root / "repo/governance/work.py",
+        "fs0_governance_work",
+    )
     accepted_state = load_module(
         root / "repo/governance/accepted_state.py",
         "fs0_accepted_state",
     )
 
     repo = accepted_state.origin_repository(root)
-    build_issue = gh_json(root, f"repos/{repo}/issues/{build_issue_number}")
+    build_issue = gh_json(
+        root,
+        f"repos/{repo}/issues/{build_issue_number}",
+    )
     if not isinstance(build_issue, dict) or "pull_request" in build_issue:
         fail("FS0_GOVERNED_BUILD_ISSUE must identify a GitHub issue")
 
@@ -213,13 +283,17 @@ def authorize(root: Path):
     if build.get("stage") != "build":
         fail("post-cutover mutation requires Governance Build work")
     if build.get("disposition") != "pending":
-        fail("post-cutover mutation is authorized only while Build is pending")
+        fail(
+            "post-cutover mutation is authorized only while Build is pending"
+        )
 
     accepted_plan_id = build.get("accepted_plan_id")
     if not isinstance(accepted_plan_id, str) or not accepted_plan_id:
         fail("Governance Build does not identify an accepted Plan")
     if build.get("predecessor_id") != accepted_plan_id:
-        fail("Governance Build predecessor does not match accepted_plan_id")
+        fail(
+            "Governance Build predecessor does not match accepted_plan_id"
+        )
 
     plan_issue, plan_record = resolve_plan_issue(
         accepted_state,
@@ -232,38 +306,54 @@ def authorize(root: Path):
         fail(f"resolved Governance Plan issue is invalid: {exc}")
 
     if plan.get("stage") != "plan":
-        fail("accepted_plan_id does not resolve to Governance Plan work")
+        fail(
+            "accepted_plan_id does not resolve to Governance Plan work"
+        )
     if plan.get("disposition") != "accepted":
         fail("resolved Governance Plan is not accepted")
 
-    plan_scope = plan.get("realization_intent", {}).get("build_scope", [])
+    plan_scope = plan.get(
+        "realization_intent", {}
+    ).get("build_scope", [])
     if not set(build.get("scope", [])) <= set(plan_scope):
-        fail("Governance Build scope exceeds accepted Plan build_scope")
+        fail(
+            "Governance Build scope exceeds accepted Plan build_scope"
+        )
 
     comments = accepted_state.github_issue_comments_for(
         repo,
         plan_issue.get("number"),
     )
-    plan_acceptance = accepted_state.resolve_governance_work_acceptance(
-        plan_issue.get("body"),
-        comments,
-        "plan",
-        accepted_plan_id,
+    plan_acceptance = (
+        accepted_state.resolve_governance_work_acceptance(
+            plan_issue.get("body"),
+            comments,
+            "plan",
+            accepted_plan_id,
+        )
     )
     if plan_acceptance.get("status") != "accepted":
         fail(
-            "resolved Governance Plan lacks exactly one explicit authorized "
-            "accepted Governance record"
+            "resolved Governance Plan lacks exactly one explicit "
+            "authorized accepted Governance record"
         )
 
-    if not recovery_authority_allowed(policy, plan, changed):
+    if not recovery_authority_allowed(
+        policy,
+        plan,
+        changed,
+    ):
         fail(
             "bootstrap cutover record/source mutation requires accepted Plan "
             "authority_purpose bootstrap-recovery|bootstrap-reconstruction"
         )
 
-    scope = build.get("bounded_authorization", {}).get("mutation_scope", [])
-    missing = [path for path in changed if path not in scope]
+    scope = build.get(
+        "bounded_authorization", {}
+    ).get("mutation_scope", [])
+    missing = [
+        path for path in changed if path not in scope
+    ]
     if missing:
         fail(
             "Governance Build mutation_scope does not authorize guarded paths: "
@@ -280,12 +370,19 @@ def authorize(root: Path):
         "accepted_plan_id": accepted_plan_id,
         "accepted_plan_issue_number": plan_issue.get("number"),
         "plan_acceptance_id": (
-            plan_acceptance["acceptance_records"][0]["record"]["acceptance_id"]
+            plan_acceptance[
+                "acceptance_records"
+            ][0]["record"]["acceptance_id"]
         ),
         "authority_purpose": plan.get("authority_purpose"),
         "changed_guarded_paths": changed,
-        "recovery_authority_required": recovery_authority_required(policy, changed),
+        "recovery_authority_required": (
+            recovery_authority_required(policy, changed)
+        ),
+        "authority_source": f"HEAD:{protected_record}",
+        "preinstallation": False,
     }
+
 
 
 

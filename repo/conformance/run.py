@@ -1003,7 +1003,48 @@ def check_bootstrap_authority_lifecycle(root, assertion_ids):
     evidence = {'accepted_state_resolver': 'repo/governance/accepted_state.py', 'unpublished_status': unpublished.get('status'), 'unbacked_status': unbacked.get('status'), 'bootstrap_transition_generator': 'repo/bootstrap/scripts/src/generate.py', 'legal_transitions': legal, 'reverse_rejected': reverse_rejected, 'fresh_cutover_rejected': fresh_cutover_rejected, 'transition_is_wired': transition_is_wired, 'legal_transition_behavior': legal_ok, 'invalid_state_rejected': invalid_rejected, 'fresh_candidate_allowed': fresh_candidate_ok}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
 
+def _fresh_bootstrap_guard_regression(root):
+    guard_path = root / 'repo/governance/bootstrap_mutation_guard.py'
+    spec = importlib.util.spec_from_file_location('fs0_fresh_bootstrap_guard', guard_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    canonical = load(root / 'repo/bootstrap/data/state/bootstrap.json')
+    with tempfile.TemporaryDirectory() as td:
+        fresh = Path(td)
+        subprocess.run(['git', 'init'], cwd=fresh, text=True, capture_output=True, check=True)
+        state_path = fresh / 'repo/bootstrap/data/state/bootstrap.json'
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+        state_path.write_text(json.dumps(canonical, indent=2) + '\n', encoding='utf-8')
+        report = module.authorize(fresh)
+        no_head_ok = report.get('authorized') is True and report.get('state') == 'candidate' and (report.get('preinstallation') is True)
+    with tempfile.TemporaryDirectory() as td:
+        preexisting = Path(td)
+        subprocess.run(['git', 'init'], cwd=preexisting, text=True, capture_output=True, check=True)
+        (preexisting / 'README.initial').write_text('pre-FS0 repository\n', encoding='utf-8')
+        subprocess.run(['git', 'add', 'README.initial'], cwd=preexisting, text=True, capture_output=True, check=True)
+        subprocess.run(['git', '-c', 'user.name=FS0 Test', '-c', 'user.email=fs0@example.invalid', 'commit', '-m', 'pre-FS0 initial commit'], cwd=preexisting, text=True, capture_output=True, check=True)
+        state_path = preexisting / 'repo/bootstrap/data/state/bootstrap.json'
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+        state_path.write_text(json.dumps(canonical, indent=2) + '\n', encoding='utf-8')
+        report = module.authorize(preexisting)
+        pre_fs0_head_ok = report.get('authorized') is True and report.get('preinstallation') is True
+    with tempfile.TemporaryDirectory() as td:
+        inconsistent = Path(td)
+        subprocess.run(['git', 'init'], cwd=inconsistent, text=True, capture_output=True, check=True)
+        committed = inconsistent / 'repo/bootstrap/data/state/bootstrap.json'
+        committed.parent.mkdir(parents=True, exist_ok=True)
+        committed.write_text(json.dumps(canonical, indent=2) + '\n', encoding='utf-8')
+        subprocess.run(['git', 'add', 'repo/bootstrap'], cwd=inconsistent, text=True, capture_output=True, check=True)
+        subprocess.run(['git', '-c', 'user.name=FS0 Test', '-c', 'user.email=fs0@example.invalid', 'commit', '-m', 'malformed partial FS0'], cwd=inconsistent, text=True, capture_output=True, check=True)
+        rejected = False
+        try:
+            module.authorize(inconsistent)
+        except SystemExit:
+            rejected = True
+    return {'ok': no_head_ok and pre_fs0_head_ok and rejected, 'no_head_preinstallation_allowed': no_head_ok, 'pre_fs0_head_preinstallation_allowed': pre_fs0_head_ok, 'committed_partial_fs0_rejected': rejected}
+
 def check_post_cutover_mutation_authority(root, assertion_ids):
+    fresh_bootstrap_regression = _fresh_bootstrap_guard_regression(root)
     wrapper = (root / 'repo/bootstrap/scripts/bootstrap').read_text(encoding='utf-8')
     guard_path = root / 'repo/governance/bootstrap_mutation_guard.py'
     guard_source = guard_path.read_text(encoding='utf-8') if guard_path.is_file() else ''
@@ -1028,8 +1069,8 @@ def check_post_cutover_mutation_authority(root, assertion_ids):
     synthetic = accepted.resolve_governance_work_acceptance(plan_body, [{'id': 1, 'body': acceptance_body}], 'plan', 'PLAN-1')
     synthetic_bad_actor = accepted.resolve_governance_work_acceptance(plan_body, [{'id': 2, 'body': acceptance_body.replace('"actor": "actor-1"', '"actor": "actor-2"')}], 'plan', 'PLAN-1')
     resolution_ok = synthetic.get('status') == 'accepted' and synthetic_bad_actor.get('status') == 'invalid'
-    ok = guard_before_generator and check_bypass and guard_semantics and accepted_helpers and predicate_ok and resolution_ok
-    evidence = {'guard': 'repo/governance/bootstrap_mutation_guard.py', 'accepted_state': 'repo/governance/accepted_state.py', 'wrapper': 'repo/bootstrap/scripts/bootstrap', 'guard_before_generator': guard_before_generator, 'accepted_plan_resolution_test': synthetic.get('status'), 'wrong_actor_resolution_test': synthetic_bad_actor.get('status'), 'local_build_file_authority_absent': 'FS0_GOVERNED_BUILD_FILE' not in guard_source, 'governance_binding_predicate': predicate_ok, 'check_bypass': check_bypass, 'guard_semantics': guard_semantics, 'accepted_state_helpers': accepted_helpers, 'acceptance_resolution_behavior': resolution_ok}
+    ok = (guard_before_generator and check_bypass and guard_semantics and accepted_helpers and predicate_ok and resolution_ok) and fresh_bootstrap_regression['ok']
+    evidence = {'guard': 'repo/governance/bootstrap_mutation_guard.py', 'accepted_state': 'repo/governance/accepted_state.py', 'wrapper': 'repo/bootstrap/scripts/bootstrap', 'guard_before_generator': guard_before_generator, 'accepted_plan_resolution_test': synthetic.get('status'), 'wrong_actor_resolution_test': synthetic_bad_actor.get('status'), 'local_build_file_authority_absent': 'FS0_GOVERNED_BUILD_FILE' not in guard_source, 'governance_binding_predicate': predicate_ok, 'check_bypass': check_bypass, 'guard_semantics': guard_semantics, 'accepted_state_helpers': accepted_helpers, 'acceptance_resolution_behavior': resolution_ok, 'fresh_bootstrap_regression': fresh_bootstrap_regression}
     return [result(aid, 'pass' if ok else 'fail', 'after cutover bootstrap mutation resolves a pending Governance Build from GitHub, resolves and verifies its explicitly accepted predecessor Plan and actor authorization, enforces Plan/Build/mutation scope bounds, and has no independent acceptance-publication capability', evidence) for aid in assertion_ids]
 
 def check_post_cutover_mutation_binding(root, assertion_ids):
