@@ -1,0 +1,106 @@
+{
+  "schema_version": "1",
+  "record_type": "successor-proposal-registry",
+  "selection_policy": "lowest-order available proposal whose reconstruction dependencies are processed",
+  "proposals": [
+    {
+      "proposal_id": "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
+      "order": 10,
+      "installed_path": "repo/proposals/framework-contract.json",
+      "markdown_projection": "repo/proposals/framework-contract.md",
+      "lifecycle_state": "available",
+      "bootstrap_provenance": "bootstrap-seed",
+      "authority_state": "none",
+      "reconstruction_dependencies": [],
+      "predecessor_id": null,
+      "successor_id": "REPO-SPEC-PROPOSAL-GOVERNANCE"
+    },
+    {
+      "proposal_id": "REPO-SPEC-PROPOSAL-GOVERNANCE",
+      "order": 20,
+      "installed_path": "repo/proposals/governance.json",
+      "markdown_projection": "repo/proposals/governance.md",
+      "lifecycle_state": "available",
+      "bootstrap_provenance": "bootstrap-seed",
+      "authority_state": "none",
+      "reconstruction_dependencies": [
+        "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT"
+      ],
+      "predecessor_id": "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
+      "successor_id": "REPO-SPEC-PROPOSAL-VALIDATION"
+    },
+    {
+      "proposal_id": "REPO-SPEC-PROPOSAL-VALIDATION",
+      "order": 30,
+      "installed_path": "repo/proposals/validation.json",
+      "markdown_projection": "repo/proposals/validation.md",
+      "lifecycle_state": "available",
+      "bootstrap_provenance": "bootstrap-seed",
+      "authority_state": "none",
+      "reconstruction_dependencies": [],
+      "predecessor_id": "REPO-SPEC-PROPOSAL-GOVERNANCE",
+      "successor_id": "REPO-SPEC-PROPOSAL-CONFORMANCE"
+    },
+    {
+      "proposal_id": "REPO-SPEC-PROPOSAL-CONFORMANCE",
+      "order": 40,
+      "installed_path": "repo/proposals/conformance.json",
+      "markdown_projection": "repo/proposals/conformance.md",
+      "lifecycle_state": "available",
+      "bootstrap_provenance": "bootstrap-seed",
+      "authority_state": "none",
+      "reconstruction_dependencies": [
+        "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
+        "REPO-SPEC-PROPOSAL-GOVERNANCE",
+        "REPO-SPEC-PROPOSAL-VALIDATION"
+      ],
+      "predecessor_id": "REPO-SPEC-PROPOSAL-VALIDATION",
+      "successor_id": "REPO-SPEC-PROPOSAL-ASSURANCE"
+    },
+    {
+      "proposal_id": "REPO-SPEC-PROPOSAL-ASSURANCE",
+      "order": 50,
+      "installed_path": "repo/proposals/assurance.json",
+      "markdown_projection": "repo/proposals/assurance.md",
+      "lifecycle_state": "available",
+      "bootstrap_provenance": "bootstrap-seed",
+      "authority_state": "none",
+      "reconstruction_dependencies": [
+        "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
+        "REPO-SPEC-PROPOSAL-GOVERNANCE",
+        "REPO-SPEC-PROPOSAL-CONFORMANCE"
+      ],
+      "predecessor_id": "REPO-SPEC-PROPOSAL-CONFORMANCE",
+      "successor_id": "REPO-SPEC-PROPOSAL-SUCCESSOR-CONCEPTS"
+    },
+    {
+      "proposal_id": "REPO-SPEC-PROPOSAL-SUCCESSOR-CONCEPTS",
+      "order": 60,
+      "installed_path": "repo/proposals/successor-concepts.json",
+      "markdown_projection": "repo/proposals/successor-concepts.md",
+      "lifecycle_state": "available",
+      "bootstrap_provenance": "bootstrap-seed",
+      "authority_state": "none",
+      "reconstruction_dependencies": [
+        "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
+        "REPO-SPEC-PROPOSAL-GOVERNANCE",
+        "REPO-SPEC-PROPOSAL-CONFORMANCE",
+        "REPO-SPEC-PROPOSAL-ASSURANCE"
+      ],
+      "predecessor_id": "REPO-SPEC-PROPOSAL-ASSURANCE",
+      "successor_id": "REPO-SPEC-PROPOSAL-REPO-COMPRESS"
+    },
+    {
+      "proposal_id": "REPO-SPEC-PROPOSAL-REPO-COMPRESS",
+      "order": 70,
+      "installed_path": "repo/proposals/repo-compress.json",
+      "markdown_projection": "repo/proposals/repo-compress.md",
+      "lifecycle_state": "available",
+      "bootstrap_provenance": "bootstrap-seed",
+      "authority_state": "none",
+      "reconstruction_dependencies": [],
+      "predecessor_id": "REPO-SPEC-PROPOSAL-SUCCESSOR-CONCEPTS",
+      "successor_id": null
+    }
+  ]
+}

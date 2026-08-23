@@ -155,6 +155,47 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/proposals",
+      "object_type": "directory",
+      "presence": "required",
+      "descendants": "closed"
+    },
+    {
+      "path": "repo/bootstrap/data/proposals/assurance.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/proposals/conformance.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/proposals/framework-contract.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/proposals/governance.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/proposals/repo-compress.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/proposals/successor-concepts.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/proposals/validation.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/realization",
       "object_type": "directory",
       "presence": "required",
@@ -482,6 +523,87 @@
     },
     {
       "path": "repo/governance/publish_accepted.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals",
+      "object_type": "directory",
+      "presence": "required",
+      "descendants": "closed"
+    },
+    {
+      "path": "repo/proposals/assurance.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/assurance.md",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/conformance.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/conformance.md",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/framework-contract.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/framework-contract.md",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/governance.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/governance.md",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/registry.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/repo-compress.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/repo-compress.md",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/successor-concepts.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/successor-concepts.md",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/validation.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/proposals/validation.md",
       "object_type": "file",
       "presence": "required"
     },

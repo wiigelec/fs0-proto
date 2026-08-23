@@ -280,6 +280,46 @@ def derive_root_surfaces(root: Path):
 
 
 
+
+def derive_successor_proposals(root: Path):
+    source_dir = root / "repo/bootstrap/data/proposals"
+    source_paths = sorted(source_dir.glob("*.json")) if source_dir.is_dir() else []
+    if not source_paths:
+        raise SystemExit("successor proposal source directory is empty")
+    required = {"schema_version","record_type","source_role","proposal_id","slug","title","order","lifecycle_state","bootstrap_provenance","authority_state","reconstruction_dependencies","predecessor_id","successor_id","source_provenance","content"}
+    sources, ids, orders, slugs = [], set(), set(), set()
+    for path in source_paths:
+        record = load_json(path)
+        if set(record) != required:
+            raise SystemExit(f"{path}: proposal source fields mismatch")
+        if record["schema_version"] != "1" or record["record_type"] != "successor-design-proposal-source" or record["source_role"] != "successor-design-proposal":
+            raise SystemExit(f"{path}: invalid successor proposal source envelope")
+        pid, slug, order = record["proposal_id"], record["slug"], record["order"]
+        if not isinstance(pid,str) or not pid or pid in ids: raise SystemExit(f"{path}: duplicate proposal_id")
+        if not isinstance(slug,str) or not slug or slug in slugs or path.name != f"{slug}.json": raise SystemExit(f"{path}: invalid proposal slug")
+        if not isinstance(order,int) or order < 1 or order in orders: raise SystemExit(f"{path}: invalid proposal order")
+        if record["lifecycle_state"] != "available" or record["bootstrap_provenance"] != "bootstrap-seed" or record["authority_state"] != "none": raise SystemExit(f"{path}: invalid bootstrap seed state")
+        if not isinstance(record["reconstruction_dependencies"], list): raise SystemExit(f"{path}: dependencies must be a list")
+        if not isinstance(record["content"], str) or not record["content"]: raise SystemExit(f"{path}: content must be non-empty")
+        provenance = record["source_provenance"]
+        if not isinstance(provenance, dict) or not all(isinstance(provenance.get(k),str) and provenance[k] for k in ("repository","revision","path","blob_sha")):
+            raise SystemExit(f"{path}: invalid source_provenance")
+        ids.add(pid); slugs.add(slug); orders.add(order); sources.append(record)
+    for record in sources:
+        unresolved = [d for d in record["reconstruction_dependencies"] if d not in ids]
+        if unresolved: raise SystemExit(f"{record['proposal_id']}: unresolved dependencies: {unresolved}")
+    outputs, registry_records = {}, []
+    for record in sorted(sources, key=lambda x: x["order"]):
+        slug = record["slug"]
+        installed_json = f"repo/proposals/{slug}.json"
+        installed_md = f"repo/proposals/{slug}.md"
+        read = {"schema_version":"1","record_type":"successor-design-proposal","source_role":record["source_role"],"proposal_id":record["proposal_id"],"slug":slug,"title":record["title"],"order":record["order"],"lifecycle_state":record["lifecycle_state"],"bootstrap_provenance":record["bootstrap_provenance"],"authority_state":record["authority_state"],"reconstruction_dependencies":record["reconstruction_dependencies"],"predecessor_id":record["predecessor_id"],"successor_id":record["successor_id"],"source_provenance":record["source_provenance"],"markdown_projection":installed_md,"content":record["content"]}
+        outputs[root / installed_json] = read
+        outputs[root / installed_md] = record["content"]
+        registry_records.append({"proposal_id":record["proposal_id"],"order":record["order"],"installed_path":installed_json,"markdown_projection":installed_md,"lifecycle_state":record["lifecycle_state"],"bootstrap_provenance":record["bootstrap_provenance"],"authority_state":record["authority_state"],"reconstruction_dependencies":record["reconstruction_dependencies"],"predecessor_id":record["predecessor_id"],"successor_id":record["successor_id"]})
+    outputs[root / "repo/proposals/registry.json"] = {"schema_version":"1","record_type":"successor-proposal-registry","selection_policy":"lowest-order available proposal whose reconstruction dependencies are processed","proposals":registry_records}
+    return outputs
+
 def derive_bootstrap_state(root: Path):
     source = root / "repo/bootstrap/data/state/bootstrap.json"
     record = load_json(source)
@@ -526,6 +566,7 @@ def derive(root: Path):
         "derivation_policy": model["identity"]["obligation"]["derivation_policy"],
         "obligations": obligations,
     }
+    outputs.update(derive_successor_proposals(root))
     outputs.update(derive_bootstrap_state(root))
     outputs.update(derive_repository_structure_state(root))
     outputs.update(derive_conformance_realization(root, requirements, assertions))

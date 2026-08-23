@@ -1214,6 +1214,37 @@ def check_assurance_runtime(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+
+def check_successor_proposal_registry(root, assertion_ids):
+    registry_path = root / "repo/proposals/registry.json"
+    if not registry_path.is_file():
+        return [result(aid, "fail", "successor proposal registry is missing") for aid in assertion_ids]
+    registry = load(registry_path)
+    records = registry.get("proposals", [])
+    required_fields = {"proposal_id","order","installed_path","markdown_projection","lifecycle_state","bootstrap_provenance","authority_state","reconstruction_dependencies","predecessor_id","successor_id"}
+    ids = {r.get("proposal_id") for r in records}
+    orders = [r.get("order") for r in records]
+    installed_ok = projections_ok = source_role_ok = provenance_ok = True
+    for record in records:
+        jp, mp = root / record["installed_path"], root / record["markdown_projection"]
+        if not jp.is_file() or not mp.is_file(): installed_ok = False; continue
+        proposal = load(jp)
+        if proposal.get("content") != mp.read_text(encoding="utf-8"): projections_ok = False
+        if proposal.get("source_role") != "successor-design-proposal": source_role_ok = False
+        source = proposal.get("source_provenance")
+        if not isinstance(source,dict) or not all(source.get(k) for k in ("repository","revision","path","blob_sha")): provenance_ok = False
+    dependencies_closed = all(all(dep in ids for dep in r.get("reconstruction_dependencies",[])) for r in records)
+    selectable = [r for r in sorted(records,key=lambda x:x["order"]) if r.get("lifecycle_state")=="available" and not r.get("reconstruction_dependencies")]
+    checks = {
+        "FS0-ASSERT-FC-064": (bool(records) and source_role_ok and provenance_ok, "successor Design Proposal source is machine-resolvably distinct and provenance-bearing"),
+        "FS0-ASSERT-FC-079": (bool(records) and installed_ok and projections_ok, "successor proposal JSON and Markdown are deterministic products of canonical proposal source data"),
+        "FS0-ASSERT-GOV-022": (bool(records) and all(required_fields <= set(r) for r in records) and len(ids)==len(records) and len(orders)==len(set(orders)), "proposal registry records identity, order, paths, lifecycle, provenance, authority state, dependencies, and lineage"),
+        "FS0-ASSERT-GOV-023": (bool(records) and all(r["lifecycle_state"]=="available" and r["bootstrap_provenance"]=="bootstrap-seed" and r["authority_state"]=="none" for r in records), "bootstrap seed proposal records use available/bootstrap-seed/none state"),
+        "FS0-ASSERT-GOV-024": (bool(records) and dependencies_closed and bool(registry.get("selection_policy")) and bool(selectable), "fresh agents can enumerate available successor proposals and reconstruction dependencies without chat history"),
+        "FS0-ASSERT-GOV-025": (bool(records) and all(r.get("proposal_id") and r.get("bootstrap_provenance")=="bootstrap-seed" for r in records), "bootstrap seed proposal identities are explicit and immutable source records can be preserved after cutover"),
+    }
+    return [result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1]) for aid in assertion_ids]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1527,6 +1558,7 @@ CALLABLES = {
     "governance_state_resolution": check_governance_state_resolution,
     "accepted_state_publication": check_accepted_state_publication,
     "assurance_runtime": check_assurance_runtime,
+    "successor_proposal_registry": check_successor_proposal_registry,
 }
 
 

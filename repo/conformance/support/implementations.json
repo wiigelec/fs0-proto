@@ -168,6 +168,21 @@
         "FS0-ASSERT-ASSUR-013",
         "FS0-ASSERT-ASSUR-014"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-SUCCESSOR-PROPOSAL-REGISTRY",
+      "role": "support",
+      "callable": "successor_proposal_registry",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-064",
+        "FS0-ASSERT-FC-079",
+        "FS0-ASSERT-GOV-022",
+        "FS0-ASSERT-GOV-023",
+        "FS0-ASSERT-GOV-024",
+        "FS0-ASSERT-GOV-025"
+      ]
     }
   ]
 }

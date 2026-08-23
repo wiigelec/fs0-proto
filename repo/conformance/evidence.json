@@ -56,6 +56,11 @@
       "evidence_id": "FS0-EVIDENCE-ASSURANCE-RUNTIME",
       "implementation_id": "FS0-IMPL-ASSURANCE-RUNTIME",
       "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-SUCCESSOR-PROPOSAL-REGISTRY",
+      "implementation_id": "FS0-IMPL-SUCCESSOR-PROPOSAL-REGISTRY",
+      "evidence_class": "execution-result"
     }
   ]
 }
