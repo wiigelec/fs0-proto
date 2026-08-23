@@ -282,6 +282,8 @@ def derive_root_surfaces(root: Path):
 
 
 def derive_successor_proposals(root: Path):
+    semantics = load_json(root / "repo/bootstrap/data/realization/generation_semantics.json")
+    proposal_policy = semantics["successor_proposals"]
     source_dir = root / "repo/bootstrap/data/proposals"
     source_paths = sorted(source_dir.glob("*.json")) if source_dir.is_dir() else []
     if not source_paths:
@@ -292,13 +294,13 @@ def derive_successor_proposals(root: Path):
         record = load_json(path)
         if set(record) != required:
             raise SystemExit(f"{path}: proposal source fields mismatch")
-        if record["schema_version"] != "1" or record["record_type"] != "successor-design-proposal-source" or record["source_role"] != "successor-design-proposal":
+        if record["schema_version"] != "1" or record["record_type"] != "successor-design-proposal-source" or record["source_role"] != proposal_policy["source_role"]:
             raise SystemExit(f"{path}: invalid successor proposal source envelope")
         pid, slug, order = record["proposal_id"], record["slug"], record["order"]
         if not isinstance(pid,str) or not pid or pid in ids: raise SystemExit(f"{path}: duplicate proposal_id")
         if not isinstance(slug,str) or not slug or slug in slugs or path.name != f"{slug}.json": raise SystemExit(f"{path}: invalid proposal slug")
         if not isinstance(order,int) or order < 1 or order in orders: raise SystemExit(f"{path}: invalid proposal order")
-        if record["lifecycle_state"] != "available" or record["bootstrap_provenance"] != "bootstrap-seed" or record["authority_state"] != "none": raise SystemExit(f"{path}: invalid bootstrap seed state")
+        if record["lifecycle_state"] != proposal_policy["required_lifecycle_state"] or record["bootstrap_provenance"] != proposal_policy["required_bootstrap_provenance"] or record["authority_state"] != proposal_policy["required_authority_state"]: raise SystemExit(f"{path}: invalid bootstrap seed state")
         if not isinstance(record["reconstruction_dependencies"], list): raise SystemExit(f"{path}: dependencies must be a list")
         if not isinstance(record["content"], str) or not record["content"]: raise SystemExit(f"{path}: content must be non-empty")
         provenance = record["source_provenance"]
@@ -317,10 +319,12 @@ def derive_successor_proposals(root: Path):
         outputs[root / installed_json] = read
         outputs[root / installed_md] = record["content"]
         registry_records.append({"proposal_id":record["proposal_id"],"order":record["order"],"installed_path":installed_json,"markdown_projection":installed_md,"lifecycle_state":record["lifecycle_state"],"bootstrap_provenance":record["bootstrap_provenance"],"authority_state":record["authority_state"],"reconstruction_dependencies":record["reconstruction_dependencies"],"predecessor_id":record["predecessor_id"],"successor_id":record["successor_id"]})
-    outputs[root / "repo/proposals/registry.json"] = {"schema_version":"1","record_type":"successor-proposal-registry","selection_policy":"lowest-order available proposal whose reconstruction dependencies are processed","proposals":registry_records}
+    outputs[root / "repo/proposals/registry.json"] = {"schema_version":"1","record_type":"successor-proposal-registry","selection_policy":proposal_policy["selection_policy"],"proposals":registry_records}
     return outputs
 
 def derive_bootstrap_state(root: Path):
+    semantics = load_json(root / "repo/bootstrap/data/realization/generation_semantics.json")
+    bootstrap_policy = semantics["bootstrap_state"]
     source = root / "repo/bootstrap/data/state/bootstrap.json"
     record = load_json(source)
 
@@ -345,10 +349,11 @@ def derive_bootstrap_state(root: Path):
         raise SystemExit(
             f"bootstrap state fields mismatch; missing={missing} extra={extra}"
         )
-    if record.get("state") not in {"candidate", "cutover"}:
-        raise SystemExit("bootstrap state must be candidate|cutover")
-    if record.get("accepted_ref") != "refs/heads/accepted":
-        raise SystemExit("bootstrap accepted_ref must be refs/heads/accepted")
+    allowed_states = set(bootstrap_policy["allowed_states"])
+    if record.get("state") not in allowed_states:
+        raise SystemExit("bootstrap state is not allowed by canonical generation semantics")
+    if record.get("accepted_ref") != bootstrap_policy["accepted_ref"]:
+        raise SystemExit("bootstrap accepted_ref differs from canonical generation semantics")
 
     return {root / "repo/state/bootstrap.json": record}
 

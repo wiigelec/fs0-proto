@@ -1954,6 +1954,7 @@ def check_generation_contract(root, assertion_ids):
     ]
 
 
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
