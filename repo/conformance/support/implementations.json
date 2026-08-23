@@ -573,6 +573,21 @@
         "FS0-FC-028",
         "FS0-FC-054"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-AUTHORITY-LIFECYCLE",
+      "role": "support",
+      "callable": "bootstrap_authority_lifecycle",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-027",
+        "FS0-ASSERT-FC-031"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-027",
+        "FS0-FC-031"
+      ]
     }
   ]
 }

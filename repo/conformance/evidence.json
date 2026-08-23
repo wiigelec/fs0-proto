@@ -241,6 +241,16 @@
         "FS0-CONF-007",
         "FS0-CONF-009"
       ]
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-AUTHORITY-LIFECYCLE",
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-AUTHORITY-LIFECYCLE",
+      "evidence_class": "execution-result",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     }
   ]
 }

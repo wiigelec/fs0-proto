@@ -2753,6 +2753,132 @@ def check_bootstrap_independence(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+def check_bootstrap_authority_lifecycle(root, assertion_ids):
+    accepted_state_path = root / "repo/governance/accepted_state.py"
+    accepted_source = accepted_state_path.read_text(encoding="utf-8")
+
+    spec = importlib.util.spec_from_file_location(
+        "fs0_fc027_accepted_state", accepted_state_path
+    )
+    accepted_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(accepted_module)
+
+    unpublished = accepted_module.resolve_accepted_state(None, [])
+    bogus_sha = "a" * 40
+    unbacked = accepted_module.resolve_accepted_state(bogus_sha, [])
+
+    accepted_resolution_ok = (
+        unpublished.get("status") == "unpublished"
+        and unpublished.get("accepted_revision") is None
+        and unbacked.get("status") == "invalid"
+        and unbacked.get("accepted_revision") == bogus_sha
+        and not unbacked.get("acceptance_records")
+        and "repo/bootstrap/data" not in accepted_source
+        and "bootstrap/data" not in accepted_source
+        and "accepted_ref(root)" in accepted_source
+        and "github_issue_comments(repo)" in accepted_source
+        and "resolve_accepted_state(sha, comments)" in accepted_source
+    )
+
+    generator_path = root / "repo/bootstrap/scripts/src/generate.py"
+    generator_dir = str(generator_path.parent)
+    inserted = generator_dir not in sys.path
+    if inserted:
+        sys.path.insert(0, generator_dir)
+    try:
+        gspec = importlib.util.spec_from_file_location(
+            "fs0_fc031_generate", generator_path
+        )
+        generator = importlib.util.module_from_spec(gspec)
+        gspec.loader.exec_module(generator)
+    finally:
+        if inserted:
+            try:
+                sys.path.remove(generator_dir)
+            except ValueError:
+                pass
+
+    allowed = {"candidate", "cutover"}
+    legal = [
+        ("candidate", "candidate"),
+        ("candidate", "cutover"),
+        ("cutover", "cutover"),
+    ]
+    legal_ok = all(
+        generator.validate_bootstrap_transition(current, desired, allowed)
+        is None
+        for current, desired in legal
+    )
+
+    reverse_rejected = False
+    try:
+        generator.validate_bootstrap_transition("cutover", "candidate", allowed)
+    except SystemExit:
+        reverse_rejected = True
+
+    invalid_rejected = True
+    for current, desired in (
+        ("unknown", "candidate"),
+        ("candidate", "unknown"),
+    ):
+        try:
+            generator.validate_bootstrap_transition(current, desired, allowed)
+        except SystemExit:
+            continue
+        invalid_rejected = False
+
+    fresh_candidate_ok = (
+        generator.validate_bootstrap_transition(None, "candidate", allowed)
+        is None
+    )
+    fresh_cutover_rejected = False
+    try:
+        generator.validate_bootstrap_transition(None, "cutover", allowed)
+    except SystemExit:
+        fresh_cutover_rejected = True
+
+    generator_source = generator_path.read_text(encoding="utf-8")
+    transition_is_wired = (
+        'validate_bootstrap_transition(current_state, record.get("state"), allowed_states)'
+        in generator_source
+        and 'target = root / "repo/state/bootstrap.json"' in generator_source
+    )
+
+    lifecycle_ok = (
+        legal_ok
+        and reverse_rejected
+        and invalid_rejected
+        and fresh_candidate_ok
+        and fresh_cutover_rejected
+        and transition_is_wired
+    )
+
+    checks = {
+        "FS0-ASSERT-FC-027": (
+            accepted_resolution_ok,
+            "accepted-state determination resolves from the accepted ref and explicit acceptance records and does not fall back to non-authoritative bootstrap maintenance source",
+        ),
+        "FS0-ASSERT-FC-031": (
+            lifecycle_ok,
+            "bootstrap generation enforces first installation as candidate, permits candidate to cutover, permits stable states, and rejects cutover to candidate reversal",
+        ),
+    }
+
+    evidence = {
+        "accepted_state_resolver": "repo/governance/accepted_state.py",
+        "unpublished_status": unpublished.get("status"),
+        "unbacked_status": unbacked.get("status"),
+        "bootstrap_transition_generator":
+            "repo/bootstrap/scripts/src/generate.py",
+        "legal_transitions": legal,
+        "reverse_rejected": reverse_rejected,
+        "fresh_cutover_rejected": fresh_cutover_rejected,
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -3079,6 +3205,7 @@ CALLABLES = {
     "bootstrap_read_surfaces": check_bootstrap_read_surfaces,
     "framework_record_orientation": check_framework_record_and_orientation_contract,
     "bootstrap_independence": check_bootstrap_independence,
+    "bootstrap_authority_lifecycle": check_bootstrap_authority_lifecycle,
 }
 
 

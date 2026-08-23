@@ -327,6 +327,21 @@ def derive_successor_proposals(root: Path):
     outputs[root / "repo/proposals/registry.json"] = {"schema_version":"1","record_type":"successor-proposal-registry","selection_policy":proposal_policy["selection_policy"],"proposals":registry_records}
     return outputs
 
+def validate_bootstrap_transition(current_state, desired_state, allowed_states):
+    if desired_state not in allowed_states:
+        raise SystemExit("desired bootstrap state is not allowed")
+    if current_state is None:
+        if desired_state != "candidate":
+            raise SystemExit("initial bootstrap state must be candidate")
+        return
+    if current_state not in allowed_states:
+        raise SystemExit("installed bootstrap state is not allowed")
+    if current_state == "cutover" and desired_state != "cutover":
+        raise SystemExit("bootstrap lifecycle cannot transition from cutover to candidate")
+    if current_state == "candidate" and desired_state not in {"candidate", "cutover"}:
+        raise SystemExit("invalid bootstrap lifecycle transition")
+
+
 def derive_bootstrap_state(root: Path):
     semantics = load_json(root / "repo/bootstrap/data/realization/generation_semantics.json")
     bootstrap_policy = semantics["bootstrap_state"]
@@ -360,7 +375,23 @@ def derive_bootstrap_state(root: Path):
     if record.get("accepted_ref") != bootstrap_policy["accepted_ref"]:
         raise SystemExit("bootstrap accepted_ref differs from canonical generation semantics")
 
-    return {root / "repo/state/bootstrap.json": record}
+    target = root / "repo/state/bootstrap.json"
+    current_state = None
+    if target.is_file():
+        try:
+            installed = json.loads(target.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"installed bootstrap state is invalid JSON: {exc}")
+        if (
+            not isinstance(installed, dict)
+            or installed.get("schema_version") != "1"
+            or installed.get("record_type") != "bootstrap-state"
+        ):
+            raise SystemExit("installed bootstrap state has invalid envelope")
+        current_state = installed.get("state")
+
+    validate_bootstrap_transition(current_state, record.get("state"), allowed_states)
+    return {target: record}
 
 
 def derive_repository_structure_state(root: Path):

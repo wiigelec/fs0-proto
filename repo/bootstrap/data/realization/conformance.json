@@ -299,6 +299,14 @@
         "FS0-ASSERT-FC-028",
         "FS0-ASSERT-FC-054"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-AUTHORITY-LIFECYCLE",
+      "callable": "bootstrap_authority_lifecycle",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-027",
+        "FS0-ASSERT-FC-031"
+      ]
     }
   ],
   "evidence": [
@@ -421,6 +429,11 @@
       "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-INDEPENDENCE",
       "implementation_id": "FS0-IMPL-BOOTSTRAP-INDEPENDENCE",
       "evidence_class": "repository-state"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-BOOTSTRAP-AUTHORITY-LIFECYCLE",
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-AUTHORITY-LIFECYCLE",
+      "evidence_class": "execution-result"
     }
   ],
   "orchestration": {
