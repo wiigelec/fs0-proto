@@ -941,6 +941,39 @@
     {
       "schema_version": "1",
       "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-097",
+      "requirement_id": "FS0-FC-097",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-097"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-098",
+      "requirement_id": "FS0-FC-098",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-098"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-FC-099",
+      "requirement_id": "FS0-FC-099",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-FC-099"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
       "assertion_id": "FS0-ASSERT-GOV-001",
       "requirement_id": "FS0-GOV-001",
       "role": "assertion",
@@ -1640,6 +1673,17 @@
       "derivation": {
         "kind": "canonical-requirement-coverage",
         "requirement_id": "FS0-CONF-028"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-CONF-029",
+      "requirement_id": "FS0-CONF-029",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-CONF-029"
       }
     },
     {

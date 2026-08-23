@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "requirement-registry",
-  "requirements_total": 185,
+  "requirements_total": 189,
   "authority_order": [
     "FS0-AUTH-FRAMEWORK",
     "FS0-AUTH-GOVERNANCE",
@@ -972,6 +972,36 @@
     {
       "schema_version": "1",
       "record_type": "requirement",
+      "requirement_id": "FS0-FC-097",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "The operating substrate SHALL resolve the canonical repository-structure configuration identity through a location-independent mechanism.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-098",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "A structurally permitted filesystem object MAY be absent without causing repository-structure Conformance failure.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-FC-099",
+      "owner_authority_id": "FS0-AUTH-FRAMEWORK",
+      "statement": "Implementation defaults, generated output lists, version-control ignore rules, workflow conventions, historical presence, and prior validation SHALL NOT independently authorize filesystem structure.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
       "requirement_id": "FS0-GOV-001",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
       "statement": "FS0 Governance SHALL implement Design Proposal -> Design -> Plan -> Build -> accepted repository state.",
@@ -1705,6 +1735,16 @@
       "requirement_id": "FS0-CONF-028",
       "owner_authority_id": "FS0-AUTH-CONFORMANCE",
       "statement": "Repository-structure Conformance SHALL fail when governed state does not determine exactly one canonical structure-configuration identity or that identity does not resolve to exactly one configuration object.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-CONF-029",
+      "owner_authority_id": "FS0-AUTH-CONFORMANCE",
+      "statement": "Repository-structure Conformance failure SHALL identify unauthorized or missing filesystem objects sufficiently for correction.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"

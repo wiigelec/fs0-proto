@@ -798,6 +798,42 @@
     {
       "schema_version": "1",
       "record_type": "assurance-obligation-definition",
+      "obligation_id": "FS0-OBL-FC-097",
+      "requirement_id": "FS0-FC-097",
+      "authorizing_authority_id": "FS0-AUTH-FRAMEWORK",
+      "review_objective": "Determine whether the governed review subject satisfies FS0-FC-097 semantically using applicable FS0 Assurance review capabilities.",
+      "derivation": {
+        "kind": "canonical-requirement-assurance",
+        "requirement_id": "FS0-FC-097"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-obligation-definition",
+      "obligation_id": "FS0-OBL-FC-098",
+      "requirement_id": "FS0-FC-098",
+      "authorizing_authority_id": "FS0-AUTH-FRAMEWORK",
+      "review_objective": "Determine whether the governed review subject satisfies FS0-FC-098 semantically using applicable FS0 Assurance review capabilities.",
+      "derivation": {
+        "kind": "canonical-requirement-assurance",
+        "requirement_id": "FS0-FC-098"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-obligation-definition",
+      "obligation_id": "FS0-OBL-FC-099",
+      "requirement_id": "FS0-FC-099",
+      "authorizing_authority_id": "FS0-AUTH-FRAMEWORK",
+      "review_objective": "Determine whether the governed review subject satisfies FS0-FC-099 semantically using applicable FS0 Assurance review capabilities.",
+      "derivation": {
+        "kind": "canonical-requirement-assurance",
+        "requirement_id": "FS0-FC-099"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-obligation-definition",
       "obligation_id": "FS0-OBL-GOV-001",
       "requirement_id": "FS0-GOV-001",
       "authorizing_authority_id": "FS0-AUTH-GOVERNANCE",
@@ -1333,6 +1369,18 @@
       "derivation": {
         "kind": "canonical-requirement-assurance",
         "requirement_id": "FS0-CONF-028"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-obligation-definition",
+      "obligation_id": "FS0-OBL-CONF-029",
+      "requirement_id": "FS0-CONF-029",
+      "authorizing_authority_id": "FS0-AUTH-CONFORMANCE",
+      "review_objective": "Determine whether the governed review subject satisfies FS0-CONF-029 semantically using applicable FS0 Assurance review capabilities.",
+      "derivation": {
+        "kind": "canonical-requirement-assurance",
+        "requirement_id": "FS0-CONF-029"
       }
     },
     {
