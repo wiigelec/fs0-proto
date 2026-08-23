@@ -9,7 +9,7 @@
     },
     {
       "id": "FS0-ASSUR-002",
-      "statement": "Every requirement with Assurance applicability required SHALL resolve from accepted authorizing authority to a review obligation and review case with subject, evidence, finding, and Governance disposition.",
+      "statement": "Every Assurance-required requirement SHALL resolve to a stable review obligation; when that obligation applies to a governed subject, FS0 SHALL instantiate a case-specific review case.",
       "c": "mechanical",
       "a": "required"
     },
