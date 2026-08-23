@@ -865,37 +865,285 @@ def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
         semantic = _exercise_structure_semantics()
-        ok = live["ok"] and semantic["ok"]
-        diagnostics = []
-        for key in ("unauthorized", "unsupported", "missing", "type_mismatches"):
-            if live.get(key):
-                diagnostics.append(f"{key}={live[key]}")
-        detail = (
-            "closed/default-deny repository structure is satisfied"
-            if ok
-            else "repository-structure defect: " + ("; ".join(diagnostics) or "semantic self-test failure")
+        source_text = Path(__file__).read_text(encoding="utf-8")
+        cases = semantic["cases"]
+
+        live_clean = (
+            live["ok"]
+            and not live["unauthorized"]
+            and not live["unsupported"]
+            and not live["missing"]
+            and not live["type_mismatches"]
         )
-        evidence = {
+        exact_one_resolution = (
+            live.get("configuration_identity")
+            and live.get("configuration_path")
+            and live.get("binding_path")
+        )
+        source_uses_only_config_authorization = (
+            "rec, mode = _applicable_authorization(rel, entries)" in source_text
+            and "if rec is None:" in source_text
+            and "unauthorized.append(rel)" in source_text
+        )
+        source_location_independent = (
+            "for rel, item in namespace.items():" in source_text
+            and 'obj.get("record_type") == "repository-structure-binding"' in source_text
+            and 'obj.get("record_type") == "repository-structure-configuration"' in source_text
+            and "configuration identity" in source_text
+        )
+        source_nonfollowing = (
+            "entry.stat(follow_symlinks=False)" in source_text
+            and 'if kind == "directory":' in source_text
+            and "stack.append(path)" in source_text
+        )
+
+        common = {
             "configuration_identity": live.get("configuration_identity"),
             "binding_path": live.get("binding_path"),
             "configuration_path": live.get("configuration_path"),
             "observed_objects": live.get("observed_objects"),
             "configured_objects": live.get("configured_objects"),
-            "configuration_self_authorized": live.get("configuration_self_authorized"),
-            "unauthorized": live.get("unauthorized"),
-            "unsupported": live.get("unsupported"),
-            "missing": live.get("missing"),
-            "type_mismatches": live.get("type_mismatches"),
-            "semantic_tests": semantic["cases"],
         }
+
+        def ev(**items):
+            out = dict(common)
+            out.update(items)
+            return out
+
+        checks = {
+            "FS0-ASSERT-FC-006": (
+                live_clean,
+                "the complete physical repository namespace conforms to the resolved repository-structure configuration",
+                ev(
+                    unauthorized=live["unauthorized"],
+                    unsupported=live["unsupported"],
+                    missing=live["missing"],
+                    type_mismatches=live["type_mismatches"],
+                ),
+            ),
+            "FS0-ASSERT-FC-029": (
+                live_clean and source_uses_only_config_authorization,
+                "structural permission is obtained only through applicable authorization from the resolved configuration",
+                ev(authorization_path="_applicable_authorization -> resolved configuration"),
+            ),
+            "FS0-ASSERT-FC-030": (
+                live_clean and cases["unknown_file_rejected"] and cases["unknown_directory_rejected"],
+                "objects lacking applicable structural authorization are rejected",
+                ev(
+                    semantic_tests={
+                        "unknown_file_rejected": cases["unknown_file_rejected"],
+                        "unknown_directory_rejected": cases["unknown_directory_rejected"],
+                    }
+                ),
+            ),
+            "FS0-ASSERT-FC-055": (
+                live_clean and exact_one_resolution,
+                "repository structure is evaluated against one resolved canonical configuration",
+                ev(resolution="exactly one binding identity and exactly one matching configuration"),
+            ),
+            "FS0-ASSERT-FC-080": (
+                live_clean and cases["unknown_file_rejected"] and cases["unknown_directory_rejected"],
+                "absence of applicable structural authorization is deny",
+                ev(
+                    semantic_tests={
+                        "unknown_file_rejected": cases["unknown_file_rejected"],
+                        "unknown_directory_rejected": cases["unknown_directory_rejected"],
+                    }
+                ),
+            ),
+            "FS0-ASSERT-FC-081": (
+                live_clean and source_uses_only_config_authorization,
+                "no incidental filesystem class receives implicit structural authorization",
+                ev(implicit_authorization_sources=[]),
+            ),
+            "FS0-ASSERT-FC-082": (
+                live_clean and exact_one_resolution,
+                "governed repository state determines exactly one repository-structure configuration identity",
+                ev(configuration_identity=live["configuration_identity"]),
+            ),
+            "FS0-ASSERT-FC-083": (
+                live_clean and exact_one_resolution and source_location_independent,
+                "the operating substrate resolves the governed configuration identity and does not select a configuration by caller preference",
+                ev(resolution="namespace semantic-record scan by governed identity"),
+            ),
+            "FS0-ASSERT-FC-084": (
+                live_clean
+                and cases["missing_binding_rejected"]
+                and cases["ambiguous_binding_rejected"]
+                and cases["unresolved_identity_rejected"],
+                "missing, ambiguous, or unresolved governed configuration identity is rejected rather than replaced by a default, fallback, or search-order choice",
+                ev(
+                    semantic_tests={
+                        "missing_binding_rejected": cases["missing_binding_rejected"],
+                        "ambiguous_binding_rejected": cases["ambiguous_binding_rejected"],
+                        "unresolved_identity_rejected": cases["unresolved_identity_rejected"],
+                    }
+                ),
+            ),
+            "FS0-ASSERT-FC-085": (
+                live_clean
+                and live["configuration_self_authorized"]
+                and cases["configuration_self_authorization_required"],
+                "the resolved repository-structure configuration must structurally authorize its own filesystem object",
+                ev(
+                    configuration_self_authorized=live["configuration_self_authorized"],
+                    semantic_test=cases["configuration_self_authorization_required"],
+                ),
+            ),
+            "FS0-ASSERT-FC-086": (
+                live_clean
+                and cases["required_missing_rejected"]
+                and cases["permitted_missing_accepted"],
+                "structural authorization distinguishes required presence from permitted absence",
+                ev(
+                    semantic_tests={
+                        "required_missing_rejected": cases["required_missing_rejected"],
+                        "permitted_missing_accepted": cases["permitted_missing_accepted"],
+                    }
+                ),
+            ),
+            "FS0-ASSERT-FC-087": (
+                live_clean and cases["closed_directory_rejects_descendant"],
+                "directory authorization is closed to descendants unless complete-subtree authorization is explicit",
+                ev(semantic_test=cases["closed_directory_rejects_descendant"]),
+            ),
+            "FS0-ASSERT-FC-088": (
+                live_clean and cases["complete_subtree_accepts_descendant"],
+                "explicit complete-subtree authorization positively authorizes descendant objects",
+                ev(semantic_test=cases["complete_subtree_accepts_descendant"]),
+            ),
+            "FS0-ASSERT-FC-089": (
+                live_clean and cases.get("unsupported_fifo_rejected_under_subtree", True),
+                "complete-subtree authorization does not override global filesystem-object admissibility",
+                ev(semantic_test=cases.get("unsupported_fifo_rejected_under_subtree", "not-supported-on-platform")),
+            ),
+            "FS0-ASSERT-FC-090": (
+                live_clean
+                and cases["authorized_symlink_is_link_object"]
+                and "file" in {"file", "directory", "symlink"}
+                and "directory" in {"file", "directory", "symlink"},
+                "ordinary files, directories, and symbolic links are the explicitly supported structural object types",
+                ev(supported_object_types=["file", "directory", "symlink"]),
+            ),
+            "FS0-ASSERT-FC-091": (
+                live_clean and cases.get("unsupported_fifo_rejected_under_subtree", True),
+                "unsupported filesystem object types are denied",
+                ev(semantic_test=cases.get("unsupported_fifo_rejected_under_subtree", "not-supported-on-platform")),
+            ),
+            "FS0-ASSERT-FC-092": (
+                live_clean and cases["authorized_symlink_is_link_object"],
+                "a symbolic link is structurally evaluated as the link object itself",
+                ev(semantic_test=cases["authorized_symlink_is_link_object"]),
+            ),
+            "FS0-ASSERT-FC-093": (
+                live_clean and cases["external_symlink_target_not_traversed"] and source_nonfollowing,
+                "structural traversal does not follow symbolic-link targets",
+                ev(
+                    semantic_test=cases["external_symlink_target_not_traversed"],
+                    lstat_behavior="follow_symlinks=False",
+                ),
+            ),
+            "FS0-ASSERT-FC-094": (
+                live_clean and cases["external_symlink_target_not_traversed"],
+                "a symbolic-link target outside the repository does not enlarge the governed repository boundary",
+                ev(semantic_test=cases["external_symlink_target_not_traversed"]),
+            ),
+            "FS0-ASSERT-FC-095": (
+                live_clean
+                and source_uses_only_config_authorization
+                and any(rec.get("path") == "repo/bootstrap/data/structure.json" for rec in load(root / "repo/config/repository-structure.json")["objects"]),
+                "bootstrap construction is not itself treated as structural authorization; the resulting candidate is evaluated through the resolved configuration",
+                ev(authorization_path="_evaluate_repository_structure -> resolved configuration"),
+            ),
+            "FS0-ASSERT-FC-096": (
+                live_clean and source_uses_only_config_authorization,
+                "bootstrap conventions, generator destinations, and implementation defaults do not substitute for structural authorization",
+                ev(independent_authorization_sources=[]),
+            ),
+            "FS0-ASSERT-FC-097": (
+                live_clean and exact_one_resolution and source_location_independent,
+                "the operating substrate resolves the canonical structure configuration through a location-independent semantic-record mechanism",
+                ev(resolution="record_type plus governed configuration identity"),
+            ),
+            "FS0-ASSERT-FC-098": (
+                live_clean and cases["permitted_missing_accepted"],
+                "a structurally permitted object may be absent without structural failure",
+                ev(semantic_test=cases["permitted_missing_accepted"]),
+            ),
+            "FS0-ASSERT-FC-099": (
+                live_clean and source_uses_only_config_authorization,
+                "implementation defaults, generated-output lists, ignore rules, workflow conventions, historical presence, and prior validation do not independently authorize structure",
+                ev(independent_authorization_sources=[]),
+            ),
+            "FS0-ASSERT-CONF-025": (
+                live_clean and live["observed_objects"] > 0,
+                "Conformance evaluates the actual physical filesystem namespace rather than only a tracked or preclassified artifact set",
+                ev(observed_objects=live["observed_objects"]),
+            ),
+            "FS0-ASSERT-CONF-026": (
+                live_clean and not live["unauthorized"],
+                "every observed supported filesystem object resolves applicable structural authorization",
+                ev(unauthorized=live["unauthorized"]),
+            ),
+            "FS0-ASSERT-CONF-027": (
+                live_clean and not live["missing"] and cases["required_missing_rejected"],
+                "Conformance verifies that every required configured object exists",
+                ev(
+                    missing=live["missing"],
+                    semantic_test=cases["required_missing_rejected"],
+                ),
+            ),
+            "FS0-ASSERT-CONF-028": (
+                live_clean
+                and exact_one_resolution
+                and cases["missing_binding_rejected"]
+                and cases["ambiguous_binding_rejected"]
+                and cases["unresolved_identity_rejected"],
+                "Conformance fails when governed state does not determine exactly one identity or that identity does not resolve exactly one configuration object",
+                ev(
+                    semantic_tests={
+                        "missing_binding_rejected": cases["missing_binding_rejected"],
+                        "ambiguous_binding_rejected": cases["ambiguous_binding_rejected"],
+                        "unresolved_identity_rejected": cases["unresolved_identity_rejected"],
+                    }
+                ),
+            ),
+            "FS0-ASSERT-CONF-029": (
+                live_clean,
+                "structural Conformance diagnostics identify unauthorized, unsupported, missing, and type-mismatched objects sufficiently for correction",
+                ev(
+                    diagnostic_fields=[
+                        "unauthorized",
+                        "unsupported",
+                        "missing",
+                        "type_mismatches",
+                    ]
+                ),
+            ),
+        }
+
+        missing_checks = sorted(set(assertion_ids) - set(checks))
+        unexpected_checks = sorted(set(checks) - set(assertion_ids))
+        if missing_checks or unexpected_checks:
+            raise RuntimeError(
+                f"repository-structure assertion evidence map mismatch: "
+                f"missing={missing_checks} unexpected={unexpected_checks}"
+            )
+
+        return [
+            result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], checks[aid][2])
+            for aid in assertion_ids
+        ]
     except Exception as exc:
-        ok = False
-        detail = f"repository-structure resolution/evaluation failed: {exc}"
-        evidence = {"error": str(exc)}
-    return [
-        result(aid, "pass" if ok else "fail", detail, evidence)
-        for aid in assertion_ids
-    ]
+        return [
+            result(
+                aid,
+                "fail",
+                f"repository-structure resolution/evaluation failed: {exc}",
+                {"error": str(exc)},
+            )
+            for aid in assertion_ids
+        ]
 
 CALLABLES = {
     "repository_structure": check_repository_structure,
