@@ -64,7 +64,7 @@ Failure to determine exactly one governed configuration identity or to resolve t
 
 # Structural Authorization Semantics
 
-FS0 shall support authorization of files and directories.
+FS0 shall support authorization of ordinary files, directories, and symbolic links.
 
 An authorization may distinguish required presence from permitted presence.
 
