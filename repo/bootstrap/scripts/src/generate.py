@@ -139,6 +139,11 @@ def load_source(root: Path):
                     "conformance_applicability": c,
                     "assurance_applicability": a,
                 }
+                if "lineage" in item:
+                    lineage = item["lineage"]
+                    if not isinstance(lineage, (dict, list)):
+                        raise SystemExit(f"{rid}: lineage must be a record or list")
+                    expanded["lineage"] = lineage
                 seen_requirements.add(rid)
                 local.append(expanded)
                 requirements.append(expanded)

@@ -191,6 +191,16 @@
         "FS0-CONF-007",
         "FS0-CONF-009"
       ]
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-REQUIREMENT-PROVENANCE",
+      "implementation_id": "FS0-IMPL-REQUIREMENT-PROVENANCE",
+      "evidence_class": "repository-state",
+      "role": "evidence",
+      "authority_requirement_ids": [
+        "FS0-CONF-007",
+        "FS0-CONF-009"
+      ]
     }
   ]
 }

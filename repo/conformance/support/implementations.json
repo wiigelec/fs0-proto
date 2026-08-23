@@ -454,6 +454,21 @@
         "FS0-FC-008",
         "FS0-FC-043"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-REQUIREMENT-PROVENANCE",
+      "role": "support",
+      "callable": "requirement_provenance",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-009",
+        "FS0-ASSERT-FC-010"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-009",
+        "FS0-FC-010"
+      ]
     }
   ]
 }

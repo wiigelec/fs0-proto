@@ -2071,6 +2071,107 @@ def check_authority_kernel(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+def check_requirement_provenance(root, assertion_ids):
+    req_registry = load(root / "repo/authority/requirements.json")
+    requirements = req_registry["requirements"]
+    req_by_id = {r["requirement_id"]: r for r in requirements}
+    accepted = {
+        rid: rec for rid, rec in req_by_id.items()
+        if rec.get("lifecycle_state") == "accepted"
+    }
+
+    authority_ids = set(req_registry.get("authority_order", []))
+
+    c_records = load(root / "repo/conformance/correspondence.json")["records"]
+    assertions = load(root / "repo/conformance/assertions.json")["assertions"]
+    a_records = load(root / "repo/assurance/correspondence.json")["records"]
+    obligations = load(root / "repo/assurance/obligations.json")["obligations"]
+
+    assertion_by_id = {a["assertion_id"]: a for a in assertions}
+    obligation_by_id = {o["obligation_id"]: o for o in obligations}
+
+    conformance_provenance_ok = all(
+        record.get("requirement_id") in accepted
+        and all(
+            aid in assertion_by_id
+            and assertion_by_id[aid].get("requirement_id")
+                == record.get("requirement_id")
+            and assertion_by_id[aid].get("derivation", {}).get("requirement_id")
+                == record.get("requirement_id")
+            for aid in record.get("assertion_ids", [])
+        )
+        for record in c_records
+    )
+
+    assurance_provenance_ok = all(
+        record.get("requirement_id") in accepted
+        and all(
+            oid in obligation_by_id
+            and obligation_by_id[oid].get("requirement_id")
+                == record.get("requirement_id")
+            and obligation_by_id[oid].get("derivation", {}).get("requirement_id")
+                == record.get("requirement_id")
+            and obligation_by_id[oid].get("authorizing_authority_id")
+                == accepted[record["requirement_id"]].get("owner_authority_id")
+            for oid in record.get("obligation_ids", [])
+        )
+        for record in a_records
+    )
+
+    base_fields = {
+        "schema_version",
+        "record_type",
+        "requirement_id",
+        "owner_authority_id",
+        "statement",
+        "lifecycle_state",
+        "conformance_applicability",
+        "assurance_applicability",
+    }
+    requirement_shape_ok = all(
+        base_fields <= set(record)
+        and record.get("schema_version") == "1"
+        and record.get("record_type") == "requirement"
+        and isinstance(record.get("requirement_id"), str)
+        and bool(record["requirement_id"])
+        and record.get("owner_authority_id") in authority_ids
+        and isinstance(record.get("statement"), str)
+        and bool(record["statement"])
+        and isinstance(record.get("lifecycle_state"), str)
+        and bool(record["lifecycle_state"])
+        and record.get("conformance_applicability") in {"mechanical", "none"}
+        and record.get("assurance_applicability") in {"required", "none"}
+        and (
+            "lineage" not in record
+            or isinstance(record.get("lineage"), (dict, list))
+        )
+        for record in requirements
+    )
+
+    checks = {
+        "FS0-ASSERT-FC-009": (
+            conformance_provenance_ok and assurance_provenance_ok,
+            "maintained derived correspondence, assertion, and Assurance obligation primitives resolve through requirement identity to accepted normative authority",
+        ),
+        "FS0-ASSERT-FC-010": (
+            requirement_shape_ok,
+            "every installed normative requirement carries identity, owner, statement, lifecycle state, Conformance and Assurance applicability, with optional structured lineage when applicable",
+        ),
+    }
+
+    evidence = {
+        "requirements_total": len(requirements),
+        "accepted_requirements": len(accepted),
+        "conformance_correspondence_records": len(c_records),
+        "assertions": len(assertions),
+        "assurance_correspondence_records": len(a_records),
+        "obligations": len(obligations),
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -2392,6 +2493,7 @@ CALLABLES = {
     "conformance_canonicality": check_conformance_canonicality,
     "generation_contract": check_generation_contract,
     "authority_kernel": check_authority_kernel,
+    "requirement_provenance": check_requirement_provenance,
 }
 
 
