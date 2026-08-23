@@ -354,6 +354,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/requirements/governance/049-050.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/root",
       "object_type": "directory",
       "presence": "required",

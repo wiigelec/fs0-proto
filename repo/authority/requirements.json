@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "requirement-registry",
-  "requirements_total": 189,
+  "requirements_total": 191,
   "authority_order": [
     "FS0-AUTH-FRAMEWORK",
     "FS0-AUTH-GOVERNANCE",
@@ -1477,6 +1477,26 @@
       "statement": "Design Normalize SHALL decompose materially compound obligations into separately identified requirements.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-049",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Design, Plan, and Build SHALL NOT be accepted while any required Assurance case for that governed work has an adverse finding that remains unresolved.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
+      "assurance_applicability": "required"
+    },
+    {
+      "schema_version": "1",
+      "record_type": "requirement",
+      "requirement_id": "FS0-GOV-050",
+      "owner_authority_id": "FS0-AUTH-GOVERNANCE",
+      "statement": "Before Design, Plan, or Build acceptance, every Assurance obligation triggered by that governed work SHALL have an instantiated review case.",
+      "lifecycle_state": "accepted",
+      "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
     },
     {

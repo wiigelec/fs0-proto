@@ -1392,6 +1392,28 @@
     {
       "schema_version": "1",
       "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-049",
+      "requirement_id": "FS0-GOV-049",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-049"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
+      "assertion_id": "FS0-ASSERT-GOV-050",
+      "requirement_id": "FS0-GOV-050",
+      "role": "assertion",
+      "derivation": {
+        "kind": "canonical-requirement-coverage",
+        "requirement_id": "FS0-GOV-050"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assertion-definition",
       "assertion_id": "FS0-ASSERT-CONF-001",
       "requirement_id": "FS0-CONF-001",
       "role": "assertion",

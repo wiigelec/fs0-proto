@@ -1254,6 +1254,30 @@
     {
       "schema_version": "1",
       "record_type": "assurance-obligation-definition",
+      "obligation_id": "FS0-OBL-GOV-049",
+      "requirement_id": "FS0-GOV-049",
+      "authorizing_authority_id": "FS0-AUTH-GOVERNANCE",
+      "review_objective": "Determine whether the governed review subject satisfies FS0-GOV-049 semantically using applicable FS0 Assurance review capabilities.",
+      "derivation": {
+        "kind": "canonical-requirement-assurance",
+        "requirement_id": "FS0-GOV-049"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-obligation-definition",
+      "obligation_id": "FS0-OBL-GOV-050",
+      "requirement_id": "FS0-GOV-050",
+      "authorizing_authority_id": "FS0-AUTH-GOVERNANCE",
+      "review_objective": "Determine whether the governed review subject satisfies FS0-GOV-050 semantically using applicable FS0 Assurance review capabilities.",
+      "derivation": {
+        "kind": "canonical-requirement-assurance",
+        "requirement_id": "FS0-GOV-050"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-obligation-definition",
       "obligation_id": "FS0-OBL-CONF-004",
       "requirement_id": "FS0-CONF-004",
       "authorizing_authority_id": "FS0-AUTH-CONFORMANCE",

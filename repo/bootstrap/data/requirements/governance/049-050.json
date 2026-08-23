@@ -1,0 +1,17 @@
+{
+  "authority": "FS0-AUTH-GOVERNANCE",
+  "requirements": [
+    {
+      "id": "FS0-GOV-049",
+      "statement": "Design, Plan, and Build SHALL NOT be accepted while any required Assurance case for that governed work has an adverse finding that remains unresolved.",
+      "c": "mechanical",
+      "a": "required"
+    },
+    {
+      "id": "FS0-GOV-050",
+      "statement": "Before Design, Plan, or Build acceptance, every Assurance obligation triggered by that governed work SHALL have an instantiated review case.",
+      "c": "mechanical",
+      "a": "required"
+    }
+  ]
+}

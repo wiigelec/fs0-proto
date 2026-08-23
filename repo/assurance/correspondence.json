@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "record_type": "assurance-correspondence-registry",
-  "requirements_total": 189,
+  "requirements_total": 191,
   "records": [
     {
       "schema_version": "1",
@@ -1238,6 +1238,24 @@
       "applicability": "required",
       "obligation_ids": [
         "FS0-OBL-GOV-048"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-GOV-049",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-GOV-049"
+      ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "assurance-correspondence",
+      "requirement_id": "FS0-GOV-050",
+      "applicability": "required",
+      "obligation_ids": [
+        "FS0-OBL-GOV-050"
       ]
     },
     {
