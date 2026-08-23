@@ -492,6 +492,49 @@
         "FS0-FC-016",
         "FS0-FC-046"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-BOOTSTRAP-READ-SURFACES",
+      "role": "support",
+      "callable": "bootstrap_read_surfaces",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-017",
+        "FS0-ASSERT-FC-019",
+        "FS0-ASSERT-FC-021",
+        "FS0-ASSERT-FC-022",
+        "FS0-ASSERT-FC-023",
+        "FS0-ASSERT-FC-025",
+        "FS0-ASSERT-FC-026",
+        "FS0-ASSERT-FC-038",
+        "FS0-ASSERT-FC-039",
+        "FS0-ASSERT-FC-040",
+        "FS0-ASSERT-FC-048",
+        "FS0-ASSERT-FC-050",
+        "FS0-ASSERT-FC-051",
+        "FS0-ASSERT-FC-052",
+        "FS0-ASSERT-FC-059",
+        "FS0-ASSERT-FC-063"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-017",
+        "FS0-FC-019",
+        "FS0-FC-021",
+        "FS0-FC-022",
+        "FS0-FC-023",
+        "FS0-FC-025",
+        "FS0-FC-026",
+        "FS0-FC-038",
+        "FS0-FC-039",
+        "FS0-FC-040",
+        "FS0-FC-048",
+        "FS0-FC-050",
+        "FS0-FC-051",
+        "FS0-FC-052",
+        "FS0-FC-059",
+        "FS0-FC-063"
+      ]
     }
   ]
 }

@@ -2283,6 +2283,231 @@ def check_operating_substrate_preflight(root, assertion_ids):
     ]
 
 
+def check_bootstrap_read_surfaces(root, assertion_ids):
+    root_index = load(root / "repo/bootstrap/data/root/index.json")
+    structure = load(root / "repo/bootstrap/data/structure.json")
+    proposals = load(root / "repo/proposals/registry.json")
+    state = load(root / "repo/state/bootstrap.json")
+    contract = load(root / "repo/bootstrap/data/realization/generation_contract.json")
+
+    structure_paths = {
+        record.get("path"): record
+        for record in structure.get("objects", [])
+        if isinstance(record, dict)
+    }
+    artifacts = root_index.get("artifacts", [])
+    roles = {record.get("role"): record for record in artifacts}
+
+    required_root_roles = {
+        "human-orientation",
+        "agent-orientation",
+        "license",
+        "canonical-conformance-workflow",
+    }
+    root_roles_ok = required_root_roles <= set(roles)
+
+    generated_targets_ok = all(
+        isinstance(record.get("target"), str)
+        and (root / record["target"]).is_file()
+        and record["target"] in structure_paths
+        and structure_paths[record["target"]].get("presence") == "required"
+        for record in artifacts
+    )
+
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+    license_text = (root / "LICENSE").read_text(encoding="utf-8")
+
+    readme_markers = (
+        "minimal self-hosting core",
+        "repo/proposals/registry.json",
+        "repo/state/bootstrap.json",
+        "refs/heads/accepted",
+        "repo/authority/",
+        "./repo/scripts/validate",
+        "do not by themselves create normative acceptance",
+    )
+    agents_markers = (
+        "Initial reading order",
+        "repo/authority/",
+        "repo/proposals/registry.json",
+        "repo/bootstrap/design/",
+        "repo/state/bootstrap.json",
+        "refs/heads/accepted",
+        "Technical write capability is not authority",
+    )
+
+    wrapper = root / contract.get("generation_entrypoint", "")
+    generator = root / contract.get("generation_implementation", "")
+    wrapper_text = wrapper.read_text(encoding="utf-8") if wrapper.is_file() else ""
+    invocation_distinct = (
+        wrapper.is_file()
+        and generator.is_file()
+        and wrapper.resolve() != generator.resolve()
+        and 'exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"' in wrapper_text
+    )
+    invocation_simple = (
+        invocation_distinct
+        and "def " not in wrapper_text
+        and "json." not in wrapper_text
+        and "repo/bootstrap/scripts/src/preflight.py" in wrapper_text
+    )
+
+    proposal_records = proposals.get("proposals", [])
+    proposal_ids = [record.get("proposal_id") for record in proposal_records]
+    expected_seed_ids = {
+        "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
+        "REPO-SPEC-PROPOSAL-GOVERNANCE",
+        "REPO-SPEC-PROPOSAL-VALIDATION",
+        "REPO-SPEC-PROPOSAL-CONFORMANCE",
+        "REPO-SPEC-PROPOSAL-ASSURANCE",
+        "REPO-SPEC-PROPOSAL-SUCCESSOR-CONCEPTS",
+        "REPO-SPEC-PROPOSAL-REPO-COMPRESS",
+    }
+    seed_complete = set(proposal_ids) == expected_seed_ids and len(proposal_ids) == 7
+
+    structured_reads_ok = True
+    markdown_projection_ok = True
+    seed_authority_none = True
+    for record in proposal_records:
+        installed = record.get("installed_path")
+        markdown = record.get("markdown_projection")
+        if not isinstance(installed, str) or not isinstance(markdown, str):
+            structured_reads_ok = False
+            markdown_projection_ok = False
+            continue
+        installed_path = root / installed
+        markdown_path = root / markdown
+        if not installed_path.is_file():
+            structured_reads_ok = False
+            continue
+        data = load(installed_path)
+        if (
+            data.get("proposal_id") != record.get("proposal_id")
+            or data.get("record_type") != "successor-design-proposal"
+            or data.get("markdown_projection") != markdown
+        ):
+            structured_reads_ok = False
+        if not markdown_path.is_file() or markdown_path.read_text(encoding="utf-8") != data.get("content"):
+            markdown_projection_ok = False
+        if record.get("authority_state") != "none" or data.get("authority_state") != "none":
+            seed_authority_none = False
+
+    source_root = root / contract.get("canonical_input_root", "")
+    source_role_ok = (
+        contract.get("canonical_source_role") == "canonical-bootstrap-maintenance-data"
+        and source_root.is_dir()
+        and contract.get("generated_surfaces_are_canonical_source") is False
+    )
+
+    # Root surfaces are direct deterministic projections of canonical source files.
+    root_projection_ok = all(
+        (root / record["target"]).read_bytes()
+        == (root / "repo/bootstrap/data/root" / record["source"]).read_bytes()
+        for record in artifacts
+    )
+
+    generator_source = generator.read_text(encoding="utf-8") if generator.is_file() else ""
+    check_missing_fails = (
+        "except FileNotFoundError:" in generator_source
+        and "mismatches.append(str(target.relative_to(root)))" in generator_source
+        and 'print("FS0 generation correspondence: FAIL"' in generator_source
+        and "raise SystemExit(1)" in generator_source
+    )
+
+    state_ok = (
+        state.get("schema_version") == "1"
+        and state.get("record_type") == "bootstrap-state"
+        and state.get("state") in {"candidate", "cutover"}
+    )
+
+    generated_vs_source_distinct = all(
+        not record["target"].startswith("repo/bootstrap/data/")
+        for record in artifacts
+    )
+
+    checks = {
+        "FS0-ASSERT-FC-017": (
+            root_roles_ok and generated_targets_ok and root_projection_ok,
+            "bootstrap generates required repository-orientation, license, and workflow surfaces from configured canonical root sources at structurally authorized locations",
+        ),
+        "FS0-ASSERT-FC-019": (
+            "GNU GENERAL PUBLIC LICENSE" in license_text
+            and "Version 3" in license_text,
+            "the installed license surface is GNU General Public License version 3",
+        ),
+        "FS0-ASSERT-FC-021": (
+            generated_vs_source_distinct and generated_targets_ok and source_role_ok,
+            "generated artifacts remain distinct from non-authoritative bootstrap maintenance source and are positively structurally authorized at configured destinations",
+        ),
+        "FS0-ASSERT-FC-022": (
+            contract.get("generation_entrypoint") == "repo/bootstrap/scripts/bootstrap"
+            and wrapper.is_file(),
+            "one machine-resolvable canonical bootstrap invocation surface is declared and present",
+        ),
+        "FS0-ASSERT-FC-023": (
+            invocation_simple,
+            "the canonical bootstrap invocation surface contains invocation/preflight concerns and delegates substantive generation to separately identified implementation",
+        ),
+        "FS0-ASSERT-FC-025": (
+            seed_complete,
+            "the complete seven-proposal successor repo-spec Design Proposal seed set is installed before cutover",
+        ),
+        "FS0-ASSERT-FC-026": (
+            seed_complete and structured_reads_ok
+            and len({r.get("installed_path") for r in proposal_records}) == len(proposal_records),
+            "each installed successor Design Proposal has exactly one canonical structured read representation",
+        ),
+        "FS0-ASSERT-FC-038": (
+            all(marker in readme for marker in readme_markers),
+            "the canonical repository-orientation surface states purpose, bootstrap/cutover state discovery, proposal discovery, accepted-state discovery, operation guidance, and authority limits",
+        ),
+        "FS0-ASSERT-FC-039": (
+            all(marker in agents for marker in agents_markers),
+            "the canonical agent-orientation surface states initial reading order, Design/proposal discovery, bootstrap-state discovery, and accepted-state resolution",
+        ),
+        "FS0-ASSERT-FC-040": (
+            root_roles_ok and check_missing_fails,
+            "bootstrap verification treats any missing generated orientation or license target as a generation mismatch and exits failure",
+        ),
+        "FS0-ASSERT-FC-048": (
+            root_projection_ok,
+            "generated repository-orientation and license surfaces are deterministic byte projections of identical canonical root inputs",
+        ),
+        "FS0-ASSERT-FC-050": (
+            invocation_distinct,
+            "substantive bootstrap generation implementation is machine-resolvably distinct from the canonical invocation surface",
+        ),
+        "FS0-ASSERT-FC-051": (
+            seed_complete and seed_authority_none,
+            "every bootstrap-installed successor Design Proposal seed has authority state none",
+        ),
+        "FS0-ASSERT-FC-052": (
+            seed_complete and structured_reads_ok and markdown_projection_ok,
+            "each generated successor Design Proposal Markdown surface is the deterministic content projection of its canonical structured proposal read representation",
+        ),
+        "FS0-ASSERT-FC-059": (
+            state_ok,
+            "bootstrap state is constrained to candidate or cutover",
+        ),
+        "FS0-ASSERT-FC-063": (
+            source_role_ok,
+            "canonical bootstrap maintenance data provides the maintained source role required to derive FS0 artifacts",
+        ),
+    }
+
+    evidence = {
+        "root_roles": sorted(role for role in roles if role),
+        "proposal_ids": proposal_ids,
+        "bootstrap_state": state.get("state"),
+        "generation_entrypoint": contract.get("generation_entrypoint"),
+        "generation_implementation": contract.get("generation_implementation"),
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -2606,6 +2831,7 @@ CALLABLES = {
     "authority_kernel": check_authority_kernel,
     "requirement_provenance": check_requirement_provenance,
     "operating_substrate_preflight": check_operating_substrate_preflight,
+    "bootstrap_read_surfaces": check_bootstrap_read_surfaces,
 }
 
 

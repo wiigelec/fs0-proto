@@ -2,6 +2,15 @@
 
 This file provides operational guidance for AI and automated agents working in an FS0 repository. It is not normative authority.
 
+
+## Initial reading order
+
+1. Read `repo/state/bootstrap.json` to determine bootstrap/cutover state.
+2. Read the applicable normative authority under `repo/authority/`.
+3. Use `repo/proposals/registry.json` to discover installed successor Design Proposals and their canonical structured read representations.
+4. Use `repo/bootstrap/design/` only for bootstrap Design-chunk discovery and maintenance context; it is not post-cutover authority.
+5. After cutover, resolve accepted state through the acceptance record identified by `repo/state/bootstrap.json` together with `refs/heads/accepted`.
+
 ## Authority
 
 - Technical write capability is not authority.

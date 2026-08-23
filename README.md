@@ -40,3 +40,14 @@ Then validate the result.
 ## License
 
 This project is licensed under the GNU General Public License, version 3. See `LICENSE`.
+## Discover successor Design Proposals
+
+Use `repo/proposals/registry.json` as the canonical successor Design Proposal discovery surface. Each registry entry points to its canonical structured proposal read representation and generated Markdown projection.
+
+Bootstrap Design source remains under `repo/bootstrap/design/` for bootstrap construction and maintenance context. It is non-authoritative after cutover.
+
+## Discover bootstrap and accepted state
+
+Read `repo/state/bootstrap.json` to determine whether the repository is still in bootstrap `candidate` state or has reached `cutover`.
+
+After cutover, resolve accepted repository state through the acceptance record identified by `repo/state/bootstrap.json` and `refs/heads/accepted`. The accepted ref and acceptance record must agree; the default branch, merge state, CI result, or technical write access does not substitute for Governance acceptance.
