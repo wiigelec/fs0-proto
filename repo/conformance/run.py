@@ -1041,6 +1041,31 @@ def check_retained_bootstrap_payload(root, assertion_ids):
     evidence = {'policy': 'repo/bootstrap/data/retained_payload.json', 'tracked_file_count': len(tracked), 'allowed_top_level': ['data', 'design', 'scripts'], 'observed_top_level': top_level, 'roles_present': sorted(roles_present), 'uncovered': uncovered, 'ambiguous': ambiguous, 'policy_valid': policy_ok}
     return [result(aid, 'pass' if ok else 'fail', 'the retained bootstrap payload is closed to Design input, canonical realization inputs, and implementation required for the declared FS0 bootstrap capabilities', evidence) for aid in assertion_ids]
 
+def check_json_record_envelopes(root, assertion_ids):
+    import subprocess
+    proc = subprocess.run(['git', 'ls-files', '-z', '--', 'repo'], cwd=root, text=False, capture_output=True)
+    tracked_ok = proc.returncode == 0
+    paths = []
+    if tracked_ok:
+        paths = sorted((item.decode('utf-8') for item in proc.stdout.split(b'\x00') if item and item.decode('utf-8').endswith('.json')))
+    invalid = []
+    non_objects = []
+    for rel in paths:
+        path = root / rel
+        try:
+            value = json.loads(path.read_text(encoding='utf-8'))
+        except Exception as exc:
+            invalid.append({'path': rel, 'error': str(exc)})
+            continue
+        if not isinstance(value, dict):
+            non_objects.append(rel)
+            continue
+        if not isinstance(value.get('schema_version'), str) or not value.get('schema_version') or (not isinstance(value.get('record_type'), str)) or (not value.get('record_type')):
+            invalid.append({'path': rel, 'error': 'missing-or-invalid-record-envelope'})
+    ok = tracked_ok and bool(paths) and (not invalid) and (not non_objects)
+    evidence = {'tracked_json_count': len(paths), 'invalid_records': invalid, 'non_object_json_documents': non_objects}
+    return [result(aid, 'pass' if ok else 'fail', 'every Git-tracked FS0 JSON document beneath repo/ is an object carrying non-empty schema_version and record_type fields', evidence) for aid in assertion_ids]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1066,7 +1091,7 @@ def check_repository_structure(root, assertion_ids):
         return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], checks[aid][2]) for aid in assertion_ids]
     except Exception as exc:
         return [result(aid, 'fail', f'repository-structure resolution/evaluation failed: {exc}', {'error': str(exc), 'post_cutover_mutation_binding': check_post_cutover_mutation_binding}) for aid in assertion_ids]
-CALLABLES = {'repository_structure': check_repository_structure, 'requirement_metadata': check_requirement_metadata, 'conformance_closure': check_conformance_closure, 'generation_correspondence': check_generation_correspondence, 'canonical_entrypoint': check_canonical_entrypoint, 'remote_execution': check_remote_execution, 'exact_candidate': check_exact_candidate, 'bootstrap_state': check_bootstrap_state, 'governance_state_resolution': check_governance_state_resolution, 'accepted_state_publication': check_accepted_state_publication, 'assurance_runtime': check_assurance_runtime, 'successor_proposal_registry': check_successor_proposal_registry, 'governed_work_kernel': check_governed_work_kernel, 'github_governance_binding': check_github_governance_binding, 'proposal_lineage': check_proposal_lineage, 'conformance_selftest': check_conformance_selftest, 'conformance_canonicality': check_conformance_canonicality, 'generation_contract': check_generation_contract, 'authority_kernel': check_authority_kernel, 'requirement_provenance': check_requirement_provenance, 'operating_substrate_preflight': check_operating_substrate_preflight, 'bootstrap_read_surfaces': check_bootstrap_read_surfaces, 'framework_record_orientation': check_framework_record_and_orientation_contract, 'bootstrap_independence': check_bootstrap_independence, 'bootstrap_authority_lifecycle': check_bootstrap_authority_lifecycle, 'post_cutover_mutation_authority': check_post_cutover_mutation_authority, 'post_cutover_mutation_binding': check_post_cutover_mutation_binding, 'retained_bootstrap_payload': check_retained_bootstrap_payload}
+CALLABLES = {'repository_structure': check_repository_structure, 'requirement_metadata': check_requirement_metadata, 'conformance_closure': check_conformance_closure, 'generation_correspondence': check_generation_correspondence, 'canonical_entrypoint': check_canonical_entrypoint, 'remote_execution': check_remote_execution, 'exact_candidate': check_exact_candidate, 'bootstrap_state': check_bootstrap_state, 'governance_state_resolution': check_governance_state_resolution, 'accepted_state_publication': check_accepted_state_publication, 'assurance_runtime': check_assurance_runtime, 'successor_proposal_registry': check_successor_proposal_registry, 'governed_work_kernel': check_governed_work_kernel, 'github_governance_binding': check_github_governance_binding, 'proposal_lineage': check_proposal_lineage, 'conformance_selftest': check_conformance_selftest, 'conformance_canonicality': check_conformance_canonicality, 'generation_contract': check_generation_contract, 'authority_kernel': check_authority_kernel, 'requirement_provenance': check_requirement_provenance, 'operating_substrate_preflight': check_operating_substrate_preflight, 'bootstrap_read_surfaces': check_bootstrap_read_surfaces, 'framework_record_orientation': check_framework_record_and_orientation_contract, 'bootstrap_independence': check_bootstrap_independence, 'bootstrap_authority_lifecycle': check_bootstrap_authority_lifecycle, 'post_cutover_mutation_authority': check_post_cutover_mutation_authority, 'post_cutover_mutation_binding': check_post_cutover_mutation_binding, 'retained_bootstrap_payload': check_retained_bootstrap_payload, 'json_record_envelopes': check_json_record_envelopes}
 
 def main():
     root = Path.cwd().resolve()

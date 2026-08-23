@@ -1,4 +1,6 @@
 {
+  "schema_version": "1",
+  "record_type": "authority-source",
   "id": "FS0-AUTH-FRAMEWORK",
   "title": "FS0 Framework Contract",
   "dependencies": [],

@@ -1,4 +1,6 @@
 {
+  "schema_version": "1",
+  "record_type": "requirement-source-set",
   "authority": "FS0-AUTH-ASSURANCE",
   "requirements": [
     {

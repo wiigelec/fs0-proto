@@ -1,4 +1,6 @@
 {
+  "schema_version": "1",
+  "record_type": "authority-source",
   "id": "FS0-AUTH-GOVERNANCE",
   "title": "FS0 Governance",
   "dependencies": [

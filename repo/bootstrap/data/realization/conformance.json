@@ -327,6 +327,13 @@
       "assertion_ids": [
         "FS0-ASSERT-FC-020"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-JSON-RECORD-ENVELOPES",
+      "callable": "json_record_envelopes",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-034"
+      ]
     }
   ],
   "evidence": [
@@ -468,6 +475,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-RETAINED-BOOTSTRAP-PAYLOAD",
       "implementation_id": "FS0-IMPL-RETAINED-BOOTSTRAP-PAYLOAD",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-JSON-RECORD-ENVELOPES",
+      "implementation_id": "FS0-IMPL-JSON-RECORD-ENVELOPES",
       "evidence_class": "execution-result"
     }
   ],
