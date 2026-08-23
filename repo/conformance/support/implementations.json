@@ -148,6 +148,26 @@
         "FS0-ASSERT-CONF-028",
         "FS0-ASSERT-CONF-029"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-ASSURANCE-RUNTIME",
+      "role": "support",
+      "callable": "assurance_runtime",
+      "assertion_ids": [
+        "FS0-ASSERT-ASSUR-001",
+        "FS0-ASSERT-ASSUR-002",
+        "FS0-ASSERT-ASSUR-003",
+        "FS0-ASSERT-ASSUR-004",
+        "FS0-ASSERT-ASSUR-005",
+        "FS0-ASSERT-ASSUR-006",
+        "FS0-ASSERT-ASSUR-008",
+        "FS0-ASSERT-ASSUR-009",
+        "FS0-ASSERT-ASSUR-012",
+        "FS0-ASSERT-ASSUR-013",
+        "FS0-ASSERT-ASSUR-014"
+      ]
     }
   ]
 }

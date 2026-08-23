@@ -54,12 +54,29 @@
       "descendants": "closed"
     },
     {
+      "path": "repo/assurance/cases",
+      "object_type": "directory",
+      "presence": "permitted",
+      "descendants": "complete-subtree"
+    },
+    {
       "path": "repo/assurance/correspondence.json",
       "object_type": "file",
       "presence": "required"
     },
     {
+      "path": "repo/assurance/findings",
+      "object_type": "directory",
+      "presence": "permitted",
+      "descendants": "complete-subtree"
+    },
+    {
       "path": "repo/assurance/obligations.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/assurance/runtime.py",
       "object_type": "file",
       "presence": "required"
     },
@@ -142,6 +159,22 @@
       "object_type": "directory",
       "presence": "required",
       "descendants": "closed"
+    },
+    {
+      "path": "repo/bootstrap/data/realization/assurance",
+      "object_type": "directory",
+      "presence": "required",
+      "descendants": "closed"
+    },
+    {
+      "path": "repo/bootstrap/data/realization/assurance.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/realization/assurance/runtime.py",
+      "object_type": "file",
+      "presence": "required"
     },
     {
       "path": "repo/bootstrap/data/realization/conformance.json",

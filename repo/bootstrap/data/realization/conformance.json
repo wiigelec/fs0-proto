@@ -118,6 +118,23 @@
         "FS0-ASSERT-CONF-028",
         "FS0-ASSERT-CONF-029"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-ASSURANCE-RUNTIME",
+      "callable": "assurance_runtime",
+      "assertion_ids": [
+        "FS0-ASSERT-ASSUR-001",
+        "FS0-ASSERT-ASSUR-002",
+        "FS0-ASSERT-ASSUR-003",
+        "FS0-ASSERT-ASSUR-004",
+        "FS0-ASSERT-ASSUR-005",
+        "FS0-ASSERT-ASSUR-006",
+        "FS0-ASSERT-ASSUR-008",
+        "FS0-ASSERT-ASSUR-009",
+        "FS0-ASSERT-ASSUR-012",
+        "FS0-ASSERT-ASSUR-013",
+        "FS0-ASSERT-ASSUR-014"
+      ]
     }
   ],
   "evidence": [
@@ -169,6 +186,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-REPOSITORY-STRUCTURE",
       "implementation_id": "FS0-IMPL-REPOSITORY-STRUCTURE",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-ASSURANCE-RUNTIME",
+      "implementation_id": "FS0-IMPL-ASSURANCE-RUNTIME",
       "evidence_class": "execution-result"
     }
   ],

@@ -1037,6 +1037,119 @@ def _exercise_structure_semantics():
     return {"ok": all(cases.values()), "cases": cases}
 
 
+
+def check_assurance_runtime(root, assertion_ids):
+    module_path = root / "repo/assurance/runtime.py"
+    if not module_path.is_file():
+        return [result(aid, "fail", "Assurance runtime realization is missing") for aid in assertion_ids]
+
+    spec = importlib.util.spec_from_file_location("fs0_assurance_runtime", module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    reqs = load(root / "repo/authority/requirements.json")["requirements"]
+    corr_obj = load(root / "repo/assurance/correspondence.json")
+    obs_obj = load(root / "repo/assurance/obligations.json")
+    corr = corr_obj["records"]
+    obs = obs_obj["obligations"]
+    req_ids = {r["requirement_id"] for r in reqs}
+    corr_by_req = {r["requirement_id"]: r for r in corr}
+    obligation_by_id = {o["obligation_id"]: o for o in obs}
+    required_corr = [r for r in corr if r["applicability"] == "required"]
+    none_corr = [r for r in corr if r["applicability"] == "none"]
+
+    sample = required_corr[0]
+    triggered = module.triggered_obligation_ids(corr, [sample["requirement_id"]])
+    case = {
+        "schema_version": "1",
+        "record_type": "assurance-review-case",
+        "case_id": "FS0-CASE-TEST",
+        "authorizing_authority_id": "FS0-AUTH-GOVERNANCE",
+        "review_obligation_id": sample["obligation_ids"][0],
+        "reviewed_subject": {"work_id": "FS0-WORK-TEST"},
+        "evidence": ["evidence:test"],
+        "material_exclusions": [],
+        "finding_identity": "FS0-FINDING-TEST-1",
+    }
+    case_ok = module.validate_case(dict(case))["case_id"] == case["case_id"]
+    self_auth = dict(case)
+    self_auth["reviewed_subject"] = {"authority_id": "FS0-AUTH-GOVERNANCE"}
+    self_auth_rejected = False
+    try:
+        module.validate_case(self_auth)
+    except module.AssuranceError:
+        self_auth_rejected = True
+
+    adverse = {
+        "schema_version": "1", "record_type": "assurance-finding",
+        "finding_id": "FS0-FINDING-TEST-1", "case_id": case["case_id"],
+        "status": "defect", "sequence": 1,
+    }
+    satisfied = {
+        "schema_version": "1", "record_type": "assurance-finding",
+        "finding_id": "FS0-FINDING-TEST-2", "case_id": case["case_id"],
+        "status": "satisfied", "sequence": 2,
+    }
+    review_types = {
+        "requirement-quality", "ambiguity", "contradiction", "Design-fidelity",
+        "Plan-fidelity", "Build-fidelity", "Conformance-interpretation",
+        "evidence-sufficiency",
+    }
+    finding_statuses = {"satisfied", "defect", "insufficient", "governance-required"}
+
+    checks = {
+        "FS0-ASSERT-ASSUR-001": (
+            corr_obj.get("requirements_total") == len(reqs) == len(corr) and set(corr_by_req) == req_ids,
+            "every active requirement has exactly one Assurance correspondence",
+        ),
+        "FS0-ASSERT-ASSUR-002": (
+            triggered == sample["obligation_ids"] and triggered and all(x in obligation_by_id for x in triggered),
+            "Assurance-required subject requirements trigger stable obligations",
+        ),
+        "FS0-ASSERT-ASSUR-003": (
+            module.REVIEW_TYPES == review_types,
+            "Assurance runtime supports every required review class",
+        ),
+        "FS0-ASSERT-ASSUR-004": (
+            module.FINDING_STATUSES == finding_statuses
+            and module.resolution_status(case["case_id"], [adverse]) == "adverse"
+            and module.resolution_status(case["case_id"], [adverse, satisfied]) == "resolved",
+            "finding vocabulary and adverse-until-satisfied resolution are realized",
+        ),
+        "FS0-ASSERT-ASSUR-005": (
+            case_ok,
+            "Assurance cases require authority, obligation, subject, evidence, exclusions when present, and finding identity",
+        ),
+        "FS0-ASSERT-ASSUR-006": (
+            self_auth_rejected,
+            "a review subject cannot authorize its own Assurance review",
+        ),
+        "FS0-ASSERT-ASSUR-008": (
+            all({"requirement_id", "applicability", "obligation_ids"} <= set(r) for r in corr),
+            "Assurance correspondence contains the required fields",
+        ),
+        "FS0-ASSERT-ASSUR-009": (
+            module.CASES_DIR == "repo/assurance/cases"
+            and module.FINDINGS_DIR == "repo/assurance/findings"
+            and isinstance(module.load_cases(root), list)
+            and isinstance(module.load_findings(root), list),
+            "case and finding artifacts use maintained repository JSON locations",
+        ),
+        "FS0-ASSERT-ASSUR-012": (
+            all(r["obligation_ids"] and all(x in obligation_by_id for x in r["obligation_ids"]) for r in required_corr),
+            "required Assurance correspondence resolves stable obligation identities",
+        ),
+        "FS0-ASSERT-ASSUR-013": (
+            all(not r["obligation_ids"] for r in none_corr),
+            "none-applicable Assurance correspondence has empty obligation_ids",
+        ),
+        "FS0-ASSERT-ASSUR-014": (
+            module.CASES_DIR.startswith("repo/assurance/") and module.FINDINGS_DIR.startswith("repo/assurance/"),
+            "Assurance case and finding artifacts are repository-hosted for the fixed GitHub binding",
+        ),
+    }
+    return [result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1]) for aid in assertion_ids]
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -1349,6 +1462,7 @@ CALLABLES = {
     "bootstrap_state": check_bootstrap_state,
     "governance_state_resolution": check_governance_state_resolution,
     "accepted_state_publication": check_accepted_state_publication,
+    "assurance_runtime": check_assurance_runtime,
 }
 
 

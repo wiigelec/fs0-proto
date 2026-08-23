@@ -408,6 +408,34 @@ def derive_repository_structure_state(root: Path):
         root / "repo/state/repository-structure-binding.json": binding,
     }
 
+def derive_assurance_realization(root: Path):
+    data_dir = root / "repo/bootstrap/data/realization"
+    config = load_json(data_dir / "assurance.json")
+    if config.get("schema_version") != "1":
+        raise SystemExit("unsupported Assurance realization data schema")
+    if config.get("record_type") != "assurance-realization-data":
+        raise SystemExit("unexpected Assurance realization data record_type")
+    artifacts = config.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        raise SystemExit("Assurance realization must define artifacts")
+    outputs, modes, seen = {}, {}, set()
+    for item in artifacts:
+        source_rel, target_rel, mode = item.get("source"), item.get("target"), item.get("mode")
+        source_path, target_path = Path(source_rel), Path(target_rel)
+        if source_path.is_absolute() or ".." in source_path.parts or target_path.is_absolute() or ".." in target_path.parts:
+            raise SystemExit("invalid Assurance realization path")
+        if target_rel in seen:
+            raise SystemExit("duplicate Assurance realization target")
+        if not isinstance(mode, str) or len(mode) != 4 or any(ch not in "01234567" for ch in mode):
+            raise SystemExit("invalid Assurance realization mode")
+        source = data_dir / source_path
+        if not source.is_file():
+            raise SystemExit(f"missing Assurance realization source: {source}")
+        seen.add(target_rel)
+        outputs[root / target_path] = source.read_text(encoding="utf-8")
+        modes[target_rel] = mode
+    return outputs, modes
+
 def derive_governance_realization(root: Path):
     data_dir = root / "repo/bootstrap/data/realization"
     config = load_json(data_dir / "governance.json")
@@ -501,6 +529,8 @@ def derive(root: Path):
     outputs.update(derive_bootstrap_state(root))
     outputs.update(derive_repository_structure_state(root))
     outputs.update(derive_conformance_realization(root, requirements, assertions))
+    assurance_outputs, _ = derive_assurance_realization(root)
+    outputs.update(assurance_outputs)
     governance_outputs, _ = derive_governance_realization(root)
     outputs.update(governance_outputs)
     outputs.update(derive_root_surfaces(root))
