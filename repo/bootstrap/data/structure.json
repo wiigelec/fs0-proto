@@ -228,6 +228,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/realization/generation_contract.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/realization/governance",
       "object_type": "directory",
       "presence": "required",

@@ -211,6 +211,19 @@
       "assertion_ids": [
         "FS0-ASSERT-CONF-017"
       ]
+    },
+    {
+      "implementation_id": "FS0-IMPL-GENERATION-CONTRACT",
+      "callable": "generation_contract",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-065",
+        "FS0-ASSERT-FC-066",
+        "FS0-ASSERT-FC-067",
+        "FS0-ASSERT-FC-068",
+        "FS0-ASSERT-FC-073",
+        "FS0-ASSERT-FC-077",
+        "FS0-ASSERT-FC-078"
+      ]
     }
   ],
   "evidence": [
@@ -297,6 +310,11 @@
     {
       "evidence_id": "FS0-EVIDENCE-CONFORMANCE-CANONICALITY",
       "implementation_id": "FS0-IMPL-CONFORMANCE-CANONICALITY",
+      "evidence_class": "execution-result"
+    },
+    {
+      "evidence_id": "FS0-EVIDENCE-GENERATION-CONTRACT",
+      "implementation_id": "FS0-IMPL-GENERATION-CONTRACT",
       "evidence_class": "execution-result"
     }
   ],

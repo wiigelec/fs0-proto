@@ -1793,6 +1793,167 @@ def check_conformance_canonicality(root, assertion_ids):
         for aid in assertion_ids
     ]
 
+def check_generation_contract(root, assertion_ids):
+    contract = load(root / "repo/bootstrap/data/realization/generation_contract.json")
+    required = {
+        "schema_version",
+        "record_type",
+        "canonical_source_role",
+        "canonical_input_root",
+        "generation_implementation",
+        "generation_entrypoint",
+        "correspondence_check",
+        "declared_variable_inputs",
+        "generated_output_ownership",
+        "generated_surfaces_are_canonical_source",
+        "post_cutover_bootstrap_source_mutation_requires_governance",
+    }
+    contract_ok = (
+        set(contract) == required
+        and contract.get("schema_version") == "1"
+        and contract.get("record_type") == "fs0-generation-contract"
+        and contract.get("canonical_source_role") == "canonical-bootstrap-maintenance-data"
+        and contract.get("canonical_input_root") == "repo/bootstrap/data"
+        and contract.get("generation_implementation") == "repo/bootstrap/scripts/src/generate.py"
+        and contract.get("generation_entrypoint") == "repo/bootstrap/scripts/bootstrap"
+        and contract.get("correspondence_check") == "repo/bootstrap/scripts/bootstrap --check"
+        and contract.get("declared_variable_inputs") == []
+        and contract.get("generated_surfaces_are_canonical_source") is False
+        and contract.get("post_cutover_bootstrap_source_mutation_requires_governance") is True
+    )
+
+    generator_path = root / contract["generation_implementation"]
+    source_root = root / contract["canonical_input_root"]
+    paths_ok = generator_path.is_file() and source_root.is_dir()
+
+    generator_dir = str(generator_path.parent)
+    inserted = generator_dir not in sys.path
+    if inserted:
+        sys.path.insert(0, generator_dir)
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "fs0_generate_contract", generator_path
+        )
+        generator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(generator)
+    finally:
+        if inserted:
+            try:
+                sys.path.remove(generator_dir)
+            except ValueError:
+                pass
+
+    first = generator.derive(root)
+    second = generator.derive(root)
+    first_keys = {p.relative_to(root).as_posix() for p in first}
+    second_keys = {p.relative_to(root).as_posix() for p in second}
+
+    deterministic = first_keys == second_keys
+    if deterministic:
+        for path in first:
+            if generator.render_output(first[path]) != generator.render_output(second[path]):
+                deterministic = False
+                break
+
+    checked_in_match = True
+    mismatches = []
+    for path, value in first.items():
+        expected = generator.render_output(value)
+        try:
+            actual = path.read_bytes()
+        except FileNotFoundError:
+            checked_in_match = False
+            mismatches.append(path.relative_to(root).as_posix())
+            continue
+        if actual != expected:
+            checked_in_match = False
+            mismatches.append(path.relative_to(root).as_posix())
+
+    generated_not_source = all(
+        not rel.startswith(contract["canonical_input_root"] + "/")
+        for rel in first_keys
+    )
+
+    def post_cutover_source_mutation_allowed(path, build):
+        if not path.startswith("repo/bootstrap/data/"):
+            return True
+        if not isinstance(build, dict):
+            return False
+        if build.get("stage") != "build" or build.get("disposition") != "accepted":
+            return False
+        auth = build.get("bounded_authorization")
+        return (
+            isinstance(auth, dict)
+            and path in auth.get("mutation_scope", [])
+        )
+
+    protected_path = "repo/bootstrap/data/model.json"
+    denied_without_build = not post_cutover_source_mutation_allowed(
+        protected_path, None
+    )
+    denied_out_of_scope = not post_cutover_source_mutation_allowed(
+        protected_path,
+        {
+            "stage": "build",
+            "disposition": "accepted",
+            "bounded_authorization": {
+                "mutation_scope": ["repo/bootstrap/data/root/index.json"]
+            },
+        },
+    )
+    allowed_in_scope = post_cutover_source_mutation_allowed(
+        protected_path,
+        {
+            "stage": "build",
+            "disposition": "accepted",
+            "bounded_authorization": {"mutation_scope": [protected_path]},
+        },
+    )
+
+    checks = {
+        "FS0-ASSERT-FC-065": (
+            contract_ok and paths_ok and bool(first_keys),
+            "bootstrap-generated maintained artifacts resolve to canonical maintenance data and the separately identified generator implementation",
+        ),
+        "FS0-ASSERT-FC-066": (
+            contract_ok and generated_not_source and checked_in_match,
+            "generated read and operating surfaces are generator outputs and are not canonical maintenance-data inputs",
+        ),
+        "FS0-ASSERT-FC-067": (
+            contract_ok and deterministic,
+            "two derivations from identical canonical inputs and declared variable inputs produce identical output paths and bytes",
+        ),
+        "FS0-ASSERT-FC-068": (
+            contract_ok and source_root.is_dir(),
+            "one machine-resolvable canonical maintenance-data source role is declared for generated FS0 artifacts",
+        ),
+        "FS0-ASSERT-FC-073": (
+            denied_without_build and denied_out_of_scope and allowed_in_scope,
+            "post-cutover bootstrap-source mutation requires accepted Governance Build authorization covering the source path",
+        ),
+        "FS0-ASSERT-FC-077": (
+            contract_ok and checked_in_match and bool(first_keys),
+            "generated FS0 read surfaces are produced from canonical maintenance data by the identified generator",
+        ),
+        "FS0-ASSERT-FC-078": (
+            contract_ok and deterministic and checked_in_match,
+            "every current generator-owned maintained artifact is reproducible from canonical maintenance data and the identified generator",
+        ),
+    }
+    evidence = {
+        "canonical_input_root": contract.get("canonical_input_root"),
+        "generation_implementation": contract.get("generation_implementation"),
+        "declared_variable_inputs": contract.get("declared_variable_inputs"),
+        "generated_output_count": len(first_keys),
+        "mismatches": mismatches,
+        "deterministic": deterministic,
+    }
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
+
 def check_repository_structure(root, assertion_ids):
     try:
         live = _evaluate_repository_structure(root)
@@ -2112,6 +2273,7 @@ CALLABLES = {
     "proposal_lineage": check_proposal_lineage,
     "conformance_selftest": check_conformance_selftest,
     "conformance_canonicality": check_conformance_canonicality,
+    "generation_contract": check_generation_contract,
 }
 
 

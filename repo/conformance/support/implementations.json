@@ -404,6 +404,31 @@
       "authority_requirement_ids": [
         "FS0-CONF-017"
       ]
+    },
+    {
+      "schema_version": "1",
+      "record_type": "conformance-implementation",
+      "implementation_id": "FS0-IMPL-GENERATION-CONTRACT",
+      "role": "support",
+      "callable": "generation_contract",
+      "assertion_ids": [
+        "FS0-ASSERT-FC-065",
+        "FS0-ASSERT-FC-066",
+        "FS0-ASSERT-FC-067",
+        "FS0-ASSERT-FC-068",
+        "FS0-ASSERT-FC-073",
+        "FS0-ASSERT-FC-077",
+        "FS0-ASSERT-FC-078"
+      ],
+      "authority_requirement_ids": [
+        "FS0-FC-065",
+        "FS0-FC-066",
+        "FS0-FC-067",
+        "FS0-FC-068",
+        "FS0-FC-073",
+        "FS0-FC-077",
+        "FS0-FC-078"
+      ]
     }
   ]
 }
