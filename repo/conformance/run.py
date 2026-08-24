@@ -926,6 +926,16 @@ def _bootstrap_clean_room_regression(root):
     with tempfile.TemporaryDirectory() as td:
         target = Path(td)
         shutil.copytree(root / 'repo/bootstrap', target / 'repo/bootstrap')
+        fresh_state_path = target / 'repo/bootstrap/data/state/bootstrap.json'
+        fresh_state = dict(load(fresh_state_path))
+        fresh_state.update({
+            'state': 'candidate',
+            'candidate_revision': None,
+            'first_accepted_fs0_revision': None,
+            'bootstrap_acceptance_record': None,
+            'cutover_timestamp': None,
+        })
+        fresh_state_path.write_text(json.dumps(fresh_state, indent=2) + '\n', encoding='utf-8')
         env = os.environ.copy()
         env['GIT_AUTHOR_NAME'] = 'FS0 Bootstrap Test'
         env['GIT_AUTHOR_EMAIL'] = 'fs0-bootstrap@example.invalid'
