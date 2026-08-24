@@ -314,6 +314,11 @@ def resolve_governance_work_acceptance(issue_body, comments, expected_stage, exp
         body = comment.get("body") if isinstance(comment, dict) else None
         if not isinstance(body, str) or MARKER not in body:
             continue
+        # Authenticate before parsing or uniqueness checks. Untrusted
+        # commenters cannot create either acceptance or a resolution defect.
+        if not _github_actor_matches_comment(comment, authorized_actor):
+            continue
+
         try:
             record = parse_acceptance_comment(body)
         except AcceptanceError as exc:
@@ -338,11 +343,6 @@ def resolve_governance_work_acceptance(issue_body, comments, expected_stage, exp
             })
             continue
         seen_ids.add(acceptance_id)
-
-        if not _github_actor_matches_comment(comment, authorized_actor):
-            # Unauthenticated/non-authorized commenters cannot create acceptance
-            # records merely by copying an authorized actor value.
-            continue
 
         if record.get("actor") != authorized_actor:
             defects.append({
@@ -398,12 +398,67 @@ def github_issues(repo):
 
 
 def github_issue_comments_for(repo, issue_number):
-    if not isinstance(issue_number, int) or issue_number < 1:
+    if (
+        isinstance(issue_number, bool)
+        or not isinstance(issue_number, int)
+        or issue_number < 1
+    ):
         raise RuntimeError("issue_number must be a positive integer")
+
+    issue = _gh_paginated(f"repos/{repo}/issues/{issue_number}")
+    if len(issue) != 1 or not isinstance(issue[0], dict):
+        raise RuntimeError("bootstrap provenance issue did not resolve exactly once")
+    issue = issue[0]
+    if "pull_request" in issue:
+        raise RuntimeError("bootstrap provenance anchor must resolve to a GitHub issue")
+
     comments = _gh_paginated(
         f"repos/{repo}/issues/{issue_number}/comments?per_page=100"
     )
-    return [item for item in comments if _github_comment_has_identity(item)]
+    out = []
+    for item in comments:
+        if not _github_comment_has_identity(item):
+            continue
+        enriched = dict(item)
+        enriched["issue_body"] = issue.get("body")
+        enriched["issue_url"] = issue.get("url")
+        out.append(enriched)
+    return out
+
+
+def bootstrap_provenance_issue_number(state):
+    if not isinstance(state, dict):
+        raise RuntimeError("bootstrap state must be a JSON object")
+    value = state.get("bootstrap_provenance_issue")
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise RuntimeError(
+            "initial accepted-state resolution requires bootstrap_provenance_issue "
+            "to name one positive GitHub issue number"
+        )
+    return value
+
+
+def committed_bootstrap_state(root, revision):
+    if not isinstance(revision, str) or not SHA_RE.fullmatch(revision):
+        raise RuntimeError("bootstrap-state revision must be an exact Git commit SHA")
+    proc = _run(["git", "show", f"{revision}:repo/state/bootstrap.json"])
+    try:
+        state = json.loads(proc.stdout)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"committed bootstrap state is invalid JSON: {exc}")
+    if (
+        not isinstance(state, dict)
+        or state.get("schema_version") != "1"
+        or state.get("record_type") != "bootstrap-state"
+    ):
+        raise RuntimeError("committed bootstrap state has invalid envelope")
+    return state
+
+
+def bootstrap_acceptance_comments(root, repo, revision):
+    state = committed_bootstrap_state(root, revision)
+    issue_number = bootstrap_provenance_issue_number(state)
+    return issue_number, github_issue_comments_for(repo, issue_number)
 
 def resolve_accepted_state(accepted_sha, comments):
     if accepted_sha is None:
@@ -621,8 +676,18 @@ def main():
             report = resolve_accepted_state(None, [])
         else:
             repo = origin_repository(root)
-            comments = github_issue_comments(repo)
-            report = resolve_accepted_state(sha, comments)
+            state = committed_bootstrap_state(root, sha)
+            if state.get("state") == "candidate":
+                issue_number, comments = bootstrap_acceptance_comments(root, repo, sha)
+                report = resolve_accepted_state(sha, comments)
+                report["provenance_issue_number"] = issue_number
+                report["provenance_resolution"] = "committed-bootstrap-anchor"
+            else:
+                # Post-cutover Build acceptance remains tied to governed-work
+                # discovery. Initial bootstrap authority is never globally discovered.
+                comments = github_issue_comments(repo)
+                report = resolve_accepted_state(sha, comments)
+                report["provenance_resolution"] = "post-cutover-governance"
     except Exception as exc:
         report = {
             "schema_version": "1",

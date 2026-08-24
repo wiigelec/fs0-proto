@@ -181,9 +181,18 @@ def main():
         report["candidate_id"] = candidate
 
         repo = module.origin_repository(root)
-        comments = module.github_issue_comments(repo)
         current = remote_accepted_ref()
         report["previous_accepted_revision"] = current
+
+        if current is None:
+            provenance_issue, comments = module.bootstrap_acceptance_comments(
+                root, repo, candidate
+            )
+            report["bootstrap_provenance_issue"] = provenance_issue
+            report["provenance_resolution"] = "committed-bootstrap-anchor"
+        else:
+            comments = module.github_issue_comments(repo)
+            report["provenance_resolution"] = "post-cutover-governance"
 
         decision = publication_decision(candidate, current, comments, module)
         report["action"] = decision["action"]
@@ -215,7 +224,14 @@ def main():
             raise RuntimeError("accepted ref does not match candidate after publication")
 
         # Canonical accepted state must resolve from ref + matching record after push.
-        comments_after = module.github_issue_comments(repo)
+        if current is None:
+            provenance_issue_after, comments_after = module.bootstrap_acceptance_comments(
+                root, repo, final
+            )
+            if provenance_issue_after != report.get("bootstrap_provenance_issue"):
+                raise RuntimeError("bootstrap provenance anchor changed during publication")
+        else:
+            comments_after = module.github_issue_comments(repo)
         resolved = module.resolve_accepted_state(final, comments_after)
         if resolved.get("status") != "accepted":
             raise RuntimeError("published accepted ref does not resolve to canonical accepted state")
