@@ -1184,7 +1184,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-019",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Design, Plan, or Build acceptance actor SHALL equal bounded_authorization.acceptance_actor on that work item; bootstrap acceptance actor SHALL equal bootstrap authorization acceptance_actor on the provenance issue.",
+      "statement": "For the FS0 GitHub binding, acceptance_actor SHALL contain a positive immutable GitHub numeric user ID; each acceptance actor SHALL equal the applicable bounded_authorization.acceptance_actor or bootstrap_authorization.acceptance_actor.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"

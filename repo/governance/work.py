@@ -15,6 +15,16 @@ class GovernanceWorkError(ValueError):
 
 def _nonempty(v):
     return isinstance(v, str) and bool(v.strip())
+def _valid_actor(v):
+    if not isinstance(v, dict):
+        return False
+    actor_id = v.get("id")
+    return (
+        not isinstance(actor_id, bool)
+        and isinstance(actor_id, int)
+        and actor_id > 0
+        and ("login" not in v or _nonempty(v.get("login")))
+    )
 
 def _string_list(v, nonempty=False):
     return isinstance(v, list) and (bool(v) or not nonempty) and all(_nonempty(x) for x in v)
@@ -47,8 +57,10 @@ def validate_work(r):
     if not isinstance(r.get("provenance"), dict) or not r["provenance"]:
         raise GovernanceWorkError("provenance must be non-empty")
     auth = r.get("bounded_authorization")
-    if not isinstance(auth, dict) or not _nonempty(auth.get("acceptance_actor")):
-        raise GovernanceWorkError("bounded_authorization.acceptance_actor is required")
+    if not isinstance(auth, dict) or not _valid_actor(auth.get("acceptance_actor")):
+        raise GovernanceWorkError(
+            "bounded_authorization.acceptance_actor requires positive GitHub user id"
+        )
     if not _string_list(auth.get("mutation_scope", [])):
         raise GovernanceWorkError("mutation_scope must be a string list")
     if not set(auth.get("mutation_scope", [])) <= set(r["scope"]):

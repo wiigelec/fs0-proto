@@ -35,7 +35,14 @@ def _nonempty(value):
 
 
 def _valid_actor(value):
-    return _nonempty(value) or (isinstance(value, dict) and bool(value))
+    if not isinstance(value, dict):
+        return False
+    actor_id = value.get("id")
+    if isinstance(actor_id, bool) or not isinstance(actor_id, int) or actor_id < 1:
+        return False
+    if "login" in value and not _nonempty(value.get("login")):
+        return False
+    return True
 
 
 def _github_comment_has_identity(comment):
@@ -61,36 +68,13 @@ def _github_actor_matches_comment(comment, actor):
     if not _github_comment_has_identity(comment):
         return False
 
-    login = user["login"]
     user_id = user["id"]
 
-    if isinstance(actor, str):
-        return actor.strip().casefold() == login.strip().casefold()
-    if not isinstance(actor, dict):
+    # Numeric GitHub user ID is the trust key. Login, when present, is display
+    # metadata and may change without retroactively invalidating acceptance.
+    if not _valid_actor(actor):
         return False
-
-    compared = False
-    for key in ("login", "github_login"):
-        value = actor.get(key)
-        if value is not None:
-            if not _nonempty(value) or value.strip().casefold() != login.strip().casefold():
-                return False
-            compared = True
-
-    for key in ("id", "github_user_id", "user_id"):
-        value = actor.get(key)
-        if value is not None:
-            if isinstance(value, bool):
-                return False
-            try:
-                actor_id = int(value)
-            except (TypeError, ValueError):
-                return False
-            if actor_id != user_id:
-                return False
-            compared = True
-
-    return compared
+    return actor["id"] == user_id
 
 
 def _valid_timestamp(value):
@@ -139,7 +123,7 @@ def _authorized_actor(issue_body, record_type):
         if node is not None:
             values.append(node)
 
-    if len(values) != 1:
+    if len(values) != 1 or not _valid_actor(values[0]):
         return None
     return values[0]
 

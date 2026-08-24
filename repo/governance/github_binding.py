@@ -9,6 +9,16 @@ class GitHubBindingError(ValueError):
 
 def _nonempty(value):
     return isinstance(value, str) and bool(value.strip())
+def _valid_actor(value):
+    if not isinstance(value, dict):
+        return False
+    actor_id = value.get("id")
+    return (
+        not isinstance(actor_id, bool)
+        and isinstance(actor_id, int)
+        and actor_id > 0
+        and ("login" not in value or _nonempty(value.get("login")))
+    )
 
 def _issue_number(value):
     return isinstance(value, int) and value > 0
@@ -57,8 +67,10 @@ def validate_bootstrap_provenance_issue(issue):
     if "governed_work" in issue:
         raise GitHubBindingError("bootstrap provenance must not be governed work")
     auth = issue.get("bootstrap_authorization")
-    if not isinstance(auth, dict) or not _nonempty(auth.get("acceptance_actor")):
-        raise GitHubBindingError("bootstrap provenance requires acceptance_actor")
+    if not isinstance(auth, dict) or not _valid_actor(auth.get("acceptance_actor")):
+        raise GitHubBindingError(
+            "bootstrap provenance acceptance_actor requires positive GitHub user id"
+        )
     return issue
 
 def resolve_remote_governance_state(snapshot):

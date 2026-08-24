@@ -88,7 +88,7 @@ def check_self_change_completion(root, assertion_ids):
         contract = load(contract_path)
         module = _load_module_for_fc033(module_path, 'fs0_fc033_self_change')
         sha = 'a' * 40
-        actor = 'authorized-actor'
+        actor = {'id': 101, 'login': 'authorized-actor'}
         plan = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'plan', 'stage_steps': ['analyze', 'specify', 'accept'], 'work_id': 'FS0-PLAN-SELFCHANGE', 'predecessor_id': 'FS0-DESIGN-SELFCHANGE', 'scope': ['repo/example'], 'material_exclusions': [], 'candidate_result': {'kind': 'self-change'}, 'completion_conditions': ['bounded cycle complete'], 'disposition': 'accepted', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, 'accepted_design_id': 'FS0-DESIGN-SELFCHANGE', 'realization_intent': {'affected_artifacts': ['repo/example'], 'conformance_work': ['FS0-ASSERT-FC-033'], 'assurance_work': ['FS0-OBL-FC-033'], 'dependencies': [], 'sequencing': ['bounded'], 'build_scope': ['repo/example']}}
         build = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'build', 'stage_steps': ['implement', 'verify', 'accept'], 'work_id': 'FS0-BUILD-SELFCHANGE', 'predecessor_id': plan['work_id'], 'scope': ['repo/example'], 'material_exclusions': [], 'candidate_result': {'candidate_id': sha}, 'completion_conditions': ['cycle complete'], 'disposition': 'pending', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, 'accepted_plan_id': plan['work_id'], 'verification': {'evidence': ['candidate-publication'], 'conformance_status': 'pending'}}
         case = {'case_id': 'FS0-CASE-SELFCHANGE', 'review_obligation_id': 'FS0-OBL-FC-033'}
@@ -203,8 +203,8 @@ def check_governance_state_resolution(root, assertion_ids):
     spec.loader.exec_module(module)
     sha = 'a' * 40
     other = 'b' * 40
-    governance_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'governance-acceptance', 'acceptance_id': 'FS0-ACCEPT-BUILD-TEST', 'stage': 'build', 'work_id': 'FS0-WORK-BUILD-TEST', 'candidate_id': sha, 'disposition': 'accepted', 'actor': {'login': 'tester'}, 'evidence': ['evidence:test'], 'decision_timestamp': '2026-08-22T00:00:00Z', 'resulting_accepted_state': sha}) + '\n```\n'
-    bootstrap_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-BOOTSTRAP-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': sha, 'disposition': 'accepted', 'actor': 'tester', 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00+00:00', 'resulting_accepted_state': sha}) + '\n```\n'
+    governance_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'governance-acceptance', 'acceptance_id': 'FS0-ACCEPT-BUILD-TEST', 'stage': 'build', 'work_id': 'FS0-WORK-BUILD-TEST', 'candidate_id': sha, 'disposition': 'accepted', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['evidence:test'], 'decision_timestamp': '2026-08-22T00:00:00Z', 'resulting_accepted_state': sha}) + '\n```\n'
+    bootstrap_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-BOOTSTRAP-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': sha, 'disposition': 'accepted', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00+00:00', 'resulting_accepted_state': sha}) + '\n```\n'
     bad_sha_body = governance_body.replace(sha, 'not-a-sha', 1)
     malformed_body = governance_body.replace('repo-spec-acceptance:v1\n```json', 'repo-spec-acceptance:v1 prose\n```json', 1)
     governance_record = module.parse_acceptance_comment(governance_body)
@@ -216,7 +216,7 @@ def check_governance_state_resolution(root, assertion_ids):
         except module.AcceptanceError:
             return True
         return False
-    comment = {'id': 1, 'issue_url': 'https://api.github.com/repos/example/repo/issues/1', 'html_url': 'https://github.com/example/repo/issues/1#issuecomment-1', 'body': governance_body, 'issue_body': '```json\n' + json.dumps({'bounded_authorization': {'acceptance_actor': {'login': 'tester'}}}) + '\n```\n'}
+    comment = {'id': 1, 'issue_url': 'https://api.github.com/repos/example/repo/issues/1', 'html_url': 'https://github.com/example/repo/issues/1#issuecomment-1', 'body': governance_body, 'issue_body': '```json\n' + json.dumps({'bounded_authorization': {'acceptance_actor': {'id': 101, 'login': 'tester'}}}) + '\n```\n'}
     paired = module.resolve_accepted_state(sha, [comment])
     mismatch = module.resolve_accepted_state(other, [comment])
     unpublished = module.resolve_accepted_state(None, [comment])
@@ -244,12 +244,12 @@ def check_accepted_state_publication(root, assertion_ids):
         sys.dont_write_bytecode = old
     candidate = 'c' * 40
     current = 'd' * 40
-    accepted_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-PUBLISH-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': candidate, 'disposition': 'accepted', 'actor': 'tester', 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00Z', 'resulting_accepted_state': candidate}) + '\n```\n'
-    current_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'governance-acceptance', 'acceptance_id': 'FS0-ACCEPT-CURRENT-TEST', 'stage': 'build', 'work_id': 'FS0-WORK-BUILD-CURRENT', 'candidate_id': current, 'disposition': 'accepted', 'actor': 'tester', 'evidence': ['conformance:test'], 'decision_timestamp': '2026-08-21T00:00:00Z', 'resulting_accepted_state': current}) + '\n```\n'
-    rejected_payload = {'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-PUBLISH-REJECTED-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': candidate, 'disposition': 'rejected', 'actor': 'tester', 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00Z'}
+    accepted_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-PUBLISH-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': candidate, 'disposition': 'accepted', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00Z', 'resulting_accepted_state': candidate}) + '\n```\n'
+    current_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'governance-acceptance', 'acceptance_id': 'FS0-ACCEPT-CURRENT-TEST', 'stage': 'build', 'work_id': 'FS0-WORK-BUILD-CURRENT', 'candidate_id': current, 'disposition': 'accepted', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['conformance:test'], 'decision_timestamp': '2026-08-21T00:00:00Z', 'resulting_accepted_state': current}) + '\n```\n'
+    rejected_payload = {'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-PUBLISH-REJECTED-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': candidate, 'disposition': 'rejected', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00Z'}
     rejected_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps(rejected_payload) + '\n```\n'
-    bootstrap_issue_body = '```json\n' + json.dumps({'bootstrap_authorization': {'acceptance_actor': 'tester'}}) + '\n```\n'
-    governance_issue_body = '```json\n' + json.dumps({'bounded_authorization': {'acceptance_actor': 'tester'}}) + '\n```\n'
+    bootstrap_issue_body = '```json\n' + json.dumps({'bootstrap_authorization': {'acceptance_actor': {'id': 101, 'login': 'tester'}}}) + '\n```\n'
+    governance_issue_body = '```json\n' + json.dumps({'bounded_authorization': {'acceptance_actor': {'id': 101, 'login': 'tester'}}}) + '\n```\n'
     accepted_comments = [{'id': 1, 'body': accepted_body, 'issue_body': bootstrap_issue_body}]
     rejected_comments = [{'id': 2, 'body': rejected_body, 'issue_body': bootstrap_issue_body}]
     chain_comments = [{'id': 3, 'body': current_body, 'issue_body': governance_issue_body}, {'id': 4, 'body': accepted_body, 'issue_body': bootstrap_issue_body}]
@@ -538,7 +538,7 @@ def check_governed_work_kernel(root, assertion_ids):
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     obligation = 'FS0-OBL-TEST'
-    d = m.create_design('D1', 'REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT', ['repo/authority/requirements.json'], {'candidate': 'design'}, ['normalized'], {'proposal': 'framework-contract'}, {'acceptance_actor': 'tester', 'mutation_scope': ['repo/authority/requirements.json']}, {'created': ['FS1-X'], 'amended': [], 'withdrawn': []})
+    d = m.create_design('D1', 'REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT', ['repo/authority/requirements.json'], {'candidate': 'design'}, ['normalized'], {'proposal': 'framework-contract'}, {'acceptance_actor': {'id': 101, 'login': 'tester'}, 'mutation_scope': ['repo/authority/requirements.json']}, {'created': ['FS1-X'], 'amended': [], 'withdrawn': []})
     case_d = {'case_id': 'CD', 'review_obligation_id': obligation}
     finding_d = {'case_id': 'CD', 'status': 'satisfied', 'sequence': 1}
     ad = m.decide(d, 'accepted', [obligation], [case_d], [finding_d])
@@ -548,7 +548,7 @@ def check_governed_work_kernel(root, assertion_ids):
         m.create_plan('P-NOAUTH', ad, ['repo/governance/work.py'], {'candidate': 'plan'}, ['specified'], {'design': 'D1'}, {}, intent)
     except m.GovernanceWorkError:
         plan_without_own_auth_rejected = True
-    p = m.create_plan('P1', ad, ['repo/governance/work.py'], {'candidate': 'plan'}, ['specified'], {'design': 'D1'}, {'acceptance_actor': 'tester', 'mutation_scope': ['repo/governance/work.py']}, intent)
+    p = m.create_plan('P1', ad, ['repo/governance/work.py'], {'candidate': 'plan'}, ['specified'], {'design': 'D1'}, {'acceptance_actor': {'id': 101, 'login': 'tester'}, 'mutation_scope': ['repo/governance/work.py']}, intent)
     case_p = {'case_id': 'CP', 'review_obligation_id': obligation}
     finding_p = {'case_id': 'CP', 'status': 'satisfied', 'sequence': 1}
     ap = m.decide(p, 'accepted', [obligation], [case_p], [finding_p])
@@ -557,10 +557,10 @@ def check_governed_work_kernel(root, assertion_ids):
         m.create_build('B-NOAUTH', ap, ['repo/governance/work.py'], {'candidate_id': 'c' * 40}, ['implemented'], {'plan': 'P1'}, {}, ['evidence:test'])
     except m.GovernanceWorkError:
         build_without_own_auth_rejected = True
-    b = m.create_build('B1', ap, ['repo/governance/work.py'], {'candidate_id': 'a' * 40}, ['implemented', 'verified'], {'plan': 'P1'}, {'acceptance_actor': 'tester', 'mutation_scope': ['repo/governance/work.py']}, ['evidence:test'])
+    b = m.create_build('B1', ap, ['repo/governance/work.py'], {'candidate_id': 'a' * 40}, ['implemented', 'verified'], {'plan': 'P1'}, {'acceptance_actor': {'id': 101, 'login': 'tester'}, 'mutation_scope': ['repo/governance/work.py']}, ['evidence:test'])
     overbroad = False
     try:
-        m.create_build('B2', ap, ['repo/governance/work.py', 'repo/authority/requirements.json'], {'candidate_id': 'b' * 40}, ['complete'], {'plan': 'P1'}, {'acceptance_actor': 'tester', 'mutation_scope': ['repo/governance/work.py']}, ['evidence:test'])
+        m.create_build('B2', ap, ['repo/governance/work.py', 'repo/authority/requirements.json'], {'candidate_id': 'b' * 40}, ['complete'], {'plan': 'P1'}, {'acceptance_actor': {'id': 101, 'login': 'tester'}, 'mutation_scope': ['repo/governance/work.py']}, ['evidence:test'])
     except m.GovernanceWorkError:
         overbroad = True
     b = m.record_conformance(b, 'pass')
@@ -571,7 +571,7 @@ def check_governed_work_kernel(root, assertion_ids):
     blocked = m.acceptance_eligibility(b, [obligation], [case_b], [adverse])
     resolved = m.acceptance_eligibility(b, [obligation], [case_b], [adverse, satisfied])
     ab = m.decide(b, 'accepted', [obligation], [case_b], [adverse, satisfied])
-    rd = m.decide(m.create_design('D2', 'REPO-SPEC-PROPOSAL-GOVERNANCE', ['repo/authority/governance.json'], {'candidate': 'rejected'}, ['decision'], {'proposal': 'governance'}, {'acceptance_actor': 'tester', 'mutation_scope': []}, {'created': [], 'amended': [], 'withdrawn': []}), 'rejected', [], [], [])
+    rd = m.decide(m.create_design('D2', 'REPO-SPEC-PROPOSAL-GOVERNANCE', ['repo/authority/governance.json'], {'candidate': 'rejected'}, ['decision'], {'proposal': 'governance'}, {'acceptance_actor': {'id': 101, 'login': 'tester'}, 'mutation_scope': []}, {'created': [], 'amended': [], 'withdrawn': []}), 'rejected', [], [], [])
     checks = {'FS0-ASSERT-GOV-001': (ad['stage'] == 'design' and ap['stage'] == 'plan' and (ab['stage'] == 'build'), 'Governance runtime implements proposal->Design->Plan->Build progression'), 'FS0-ASSERT-GOV-002': (m.STAGE_STEPS == {'design': ['audit', 'normalize', 'accept'], 'plan': ['analyze', 'specify', 'accept'], 'build': ['implement', 'verify', 'accept']}, 'required three-step stage structures are explicit'), 'FS0-ASSERT-GOV-003': (all(({'work_id', 'predecessor_id', 'scope', 'material_exclusions', 'candidate_result', 'completion_conditions', 'disposition', 'provenance', 'bounded_authorization'} <= set(x) for x in (d, p, b))), 'common governed-work properties are validated'), 'FS0-ASSERT-GOV-004': (d['initiating_proposal_id'] == d['predecessor_id'], 'Design consumes an explicit proposal identity'), 'FS0-ASSERT-GOV-005': (p['accepted_design_id'] == ad['work_id'] and set(intent) >= {'affected_artifacts', 'conformance_work', 'assurance_work', 'dependencies', 'sequencing', 'build_scope'}, 'Plan consumes accepted Design and records bounded realization intent'), 'FS0-ASSERT-GOV-006': (b['accepted_plan_id'] == ap['work_id'] and overbroad, 'Build consumes accepted Plan and rejects over-broad scope'), 'FS0-ASSERT-GOV-010': (set(b['bounded_authorization']['mutation_scope']) <= set(b['scope']), 'mutation authorization is bounded by explicit scope'), 'FS0-ASSERT-GOV-028': (len({d['work_id'], p['work_id'], b['work_id']}) == 3, 'Design Plan and Build are distinct governed work'), 'FS0-ASSERT-GOV-031': (ad['disposition'] == 'accepted' and rd['disposition'] == 'rejected' and isinstance(d['normative_delta'], dict), 'Design records normative delta and explicit disposition'), 'FS0-ASSERT-GOV-033': (b['verification']['conformance_status'] == 'pass' and (not blocked['eligible']) and resolved['eligible'] and (ab['disposition'] == 'accepted'), 'Build acceptance requires evidence Conformance and resolved Assurance'), 'FS0-ASSERT-GOV-036': (plan_without_own_auth_rejected and build_without_own_auth_rejected, 'accepted predecessor work does not independently authorize successor Plan or Build work'), 'FS0-ASSERT-GOV-049': (not blocked['eligible'] and resolved['eligible'], 'adverse Assurance blocks acceptance until satisfied'), 'FS0-ASSERT-GOV-050': (not missing['eligible'] and missing['reason'] == 'missing-or-ambiguous-required-case', 'triggered obligations require instantiated cases before acceptance')}
     return [result(a, 'pass' if checks[a][0] else 'fail', checks[a][1]) for a in assertion_ids]
 
@@ -584,7 +584,7 @@ def check_github_governance_binding(root, assertion_ids):
     spec.loader.exec_module(m)
     design_work = {'stage': 'design', 'work_id': 'D1', 'predecessor_id': 'REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT', 'initiating_proposal_id': 'REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT', 'normative_delta': {'created': ['FS1-X']}, 'candidate_result': {'authority_delta': 'FS1-X'}, 'disposition': 'accepted'}
     plan_work = {'stage': 'plan', 'work_id': 'P1', 'predecessor_id': 'D1', 'candidate_result': {'build_scope': ['repo/governance/github_binding.py']}, 'disposition': 'accepted'}
-    build_work = {'stage': 'build', 'work_id': 'B1', 'predecessor_id': 'P1', 'candidate_result': {'candidate_id': 'a' * 40}, 'disposition': 'pending', 'bounded_authorization': {'acceptance_actor': 'tester', 'mutation_scope': ['repo/governance/github_binding.py']}}
+    build_work = {'stage': 'build', 'work_id': 'B1', 'predecessor_id': 'P1', 'candidate_result': {'candidate_id': 'a' * 40}, 'disposition': 'pending', 'bounded_authorization': {'acceptance_actor': {'id': 101, 'login': 'tester'}, 'mutation_scope': ['repo/governance/github_binding.py']}}
     snap = {'design_issue': {'kind': 'issue', 'number': 101, 'governed_work': design_work}, 'plan_issue': {'kind': 'issue', 'number': 102, 'governed_work': plan_work}, 'build_issue': {'kind': 'issue', 'number': 103, 'governed_work': build_work}, 'candidate': {'branch': 'fs1/build-B1', 'commit_sha': 'a' * 40}, 'pull_request': {'kind': 'pull_request', 'number': 104, 'head_branch': 'fs1/build-B1', 'head_sha': 'a' * 40}, 'acceptance': {'disposition': 'pending'}, 'remaining_unauthorized_work': ['FS2']}
     resolved = m.resolve_remote_governance_state(snap)
     same_issue_rejected = False
@@ -604,7 +604,7 @@ def check_github_governance_binding(root, assertion_ids):
         m.validate_review_surface({'kind': 'pull_request', 'number': 9, 'head_branch': 'other', 'head_sha': 'a' * 40}, snap['candidate'])
     except m.GitHubBindingError:
         bad_pr_rejected = True
-    bootstrap_issue = {'kind': 'issue', 'number': 100, 'bootstrap_authorization': {'acceptance_actor': 'tester'}}
+    bootstrap_issue = {'kind': 'issue', 'number': 100, 'bootstrap_authorization': {'acceptance_actor': {'id': 101, 'login': 'tester'}}}
     bootstrap_ok = m.validate_bootstrap_provenance_issue(bootstrap_issue)['number'] == 100
     bootstrap_as_work_rejected = False
     try:
@@ -1111,10 +1111,10 @@ def check_post_cutover_mutation_authority(root, assertion_ids):
     spec = importlib.util.spec_from_file_location('fs0_fc032_accepted_state', accepted_path)
     accepted = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(accepted)
-    plan_body = '```json\n{\n  "schema_version": "1",\n  "record_type": "governed-work",\n  "stage": "plan",\n  "work_id": "PLAN-1",\n  "bounded_authorization": {\n    "acceptance_actor": "actor-1",\n    "mutation_scope": []\n  }\n}\n```'
-    acceptance_body = 'repo-spec-acceptance:v1\n```json\n{\n  "schema_version": "1",\n  "record_type": "governance-acceptance",\n  "acceptance_id": "ACC-PLAN-1",\n  "stage": "plan",\n  "work_id": "PLAN-1",\n  "candidate_id": "1111111111111111111111111111111111111111",\n  "disposition": "accepted",\n  "actor": "actor-1",\n  "evidence": [],\n  "decision_timestamp": "2026-01-01T00:00:00Z"\n}\n```'
+    plan_body = '```json\n{\n  "schema_version": "1",\n  "record_type": "governed-work",\n  "stage": "plan",\n  "work_id": "PLAN-1",\n  "bounded_authorization": {\n    "acceptance_actor": {"id": 101, "login": "actor-1"},\n    "mutation_scope": []\n  }\n}\n```'
+    acceptance_body = 'repo-spec-acceptance:v1\n```json\n{\n  "schema_version": "1",\n  "record_type": "governance-acceptance",\n  "acceptance_id": "ACC-PLAN-1",\n  "stage": "plan",\n  "work_id": "PLAN-1",\n  "candidate_id": "1111111111111111111111111111111111111111",\n  "disposition": "accepted",\n  "actor": {"id": 101, "login": "actor-1"},\n  "evidence": [],\n  "decision_timestamp": "2026-01-01T00:00:00Z"\n}\n```'
     synthetic = accepted.resolve_governance_work_acceptance(plan_body, [{'id': 1, 'body': acceptance_body}], 'plan', 'PLAN-1')
-    synthetic_bad_actor = accepted.resolve_governance_work_acceptance(plan_body, [{'id': 2, 'body': acceptance_body.replace('"actor": "actor-1"', '"actor": "actor-2"')}], 'plan', 'PLAN-1')
+    synthetic_bad_actor = accepted.resolve_governance_work_acceptance(plan_body, [{'id': 2, 'body': acceptance_body.replace('"actor": {"id": 101, "login": "actor-1"}', '"actor": {"id": 202, "login": "actor-2"}')}], 'plan', 'PLAN-1')
     resolution_ok = synthetic.get('status') == 'accepted' and synthetic_bad_actor.get('status') == 'invalid'
     ok = (guard_before_generator and check_bypass and guard_semantics and accepted_helpers and predicate_ok and resolution_ok) and fresh_bootstrap_regression['ok']
     evidence = {'guard': 'repo/governance/bootstrap_mutation_guard.py', 'accepted_state': 'repo/governance/accepted_state.py', 'wrapper': 'repo/bootstrap/scripts/bootstrap', 'guard_before_generator': guard_before_generator, 'accepted_plan_resolution_test': synthetic.get('status'), 'wrong_actor_resolution_test': synthetic_bad_actor.get('status'), 'local_build_file_authority_absent': 'FS0_GOVERNED_BUILD_FILE' not in guard_source, 'governance_binding_predicate': predicate_ok, 'check_bypass': check_bypass, 'guard_semantics': guard_semantics, 'accepted_state_helpers': accepted_helpers, 'acceptance_resolution_behavior': resolution_ok, 'fresh_bootstrap_regression': fresh_bootstrap_regression}
