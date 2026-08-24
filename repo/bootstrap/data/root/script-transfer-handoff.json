@@ -10,7 +10,28 @@
       "artifact": "standalone Python transfer script",
       "suggested_local_path": "~/Downloads/<script>.py",
       "invocation": "python3 ~/Downloads/<script>.py",
-      "working_directory": "repository root"
+      "working_directory": "repository root",
+      "terminal_output": {
+        "standard": "fs0-script-transfer-terminal-v1",
+        "status_line": "FS0 Script Transfer: <START|PASS|FAILED>",
+        "required_summary_fields": [
+          "Operation",
+          "Repository",
+          "Branch",
+          "Expected HEAD",
+          "Observed HEAD",
+          "Commit",
+          "Remote HEAD",
+          "Result JSON"
+        ],
+        "behavior": [
+          "emit START before repository mutation",
+          "emit PASS only after commit, push, and exact remote-head verification",
+          "emit FAILED on any precondition, mutation, validation, commit, push, or verification failure",
+          "write the machine-readable result JSON on both PASS and FAILED when possible",
+          "send command diagnostics to captured result data rather than interleaving unstructured terminal noise"
+        ]
+      }
     },
     "local_to_web": {
       "artifact": "machine-readable JSON result",
@@ -48,7 +69,8 @@
     "handoff_rules": [
       "write a machine-readable JSON result even on failure when possible",
       "stop on validation failure, conflicting dirty state, authority conflict, or remote race",
-      "inspect the uploaded result JSON before authorizing the next mutation"
+      "inspect the uploaded result JSON before authorizing the next mutation",
+      "emit standardized terminal output conforming to fs0-script-transfer-terminal-v1"
     ]
   },
   "result_record": {

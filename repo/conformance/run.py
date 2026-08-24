@@ -977,6 +977,11 @@ def check_operating_substrate_preflight(root, assertion_ids):
         env = os.environ.copy()
         env['HOME'] = str(target / 'empty-home')
         env['GIT_CONFIG_NOSYSTEM'] = '1'
+        for name in ('GIT_AUTHOR_NAME', 'GIT_AUTHOR_EMAIL', 'GIT_AUTHOR_DATE', 'GIT_COMMITTER_NAME', 'GIT_COMMITTER_EMAIL', 'GIT_COMMITTER_DATE', 'EMAIL'):
+            env.pop(name, None)
+        env['GIT_CONFIG_COUNT'] = '1'
+        env['GIT_CONFIG_KEY_0'] = 'user.useConfigOnly'
+        env['GIT_CONFIG_VALUE_0'] = 'true'
         (target / 'empty-home').mkdir()
         proc = subprocess.run(['./repo/bootstrap/scripts/bootstrap'], cwd=target, text=True, capture_output=True, env=env)
         missing_prerequisite = {'returncode': proc.returncode, 'clear_error': proc.returncode != 0 and 'FS0 bootstrap prerequisite failed:' in proc.stdout + proc.stderr, 'git_not_initialized': not (target / '.git').exists(), 'output': (proc.stdout + proc.stderr).strip()}
