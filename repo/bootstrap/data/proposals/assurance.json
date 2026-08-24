@@ -15,7 +15,7 @@
     "REPO-SPEC-PROPOSAL-CONFORMANCE"
   ],
   "predecessor_id": "REPO-SPEC-PROPOSAL-CONFORMANCE",
-  "successor_id": "REPO-SPEC-PROPOSAL-SUCCESSOR-CONCEPTS",
+  "successor_id": null,
   "source_provenance": {
     "repository": "wiigelec/repo-spec",
     "revision": "e9ec83c62e8ea15f0160ac1ab56f1305171623d3",

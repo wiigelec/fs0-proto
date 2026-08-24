@@ -11,10 +11,9 @@
   "authority_state": "none",
   "reconstruction_dependencies": [
     "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
-    "REPO-SPEC-PROPOSAL-GOVERNANCE",
-    "REPO-SPEC-PROPOSAL-VALIDATION"
+    "REPO-SPEC-PROPOSAL-GOVERNANCE"
   ],
-  "predecessor_id": "REPO-SPEC-PROPOSAL-VALIDATION",
+  "predecessor_id": "REPO-SPEC-PROPOSAL-GOVERNANCE",
   "successor_id": "REPO-SPEC-PROPOSAL-ASSURANCE",
   "source_provenance": {
     "repository": "wiigelec/repo-spec",

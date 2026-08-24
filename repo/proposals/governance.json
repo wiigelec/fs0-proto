@@ -13,7 +13,7 @@
     "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT"
   ],
   "predecessor_id": "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
-  "successor_id": "REPO-SPEC-PROPOSAL-VALIDATION",
+  "successor_id": "REPO-SPEC-PROPOSAL-CONFORMANCE",
   "source_provenance": {
     "repository": "wiigelec/repo-spec",
     "revision": "e9ec83c62e8ea15f0160ac1ab56f1305171623d3",

@@ -196,16 +196,6 @@
       "presence": "required"
     },
     {
-      "path": "repo/bootstrap/data/proposals/successor-concepts.json",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
-      "path": "repo/bootstrap/data/proposals/validation.json",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
       "path": "repo/bootstrap/data/realization",
       "object_type": "directory",
       "presence": "required",
@@ -684,26 +674,6 @@
     },
     {
       "path": "repo/proposals/registry.json",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
-      "path": "repo/proposals/successor-concepts.json",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
-      "path": "repo/proposals/successor-concepts.md",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
-      "path": "repo/proposals/validation.json",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
-      "path": "repo/proposals/validation.md",
       "object_type": "file",
       "presence": "required"
     },

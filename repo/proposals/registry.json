@@ -27,18 +27,6 @@
         "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT"
       ],
       "predecessor_id": "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
-      "successor_id": "REPO-SPEC-PROPOSAL-VALIDATION"
-    },
-    {
-      "proposal_id": "REPO-SPEC-PROPOSAL-VALIDATION",
-      "order": 30,
-      "installed_path": "repo/proposals/validation.json",
-      "markdown_projection": "repo/proposals/validation.md",
-      "lifecycle_state": "available",
-      "bootstrap_provenance": "bootstrap-seed",
-      "authority_state": "none",
-      "reconstruction_dependencies": [],
-      "predecessor_id": "REPO-SPEC-PROPOSAL-GOVERNANCE",
       "successor_id": "REPO-SPEC-PROPOSAL-CONFORMANCE"
     },
     {
@@ -51,10 +39,9 @@
       "authority_state": "none",
       "reconstruction_dependencies": [
         "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
-        "REPO-SPEC-PROPOSAL-GOVERNANCE",
-        "REPO-SPEC-PROPOSAL-VALIDATION"
+        "REPO-SPEC-PROPOSAL-GOVERNANCE"
       ],
-      "predecessor_id": "REPO-SPEC-PROPOSAL-VALIDATION",
+      "predecessor_id": "REPO-SPEC-PROPOSAL-GOVERNANCE",
       "successor_id": "REPO-SPEC-PROPOSAL-ASSURANCE"
     },
     {
@@ -71,23 +58,6 @@
         "REPO-SPEC-PROPOSAL-CONFORMANCE"
       ],
       "predecessor_id": "REPO-SPEC-PROPOSAL-CONFORMANCE",
-      "successor_id": "REPO-SPEC-PROPOSAL-SUCCESSOR-CONCEPTS"
-    },
-    {
-      "proposal_id": "REPO-SPEC-PROPOSAL-SUCCESSOR-CONCEPTS",
-      "order": 60,
-      "installed_path": "repo/proposals/successor-concepts.json",
-      "markdown_projection": "repo/proposals/successor-concepts.md",
-      "lifecycle_state": "available",
-      "bootstrap_provenance": "bootstrap-seed",
-      "authority_state": "none",
-      "reconstruction_dependencies": [
-        "REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT",
-        "REPO-SPEC-PROPOSAL-GOVERNANCE",
-        "REPO-SPEC-PROPOSAL-CONFORMANCE",
-        "REPO-SPEC-PROPOSAL-ASSURANCE"
-      ],
-      "predecessor_id": "REPO-SPEC-PROPOSAL-ASSURANCE",
       "successor_id": null
     }
   ]
