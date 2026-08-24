@@ -822,6 +822,37 @@ def resolve_accepted_state(accepted_sha, comments):
         "defects": [],
     }
 
+def resolve_main_revision(bootstrap_state, revision):
+    if not isinstance(revision, str) or not SHA_RE.fullmatch(revision):
+        return {
+            "schema_version": "1",
+            "record_type": "accepted-state-resolution",
+            "status": "invalid",
+            "accepted_revision": None,
+            "accepted_ref": "refs/heads/main",
+            "defects": ["main does not resolve to an exact Git commit SHA"],
+        }
+    if not isinstance(bootstrap_state, dict) or bootstrap_state.get("state") != "cutover":
+        return {
+            "schema_version": "1",
+            "record_type": "accepted-state-resolution",
+            "status": "unaccepted",
+            "accepted_revision": None,
+            "repository_revision": revision.lower(),
+            "accepted_ref": "refs/heads/main",
+            "defects": [],
+        }
+    return {
+        "schema_version": "1",
+        "record_type": "accepted-state-resolution",
+        "status": "accepted",
+        "accepted_revision": revision.lower(),
+        "repository_revision": revision.lower(),
+        "accepted_ref": "refs/heads/main",
+        "provenance_resolution": "governed-pr-merge",
+        "defects": [],
+    }
+
 def _run(args, allowed=(0,)):
     proc = subprocess.run(args, text=True, capture_output=True)
     if proc.returncode not in allowed:
@@ -919,10 +950,11 @@ def github_issue_comments(repo):
     return out
 
 
+
 def main():
     parser = argparse.ArgumentParser(
         prog="repo/scripts/accepted-state",
-        description="Resolve canonical FS0 accepted repository state.",
+        description="Resolve canonical FS0 accepted repository state from refs/heads/main.",
     )
     parser.add_argument("--json", action="store_true", help="emit structured JSON")
     args = parser.parse_args()
@@ -931,56 +963,38 @@ def main():
         root = repository_root()
         sha = accepted_ref(root)
         if sha is None:
-            report = resolve_accepted_state(None, [])
+            report = {
+                "schema_version": "1",
+                "record_type": "accepted-state-resolution",
+                "status": "unpublished",
+                "accepted_revision": None,
+                "accepted_ref": "refs/heads/main",
+                "defects": [],
+            }
         else:
-            repo = origin_repository(root)
-            report = resolve_published_state(repo, sha)
-            if report.get("status") == "accepted":
-                report["provenance_resolution"] = "immutable-acceptance-receipt"
-            else:
-                bootstrap = committed_bootstrap_state(root, sha)
-                fallback = (
-                    bootstrap.get("first_accepted_fs0_revision")
-                    if bootstrap.get("state") == "cutover"
-                    else None
-                )
-                if fallback:
-                    report = resolve_published_state(repo, fallback)
-                    report["repository_revision"] = sha
-                    report["provenance_resolution"] = (
-                        "bootstrap-cutover-to-immutable-acceptance-receipt"
-                    )
+            bootstrap = committed_bootstrap_state(root, sha)
+            report = resolve_main_revision(bootstrap, sha)
     except Exception as exc:
         report = {
             "schema_version": "1",
             "record_type": "accepted-state-resolution",
             "status": "error",
             "accepted_revision": None,
-            "acceptance_records": [],
+            "accepted_ref": "refs/heads/main",
             "defects": [str(exc)],
         }
 
     if args.json:
         print(json.dumps(report, indent=2))
     else:
-        status = report["status"].upper()
-        print(f"FS0 accepted state: {status}")
+        print("FS0 accepted state: " + report["status"].upper())
         if report.get("accepted_revision"):
-            print(f"Revision: {report['accepted_revision']}")
-        if report.get("acceptance_records"):
-            ids = [
-                item["record"]["acceptance_id"]
-                for item in report["acceptance_records"]
-            ]
-            print("Acceptance: " + ", ".join(ids))
+            print("Revision: " + report["accepted_revision"])
         for defect in report.get("defects", []):
-            print(f"Defect: {defect}", file=sys.stderr)
+            print("Defect: " + str(defect), file=sys.stderr)
 
-    if report["status"] == "accepted":
-        return 0
-    if report["status"] == "unpublished":
-        return 2
-    return 1
+    return 0 if report["status"] == "accepted" else 1
+
 
 
 if __name__ == "__main__":

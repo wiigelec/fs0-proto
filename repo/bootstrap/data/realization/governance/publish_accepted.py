@@ -193,130 +193,30 @@ def ensure_acceptance_receipt(candidate, acceptance_item, module, report):
     return expected_sha
 
 
+
 def main():
     parser = argparse.ArgumentParser(
         prog="repo/scripts/publish-accepted",
-        description="Publish an explicitly accepted FS0 repository revision.",
+        description="Retired compatibility entrypoint; governed PR merge publishes accepted state.",
     )
-    parser.add_argument("--candidate", required=True, help="exact accepted commit SHA")
-    parser.add_argument("--json", action="store_true", help="emit structured JSON")
+    parser.add_argument("--candidate")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
-
     report = {
         "schema_version": "1",
         "record_type": "accepted-state-publication-result",
-        "status": "error",
-        "candidate_id": None,
-        "previous_accepted_revision": None,
-        "published_revision": None,
-        "action": None,
-        "acceptance_records": [],
-        "errors": [],
+        "status": "retired",
+        "errors": [
+            "publish-accepted is retired; merge an eligible governed pull request into refs/heads/main"
+        ],
     }
-
-    try:
-        root = repository_root()
-        if _run(["git", "status", "--porcelain", "--untracked-files=all"]).stdout.strip():
-            raise RuntimeError("working tree must be clean before accepted-state publication")
-
-        module = load_accepted_state(root)
-        candidate = exact_commit(root, args.candidate)
-        report["candidate_id"] = candidate
-
-        repo = module.origin_repository(root)
-        current = remote_accepted_ref()
-        report["previous_accepted_revision"] = current
-
-        candidate_bootstrap = module.committed_bootstrap_state(root, candidate)
-        initial_bootstrap_publication = (
-            candidate_bootstrap.get("state") == "candidate"
-            and current == candidate
-            and candidate_bootstrap.get("first_accepted_fs0_revision") is None
-            and candidate_bootstrap.get("bootstrap_acceptance_record") is None
-        )
-        if initial_bootstrap_publication:
-            provenance_issue, comments = module.bootstrap_acceptance_comments(
-                root, repo, candidate
-            )
-            report["bootstrap_provenance_issue"] = provenance_issue
-            report["provenance_resolution"] = "committed-bootstrap-anchor"
-        else:
-            comments = module.github_issue_comments(repo)
-            report["provenance_resolution"] = "post-cutover-governance"
-
-        decision = publication_decision(candidate, current, comments, module)
-        report["action"] = decision["action"]
-        report["acceptance_records"] = decision.get("candidate_report", {}).get(
-            "acceptance_records", []
-        )
-        if not decision["allowed"]:
-            raise RuntimeError(decision["reason"])
-
-        if current is not None and current != candidate:
-            current_state = module.resolve_published_state(repo, current)
-            if current_state.get("status") != "accepted":
-                current_bootstrap = module.committed_bootstrap_state(root, current)
-                fallback = (
-                    current_bootstrap.get("first_accepted_fs0_revision")
-                    if current_bootstrap.get("state") == "cutover"
-                    else None
-                )
-                if fallback:
-                    current_state = module.resolve_published_state(repo, fallback)
-                    report["previous_repository_revision"] = current
-            if current_state.get("status") != "accepted":
-                raise RuntimeError(
-                    "current main state is not backed by a valid immutable acceptance receipt"
-                )
-            report["previous_resolved_state"] = current_state
-
-        ensure_fast_forward(current, candidate)
-
-        # Publish and verify the immutable receipt before accepted-ref movement.
-        acceptance_item = receipt_source(decision)
-        ensure_acceptance_receipt(candidate, acceptance_item, module, report)
-
-        # Re-read the accepted ref immediately before mutation.
-        observed = remote_accepted_ref()
-        if observed != current:
-            raise RuntimeError("accepted ref changed concurrently; refusing publication")
-
-        if decision["action"] in {"create", "advance"}:
-            proc = _run(
-                ["git", "push", "origin", f"{candidate}:refs/heads/main"],
-                allowed=(0,),
-            )
-            report["push_output"] = (proc.stdout + proc.stderr).strip()
-        elif decision["action"] != "noop":
-            raise RuntimeError(f"unexpected publication action: {decision['action']}")
-
-        final = remote_accepted_ref()
-        if final != candidate:
-            raise RuntimeError("accepted ref does not match candidate after publication")
-
-        # Canonical accepted state resolves from accepted ref + immutable receipt.
-        resolved = module.resolve_published_state(repo, final)
-        if resolved.get("status") != "accepted":
-            raise RuntimeError(
-                "published accepted ref does not resolve through immutable acceptance receipt"
-            )
-
-        report["status"] = "published"
-        report["published_revision"] = final
-        report["resolved_state"] = resolved
-    except Exception as exc:
-        report["errors"].append(str(exc))
-
     if args.json:
         print(json.dumps(report, indent=2))
     else:
-        print(f"FS0 accepted-state publication: {report['status'].upper()}")
-        if report.get("published_revision"):
-            print(f"Revision: {report['published_revision']}")
-        for error in report["errors"]:
-            print(f"Error: {error}", file=sys.stderr)
+        print("FS0 accepted-state publication: RETIRED")
+        print(report["errors"][0], file=sys.stderr)
+    return 2
 
-    return 0 if report["status"] == "published" else 1
 
 
 if __name__ == "__main__":

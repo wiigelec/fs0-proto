@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from copy import deepcopy
+import re
 
 STAGE_STEPS = {
     "design": ["audit", "normalize", "accept"],
@@ -193,17 +194,65 @@ def decide(work, disposition, triggered_obligation_ids, cases, findings):
     r["disposition"] = disposition
     return validate_work(r)
 
-def merge_accept(work, merge_actor, triggered_obligation_ids, cases, findings):
-    r = deepcopy(validate_work(dict(work)))
-    if r["disposition"] != "pending":
-        raise GovernanceWorkError("work already decided")
+SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+
+def validate_pr_candidate(work, candidate):
+    r = validate_work(dict(work))
+    required = {
+        "schema_version", "record_type", "work_id", "issue_number",
+        "head_sha", "accepted_repository_predecessor", "base_ref",
+    }
+    if not isinstance(candidate, dict) or set(candidate) != required:
+        raise GovernanceWorkError("governed PR candidate fields mismatch")
+    if candidate["schema_version"] != "1" or candidate["record_type"] != "governed-pr-candidate":
+        raise GovernanceWorkError("invalid governed PR candidate envelope")
+    if candidate["work_id"] != r["work_id"] or not isinstance(candidate["work_id"], str):
+        raise GovernanceWorkError("PR must identify exactly one matching governed work item")
+    issue = candidate["issue_number"]
+    if isinstance(issue, bool) or not isinstance(issue, int) or issue < 1:
+        raise GovernanceWorkError("PR issue_number must be a positive integer")
+    for key in ("head_sha", "accepted_repository_predecessor"):
+        value = candidate[key]
+        if not isinstance(value, str) or not SHA_RE.fullmatch(value):
+            raise GovernanceWorkError(f"{key} must be an exact Git commit SHA")
+    if candidate["base_ref"] != "refs/heads/main":
+        raise GovernanceWorkError("governed PR must target refs/heads/main")
+    out = deepcopy(candidate)
+    out["head_sha"] = out["head_sha"].lower()
+    out["accepted_repository_predecessor"] = out["accepted_repository_predecessor"].lower()
+    return out
+
+def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cases, findings):
+    r = validate_work(dict(work))
+    pr = validate_pr_candidate(r, candidate)
     gate = acceptance_eligibility(r, triggered_obligation_ids, cases, findings)
     if not gate["eligible"]:
         raise GovernanceWorkError("merge acceptance blocked: " + gate["reason"])
+    if not isinstance(merge_event, dict):
+        raise GovernanceWorkError("merge event must be a record")
+    required = {"merged", "actor", "head_sha", "base_sha", "resulting_revision"}
+    if set(merge_event) != required or merge_event.get("merged") is not True:
+        raise GovernanceWorkError("merge event is not an accepted merge")
+    actor = merge_event.get("actor")
     expected = r["bounded_authorization"]["acceptance_actor"]
-    if not _valid_actor(merge_actor) or merge_actor.get("id") != expected.get("id"):
+    if not _valid_actor(actor) or actor.get("id") != expected.get("id"):
         raise GovernanceWorkError("merge actor is not authorized acceptance_actor")
-    r["disposition"] = "accepted"
-    r["provenance"] = deepcopy(r["provenance"])
-    r["provenance"]["acceptance"] = {"kind":"pull-request-merge","actor":deepcopy(merge_actor)}
-    return validate_work(r)
+    for key in ("head_sha", "base_sha", "resulting_revision"):
+        value = merge_event.get(key)
+        if not isinstance(value, str) or not SHA_RE.fullmatch(value):
+            raise GovernanceWorkError(f"merge event {key} must be an exact Git commit SHA")
+    if merge_event["head_sha"].lower() != pr["head_sha"]:
+        raise GovernanceWorkError("merged head does not equal evaluated PR head")
+    if merge_event["base_sha"].lower() != pr["accepted_repository_predecessor"]:
+        raise GovernanceWorkError("merged base does not equal accepted repository predecessor")
+    return {
+        "schema_version": "1",
+        "record_type": "governed-pr-acceptance",
+        "status": "accepted",
+        "work_id": r["work_id"],
+        "issue_number": pr["issue_number"],
+        "candidate_head": pr["head_sha"],
+        "accepted_repository_predecessor": pr["accepted_repository_predecessor"],
+        "resulting_accepted_revision": merge_event["resulting_revision"].lower(),
+        "actor": deepcopy(actor),
+    }

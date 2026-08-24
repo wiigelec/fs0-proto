@@ -6,8 +6,7 @@
     "candidate-publication",
     "conformance",
     "assurance",
-    "explicit-acceptance",
-    "accepted-state-publication"
+    "authorized-pr-merge"
   ],
   "candidate_ref": "refs/heads/candidate",
   "accepted_ref": "refs/heads/main",
@@ -16,8 +15,6 @@
   "dependencies": {
     "work": "repo/governance/work.py",
     "assurance_runtime": "repo/assurance/runtime.py",
-    "accepted_state": "repo/governance/accepted_state.py",
-    "accepted_publication": "repo/governance/publish_accepted.py",
     "conformance": "repo/scripts/validate"
   }
 }

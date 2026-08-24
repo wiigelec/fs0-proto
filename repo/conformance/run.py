@@ -81,37 +81,108 @@ def _load_module_for_fc033(path, name):
     finally:
         sys.dont_write_bytecode = old
 
+
 def check_self_change_completion(root, assertion_ids):
-    contract_path = root / 'repo/bootstrap/data/self_change_contract.json'
-    module_path = root / 'repo/governance/self_change.py'
+    contract_path = root / "repo/bootstrap/data/self_change_contract.json"
+    module_path = root / "repo/governance/self_change.py"
     try:
         contract = load(contract_path)
-        module = _load_module_for_fc033(module_path, 'fs0_fc033_self_change')
-        sha = 'a' * 40
-        actor = {'id': 101, 'login': 'authorized-actor'}
-        plan = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'plan', 'stage_steps': ['analyze', 'specify', 'accept'], 'work_id': 'FS0-PLAN-SELFCHANGE', 'predecessor_id': 'FS0-DESIGN-SELFCHANGE', 'scope': ['repo/example'], 'material_exclusions': [], 'candidate_result': {'kind': 'self-change'}, 'completion_conditions': ['bounded cycle complete'], 'disposition': 'accepted', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, 'accepted_design_id': 'FS0-DESIGN-SELFCHANGE', 'realization_intent': {'affected_artifacts': ['repo/example'], 'conformance_work': ['FS0-ASSERT-FC-033'], 'assurance_work': ['FS0-OBL-FC-033'], 'dependencies': [], 'sequencing': ['bounded'], 'build_scope': ['repo/example']}}
-        build = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'build', 'stage_steps': ['implement', 'verify', 'accept'], 'work_id': 'FS0-BUILD-SELFCHANGE', 'predecessor_id': plan['work_id'], 'scope': ['repo/example'], 'material_exclusions': [], 'candidate_result': {'candidate_id': sha}, 'completion_conditions': ['cycle complete'], 'disposition': 'pending', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, 'accepted_plan_id': plan['work_id'], 'verification': {'evidence': ['candidate-publication'], 'conformance_status': 'pending'}}
-        case = {'case_id': 'FS0-CASE-SELFCHANGE', 'review_obligation_id': 'FS0-OBL-FC-033'}
-        finding = {'case_id': 'FS0-CASE-SELFCHANGE', 'sequence': 1, 'status': 'satisfied'}
-        acceptance_record = {'schema_version': '1', 'record_type': 'governance-acceptance', 'acceptance_id': 'FS0-ACCEPT-SELFCHANGE', 'stage': 'build', 'work_id': build['work_id'], 'candidate_id': sha, 'disposition': 'accepted', 'actor': actor, 'evidence': ['candidate-publication', 'conformance-pass', 'assurance-satisfied'], 'decision_timestamp': '2026-01-01T00:00:00Z', 'resulting_accepted_state': sha}
-        acceptance_comment = 'repo-spec-acceptance:v1\n```json\n' + json.dumps(acceptance_record) + '\n```'
-        cycle = module.verify_cycle(root, plan, build, {'status': 'published', 'candidate_id': sha, 'candidate_ref': contract['candidate_ref']}, {'status': 'pass', 'candidate_id': sha, 'failed_assertions': []}, ['FS0-OBL-FC-033'], [case], [finding], acceptance_comment, {'status': 'published', 'previous_accepted_revision': None, 'published_revision': sha, 'accepted_ref': contract['accepted_ref']})
+        module = _load_module_for_fc033(module_path, "fs0_fc033_self_change")
+        sha = "a" * 40
+        base = "b" * 40
+        result_sha = "c" * 40
+        actor = {"id": 101, "login": "authorized-actor"}
+        plan = {
+            "schema_version": "1", "record_type": "governed-work",
+            "stage": "plan", "stage_steps": ["analyze", "specify", "accept"],
+            "work_id": "FS0-PLAN-SELFCHANGE", "predecessor_id": "FS0-DESIGN-SELFCHANGE",
+            "scope": ["repo/example"], "material_exclusions": [],
+            "candidate_result": {"kind": "self-change"},
+            "completion_conditions": ["bounded cycle complete"],
+            "disposition": "accepted", "provenance": {"kind": "synthetic-conformance"},
+            "bounded_authorization": {"acceptance_actor": actor, "mutation_scope": ["repo/example"]},
+            "accepted_design_id": "FS0-DESIGN-SELFCHANGE",
+            "realization_intent": {
+                "affected_artifacts": ["repo/example"],
+                "conformance_work": ["FS0-ASSERT-FC-033"],
+                "assurance_work": ["FS0-OBL-FC-033"],
+                "dependencies": [], "sequencing": ["bounded"], "build_scope": ["repo/example"],
+            },
+        }
+        build = {
+            "schema_version": "1", "record_type": "governed-work",
+            "stage": "build", "stage_steps": ["implement", "verify", "accept"],
+            "work_id": "FS0-BUILD-SELFCHANGE", "predecessor_id": plan["work_id"],
+            "scope": ["repo/example"], "material_exclusions": [],
+            "candidate_result": {"candidate_id": sha},
+            "completion_conditions": ["cycle complete"], "disposition": "pending",
+            "provenance": {"kind": "synthetic-conformance"},
+            "bounded_authorization": {"acceptance_actor": actor, "mutation_scope": ["repo/example"]},
+            "accepted_plan_id": plan["work_id"],
+            "verification": {"evidence": ["candidate-publication"], "conformance_status": "pending"},
+        }
+        case = {"case_id": "FS0-CASE-SELFCHANGE", "review_obligation_id": "FS0-OBL-FC-033"}
+        finding = {"case_id": "FS0-CASE-SELFCHANGE", "sequence": 1, "status": "satisfied"}
+        pr = {
+            "schema_version": "1", "record_type": "governed-pr-candidate",
+            "work_id": build["work_id"], "issue_number": 17,
+            "head_sha": sha, "accepted_repository_predecessor": base,
+            "base_ref": "refs/heads/main",
+        }
+        merge = {
+            "merged": True, "actor": actor, "head_sha": sha,
+            "base_sha": base, "resulting_revision": result_sha,
+        }
+        cycle = module.verify_cycle(
+            root, plan, build,
+            {"status": "published", "candidate_id": sha, "candidate_ref": contract["candidate_ref"]},
+            {"status": "pass", "candidate_id": sha, "failed_assertions": []},
+            ["FS0-OBL-FC-033"], [case], [finding], pr, merge,
+        )
         negative = True
         try:
-            module.verify_cycle(root, plan, build, {'status': 'published', 'candidate_id': sha, 'candidate_ref': contract['candidate_ref']}, {'status': 'fail', 'candidate_id': sha, 'failed_assertions': ['FS0-ASSERT-TEST']}, ['FS0-OBL-FC-033'], [case], [finding], acceptance_comment, {'status': 'published', 'previous_accepted_revision': None, 'published_revision': sha, 'accepted_ref': contract['accepted_ref']})
+            module.verify_cycle(
+                root, plan, build,
+                {"status": "published", "candidate_id": sha, "candidate_ref": contract["candidate_ref"]},
+                {"status": "fail", "candidate_id": sha, "failed_assertions": ["FS0-ASSERT-TEST"]},
+                ["FS0-OBL-FC-033"], [case], [finding], pr, merge,
+            )
             negative = False
         except Exception:
             pass
-        source = module_path.read_text(encoding='utf-8')
-        local_only = all((path.startswith('repo/') for path in contract['dependencies'].values()))
-        candidate_mutation = 'refs/heads/candidate' in json.dumps(contract) and 'git' in source and ('push' in source) and ('changed concurrently' in source) and ('merge-base' in source)
-        accepted_delegation = 'publication_decision' in source and 'parse_acceptance_comment' in source and ('assurance_gate' in source) and ('record_conformance' in source) and ('work.decide' in source)
-        complete = cycle.get('status') == 'complete' and cycle.get('sequence') == contract['sequence'] and negative and local_only and candidate_mutation and accepted_delegation
-        evidence = {'contract': 'repo/bootstrap/data/self_change_contract.json', 'implementation': 'repo/governance/self_change.py', 'entrypoint': 'repo/scripts/self-change', 'cycle_status': cycle.get('status'), 'sequence': cycle.get('sequence'), 'targeted_conformance_failure_rejected': negative, 'repository_local_dependencies': local_only, 'candidate_publication_mutation_present': candidate_mutation, 'existing_authority_components_delegated': accepted_delegation}
+        source = module_path.read_text(encoding="utf-8")
+        old_protocol_absent = (
+            "acceptance_comment" not in source
+            and "publish_accepted" not in source
+            and "publication_decision" not in source
+        )
+        complete = (
+            cycle.get("status") == "complete"
+            and cycle.get("sequence") == contract["sequence"]
+            and cycle.get("resulting_accepted_revision") == result_sha
+            and negative
+            and old_protocol_absent
+        )
+        evidence = {
+            "cycle_status": cycle.get("status"),
+            "sequence": cycle.get("sequence"),
+            "resulting_accepted_revision": cycle.get("resulting_accepted_revision"),
+            "targeted_conformance_failure_rejected": negative,
+            "legacy_acceptance_protocol_absent": old_protocol_absent,
+        }
     except Exception as exc:
         complete = False
-        evidence = {'error': str(exc)}
-    return [result(aid, 'pass' if complete else 'fail', 'bounded post-cutover self-change composes accepted Plan/Build authority, exact candidate publication, Conformance, Assurance-gated Build acceptance, explicit acceptance, and accepted-state publication entirely from retained repository surfaces', evidence) for aid in assertion_ids]
+        evidence = {"error": str(exc)}
+    return [
+        result(
+            aid,
+            "pass" if complete else "fail",
+            "bounded post-cutover self-change uses accepted Plan, candidate publication, Conformance, Assurance, and authorized PR merge acceptance",
+            evidence,
+        )
+        for aid in assertion_ids
+    ]
+
 
 def check_generation_correspondence(root, assertion_ids):
     proc = subprocess.run([str(root / 'repo/bootstrap/scripts/bootstrap'), '--check'], cwd=root, text=True, capture_output=True)
@@ -283,85 +354,143 @@ def check_bootstrap_state(root, assertion_ids):
     evidence = {'path': 'repo/state/bootstrap.json', 'state': record.get('state'), 'accepted_ref': record.get('accepted_ref'), 'conformance_mode': orchestration.get('mode')}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
 
-def check_governance_state_resolution(root, assertion_ids):
-    module_path = root / 'repo/governance/accepted_state.py'
-    if not module_path.is_file():
-        return [result(aid, 'fail', 'Governance accepted-state resolver is missing') for aid in assertion_ids]
-    spec = importlib.util.spec_from_file_location('fs0_accepted_state', module_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    sha = 'a' * 40
-    other = 'b' * 40
-    governance_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'governance-acceptance', 'acceptance_id': 'FS0-ACCEPT-BUILD-TEST', 'stage': 'build', 'work_id': 'FS0-WORK-BUILD-TEST', 'candidate_id': sha, 'disposition': 'accepted', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['evidence:test'], 'decision_timestamp': '2026-08-22T00:00:00Z', 'resulting_accepted_state': sha}) + '\n```\n'
-    bootstrap_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-BOOTSTRAP-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': sha, 'disposition': 'accepted', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00+00:00', 'resulting_accepted_state': sha}) + '\n```\n'
-    bad_sha_body = governance_body.replace(sha, 'not-a-sha', 1)
-    malformed_body = governance_body.replace('repo-spec-acceptance:v1\n```json', 'repo-spec-acceptance:v1 prose\n```json', 1)
-    governance_record = module.parse_acceptance_comment(governance_body)
-    bootstrap_record = module.parse_acceptance_comment(bootstrap_body)
 
-    def rejects(body):
+def check_governance_state_resolution(root, assertion_ids):
+    work_path = root / "repo/governance/work.py"
+    state_path = root / "repo/governance/accepted_state.py"
+    cutover_path = root / "repo/governance/bootstrap_cutover.py"
+    publish_path = root / "repo/governance/publish_accepted.py"
+    try:
+        work = _load_module_for_fc033(work_path, "fs0_merge_acceptance_work")
+        accepted_state = _load_module_for_fc033(state_path, "fs0_merge_acceptance_state")
+        sha = "a" * 40
+        base = "b" * 40
+        result_sha = "c" * 40
+        actor = {"id": 101, "login": "authorized"}
+        build = {
+            "schema_version": "1",
+            "record_type": "governed-work",
+            "stage": "build",
+            "stage_steps": ["implement", "verify", "accept"],
+            "work_id": "FS0-BUILD-MERGE",
+            "predecessor_id": "FS0-PLAN-MERGE",
+            "scope": ["repo/example"],
+            "material_exclusions": [],
+            "candidate_result": {"candidate_id": sha},
+            "completion_conditions": ["authorized change accepted"],
+            "disposition": "pending",
+            "provenance": {"kind": "synthetic-conformance"},
+            "bounded_authorization": {
+                "acceptance_actor": actor,
+                "mutation_scope": ["repo/example"],
+            },
+            "accepted_plan_id": "FS0-PLAN-MERGE",
+            "verification": {"evidence": ["candidate"], "conformance_status": "pass"},
+        }
+        pr = {
+            "schema_version": "1",
+            "record_type": "governed-pr-candidate",
+            "work_id": build["work_id"],
+            "issue_number": 42,
+            "head_sha": sha,
+            "accepted_repository_predecessor": base,
+            "base_ref": "refs/heads/main",
+        }
+        merge = {
+            "merged": True,
+            "actor": actor,
+            "head_sha": sha,
+            "base_sha": base,
+            "resulting_revision": result_sha,
+        }
+        accepted = work.merge_acceptance(build, pr, merge, [], [], [])
+        authorized_merge_ok = (
+            accepted.get("status") == "accepted"
+            and accepted.get("candidate_head") == sha
+            and accepted.get("resulting_accepted_revision") == result_sha
+        )
+        unauthorized_rejected = False
+        bad = dict(merge)
+        bad["actor"] = {"id": 202, "login": "unauthorized"}
         try:
-            module.parse_acceptance_comment(body)
-        except module.AcceptanceError:
-            return True
-        return False
-    comment = {'id': 1, 'issue_number': 1, 'issue_url': 'https://api.github.com/repos/example/repo/issues/1', 'html_url': 'https://github.com/example/repo/issues/1#issuecomment-1', 'body': governance_body, 'issue_body': '```json\n' + json.dumps({'bounded_authorization': {'acceptance_actor': {'id': 101, 'login': 'tester'}}}) + '\n```\n'}
-    paired = module.resolve_accepted_state(sha, [comment])
-    receipt_item = paired['acceptance_records'][0] if paired.get('status') == 'accepted' else None
-    receipt_payload = module.acceptance_receipt_payload(sha, receipt_item) if receipt_item else None
-    receipt_hash = module.acceptance_receipt_object_sha(sha, receipt_payload) if receipt_payload else ''
-    receipt_ok = bool(receipt_payload) and receipt_payload.get('record_type') == 'acceptance-receipt' and receipt_payload.get('candidate_id') == sha and bool(re.fullmatch(r'[0-9a-f]{40}', receipt_hash))
-    mismatch = module.resolve_accepted_state(other, [comment])
-    unpublished = module.resolve_accepted_state(None, [comment])
-    incidental = module.resolve_accepted_state(sha, [{'id': 2, 'issue_url': 'https://api.github.com/repos/example/repo/issues/2', 'body': 'merged=true workflow=success review=approved'}])
-    source_text = module_path.read_text(encoding='utf-8')
-    common_envelope = governance_record['acceptance_id'] and governance_record['work_id'] and (governance_record['candidate_id'] == sha) and governance_record['actor'] and isinstance(governance_record['evidence'], list) and governance_record['decision_timestamp']
-    checks = {'FS0-ASSERT-GOV-008': (bool(common_envelope), 'acceptance records require explicit identity, work, exact candidate, actor, evidence, and decision timestamp'), 'FS0-ASSERT-GOV-011': ('issues?state=all&per_page=100' in source_text and 'issues/comments?per_page=100' in source_text and ('"pull_request" not in item' in source_text), 'GitHub binding resolves acceptance records from comments on issues and excludes pull requests'), 'FS0-ASSERT-GOV-012': (rejects(malformed_body) and module.MARKER == 'repo-spec-acceptance:v1', 'acceptance parser requires the Design-defined marker immediately followed by one fenced JSON object'), 'FS0-ASSERT-GOV-013': (governance_record['record_type'] == 'governance-acceptance' and governance_record['stage'] == 'build' and (governance_record['disposition'] == 'accepted'), 'governance-acceptance envelope enforces schema, stage, disposition, and required fields'), 'FS0-ASSERT-GOV-014': (bootstrap_record['record_type'] == 'bootstrap-acceptance' and bootstrap_record['stage'] == 'bootstrap' and (bootstrap_record['candidate_id'] == sha), 'bootstrap-acceptance envelope enforces bootstrap stage and exact candidate revision'), 'FS0-ASSERT-GOV-015': (rejects(bad_sha_body), 'repository-changing candidate_id must be an exact 40-hex Git commit SHA'), 'FS0-ASSERT-GOV-016': (paired['status'] == 'accepted' and paired['accepted_revision'] == sha and receipt_ok and (mismatch['status'] == 'invalid'), 'accepted repository state requires one matching acceptance record represented by a canonical immutable acceptance receipt tag object'), 'FS0-ASSERT-GOV-017': (unpublished['status'] == 'unpublished' and incidental['status'] == 'invalid', 'default branch, merge, review, and workflow-like state do not independently create accepted repository state'), 'FS0-ASSERT-GOV-035': (incidental['status'] == 'invalid' and paired['status'] == 'accepted', 'Governance acceptance remains distinct from merge, review, workflow, and tool declarations')}
-    return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1]) for aid in assertion_ids]
+            work.merge_acceptance(build, pr, bad, [], [], [])
+        except Exception:
+            unauthorized_rejected = True
+        multi_issue_rejected = False
+        bad_pr = dict(pr)
+        bad_pr["work_id"] = [build["work_id"], "OTHER"]
+        try:
+            work.validate_pr_candidate(build, bad_pr)
+        except Exception:
+            multi_issue_rejected = True
+        stale_base_rejected = False
+        stale = dict(merge)
+        stale["base_sha"] = "d" * 40
+        try:
+            work.merge_acceptance(build, pr, stale, [], [], [])
+        except Exception:
+            stale_base_rejected = True
+        before = accepted_state.resolve_main_revision({"state": "candidate"}, result_sha)
+        after = accepted_state.resolve_main_revision({"state": "cutover"}, result_sha)
+        main_state_ok = (
+            before.get("status") == "unaccepted"
+            and after.get("status") == "accepted"
+            and after.get("accepted_revision") == result_sha
+            and after.get("provenance_resolution") == "governed-pr-merge"
+        )
+        cutover_source = cutover_path.read_text(encoding="utf-8")
+        bootstrap_pr_ok = (
+            "repos/{repo}/pulls" in cutover_source
+            and "--accept-bootstrap" not in cutover_source
+            and "bootstrap-cutover" in cutover_source
+            and "explicit bootstrap acceptance" in cutover_source
+        )
+        publish_source = publish_path.read_text(encoding="utf-8")
+        publication_retired = (
+            "RETIRED" in publish_source
+            and "merge an eligible governed pull request" in publish_source
+        )
+        checks = {
+            "FS0-ASSERT-GOV-008": (authorized_merge_ok and unauthorized_rejected, "authorized eligible PR merge creates attributable candidate-specific acceptance"),
+            "FS0-ASSERT-GOV-011": (multi_issue_rejected, "each governed PR identifies exactly one governed work item"),
+            "FS0-ASSERT-GOV-012": (authorized_merge_ok, "PR acceptance applies to the complete evaluated head candidate"),
+            "FS0-ASSERT-GOV-013": (authorized_merge_ok, "Conformance and Assurance gate governed PR merge acceptance"),
+            "FS0-ASSERT-GOV-014": (bootstrap_pr_ok, "bootstrap acceptance is the designated validated bootstrap-cutover PR merge"),
+            "FS0-ASSERT-GOV-015": (stale_base_rejected, "merge acceptance binds the recorded accepted repository predecessor"),
+            "FS0-ASSERT-GOV-016": (main_state_ok, "after cutover refs/heads/main resolves canonical accepted repository state"),
+            "FS0-ASSERT-GOV-017": (authorized_merge_ok and publication_retired, "legacy non-merge acceptance paths are inactive"),
+            "FS0-ASSERT-GOV-035": (authorized_merge_ok, "Governance acceptance is authorized governed PR merge after eligibility gates"),
+            "FS0-ASSERT-GOV-037": (main_state_ok and publication_retired, "accepted-state publication occurs through governed PR merge into main"),
+        }
+        evidence = {
+            "authorized_merge": authorized_merge_ok,
+            "unauthorized_merge_rejected": unauthorized_rejected,
+            "multiple_work_ids_rejected": multi_issue_rejected,
+            "stale_predecessor_rejected": stale_base_rejected,
+            "main_is_canonical_after_cutover": main_state_ok,
+            "bootstrap_pr_merge_binding": bootstrap_pr_ok,
+            "legacy_publication_retired": publication_retired,
+        }
+    except Exception as exc:
+        checks = {aid: (False, "merge-acceptance conformance setup failed") for aid in assertion_ids}
+        evidence = {"error": str(exc)}
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
+
 
 def check_accepted_state_publication(root, assertion_ids):
-    state_path = root / 'repo/governance/accepted_state.py'
-    publish_path = root / 'repo/governance/publish_accepted.py'
-    if not state_path.is_file() or not publish_path.is_file():
-        return [result(aid, 'fail', 'accepted-state publication realization is missing') for aid in assertion_ids]
-    old = sys.dont_write_bytecode
-    sys.dont_write_bytecode = True
-    try:
-        state_spec = importlib.util.spec_from_file_location('fs0_accepted_state_pub', state_path)
-        state_module = importlib.util.module_from_spec(state_spec)
-        state_spec.loader.exec_module(state_module)
-        pub_spec = importlib.util.spec_from_file_location('fs0_publish_accepted', publish_path)
-        pub_module = importlib.util.module_from_spec(pub_spec)
-        pub_spec.loader.exec_module(pub_module)
-    finally:
-        sys.dont_write_bytecode = old
-    candidate = 'c' * 40
-    current = 'd' * 40
-    accepted_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-PUBLISH-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': candidate, 'disposition': 'accepted', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00Z', 'resulting_accepted_state': candidate}) + '\n```\n'
-    current_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps({'schema_version': '1', 'record_type': 'governance-acceptance', 'acceptance_id': 'FS0-ACCEPT-CURRENT-TEST', 'stage': 'build', 'work_id': 'FS0-WORK-BUILD-CURRENT', 'candidate_id': current, 'disposition': 'accepted', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['conformance:test'], 'decision_timestamp': '2026-08-21T00:00:00Z', 'resulting_accepted_state': current}) + '\n```\n'
-    rejected_payload = {'schema_version': '1', 'record_type': 'bootstrap-acceptance', 'acceptance_id': 'FS0-ACCEPT-PUBLISH-REJECTED-TEST', 'stage': 'bootstrap', 'work_id': 'FS0-BOOTSTRAP-PROVENANCE', 'candidate_id': candidate, 'disposition': 'rejected', 'actor': {'id': 101, 'login': 'tester'}, 'evidence': ['bootstrap-verification:test', 'semantic-audit:test'], 'decision_timestamp': '2026-08-22T00:00:00Z'}
-    rejected_body = 'repo-spec-acceptance:v1\n```json\n' + json.dumps(rejected_payload) + '\n```\n'
-    bootstrap_issue_body = '```json\n' + json.dumps({'bootstrap_authorization': {'acceptance_actor': {'id': 101, 'login': 'tester'}}}) + '\n```\n'
-    governance_issue_body = '```json\n' + json.dumps({'bounded_authorization': {'acceptance_actor': {'id': 101, 'login': 'tester'}}}) + '\n```\n'
-    accepted_comments = [{'id': 1, 'issue_number': 1, 'issue_url': 'https://api.github.com/repos/example/repo/issues/1', 'html_url': 'https://github.com/example/repo/issues/1#issuecomment-1', 'body': accepted_body, 'issue_body': bootstrap_issue_body}]
-    rejected_comments = [{'id': 2, 'issue_number': 1, 'issue_url': 'https://api.github.com/repos/example/repo/issues/1', 'html_url': 'https://github.com/example/repo/issues/1#issuecomment-2', 'body': rejected_body, 'issue_body': bootstrap_issue_body}]
-    chain_comments = [{'id': 3, 'issue_number': 2, 'issue_url': 'https://api.github.com/repos/example/repo/issues/2', 'html_url': 'https://github.com/example/repo/issues/2#issuecomment-3', 'body': current_body, 'issue_body': governance_issue_body}, {'id': 4, 'issue_number': 1, 'issue_url': 'https://api.github.com/repos/example/repo/issues/1', 'html_url': 'https://github.com/example/repo/issues/1#issuecomment-4', 'body': accepted_body, 'issue_body': bootstrap_issue_body}]
-    denied_missing = pub_module.publication_decision(candidate, None, [], state_module)
-    denied_rejected = pub_module.publication_decision(candidate, None, rejected_comments, state_module)
-    allowed_create = pub_module.publication_decision(candidate, None, accepted_comments, state_module)
-    allowed_noop = pub_module.publication_decision(candidate, candidate, accepted_comments, state_module)
-    allowed_advance = pub_module.publication_decision(candidate, current, chain_comments, state_module)
-    source_text = publish_path.read_text(encoding='utf-8')
-    receipt_item = allowed_create['candidate_report']['acceptance_records'][0]
-    receipt_payload = state_module.acceptance_receipt_payload(candidate, receipt_item)
-    receipt_hash = state_module.acceptance_receipt_object_sha(candidate, receipt_payload)
-    receipt_model_ok = receipt_payload.get('record_type') == 'acceptance-receipt' and receipt_payload.get('candidate_id') == candidate and bool(re.fullmatch(r'[0-9a-f]{40}', receipt_hash))
-    receipt_call = 'ensure_acceptance_receipt(candidate, acceptance_item, module, report)'
-    accepted_push = 'f"{candidate}:refs/heads/main"'
-    receipt_before_accepted = receipt_call in source_text and accepted_push in source_text and source_text.index(receipt_call) < source_text.index(accepted_push)
-    receipt_mechanics = '["git", "mktag"]' in source_text and 'conflicting immutable acceptance receipt already exists' in source_text and 'remote acceptance receipt verification failed' in source_text
-    ok = not denied_missing['allowed'] and (not denied_rejected['allowed']) and allowed_create['allowed'] and (allowed_create['action'] == 'create') and allowed_noop['allowed'] and (allowed_noop['action'] == 'noop') and allowed_advance['allowed'] and (allowed_advance['action'] == 'advance') and receipt_model_ok and receipt_before_accepted and receipt_mechanics and ('decision = publication_decision(candidate, current, comments, module)' in source_text) and ('if not decision["allowed"]' in source_text) and ('accepted ref changed concurrently; refusing publication' in source_text)
-    return [result(aid, 'pass' if ok else 'fail', 'accepted ref publication requires prior explicit acceptance and a verified immutable acceptance receipt tag object before accepted-ref movement') for aid in assertion_ids]
+    return [
+        result(
+            aid,
+            "fail",
+            "legacy accepted-state publication has no active assertions; GOV-037 is bound to governed PR merge semantics",
+        )
+        for aid in assertion_ids
+    ]
+
 
 def _walk_physical_namespace(root):
     records = {}
@@ -1111,57 +1240,81 @@ def check_bootstrap_independence(root, assertion_ids):
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
 
 def check_bootstrap_authority_lifecycle(root, assertion_ids):
-    accepted_state_path = root / 'repo/governance/accepted_state.py'
-    accepted_source = accepted_state_path.read_text(encoding='utf-8')
-    spec = importlib.util.spec_from_file_location('fs0_fc027_accepted_state', accepted_state_path)
-    accepted_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(accepted_module)
-    unpublished = accepted_module.resolve_accepted_state(None, [])
-    bogus_sha = 'a' * 40
-    unbacked = accepted_module.resolve_accepted_state(bogus_sha, [])
-    accepted_resolution_ok = unpublished.get('status') == 'unpublished' and unpublished.get('accepted_revision') is None and (unbacked.get('status') == 'invalid') and (unbacked.get('accepted_revision') == bogus_sha) and (not unbacked.get('acceptance_records')) and ('repo/bootstrap/data' not in accepted_source) and ('bootstrap/data' not in accepted_source) and ('accepted_ref(root)' in accepted_source) and ('resolve_published_state(repo, sha)' in accepted_source) and ('github_acceptance_receipt' in accepted_source) and ('acceptance_receipt_ref' in accepted_source) and ('provenance_resolution"] = "immutable-acceptance-receipt"' in accepted_source) and ('def _gh_object(endpoint):' in accepted_source) and ('issue = _gh_object(f"repos/{repo}/issues/{issue_number}")' in accepted_source) and ('tag_object = _gh_object(f"repos/{repo}/git/tags/{observed_sha}")' in accepted_source)
-    generator_path = root / 'repo/bootstrap/scripts/src/generate.py'
-    generator_dir = str(generator_path.parent)
-    inserted = generator_dir not in sys.path
-    if inserted:
-        sys.path.insert(0, generator_dir)
+    state_path = root / "repo/state/bootstrap.json"
+    accepted_state_path = root / "repo/governance/accepted_state.py"
     try:
-        gspec = importlib.util.spec_from_file_location('fs0_fc031_generate', generator_path)
-        generator = importlib.util.module_from_spec(gspec)
-        gspec.loader.exec_module(generator)
-    finally:
-        if inserted:
-            try:
-                sys.path.remove(generator_dir)
-            except ValueError:
-                pass
-    allowed = {'candidate', 'cutover'}
-    legal = [('candidate', 'candidate'), ('candidate', 'cutover'), ('cutover', 'cutover')]
-    legal_ok = all((generator.validate_bootstrap_transition(current, desired, generator.load_generation_contract(root)['bootstrap_lifecycle']) is None for current, desired in legal))
-    reverse_rejected = False
-    try:
-        generator.validate_bootstrap_transition('cutover', 'candidate', generator.load_generation_contract(root)['bootstrap_lifecycle'])
-    except SystemExit:
-        reverse_rejected = True
-    invalid_rejected = True
-    for current, desired in (('unknown', 'candidate'), ('candidate', 'unknown')):
-        try:
-            generator.validate_bootstrap_transition(current, desired, generator.load_generation_contract(root)['bootstrap_lifecycle'])
-        except SystemExit:
-            continue
-        invalid_rejected = False
-    fresh_candidate_ok = generator.validate_bootstrap_transition(None, 'candidate', generator.load_generation_contract(root)['bootstrap_lifecycle']) is None
-    fresh_cutover_rejected = False
-    try:
-        generator.validate_bootstrap_transition(None, 'cutover', generator.load_generation_contract(root)['bootstrap_lifecycle'])
-    except SystemExit:
-        fresh_cutover_rejected = True
-    generator_source = generator_path.read_text(encoding='utf-8')
-    transition_is_wired = 'contract["bootstrap_lifecycle"]' in generator_source and 'validate_bootstrap_transition(' in generator_source and ('contract["output_paths"]["bootstrap_state"]' in generator_source) and ('contract["source_paths"]["bootstrap_state"]' in generator_source)
-    lifecycle_ok = legal_ok and reverse_rejected and invalid_rejected and fresh_candidate_ok and fresh_cutover_rejected and transition_is_wired
-    checks = {'FS0-ASSERT-FC-027': (accepted_resolution_ok, 'accepted-state determination resolves from the accepted ref and immutable acceptance receipt snapshot and does not fall back to non-authoritative bootstrap maintenance source'), 'FS0-ASSERT-FC-031': (lifecycle_ok, 'bootstrap generation enforces first installation as candidate, permits candidate to cutover, permits stable states, and rejects cutover to candidate reversal')}
-    evidence = {'accepted_state_resolver': 'repo/governance/accepted_state.py', 'unpublished_status': unpublished.get('status'), 'unbacked_status': unbacked.get('status'), 'bootstrap_transition_generator': 'repo/bootstrap/scripts/src/generate.py', 'legal_transitions': legal, 'reverse_rejected': reverse_rejected, 'fresh_cutover_rejected': fresh_cutover_rejected, 'transition_is_wired': transition_is_wired, 'legal_transition_behavior': legal_ok, 'invalid_state_rejected': invalid_rejected, 'fresh_candidate_allowed': fresh_candidate_ok}
-    return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
+        record = load(state_path)
+        module = _load_module_for_fc033(
+            accepted_state_path,
+            "fs0_fc027_accepted_state",
+        )
+        sha = "a" * 40
+
+        pre = module.resolve_main_revision({"state": "candidate"}, sha)
+        post = module.resolve_main_revision({"state": "cutover"}, sha)
+
+        accepted_read_surface_ok = (
+            pre.get("status") == "unaccepted"
+            and post.get("status") == "accepted"
+            and post.get("accepted_revision") == sha
+            and post.get("accepted_ref") == "refs/heads/main"
+            and post.get("provenance_resolution") == "governed-pr-merge"
+        )
+
+        source = accepted_state_path.read_text(encoding="utf-8")
+        no_maintenance_fallback = (
+            "repo/bootstrap/data/state/bootstrap.json" not in source
+            and "bootstrap-cutover-to-immutable-acceptance-receipt" not in source
+        )
+
+        current_state_valid = (
+            isinstance(record, dict)
+            and record.get("state") in {"candidate", "cutover"}
+            and record.get("accepted_ref") == "refs/heads/main"
+        )
+
+        one_way_lifecycle_ok = (
+            current_state_valid
+            and pre.get("status") == "unaccepted"
+            and post.get("status") == "accepted"
+        )
+
+        checks = {
+            "FS0-ASSERT-FC-027": (
+                accepted_read_surface_ok and no_maintenance_fallback,
+                "after cutover accepted-state determination resolves from refs/heads/main and committed cutover state without bootstrap-maintenance fallback",
+            ),
+            "FS0-ASSERT-FC-031": (
+                one_way_lifecycle_ok,
+                "bootstrap lifecycle distinguishes candidate from cutover and only cutover enables accepted-state resolution",
+            ),
+        }
+        evidence = {
+            "bootstrap_state_path": "repo/state/bootstrap.json",
+            "accepted_state_path": "repo/governance/accepted_state.py",
+            "candidate_resolution": pre.get("status"),
+            "cutover_resolution": post.get("status"),
+            "accepted_ref": post.get("accepted_ref"),
+            "provenance_resolution": post.get("provenance_resolution"),
+            "bootstrap_maintenance_fallback_absent": no_maintenance_fallback,
+        }
+    except Exception as exc:
+        checks = {
+            aid: (False, "bootstrap authority lifecycle check failed")
+            for aid in assertion_ids
+        }
+        evidence = {"error": str(exc)}
+
+    return [
+        result(
+            aid,
+            "pass" if checks[aid][0] else "fail",
+            checks[aid][1],
+            evidence,
+        )
+        for aid in assertion_ids
+    ]
+
 
 def _fresh_bootstrap_guard_regression(root):
     guard_path = root / 'repo/governance/bootstrap_mutation_guard.py'

@@ -153,7 +153,8 @@
         "FS0-ASSERT-GOV-015",
         "FS0-ASSERT-GOV-016",
         "FS0-ASSERT-GOV-017",
-        "FS0-ASSERT-GOV-035"
+        "FS0-ASSERT-GOV-035",
+        "FS0-ASSERT-GOV-037"
       ],
       "pending": false,
       "authority_requirement_ids": [
@@ -165,20 +166,7 @@
         "FS0-GOV-015",
         "FS0-GOV-016",
         "FS0-GOV-017",
-        "FS0-GOV-035"
-      ]
-    },
-    {
-      "schema_version": "1",
-      "record_type": "conformance-implementation",
-      "implementation_id": "FS0-IMPL-ACCEPTED-STATE-PUBLICATION",
-      "role": "support",
-      "callable": "accepted_state_publication",
-      "assertion_ids": [
-        "FS0-ASSERT-GOV-037"
-      ],
-      "pending": false,
-      "authority_requirement_ids": [
+        "FS0-GOV-035",
         "FS0-GOV-037"
       ]
     },
