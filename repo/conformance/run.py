@@ -1383,29 +1383,32 @@ def check_post_cutover_mutation_authority(root, assertion_ids):
     maintenance_preflight_call = 'python3 -B repo/bootstrap/scripts/src/preflight.py'
     guard_before_generator = guard_call in wrapper and generator_call in wrapper and maintenance_preflight_call in wrapper and wrapper.index(maintenance_preflight_call) < wrapper.index(guard_call) < wrapper.rindex(generator_call)
     check_bypass = 'if [ "${1:-}" = "--check" ]' in wrapper and 'exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"' in wrapper and wrapper.index('if [ "${1:-}" = "--check" ]') < wrapper.index('git init')
-    required_guard = ('FS0_GOVERNED_BUILD_ISSUE','governed_work_from_issue_body','github_issues','github_pull_requests_for_issue','resolve_governance_work_acceptance','accepted_plan_id must resolve to exactly one Governance Plan issue','Governance Build scope exceeds accepted Plan build_scope','mutation_scope does not authorize guarded paths')
-    forbidden_guard = ('FS0_GOVERNED_BUILD_FILE','repo-spec-acceptance:v1','github_issue_comments_for','publish_accepted','git push')
-    guard_semantics = all(x in guard_source for x in required_guard) and all(x not in guard_source for x in forbidden_guard) and 'plan_acceptance.get("status") != "accepted"' in guard_source
-    accepted_helpers = all(x in accepted_source for x in ('def governed_work_from_issue_body(body):','def governed_pr_candidate_from_body(body):','def resolve_governance_work_acceptance(','def github_issues(repo):','def github_pull_requests_for_issue(repo, issue_number):'))
-    predicate_ok = 'def post_cutover_mutation_allowed' in binding_source and 'governed_build.get("stage") == "build"' in binding_source and 'governed_build.get("disposition") == "pending"' in binding_source and 'governed_build.get("accepted_plan_id")' in binding_source and 'mutation_scope' in binding_source
+    guard_semantics = 'FS0_GOVERNED_BUILD_ISSUE' in guard_source and 'github_pull_requests_for_issue' in guard_source and 'resolve_governance_work_acceptance' in guard_source and 'plan_acceptance.get("status") != "accepted"' in guard_source and 'mutation_scope does not authorize' in guard_source and 'repo-spec-acceptance:v1' not in guard_source and 'github_issue_comments_for' not in guard_source and 'publish_accepted' not in guard_source and 'git push' not in guard_source
+    accepted_helpers = all(fragment in accepted_source for fragment in (
+        'def github_candidate_conformance(repo, candidate_sha):',
+        'def github_candidate_assurance(repo, candidate_sha, work):',
+        'def github_candidate_eligibility(repo, candidate_sha, work):',
+        'def resolve_governance_work_acceptance(',
+        'def github_pull_requests_for_issue(repo, issue_number):',
+    ))
+    predicate_ok = 'def post_cutover_mutation_allowed' in binding_source and 'governed_build.get("stage") == "build"' in binding_source and 'governed_build.get("disposition") == "pending"' in binding_source and 'mutation_scope' in binding_source
 
     spec = importlib.util.spec_from_file_location('fs0_fc032_accepted_state', accepted_path)
     accepted = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(accepted)
-    plan_body = """```json
-{"schema_version":"1","record_type":"governed-work","stage":"plan","work_id":"PLAN-1","bounded_authorization":{"acceptance_actor":{"id":101,"login":"actor-1"},"mutation_scope":[]}}
-```"""
-    pr_body = """```json
-{"schema_version":"1","record_type":"governed-pr-candidate","work_id":"PLAN-1","issue_number":17,"head_sha":"1111111111111111111111111111111111111111","accepted_repository_predecessor":"2222222222222222222222222222222222222222","base_ref":"refs/heads/main"}
-```"""
-    pr = {'number':7,'body':pr_body,'merged_at':'2026-01-01T00:00:00Z','merged_by':{'id':101,'login':'actor-1'},'head':{'sha':'1'*40},'base':{'ref':'main','sha':'2'*40},'merge_commit_sha':'3'*40}
+    plan_body = '```json\n{"schema_version":"1","record_type":"governed-work","stage":"plan","work_id":"PLAN-1","bounded_authorization":{"acceptance_actor":{"id":101,"login":"actor-1"},"mutation_scope":[]},"required_assurance_obligation_ids":["FS0-OBL-TEST"]}\n```'
+    pr_body = '```json\n{"schema_version":"1","record_type":"governed-pr-candidate","work_id":"PLAN-1","issue_number":17,"head_sha":"1111111111111111111111111111111111111111","accepted_repository_predecessor":"2222222222222222222222222222222222222222","base_ref":"refs/heads/main"}\n```'
+    eligibility = {'status':'pass','candidate_sha':'1'*40,'conformance':{'status':'pass','candidate_sha':'1'*40},'assurance':{'status':'pass','candidate_sha':'1'*40,'required_obligation_ids':['FS0-OBL-TEST'],'cases':[{'obligation_id':'FS0-OBL-TEST','case_id':'CASE-1','finding_id':'FIND-1'}],'defects':[]},'defects':[]}
+    pr = {'number':7,'body':pr_body,'merged_at':'2026-01-01T00:00:00Z','merged_by':{'id':101,'login':'actor-1'},'head':{'sha':'1'*40},'base':{'ref':'main','sha':'2'*40},'merge_commit_sha':'3'*40,'_fs0_eligibility':eligibility}
     synthetic = accepted.resolve_governance_work_acceptance(plan_body, [pr], 'plan', 'PLAN-1')
-    bad_pr = dict(pr); bad_pr['merged_by'] = {'id':202,'login':'actor-2'}
-    synthetic_bad_actor = accepted.resolve_governance_work_acceptance(plan_body, [bad_pr], 'plan', 'PLAN-1')
-    resolution_ok = synthetic.get('status') == 'accepted' and synthetic.get('acceptance_records',[{}])[0].get('pull_request_number') == 7 and synthetic_bad_actor.get('status') == 'invalid'
+    bad_conformance = dict(pr); bad_conformance['_fs0_eligibility'] = {**eligibility,'status':'fail','conformance':{'status':'fail','candidate_sha':'1'*40}}
+    failed_conformance = accepted.resolve_governance_work_acceptance(plan_body, [bad_conformance], 'plan', 'PLAN-1')
+    bad_assurance = dict(pr); bad_assurance['_fs0_eligibility'] = {**eligibility,'status':'fail','assurance':{**eligibility['assurance'],'status':'fail','defects':['unresolved adverse finding']}}
+    failed_assurance = accepted.resolve_governance_work_acceptance(plan_body, [bad_assurance], 'plan', 'PLAN-1')
+    resolution_ok = synthetic.get('status') == 'accepted' and failed_conformance.get('status') == 'invalid' and failed_assurance.get('status') == 'invalid'
     ok = guard_before_generator and check_bypass and guard_semantics and accepted_helpers and predicate_ok and resolution_ok and fresh_bootstrap_regression['ok']
-    evidence = {'guard':'repo/governance/bootstrap_mutation_guard.py','accepted_state':'repo/governance/accepted_state.py','wrapper':'repo/bootstrap/scripts/bootstrap','guard_before_generator':guard_before_generator,'accepted_plan_resolution_test':synthetic.get('status'),'wrong_actor_resolution_test':synthetic_bad_actor.get('status'),'governance_binding_predicate':predicate_ok,'check_bypass':check_bypass,'guard_semantics':guard_semantics,'accepted_state_helpers':accepted_helpers,'acceptance_resolution_behavior':resolution_ok,'fresh_bootstrap_regression':fresh_bootstrap_regression}
-    return [result(aid, 'pass' if ok else 'fail', 'after cutover bootstrap mutation resolves a pending Governance Build from GitHub, resolves its predecessor Plan through authorized merged-PR acceptance, enforces Plan/Build/mutation scope bounds, and has no independent acceptance-publication capability', evidence) for aid in assertion_ids]
+    evidence = {'guard':'repo/governance/bootstrap_mutation_guard.py','accepted_state':'repo/governance/accepted_state.py','guard_before_generator':guard_before_generator,'eligible_merge_resolution':synthetic.get('status'),'failed_conformance_resolution':failed_conformance.get('status'),'failed_assurance_resolution':failed_assurance.get('status'),'remote_eligibility_helpers':accepted_helpers,'governance_binding_predicate':predicate_ok,'check_bypass':check_bypass,'guard_semantics':guard_semantics,'fresh_bootstrap_regression':fresh_bootstrap_regression}
+    return [result(aid, 'pass' if ok else 'fail', 'after cutover predecessor acceptance requires authorized merged-PR acceptance whose exact head has passing canonical remote Conformance and all declared required candidate-bound Assurance obligations resolved', evidence) for aid in assertion_ids]
 
 def check_post_cutover_mutation_binding(root, assertion_ids):
     binding_path = root / 'repo/governance/github_binding.py'

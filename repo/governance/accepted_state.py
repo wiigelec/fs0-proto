@@ -292,6 +292,182 @@ def governed_pr_candidate_from_body(body):
     return candidate
 
 
+def _gh_json(endpoint):
+    if shutil.which("gh") is None:
+        raise RuntimeError(
+            "GitHub CLI (gh) is required for remote Governance and accepted-state resolution"
+        )
+    proc = _run(["gh", "api", endpoint])
+    return json.loads(proc.stdout)
+
+
+def _github_file_json(repo, path, revision):
+    value = _gh_object(f"repos/{repo}/contents/{path}?ref={revision}")
+    if value.get("encoding") != "base64" or not isinstance(value.get("content"), str):
+        raise RuntimeError(f"GitHub content is not base64 file data: {path}")
+    import base64
+    raw = base64.b64decode(value["content"].replace("\n", "")).decode("utf-8")
+    parsed = json.loads(raw)
+    if not isinstance(parsed, dict):
+        raise RuntimeError(f"GitHub JSON file is not an object: {path}")
+    return parsed
+
+
+def _github_json_directory(repo, path, revision):
+    value = _gh_json(f"repos/{repo}/contents/{path}?ref={revision}")
+    if not isinstance(value, list):
+        raise RuntimeError(f"GitHub directory result is not a list: {path}")
+    records = []
+    for item in value:
+        if not isinstance(item, dict) or item.get("type") != "file":
+            continue
+        name = item.get("name")
+        if not isinstance(name, str) or not name.endswith(".json"):
+            continue
+        records.append(_github_file_json(repo, item["path"], revision))
+    return records
+
+
+def github_candidate_conformance(repo, candidate_sha):
+    if not isinstance(candidate_sha, str) or not SHA_RE.fullmatch(candidate_sha):
+        return {"status": "fail", "defects": ["candidate SHA is not exact"]}
+    candidate_sha = candidate_sha.lower()
+    value = _gh_json(
+        f"repos/{repo}/actions/runs?head_sha={candidate_sha}&event=pull_request&status=completed&per_page=100"
+    )
+    runs = value.get("workflow_runs") if isinstance(value, dict) else None
+    if not isinstance(runs, list):
+        return {"status": "fail", "defects": ["GitHub Actions run list is unavailable"]}
+    matching = [
+        run for run in runs
+        if isinstance(run, dict)
+        and run.get("name") == "FS0 Conformance"
+        and run.get("event") == "pull_request"
+        and str(run.get("head_sha", "")).lower() == candidate_sha
+        and str(run.get("path", "")).endswith(".github/workflows/fs0-conformance.yml")
+    ]
+    if not matching:
+        return {
+            "status": "fail", "candidate_sha": candidate_sha,
+            "defects": ["exact candidate lacks completed FS0 Conformance pull-request run"],
+        }
+    matching.sort(key=lambda run: (
+        run.get("run_number", 0), run.get("run_attempt", 0), run.get("id", 0)
+    ))
+    latest = matching[-1]
+    passed = latest.get("conclusion") == "success"
+    return {
+        "status": "pass" if passed else "fail",
+        "candidate_sha": candidate_sha,
+        "workflow_run_id": latest.get("id"),
+        "workflow_run_url": latest.get("html_url"),
+        "conclusion": latest.get("conclusion"),
+        "defects": [] if passed else ["latest exact-candidate FS0 Conformance run is not successful"],
+    }
+
+
+def github_candidate_assurance(repo, candidate_sha, work):
+    required = work.get("required_assurance_obligation_ids")
+    if not isinstance(required, list) or any(not _nonempty(x) for x in required):
+        return {"status": "fail", "defects": ["governed work lacks required_assurance_obligation_ids"]}
+    if len(required) != len(set(required)):
+        return {"status": "fail", "defects": ["required Assurance obligation IDs are duplicated"]}
+    candidate_sha = candidate_sha.lower()
+    if not required:
+        return {
+            "status": "pass", "candidate_sha": candidate_sha,
+            "required_obligation_ids": [], "cases": [], "defects": [],
+        }
+    try:
+        registry = _github_file_json(repo, "repo/assurance/obligations.json", candidate_sha)
+        definitions = registry.get("obligations")
+        if not isinstance(definitions, list):
+            raise RuntimeError("Assurance obligation registry is invalid")
+        known = {
+            item.get("obligation_id") for item in definitions
+            if isinstance(item, dict) and _nonempty(item.get("obligation_id"))
+        }
+        unknown = sorted(set(required) - known)
+        if unknown:
+            return {
+                "status": "fail", "candidate_sha": candidate_sha,
+                "required_obligation_ids": list(required), "cases": [],
+                "defects": ["unresolved required Assurance obligation IDs: " + ", ".join(unknown)],
+            }
+        cases = _github_json_directory(repo, "repo/assurance/cases", candidate_sha)
+        findings = _github_json_directory(repo, "repo/assurance/findings", candidate_sha)
+    except Exception as exc:
+        return {
+            "status": "fail", "candidate_sha": candidate_sha,
+            "required_obligation_ids": list(required), "cases": [],
+            "defects": [str(exc)],
+        }
+
+    case_results = []
+    defects = []
+    for obligation_id in required:
+        matching = [
+            case for case in cases
+            if isinstance(case, dict)
+            and case.get("record_type") == "assurance-review-case"
+            and case.get("review_obligation_id") == obligation_id
+            and isinstance(case.get("reviewed_subject"), dict)
+            and case["reviewed_subject"].get("work_id") == work.get("work_id")
+            and str(case["reviewed_subject"].get("candidate_sha", "")).lower() == candidate_sha
+        ]
+        if len(matching) != 1:
+            defects.append(
+                f"{obligation_id}: expected exactly one candidate-bound Assurance case, found {len(matching)}"
+            )
+            continue
+        case = matching[0]
+        case_id = case.get("case_id")
+        related = [
+            finding for finding in findings
+            if isinstance(finding, dict)
+            and finding.get("record_type") == "assurance-finding"
+            and finding.get("case_id") == case_id
+        ]
+        seqs = [item.get("sequence") for item in related]
+        if (
+            not related
+            or any(isinstance(seq, bool) or not isinstance(seq, int) or seq < 1 for seq in seqs)
+            or len(seqs) != len(set(seqs))
+        ):
+            defects.append(f"{obligation_id}: Assurance findings are missing or have invalid sequence")
+            continue
+        latest = max(related, key=lambda item: item["sequence"])
+        if latest.get("status") != "satisfied":
+            defects.append(f"{obligation_id}: latest Assurance finding is not satisfied")
+            continue
+        case_results.append({
+            "obligation_id": obligation_id,
+            "case_id": case_id,
+            "finding_id": latest.get("finding_id"),
+            "finding_sequence": latest.get("sequence"),
+        })
+
+    return {
+        "status": "pass" if not defects else "fail",
+        "candidate_sha": candidate_sha,
+        "required_obligation_ids": list(required),
+        "cases": case_results,
+        "defects": defects,
+    }
+
+
+def github_candidate_eligibility(repo, candidate_sha, work):
+    conformance = github_candidate_conformance(repo, candidate_sha)
+    assurance = github_candidate_assurance(repo, candidate_sha, work)
+    defects = list(conformance.get("defects", [])) + list(assurance.get("defects", []))
+    return {
+        "status": "pass" if conformance.get("status") == "pass" and assurance.get("status") == "pass" else "fail",
+        "candidate_sha": candidate_sha.lower() if isinstance(candidate_sha, str) else candidate_sha,
+        "conformance": conformance,
+        "assurance": assurance,
+        "defects": defects,
+    }
+
 def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage, expected_work_id):
     if expected_stage not in {"design", "plan", "build"} or not _nonempty(expected_work_id):
         raise AcceptanceError("invalid requested governed-work acceptance identity")
@@ -300,8 +476,11 @@ def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage
         return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":["issue governed-work identity does not match requested stage/work"]}
     auth = work.get("bounded_authorization")
     actor = auth.get("acceptance_actor") if isinstance(auth, dict) else None
+    required_assurance = work.get("required_assurance_obligation_ids")
     if not _valid_actor(actor):
         return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":["issue does not expose one valid acceptance_actor"]}
+    if not isinstance(required_assurance, list) or any(not _nonempty(x) for x in required_assurance):
+        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":["issue does not declare required_assurance_obligation_ids"]}
 
     matches = []
     defects = []
@@ -322,7 +501,8 @@ def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage
         head = pr.get("head")
         base = pr.get("base")
         resulting = pr.get("merge_commit_sha")
-        valid = (
+        eligibility = pr.get("_fs0_eligibility")
+        valid_merge = (
             isinstance(number, int) and not isinstance(number, bool) and number > 0
             and _nonempty(merged_at)
             and isinstance(merged_by, dict) and merged_by.get("id") == actor.get("id")
@@ -331,20 +511,33 @@ def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage
             and str(base.get("sha", "")).lower() == candidate["accepted_repository_predecessor"]
             and isinstance(resulting, str) and bool(SHA_RE.fullmatch(resulting))
         )
-        if not valid:
+        valid_eligibility = (
+            isinstance(eligibility, dict)
+            and eligibility.get("status") == "pass"
+            and str(eligibility.get("candidate_sha", "")).lower() == candidate["head_sha"]
+            and isinstance(eligibility.get("conformance"), dict)
+            and eligibility["conformance"].get("status") == "pass"
+            and isinstance(eligibility.get("assurance"), dict)
+            and eligibility["assurance"].get("status") == "pass"
+            and sorted(eligibility["assurance"].get("required_obligation_ids", [])) == sorted(required_assurance)
+        )
+        if not valid_merge:
             defects.append({"pull_request_number": number, "error": "merged pull request does not satisfy candidate/actor/predecessor binding"})
             continue
+        if not valid_eligibility:
+            defects.append({"pull_request_number": number, "error": "merged pull request lacks passing exact-candidate Conformance and required Assurance eligibility", "eligibility": eligibility})
+            continue
         matches.append({
-            "schema_version":"1","record_type":"governed-pr-acceptance","status":"accepted",
-            "work_id":expected_work_id,"issue_number":candidate["issue_number"],
-            "pull_request_number":number,"candidate_head":candidate["head_sha"],
+            "schema_version":"1", "record_type":"governed-pr-acceptance", "status":"accepted",
+            "work_id":expected_work_id, "issue_number":candidate["issue_number"],
+            "pull_request_number":number, "candidate_head":candidate["head_sha"],
             "accepted_repository_predecessor":candidate["accepted_repository_predecessor"],
             "resulting_accepted_revision":resulting.lower(),
             "actor":{"id":merged_by.get("id"),"login":merged_by.get("login")},
-            "merged_at":merged_at,
+            "merged_at":merged_at, "eligibility":eligibility,
         })
     if not matches:
-        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":defects or ["governed work has no authorized merged PR acceptance"]}
+        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":defects or ["governed work has no eligible authorized merged PR acceptance"]}
     matches.sort(key=lambda x: (x["merged_at"], x["pull_request_number"]))
     return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"accepted","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[matches[-1]],"superseded_acceptance_count":len(matches)-1,"defects":[]}
 
@@ -352,6 +545,10 @@ def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage
 def github_pull_requests_for_issue(repo, issue_number):
     if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
         raise RuntimeError("issue_number must be a positive integer")
+    issue = _gh_object(f"repos/{repo}/issues/{issue_number}")
+    if "pull_request" in issue:
+        raise RuntimeError("governed-work identity must resolve to a GitHub issue")
+    work = governed_work_from_issue_body(issue.get("body"))
     pulls = _gh_paginated(f"repos/{repo}/pulls?state=closed&per_page=100")
     out = []
     for item in pulls:
@@ -368,6 +565,7 @@ def github_pull_requests_for_issue(repo, issue_number):
             continue
         detail = _gh_object(f"repos/{repo}/pulls/{number}")
         detail["_fs0_candidate"] = candidate
+        detail["_fs0_eligibility"] = github_candidate_eligibility(repo, candidate["head_sha"], work)
         out.append(detail)
     return out
 
