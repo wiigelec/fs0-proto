@@ -1030,36 +1030,195 @@ def resolve_accepted_state(accepted_sha, comments):
         "defects": [],
     }
 
-def resolve_main_revision(bootstrap_state, revision):
-    if not isinstance(revision, str) or not SHA_RE.fullmatch(revision):
-        return {
-            "schema_version": "1",
-            "record_type": "accepted-state-resolution",
-            "status": "invalid",
-            "accepted_revision": None,
-            "accepted_ref": "refs/heads/main",
-            "defects": ["main does not resolve to an exact Git commit SHA"],
-        }
+def bootstrap_authorization_from_issue_body(body):
+    matches = [obj for obj in _json_fence_objects(body) if obj.get("record_type") == "bootstrap-authorization"]
+    if len(matches) != 1:
+        raise AcceptanceError("bootstrap provenance issue must expose exactly one bootstrap-authorization JSON record")
+    record = matches[0]
+    required = {"schema_version","record_type","acceptance_actor","accepted_repository_predecessor","accepted_ref"}
+    if set(record) != required or record.get("schema_version") != "1":
+        raise AcceptanceError("bootstrap authorization fields are not canonical")
+    if not _valid_actor(record.get("acceptance_actor")):
+        raise AcceptanceError("bootstrap authorization requires one valid acceptance_actor")
+    predecessor = record.get("accepted_repository_predecessor")
+    if not isinstance(predecessor, str) or not SHA_RE.fullmatch(predecessor):
+        raise AcceptanceError("bootstrap authorization predecessor must be an exact Git SHA")
+    if record.get("accepted_ref") != "refs/heads/main":
+        raise AcceptanceError("bootstrap authorization accepted_ref must be refs/heads/main")
+    record["accepted_repository_predecessor"] = predecessor.lower()
+    return record
+
+def bootstrap_cutover_candidate_from_body(body):
+    matches = [obj for obj in _json_fence_objects(body) if obj.get("record_type") == "bootstrap-cutover-candidate"]
+    if len(matches) != 1:
+        raise AcceptanceError("bootstrap cutover PR must expose exactly one bootstrap-cutover-candidate JSON record")
+    record = matches[0]
+    required = {"schema_version","record_type","bootstrap_provenance_issue","head_sha","accepted_repository_predecessor","base_ref"}
+    if set(record) != required or record.get("schema_version") != "1":
+        raise AcceptanceError("bootstrap cutover candidate fields are not canonical")
+    issue = record.get("bootstrap_provenance_issue")
+    if isinstance(issue, bool) or not isinstance(issue, int) or issue < 1:
+        raise AcceptanceError("bootstrap cutover candidate provenance issue must be positive")
+    for key in ("head_sha","accepted_repository_predecessor"):
+        value = record.get(key)
+        if not isinstance(value, str) or not SHA_RE.fullmatch(value):
+            raise AcceptanceError(f"bootstrap cutover candidate {key} must be an exact Git SHA")
+        record[key] = value.lower()
+    if record.get("base_ref") != "refs/heads/main":
+        raise AcceptanceError("bootstrap cutover candidate must target refs/heads/main")
+    return record
+
+def github_resulting_pull_requests(repo, accepted_sha):
+    if not isinstance(accepted_sha, str) or not SHA_RE.fullmatch(accepted_sha):
+        raise RuntimeError("accepted revision must be an exact Git SHA")
+    accepted_sha = accepted_sha.lower()
+    pulls = _gh_paginated(f"repos/{repo}/pulls?state=closed&per_page=100")
+    out = []
+    for item in pulls:
+        number = item.get("number") if isinstance(item, dict) else None
+        if isinstance(number, bool) or not isinstance(number, int) or number < 1:
+            continue
+        detail = _gh_object(f"repos/{repo}/pulls/{number}")
+        if str(detail.get("merge_commit_sha","")).lower() == accepted_sha:
+            out.append(detail)
+    return out
+
+def resolve_bootstrap_merge_acceptance(repo, bootstrap_state, accepted_sha, pull_requests=None, provenance_issue=None):
+    if not isinstance(accepted_sha, str) or not SHA_RE.fullmatch(accepted_sha):
+        return {"status":"invalid","defects":["accepted revision is not an exact Git SHA"]}
+    accepted_sha = accepted_sha.lower()
     if not isinstance(bootstrap_state, dict) or bootstrap_state.get("state") != "cutover":
-        return {
-            "schema_version": "1",
-            "record_type": "accepted-state-resolution",
-            "status": "unaccepted",
-            "accepted_revision": None,
-            "repository_revision": revision.lower(),
-            "accepted_ref": "refs/heads/main",
-            "defects": [],
-        }
-    return {
-        "schema_version": "1",
-        "record_type": "accepted-state-resolution",
-        "status": "accepted",
-        "accepted_revision": revision.lower(),
-        "repository_revision": revision.lower(),
-        "accepted_ref": "refs/heads/main",
-        "provenance_resolution": "governed-pr-merge",
-        "defects": [],
-    }
+        return {"status":"invalid","defects":["bootstrap state is not cutover"]}
+    issue_number = bootstrap_state.get("bootstrap_provenance_issue")
+    if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
+        return {"status":"invalid","defects":["cutover state lacks bootstrap provenance issue"]}
+    try:
+        issue = provenance_issue or _gh_object(f"repos/{repo}/issues/{issue_number}")
+        authorization = bootstrap_authorization_from_issue_body(issue.get("body"))
+    except Exception as exc:
+        return {"status":"invalid","defects":[str(exc)]}
+    actor = authorization["acceptance_actor"]
+    predecessor = authorization["accepted_repository_predecessor"]
+    pulls = pull_requests if pull_requests is not None else github_resulting_pull_requests(repo, accepted_sha)
+    matches, defects = [], []
+    for pr in pulls:
+        if not isinstance(pr, dict):
+            continue
+        try:
+            candidate = pr.get("_fs0_bootstrap_candidate")
+            if not isinstance(candidate, dict):
+                candidate = bootstrap_cutover_candidate_from_body(pr.get("body"))
+        except AcceptanceError:
+            continue
+        if candidate.get("bootstrap_provenance_issue") != issue_number:
+            continue
+        number = pr.get("number")
+        merged_at = pr.get("merged_at")
+        merged_by = pr.get("merged_by")
+        head = pr.get("head")
+        base = pr.get("base")
+        valid = (
+            isinstance(number, int) and not isinstance(number, bool) and number > 0
+            and _nonempty(merged_at)
+            and isinstance(merged_by, dict) and merged_by.get("id") == actor.get("id")
+            and isinstance(head, dict) and str(head.get("sha","")).lower() == candidate["head_sha"]
+            and isinstance(base, dict) and base.get("ref") == "main"
+            and str(base.get("sha","")).lower() == predecessor
+            and candidate["accepted_repository_predecessor"] == predecessor
+            and str(pr.get("merge_commit_sha","")).lower() == accepted_sha
+        )
+        if not valid:
+            defects.append({"pull_request_number":number,"error":"bootstrap merge binding invalid"})
+            continue
+        conformance = pr.get("_fs0_bootstrap_conformance")
+        if not isinstance(conformance, dict):
+            conformance = github_candidate_conformance(repo, candidate["head_sha"], merged_at)
+        if conformance.get("status") != "pass":
+            defects.append({"pull_request_number":number,"error":"bootstrap exact-head Conformance did not pass before merge"})
+            continue
+        matches.append({
+            "schema_version":"1","record_type":"bootstrap-pr-acceptance","status":"accepted",
+            "bootstrap_provenance_issue":issue_number,"pull_request_number":number,
+            "candidate_head":candidate["head_sha"],"accepted_repository_predecessor":predecessor,
+            "resulting_accepted_revision":accepted_sha,
+            "actor":{"id":merged_by.get("id"),"login":merged_by.get("login")},
+            "merged_at":merged_at,
+            "eligibility":{"status":"pass","mechanical_verification":conformance,
+                           "semantic_audit":{"status":"satisfied-by-authorized-merge"}},
+        })
+    if len(matches) != 1:
+        defects.append(f"accepted bootstrap revision must resolve to exactly one eligible designated cutover PR; found {len(matches)}")
+        return {"status":"invalid","defects":defects,"acceptance_records":matches}
+    return matches[0]
+
+def resolve_governed_resulting_acceptance(repo, accepted_sha, pull_requests=None):
+    if not isinstance(accepted_sha, str) or not SHA_RE.fullmatch(accepted_sha):
+        return {"status":"invalid","defects":["accepted revision is not an exact Git SHA"]}
+    accepted_sha = accepted_sha.lower()
+    pulls = pull_requests if pull_requests is not None else github_resulting_pull_requests(repo, accepted_sha)
+    matches, defects = [], []
+    for pr in pulls:
+        if not isinstance(pr, dict):
+            continue
+        try:
+            candidate = pr.get("_fs0_candidate")
+            if not isinstance(candidate, dict):
+                candidate = governed_pr_candidate_from_body(pr.get("body"))
+        except AcceptanceError:
+            continue
+        try:
+            issue = pr.get("_fs0_issue")
+            if not isinstance(issue, dict):
+                issue = _gh_object(f"repos/{repo}/issues/{candidate['issue_number']}")
+            work = governed_work_from_issue_body(issue.get("body"))
+            if work.get("work_id") != candidate.get("work_id") or work.get("stage") not in {"design","plan","build"}:
+                raise AcceptanceError("governed candidate issue/work binding invalid")
+            detail = dict(pr)
+            detail["_fs0_candidate"] = candidate
+            if not isinstance(detail.get("_fs0_eligibility"), dict):
+                detail["_fs0_eligibility"] = github_candidate_eligibility(repo, candidate["head_sha"], work, detail.get("merged_at"))
+            resolution = resolve_governance_work_acceptance(issue.get("body"), [detail], work["stage"], work["work_id"])
+        except Exception as exc:
+            defects.append(str(exc))
+            continue
+        records = resolution.get("acceptance_records", [])
+        if resolution.get("status") == "accepted" and len(records) == 1 and records[0].get("resulting_accepted_revision") == accepted_sha:
+            matches.append(records[0])
+        else:
+            defects.extend(resolution.get("defects", []))
+    if len(matches) != 1:
+        defects.append(f"accepted governed revision must resolve to exactly one eligible authorized merged PR; found {len(matches)}")
+        return {"status":"invalid","defects":defects,"acceptance_records":matches}
+    return matches[0]
+
+def resolve_remote_main_acceptance(repo, bootstrap_state, accepted_sha, pull_requests=None, provenance_issue=None):
+    if not isinstance(bootstrap_state, dict) or bootstrap_state.get("state") != "cutover":
+        return resolve_main_revision(bootstrap_state, accepted_sha, None)
+    pulls = pull_requests if pull_requests is not None else github_resulting_pull_requests(repo, accepted_sha)
+    bootstrap = resolve_bootstrap_merge_acceptance(repo, bootstrap_state, accepted_sha, pulls, provenance_issue)
+    if bootstrap.get("status") == "accepted":
+        return resolve_main_revision(bootstrap_state, accepted_sha, bootstrap)
+    governed = resolve_governed_resulting_acceptance(repo, accepted_sha, pulls)
+    if governed.get("status") == "accepted":
+        return resolve_main_revision(bootstrap_state, accepted_sha, governed)
+    return {"schema_version":"1","record_type":"accepted-state-resolution","status":"invalid",
+            "accepted_revision":None,"repository_revision":accepted_sha.lower(),
+            "accepted_ref":"refs/heads/main","acceptance_records":[],
+            "defects":list(bootstrap.get("defects",[]))+list(governed.get("defects",[]))}
+
+def resolve_main_revision(bootstrap_state, revision, acceptance=None):
+    if not isinstance(revision, str) or not SHA_RE.fullmatch(revision):
+        return {"schema_version":"1","record_type":"accepted-state-resolution","status":"invalid","accepted_revision":None,"accepted_ref":"refs/heads/main","defects":["main does not resolve to an exact Git commit SHA"]}
+    revision = revision.lower()
+    if not isinstance(bootstrap_state, dict) or bootstrap_state.get("state") != "cutover":
+        return {"schema_version":"1","record_type":"accepted-state-resolution","status":"unaccepted","accepted_revision":None,"repository_revision":revision,"accepted_ref":"refs/heads/main","defects":[]}
+    if not (isinstance(acceptance, dict)
+            and acceptance.get("record_type") in {"bootstrap-pr-acceptance","governed-pr-acceptance"}
+            and acceptance.get("status") == "accepted"
+            and acceptance.get("resulting_accepted_revision") == revision
+            and _valid_actor(acceptance.get("actor"))):
+        return {"schema_version":"1","record_type":"accepted-state-resolution","status":"invalid","accepted_revision":None,"repository_revision":revision,"accepted_ref":"refs/heads/main","acceptance_records":[],"defects":["main revision lacks resolved authorized eligible merge acceptance"]}
+    return {"schema_version":"1","record_type":"accepted-state-resolution","status":"accepted","accepted_revision":revision,"repository_revision":revision,"accepted_ref":"refs/heads/main","provenance_resolution":acceptance["record_type"],"acceptance_records":[acceptance],"defects":[]}
 
 def _run(args, allowed=(0,)):
     proc = subprocess.run(args, text=True, capture_output=True)
@@ -1160,38 +1319,19 @@ def github_issue_comments(repo):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        prog="repo/scripts/accepted-state",
-        description="Resolve canonical FS0 accepted repository state from refs/heads/main.",
-    )
+    parser = argparse.ArgumentParser(prog="repo/scripts/accepted-state", description="Resolve canonical FS0 accepted repository state from refs/heads/main.")
     parser.add_argument("--json", action="store_true", help="emit structured JSON")
     args = parser.parse_args()
-
     try:
         root = repository_root()
         sha = accepted_ref(root)
         if sha is None:
-            report = {
-                "schema_version": "1",
-                "record_type": "accepted-state-resolution",
-                "status": "unpublished",
-                "accepted_revision": None,
-                "accepted_ref": "refs/heads/main",
-                "defects": [],
-            }
+            report = {"schema_version":"1","record_type":"accepted-state-resolution","status":"unpublished","accepted_revision":None,"accepted_ref":"refs/heads/main","defects":[]}
         else:
             bootstrap = committed_bootstrap_state(root, sha)
-            report = resolve_main_revision(bootstrap, sha)
+            report = resolve_remote_main_acceptance(origin_repository(root), bootstrap, sha) if bootstrap.get("state") == "cutover" else resolve_main_revision(bootstrap, sha, None)
     except Exception as exc:
-        report = {
-            "schema_version": "1",
-            "record_type": "accepted-state-resolution",
-            "status": "error",
-            "accepted_revision": None,
-            "accepted_ref": "refs/heads/main",
-            "defects": [str(exc)],
-        }
-
+        report = {"schema_version":"1","record_type":"accepted-state-resolution","status":"error","accepted_revision":None,"accepted_ref":"refs/heads/main","defects":[str(exc)]}
     if args.json:
         print(json.dumps(report, indent=2))
     else:
@@ -1200,7 +1340,6 @@ def main():
             print("Revision: " + report["accepted_revision"])
         for defect in report.get("defects", []):
             print("Defect: " + str(defect), file=sys.stderr)
-
     return 0 if report["status"] == "accepted" else 1
 
 

@@ -133,6 +133,18 @@ def now():
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
+def bootstrap_issue_body(base, actor_id, actor_login):
+    record = {"schema_version":"1","record_type":"bootstrap-authorization",
+              "acceptance_actor":{"id":actor_id,"login":actor_login},
+              "accepted_repository_predecessor":base,"accepted_ref":"refs/heads/main"}
+    return "# FS0 Bootstrap Provenance\n\nThis issue is the one-time bootstrap work identity and authorization anchor.\n\n```json\n" + json.dumps(record, indent=2) + "\n```\n"
+
+def bootstrap_pr_body(issue_number, candidate, base):
+    record = {"schema_version":"1","record_type":"bootstrap-cutover-candidate",
+              "bootstrap_provenance_issue":issue_number,"head_sha":candidate,
+              "accepted_repository_predecessor":base,"base_ref":"refs/heads/main"}
+    return f"Governed by bootstrap provenance issue #{issue_number}.\n\nThis exact PR head is the designated bootstrap-cutover candidate. Merging is bootstrap acceptance only when exact-head remote FS0 Conformance has passed.\n\n```json\n" + json.dumps(record, indent=2) + "\n```\n"
+
 def main():
     parser = argparse.ArgumentParser(
         description="Create the one-time FS0 bootstrap cutover PR."
@@ -238,14 +250,7 @@ def main():
             method="POST",
             payload={
                 "title": "FS0 bootstrap provenance",
-                "body": (
-                    "# FS0 Bootstrap Provenance\n\n"
-                    "This issue authorizes the one-time bootstrap cutover PR. "
-                    "Merging the designated validated PR is the external semantic audit "
-                    "and explicit bootstrap acceptance.\n\n"
-                    f"Base revision: `{base}`\n"
-                    f"Actor: `{actor_login}` (`{actor_id}`)\n"
-                ),
+                "body": bootstrap_issue_body(base, actor_id, actor_login),
             },
         )
         issue_number = issue.get("number")
@@ -372,12 +377,7 @@ def main():
                 "title": "FS0 bootstrap cutover",
                 "head": BRANCH,
                 "base": "main",
-                "body": (
-                    f"Governed by bootstrap provenance issue #{issue_number}.\n\n"
-                    f"Validated candidate: `{candidate}`\n\n"
-                    "Merging this PR is the external semantic audit and explicit "
-                    "bootstrap acceptance."
-                ),
+                "body": bootstrap_pr_body(issue_number, candidate, base),
             },
         )
         pr_number = pr.get("number")

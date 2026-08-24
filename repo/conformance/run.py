@@ -345,7 +345,7 @@ def check_bootstrap_state(root, assertion_ids):
 
 
 
-def check_governance_state_resolution(root, assertion_ids):
+def _fs0_pre_main_provenance_check_governance_state_resolution(root, assertion_ids):
     work_path = root / "repo/governance/work.py"
     state_path = root / "repo/governance/accepted_state.py"
     cutover_path = root / "repo/governance/bootstrap_cutover.py"
@@ -469,6 +469,41 @@ def check_governance_state_resolution(root, assertion_ids):
         result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
         for aid in assertion_ids
     ]
+
+def check_governance_state_resolution(root, assertion_ids):
+    legacy_results = _fs0_pre_main_provenance_check_governance_state_resolution(root, assertion_ids)
+    path = root / 'repo/governance/accepted_state.py'
+    spec = importlib.util.spec_from_file_location('fs0_main_provenance', path)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    sha='3'*40; head='1'*40; predecessor='2'*40
+    state={'state':'cutover','bootstrap_provenance_issue':17}
+    issue_body='```json\n{"schema_version":"1","record_type":"bootstrap-authorization","acceptance_actor":{"id":101,"login":"tester"},"accepted_repository_predecessor":"'+predecessor+'","accepted_ref":"refs/heads/main"}\n```'
+    pr_body='```json\n{"schema_version":"1","record_type":"bootstrap-cutover-candidate","bootstrap_provenance_issue":17,"head_sha":"'+head+'","accepted_repository_predecessor":"'+predecessor+'","base_ref":"refs/heads/main"}\n```'
+    issue={'number':17,'body':issue_body}
+    conf={'status':'pass','candidate_sha':head,'defects':[]}
+    pr={'number':7,'body':pr_body,'merged_at':'2026-01-01T00:20:00Z','merged_by':{'id':101,'login':'tester'},'head':{'sha':head},'base':{'ref':'main','sha':predecessor},'merge_commit_sha':sha,'_fs0_bootstrap_conformance':conf}
+    accepted=m.resolve_bootstrap_merge_acceptance('o/r',state,sha,[pr],issue)
+    bad=dict(pr); bad['_fs0_bootstrap_conformance']={'status':'fail','candidate_sha':head,'defects':['failed']}
+    ineligible=m.resolve_bootstrap_merge_acceptance('o/r',state,sha,[bad],issue)
+    direct=m.resolve_remote_main_acceptance('o/r',state,'4'*40,[],issue)
+    unproven=m.resolve_main_revision(state,sha)
+    proven=m.resolve_main_revision(state,sha,accepted)
+    cutover=(root/'repo/governance/bootstrap_cutover.py').read_text(encoding='utf-8')
+    ok=(accepted.get('status')=='accepted' and ineligible.get('status')=='invalid' and direct.get('status')=='invalid' and unproven.get('status')=='invalid' and proven.get('status')=='accepted' and 'bootstrap-authorization' in cutover and 'bootstrap-cutover-candidate' in cutover)
+    out=[]
+    for item in legacy_results:
+        aid=item.get('assertion_id') if isinstance(item,dict) else None
+        if aid in {'FS0-ASSERT-GOV-014','FS0-ASSERT-GOV-016','FS0-ASSERT-GOV-037'}:
+            detail = (
+                'bootstrap acceptance is the designated eligible authorized bootstrap-cutover PR merge'
+                if aid == 'FS0-ASSERT-GOV-014'
+                else 'refs/heads/main requires eligible authorized merge provenance'
+            )
+            out.append(result(aid,'pass' if ok else 'fail',detail,{'eligible_bootstrap':accepted.get('status'),'ineligible_bootstrap':ineligible.get('status'),'direct_push':direct.get('status'),'unproven_main':unproven.get('status'),'proven_main':proven.get('status')}))
+        else:
+            out.append(item)
+    return out
 
 
 
@@ -1236,7 +1271,7 @@ def check_bootstrap_independence(root, assertion_ids):
     evidence = {'bootstrap_top_level': top_level, 'canonical_source_role': contract.get('canonical_source_role'), 'canonical_input_root': contract.get('canonical_input_root'), 'generation_implementation': contract.get('generation_implementation'), 'generation_entrypoint': contract.get('generation_entrypoint'), 'generated_surfaces_are_canonical_source': contract.get('generated_surfaces_are_canonical_source')}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
 
-def check_bootstrap_authority_lifecycle(root, assertion_ids):
+def _fs0_pre_merge_provenance_check_bootstrap_authority_lifecycle(root, assertion_ids):
     state_path = root / "repo/state/bootstrap.json"
     accepted_state_path = root / "repo/governance/accepted_state.py"
     try:
@@ -1311,6 +1346,48 @@ def check_bootstrap_authority_lifecycle(root, assertion_ids):
         )
         for aid in assertion_ids
     ]
+
+def check_bootstrap_authority_lifecycle(root, assertion_ids):
+    legacy_results = _fs0_pre_merge_provenance_check_bootstrap_authority_lifecycle(root, assertion_ids)
+    path = root / 'repo/governance/accepted_state.py'
+    spec = importlib.util.spec_from_file_location('fs0_lifecycle_provenance', path)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    sha = '3' * 40
+    candidate_state = {'state':'candidate','bootstrap_provenance_issue':None}
+    cutover_state = {'state':'cutover','bootstrap_provenance_issue':17}
+    proof = {
+        'schema_version':'1','record_type':'bootstrap-pr-acceptance','status':'accepted',
+        'bootstrap_provenance_issue':17,'pull_request_number':7,
+        'candidate_head':'1'*40,'accepted_repository_predecessor':'2'*40,
+        'resulting_accepted_revision':sha,
+        'actor':{'id':101,'login':'tester'},
+        'merged_at':'2026-01-01T00:20:00Z',
+        'eligibility':{'status':'pass'},
+    }
+    candidate = m.resolve_main_revision(candidate_state, sha, None)
+    unproven_cutover = m.resolve_main_revision(cutover_state, sha, None)
+    proven_cutover = m.resolve_main_revision(cutover_state, sha, proof)
+    ok = (candidate.get('status') == 'unaccepted' and unproven_cutover.get('status') == 'invalid' and proven_cutover.get('status') == 'accepted' and proven_cutover.get('accepted_ref') == 'refs/heads/main')
+    out = []
+    for item in legacy_results:
+        aid = item.get('assertion_id') if isinstance(item, dict) else None
+        if aid in {'FS0-ASSERT-FC-027','FS0-ASSERT-FC-031'}:
+            detail = (
+                'after cutover accepted-state determination resolves from refs/heads/main only with resolved authorized eligible merge provenance and without bootstrap-maintenance fallback'
+                if aid == 'FS0-ASSERT-FC-027'
+                else 'bootstrap lifecycle distinguishes candidate from cutover and cutover accepted-state resolution additionally requires authorized eligible merge provenance'
+            )
+            out.append(result(aid, 'pass' if ok else 'fail', detail, {
+                'candidate_resolution': candidate.get('status'),
+                'unproven_cutover_resolution': unproven_cutover.get('status'),
+                'proven_cutover_resolution': proven_cutover.get('status'),
+                'accepted_ref': proven_cutover.get('accepted_ref'),
+                'provenance_resolution': proven_cutover.get('provenance_resolution'),
+            }))
+        else:
+            out.append(item)
+    return out
 
 
 def _fresh_bootstrap_guard_regression(root):
