@@ -216,7 +216,7 @@ FS0 operating substrate is sufficient only if an authorized agent operating thro
 4. create bounded candidate work;
 5. publish candidate repository changes;
 6. execute and inspect remote Conformance;
-7. create or inspect required Assurance audit context, GitHub evidence/history, and disposition state;
+7. create or inspect required structured Assurance audit receipts, GitHub evidence/history, and merge/issue-closure disposition state;
 8. perform authorized privileged GitHub mutations;
 9. record explicit acceptance; and
 10. publish the successor accepted state without access to the bootstrap environment.

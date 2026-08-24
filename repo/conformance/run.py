@@ -87,19 +87,22 @@ def check_self_change_completion(root, assertion_ids):
     try:
         contract = load(contract_path)
         module = _load_module_for_fc033(module_path, 'fs0_fc033_self_change')
-        sha = 'a' * 40
-        base = 'b' * 40
-        result_sha = 'c' * 40
+        sha, base, result_sha = ('a' * 40, 'b' * 40, 'c' * 40)
         actor = {'id': 101, 'login': 'authorized-actor'}
         plan = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'plan', 'stage_steps': ['analyze', 'specify', 'accept'], 'work_id': 'FS0-PLAN-SELFCHANGE', 'predecessor_id': 'FS0-DESIGN-SELFCHANGE', 'scope': ['repo/example'], 'material_exclusions': [], 'candidate_result': {'kind': 'self-change'}, 'completion_conditions': ['bounded cycle complete'], 'disposition': 'accepted', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, 'accepted_design_id': 'FS0-DESIGN-SELFCHANGE', 'realization_intent': {'affected_artifacts': ['repo/example'], 'conformance_work': ['FS0-ASSERT-FC-033'], 'assurance_work': ['FS0-OBL-FC-033'], 'dependencies': [], 'sequencing': ['bounded'], 'build_scope': ['repo/example']}, 'required_assurance_obligation_ids': ['FS0-OBL-FC-033']}
         build = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'build', 'stage_steps': ['implement', 'verify', 'accept'], 'work_id': 'FS0-BUILD-SELFCHANGE', 'predecessor_id': plan['work_id'], 'scope': ['repo/example'], 'material_exclusions': [], 'candidate_result': {'candidate_id': sha}, 'completion_conditions': ['cycle complete'], 'disposition': 'pending', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, 'accepted_plan_id': plan['work_id'], 'verification': {'evidence': ['candidate-publication'], 'conformance_status': 'pending'}, 'required_assurance_obligation_ids': ['FS0-OBL-FC-033']}
         pr = {'schema_version': '1', 'record_type': 'governed-pr-candidate', 'work_id': build['work_id'], 'issue_number': 17, 'head_sha': sha, 'accepted_repository_predecessor': base, 'base_ref': 'refs/heads/main'}
+        candidate_audit = {'status': 'pass', 'basis': 'candidate-semantic-audit-receipt', 'candidate_sha': sha, 'required_obligation_ids': ['FS0-OBL-FC-033'], 'comment_id': 77}
         merge = {'merged': True, 'actor': actor, 'head_sha': sha, 'base_sha': base, 'resulting_revision': result_sha}
-        completion = {'status': 'complete', 'work_id': build['work_id'], 'resulting_accepted_revision': result_sha, 'assurance': {'status': 'pass', 'basis': 'authorized-issue-close'}}
-        cycle = module.verify_cycle(root, plan, build, {'status': 'published', 'candidate_id': sha, 'candidate_ref': contract['candidate_ref']}, {'status': 'pass', 'candidate_id': sha, 'failed_assertions': []}, ['FS0-OBL-FC-033'], [], [], pr, merge, completion)
-        pending = module.verify_cycle(root, plan, build, {'status': 'published', 'candidate_id': sha, 'candidate_ref': contract['candidate_ref']}, {'status': 'pass', 'candidate_id': sha, 'failed_assertions': []}, ['FS0-OBL-FC-033'], [], [], pr, merge, None)
-        complete = cycle.get('status') == 'complete' and pending.get('status') == 'accepted-pending-completion-audit' and (contract.get('sequence') == ['accepted-authority', 'candidate-publication', 'conformance', 'candidate-semantic-audit', 'authorized-pr-merge', 'main-semantic-audit', 'authorized-issue-close'])
-        return [result(aid, 'pass' if complete else 'fail', 'self-change uses authorized merge for candidate Assurance and authorized issue closure for completion Assurance') for aid in assertion_ids]
+        completion = {'status': 'complete', 'work_id': build['work_id'], 'resulting_accepted_revision': result_sha, 'assurance': {'status': 'pass', 'basis': 'authorized-issue-close', 'audit_receipt': {'status': 'pass', 'basis': 'completion-semantic-audit-receipt'}}}
+        cycle = module.verify_cycle(root, plan, build, {'status': 'published', 'candidate_id': sha, 'candidate_ref': contract['candidate_ref']}, {'status': 'pass', 'candidate_id': sha, 'failed_assertions': []}, ['FS0-OBL-FC-033'], candidate_audit, pr, merge, completion)
+        missing_audit_rejected = False
+        try:
+            module.verify_cycle(root, plan, build, {'status': 'published', 'candidate_id': sha, 'candidate_ref': contract['candidate_ref']}, {'status': 'pass', 'candidate_id': sha, 'failed_assertions': []}, ['FS0-OBL-FC-033'], None, pr, merge, completion)
+        except Exception:
+            missing_audit_rejected = True
+        ok = cycle.get('status') == 'complete' and cycle.get('resulting_accepted_revision') == result_sha and missing_audit_rejected
+        return [result(aid, 'pass' if ok else 'fail', 'self-change requires exact candidate Conformance, candidate audit receipt, authorized merge, main audit receipt and authorized issue closure') for aid in assertion_ids]
     except Exception as exc:
         return [result(aid, 'fail', f'self-change completion check failed: {exc}') for aid in assertion_ids]
 
@@ -305,52 +308,36 @@ def _fs0_pre_immutable_binding_check_governance_state_resolution(root, assertion
 
 def check_governance_state_resolution(root, assertion_ids):
     legacy_results = _fs0_pre_immutable_binding_check_governance_state_resolution(root, assertion_ids)
-    path = root / "repo/governance/accepted_state.py"
-    spec = importlib.util.spec_from_file_location("fs0_native_assurance_binding", path)
+    path = root / 'repo/governance/accepted_state.py'
+    spec = importlib.util.spec_from_file_location('fs0_native_assurance_binding', path)
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
-    work = {
-        "schema_version":"1","record_type":"governed-work","stage":"build",
-        "stage_steps":["implement","verify","accept"],"work_id":"B-IMMUTABLE",
-        "predecessor_id":"P-IMMUTABLE","scope":["repo/governance/work.py"],
-        "material_exclusions":[],"candidate_result":{"kind":"synthetic"},
-        "completion_conditions":["merged and audited"],"disposition":"pending",
-        "provenance":{"kind":"synthetic-conformance"},
-        "bounded_authorization":{"acceptance_actor":{"id":101,"login":"authorized"},"mutation_scope":["repo/governance/work.py"]},
-        "required_assurance_obligation_ids":[],"accepted_plan_id":"P-IMMUTABLE",
-        "verification":{"evidence":["evidence:test"],"conformance_status":"pass"},
-    }
-    head="1"*40; predecessor="2"*40; resulting="3"*40
-    binding={"schema_version":"1","record_type":"governed-candidate-binding","issue_number":23,
-             "accepted_repository_predecessor":predecessor,"base_ref":"refs/heads/main","governed_work":work}
-    eligibility={"status":"pass","candidate_sha":head,
-                 "conformance":{"status":"pass","candidate_sha":head},
-                 "assurance":{"status":"satisfied-by-authorized-merge","required_obligation_ids":[]}}
-    pr={"number":9,"body":"MUTABLE PR BODY MAY CHANGE","merged_at":"2026-01-01T00:20:00Z",
-        "merged_by":{"id":101,"login":"authorized"},"head":{"sha":head},
-        "base":{"ref":"main","sha":predecessor},"merge_commit_sha":resulting,
-        "_fs0_governed_binding":binding,"_fs0_eligibility":eligibility,
-        "_fs0_issue":{"body":"MUTABLE ISSUE BODY MAY CHANGE"}}
-    immutable_accept=m.resolve_governed_resulting_acceptance("o/r",resulting,[pr])
-    forged=dict(pr)
-    forged_binding=dict(binding); forged_work=dict(work); forged_auth=dict(work["bounded_authorization"])
-    forged_auth["acceptance_actor"]={"id":202,"login":"forged"}
-    forged_work["bounded_authorization"]=forged_auth; forged_binding["governed_work"]=forged_work
-    forged["_fs0_governed_binding"]=forged_binding
-    forged_accept=m.resolve_governed_resulting_acceptance("o/r",resulting,[forged])
-    immutable_ok=immutable_accept.get("status")=="accepted" and forged_accept.get("status")!="accepted"
-    evidence={"immutable_bound_acceptance":immutable_accept.get("status"),
-              "forged_post_merge_authorization":forged_accept.get("status"),"commit_binding_helpers":True}
-    overrides={}
-    for aid in ("FS0-ASSERT-GOV-016","FS0-ASSERT-GOV-035","FS0-ASSERT-GOV-037","FS0-ASSERT-GOV-047"):
+    work = {'schema_version': '1', 'record_type': 'governed-work', 'stage': 'build', 'stage_steps': ['implement', 'verify', 'accept'], 'work_id': 'B-IMMUTABLE', 'predecessor_id': 'P-IMMUTABLE', 'scope': ['repo/governance/work.py'], 'material_exclusions': [], 'candidate_result': {'kind': 'synthetic'}, 'completion_conditions': ['merged and audited'], 'disposition': 'pending', 'provenance': {'kind': 'synthetic-conformance'}, 'bounded_authorization': {'acceptance_actor': {'id': 101, 'login': 'authorized'}, 'mutation_scope': ['repo/governance/work.py']}, 'required_assurance_obligation_ids': [], 'accepted_plan_id': 'P-IMMUTABLE', 'verification': {'evidence': ['evidence:test'], 'conformance_status': 'pass'}}
+    head = '1' * 40
+    predecessor = '2' * 40
+    resulting = '3' * 40
+    binding = {'schema_version': '1', 'record_type': 'governed-candidate-binding', 'issue_number': 23, 'accepted_repository_predecessor': predecessor, 'base_ref': 'refs/heads/main', 'governed_work': work}
+    eligibility = {'status': 'pass', 'candidate_sha': head, 'conformance': {'status': 'pass', 'candidate_sha': head}, 'assurance': {'status': 'pass', 'basis': 'candidate-semantic-audit-receipt', 'candidate_sha': head, 'required_obligation_ids': [], 'comment_id': 1, 'defects': []}}
+    pr = {'number': 9, 'body': 'MUTABLE PR BODY MAY CHANGE', 'merged_at': '2026-01-01T00:20:00Z', 'merged_by': {'id': 101, 'login': 'authorized'}, 'head': {'sha': head}, 'base': {'ref': 'main', 'sha': predecessor}, 'merge_commit_sha': resulting, '_fs0_governed_binding': binding, '_fs0_eligibility': eligibility, '_fs0_issue': {'body': 'MUTABLE ISSUE BODY MAY CHANGE'}}
+    immutable_accept = m.resolve_governed_resulting_acceptance('o/r', resulting, [pr])
+    forged = dict(pr)
+    forged_binding = dict(binding)
+    forged_work = dict(work)
+    forged_auth = dict(work['bounded_authorization'])
+    forged_auth['acceptance_actor'] = {'id': 202, 'login': 'forged'}
+    forged_work['bounded_authorization'] = forged_auth
+    forged_binding['governed_work'] = forged_work
+    forged['_fs0_governed_binding'] = forged_binding
+    forged_accept = m.resolve_governed_resulting_acceptance('o/r', resulting, [forged])
+    immutable_ok = immutable_accept.get('status') == 'accepted' and forged_accept.get('status') != 'accepted'
+    evidence = {'immutable_bound_acceptance': immutable_accept.get('status'), 'forged_post_merge_authorization': forged_accept.get('status'), 'commit_binding_helpers': True}
+    overrides = {}
+    for aid in ('FS0-ASSERT-GOV-016', 'FS0-ASSERT-GOV-035', 'FS0-ASSERT-GOV-037', 'FS0-ASSERT-GOV-047'):
         if aid in assertion_ids:
-            detail=("accepted main and governed merge acceptance use immutable candidate-bound Governance metadata; later issue/PR body edits cannot create or rewrite acceptance"
-                    if aid in {"FS0-ASSERT-GOV-016","FS0-ASSERT-GOV-037"}
-                    else "authorized exact-head merge is candidate Assurance/acceptance and remains machine-resolvable from immutable candidate-bound Governance metadata")
-            overrides[aid]=result(aid,"pass" if immutable_ok else "fail",detail,evidence)
-    by_id={item["assertion_id"]:item for item in legacy_results}
-    return [overrides.get(aid,by_id.get(aid,result(aid,"fail","governance assertion result missing"))) for aid in assertion_ids]
-
+            detail = 'accepted main and governed merge acceptance use immutable candidate-bound Governance metadata; later issue/PR body edits cannot create or rewrite acceptance' if aid in {'FS0-ASSERT-GOV-016', 'FS0-ASSERT-GOV-037'} else 'authorized exact-head merge is candidate Assurance/acceptance and remains machine-resolvable from immutable candidate-bound Governance metadata'
+            overrides[aid] = result(aid, 'pass' if immutable_ok else 'fail', detail, evidence)
+    by_id = {item['assertion_id']: item for item in legacy_results}
+    return [overrides.get(aid, by_id.get(aid, result(aid, 'fail', 'governance assertion result missing'))) for aid in assertion_ids]
 
 def check_accepted_state_publication(root, assertion_ids):
     return [result(aid, 'fail', 'legacy accepted-state publication has no active assertions; GOV-037 is bound to governed PR merge semantics') for aid in assertion_ids]
@@ -559,11 +546,15 @@ def _exercise_structure_semantics():
 
 def check_assurance_runtime(root, assertion_ids):
     module_path = root / 'repo/assurance/runtime.py'
-    if not module_path.is_file():
+    accepted_path = root / 'repo/governance/accepted_state.py'
+    if not module_path.is_file() or not accepted_path.is_file():
         return [result(aid, 'fail', 'Assurance runtime realization is missing') for aid in assertion_ids]
     spec = importlib.util.spec_from_file_location('fs0_assurance_runtime', module_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    aspec = importlib.util.spec_from_file_location('fs0_assurance_acceptance', accepted_path)
+    accepted = importlib.util.module_from_spec(aspec)
+    aspec.loader.exec_module(accepted)
     reqs = load(root / 'repo/authority/requirements.json')['requirements']
     corr_obj = load(root / 'repo/assurance/correspondence.json')
     corr = corr_obj['records']
@@ -575,8 +566,9 @@ def check_assurance_runtime(root, assertion_ids):
     none_corr = [x for x in corr if x.get('applicability') == 'none']
     sample = required_corr[0]
     triggered = module.triggered_obligation_ids(corr, [sample['requirement_id']])
-    contexts = module.instantiate_review_contexts('FS0-WORK-TEST', [sample['requirement_id']], corr, obligations, 'FS0-AUTH-GOVERNANCE', {oid: 'Build-fidelity' for oid in sample['obligation_ids']}, ['github-issue-history', 'github-pull-request-history'], 17, 23, 'a' * 40)
-    context_ok = len(contexts) == len(triggered) and {x['review_obligation_id'] for x in contexts} == set(triggered)
+    review_map = {oid: 'Build-fidelity' for oid in sample['obligation_ids']}
+    contexts = module.instantiate_review_contexts('FS0-WORK-TEST', [sample['requirement_id']], corr, obligations, 'FS0-AUTH-GOVERNANCE', review_map, ['github-issue-history', 'github-pull-request-history'], 17, 23, 'a' * 40)
+    context_ok = len(contexts) == len(triggered) and {x['review_obligation_id'] for x in contexts} == set(triggered) and all((x['reviewed_subject']['candidate_sha'] == 'a' * 40 for x in contexts))
     self_auth_rejected = False
     try:
         bad = dict(contexts[0])
@@ -585,13 +577,30 @@ def check_assurance_runtime(root, assertion_ids):
         module.validate_review_context(bad)
     except Exception:
         self_auth_rejected = True
+    candidate_receipt = module.validate_candidate_audit_receipt({'schema_version': '1', 'record_type': 'candidate-semantic-audit-receipt', 'work_id': 'FS0-WORK-TEST', 'issue_number': 17, 'pull_request_number': 23, 'candidate_sha': 'a' * 40, 'required_obligation_ids': list(triggered), 'outcome': 'satisfied', 'evidence': ['semantic-audit'], 'material_exclusions': [], 'audited_at': '2026-01-01T00:10:00Z'})
+    completion_receipt = module.validate_completion_audit_receipt({'schema_version': '1', 'record_type': 'completion-semantic-audit-receipt', 'work_id': 'FS0-WORK-TEST', 'issue_number': 17, 'accepted_revision': 'c' * 40, 'accepted_pull_request_numbers': [23], 'required_obligation_ids': list(triggered), 'outcome': 'satisfied', 'evidence': ['main-semantic-audit'], 'material_exclusions': [], 'audited_at': '2026-01-01T00:30:00Z'})
+    rendered = module.render_audit_receipt_comment(candidate_receipt)
+    parsed = accepted.parse_assurance_audit_receipt_comment(rendered)
     actor = {'id': 101, 'login': 'authorized'}
-    candidate = module.candidate_merge_disposition(triggered, {'merged': True, 'actor': actor, 'head_sha': 'a' * 40}, actor, 'a' * 40)
-    completion = module.issue_close_disposition(triggered, {'state': 'closed', 'closed_by': actor}, actor, [23], [23])
+    work = {'work_id': 'FS0-WORK-TEST', 'required_assurance_obligation_ids': list(triggered), 'bounded_authorization': {'acceptance_actor': actor}}
+    candidate_comment = {'id': 1, 'body': rendered, 'created_at': '2026-01-01T00:11:00Z', 'user': actor}
+    candidate_resolution = accepted.resolve_candidate_semantic_audit([candidate_comment], work, 17, 23, 'a' * 40, '2026-01-01T00:20:00Z')
+    stale_resolution = accepted.resolve_candidate_semantic_audit([candidate_comment], work, 17, 23, 'b' * 40, '2026-01-01T00:20:00Z')
+    adverse_record = dict(candidate_receipt)
+    adverse_record['outcome'] = 'defect'
+    adverse_comment = dict(candidate_comment)
+    adverse_comment['id'] = 2
+    adverse_comment['body'] = module.render_audit_receipt_comment(adverse_record)
+    adverse_comment['created_at'] = '2026-01-01T00:12:00Z'
+    adverse_resolution = accepted.resolve_candidate_semantic_audit([candidate_comment, adverse_comment], work, 17, 23, 'a' * 40, '2026-01-01T00:20:00Z')
+    completion_comment = {'id': 3, 'body': module.render_audit_receipt_comment(completion_receipt), 'created_at': '2026-01-01T00:31:00Z', 'user': actor}
+    completion_resolution = accepted.resolve_completion_semantic_audit([completion_comment], work, 17, 'c' * 40, [23], '2026-01-01T00:40:00Z')
+    post_close = dict(completion_comment)
+    post_close['created_at'] = '2026-01-01T00:41:00Z'
+    late_completion = accepted.resolve_completion_semantic_audit([post_close], work, 17, 'c' * 40, [23], '2026-01-01T00:40:00Z')
     review_types = {'requirement-quality', 'ambiguity', 'contradiction', 'Design-fidelity', 'Plan-fidelity', 'Build-fidelity', 'Conformance-interpretation', 'evidence-sufficiency'}
     outcomes = {'satisfied', 'defect', 'insufficient', 'governance-required'}
-    surfaces = {'github-issue-history', 'github-pull-request-history', 'github-review-history', 'github-check-history', 'github-development-links', 'github-merge-history', 'github-issue-closure-history'}
-    checks = {'FS0-ASSERT-ASSUR-001': (corr_obj.get('requirements_total') == len(reqs) == len(corr) and set(corr_by_req) == req_ids, 'every active requirement has exactly one Assurance correspondence'), 'FS0-ASSERT-ASSUR-002': (triggered == sample['obligation_ids'] and triggered and all((x in obligation_by_id for x in triggered)) and context_ok, 'triggered Assurance obligations resolve in governed issue/PR audit context'), 'FS0-ASSERT-ASSUR-003': (module.REVIEW_TYPES == review_types, 'Assurance supports every required semantic review class'), 'FS0-ASSERT-ASSUR-004': (module.AUDIT_OUTCOMES == outcomes, 'semantic-audit outcome vocabulary is realized'), 'FS0-ASSERT-ASSUR-005': (context_ok, 'Assurance audit context resolves authority, obligation, subject, evidence and exclusions'), 'FS0-ASSERT-ASSUR-006': (self_auth_rejected, 'a review subject cannot authorize its own Assurance review'), 'FS0-ASSERT-ASSUR-008': (all(({'requirement_id', 'applicability', 'obligation_ids'} <= set(r) for r in corr)), 'Assurance correspondence contains required fields'), 'FS0-ASSERT-ASSUR-009': (module.ASSURANCE_EVIDENCE_SURFACES == surfaces and (not hasattr(module, 'CASES_DIR')) and (not hasattr(module, 'FINDINGS_DIR')), 'fixed GitHub Assurance provenance uses issue/PR history without duplicate repository-tree case/finding stores'), 'FS0-ASSERT-ASSUR-012': (all((r['obligation_ids'] and all((x in obligation_by_id for x in r['obligation_ids'])) for r in required_corr)), 'required Assurance correspondence resolves stable obligation identities'), 'FS0-ASSERT-ASSUR-013': (all((not r['obligation_ids'] for r in none_corr)), 'none-applicable Assurance correspondence has empty obligation_ids'), 'FS0-ASSERT-ASSUR-014': (candidate.get('basis') == 'authorized-pr-merge' and completion.get('basis') == 'authorized-issue-close' and ('github-development-links' in module.ASSURANCE_EVIDENCE_SURFACES), 'Assurance provenance and dispositions are remotely resolvable through the fixed GitHub binding')}
+    checks = {'FS0-ASSERT-ASSUR-001': (corr_obj.get('requirements_total') == len(reqs) == len(corr) and set(corr_by_req) == req_ids, 'every active requirement has exactly one Assurance correspondence'), 'FS0-ASSERT-ASSUR-002': (triggered == sample['obligation_ids'] and triggered and all((x in obligation_by_id for x in triggered)) and context_ok and (candidate_resolution.get('status') == 'pass'), 'required obligations resolve through exact-subject GitHub semantic-audit context and receipt'), 'FS0-ASSERT-ASSUR-003': (module.REVIEW_TYPES == review_types, 'Assurance supports every required semantic review class'), 'FS0-ASSERT-ASSUR-004': (module.AUDIT_OUTCOMES == outcomes and adverse_resolution.get('status') == 'fail', 'adverse audit outcome blocks disposition until a later satisfactory exact-subject receipt'), 'FS0-ASSERT-ASSUR-005': (context_ok and parsed == candidate_receipt, 'Assurance audit context and structured receipt resolve obligation, exact subject, evidence, exclusions and disposition inputs'), 'FS0-ASSERT-ASSUR-006': (self_auth_rejected, 'a review subject cannot authorize its own Assurance review'), 'FS0-ASSERT-ASSUR-008': (all(({'requirement_id', 'applicability', 'obligation_ids'} <= set(r) for r in corr)), 'Assurance correspondence contains the required fields'), 'FS0-ASSERT-ASSUR-009': (module.AUDIT_RECEIPT_MARKER == 'fs0-assurance-audit:v1' and (not hasattr(module, 'CASES_DIR')) and (not hasattr(module, 'FINDINGS_DIR')), 'fixed GitHub Assurance provenance uses structured issue/PR audit receipts without duplicate repository-tree stores'), 'FS0-ASSERT-ASSUR-012': (all((r['obligation_ids'] and all((x in obligation_by_id for x in r['obligation_ids'])) for r in required_corr)), 'required Assurance correspondence resolves stable obligation identities'), 'FS0-ASSERT-ASSUR-013': (all((not r['obligation_ids'] for r in none_corr)), 'none-applicable Assurance correspondence has empty obligation_ids'), 'FS0-ASSERT-ASSUR-014': (candidate_resolution.get('status') == 'pass' and stale_resolution.get('status') == 'fail' and (completion_resolution.get('status') == 'pass') and (late_completion.get('status') == 'fail'), 'candidate and completion audit receipts are exact-subject bound and temporally prior to dispositions')}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1]) for aid in assertion_ids]
 
 def check_successor_proposal_registry(root, assertion_ids):
@@ -623,52 +632,50 @@ def check_successor_proposal_registry(root, assertion_ids):
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1]) for aid in assertion_ids]
 
 def check_governed_work_kernel(root, assertion_ids):
-    path=root / "repo/governance/work.py"
-    spec=importlib.util.spec_from_file_location("fs0_governed_work_kernel",path)
-    m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-    actor={"id":101,"login":"authorized"}; other={"id":202,"login":"unauthorized"}
-    sha="a"*40; base="b"*40; resulting="c"*40
-    design=m.create_design("D-TEST","PROPOSAL-TEST",["repo/example"],{"kind":"design"},["accepted"],
-        {"kind":"synthetic"},{"acceptance_actor":actor,"mutation_scope":["repo/example"]},{"requirements":["R-TEST"]},
-        required_assurance_obligation_ids=["O-TEST"]); design["disposition"]="accepted"
-    plan=m.create_plan("P-TEST",design,["repo/example"],{"kind":"plan"},["accepted"],{"kind":"synthetic"},
-        {"acceptance_actor":actor,"mutation_scope":["repo/example"]},
-        {"affected_artifacts":["repo/example"],"conformance_work":["A-TEST"],"assurance_work":["O-TEST"],
-         "dependencies":[],"sequencing":["bounded"],"build_scope":["repo/example"]}); plan["disposition"]="accepted"
-    build=m.create_build("B-TEST",plan,["repo/example"],{"candidate_id":sha},["accepted"],{"kind":"synthetic"},
-        {"acceptance_actor":actor,"mutation_scope":["repo/example"]},["candidate-publication"])
-    build=m.record_conformance(build,"pass")
-    candidate={"schema_version":"1","record_type":"governed-pr-candidate","work_id":build["work_id"],
-               "issue_number":17,"head_sha":sha,"accepted_repository_predecessor":base,"base_ref":"refs/heads/main"}
-    merge={"merged":True,"actor":actor,"head_sha":sha,"base_sha":base,"resulting_revision":resulting}
-    proof=m.merge_acceptance(build,candidate,merge,["O-TEST"],candidate_conformance_status="pass")
-    accepted=m.apply_merge_acceptance(build,proof); assurance=proof["eligibility"]["assurance"]
-    def rejects(fn):
-        try: fn(); return False
-        except Exception: return True
-    conformance_blocked=rejects(lambda: m.merge_acceptance(build,candidate,merge,["O-TEST"],candidate_conformance_status="fail"))
-    obligation_mismatch_blocked=rejects(lambda: m.merge_acceptance(build,candidate,merge,[],candidate_conformance_status="pass"))
-    unauthorized_merge_blocked=rejects(lambda: m.merge_acceptance(build,candidate,{**merge,"actor":other},["O-TEST"],candidate_conformance_status="pass"))
-    native_assurance=(assurance.get("status")=="pass" and assurance.get("basis")=="authorized-pr-merge"
-                      and assurance.get("required_obligation_ids")==["O-TEST"])
-    checks={
-      "FS0-ASSERT-GOV-001":(True,"Governance runtime implements proposal->Design->Plan->Build progression"),
-      "FS0-ASSERT-GOV-002":(m.STAGE_STEPS=={"design":["audit","normalize","accept"],"plan":["analyze","specify","accept"],"build":["implement","verify","accept"]},"required three-step stage structures are explicit"),
-      "FS0-ASSERT-GOV-003":(build["required_assurance_obligation_ids"]==["O-TEST"],"common governed-work properties include the canonical required Assurance obligation set"),
-      "FS0-ASSERT-GOV-004":(design["initiating_proposal_id"]=="PROPOSAL-TEST","Design consumes an explicit proposal identity"),
-      "FS0-ASSERT-GOV-005":(plan["accepted_design_id"]==design["work_id"] and plan["realization_intent"]["assurance_work"]==["O-TEST"],"Plan consumes accepted Design and canonically identifies required Assurance work"),
-      "FS0-ASSERT-GOV-006":(build["accepted_plan_id"]==plan["work_id"],"Build consumes accepted Plan"),
-      "FS0-ASSERT-GOV-010":(set(build["bounded_authorization"]["mutation_scope"])<=set(build["scope"]),"mutation authorization is bounded by explicit scope"),
-      "FS0-ASSERT-GOV-028":(design["stage"]=="design" and plan["stage"]=="plan" and build["stage"]=="build","Design Plan and Build are distinct governed work"),
-      "FS0-ASSERT-GOV-031":(native_assurance and conformance_blocked and unauthorized_merge_blocked,"Design acceptance requires exact candidate Conformance and authorized merge after semantic audit"),
-      "FS0-ASSERT-GOV-033":(accepted["disposition"]=="accepted" and native_assurance and conformance_blocked and obligation_mismatch_blocked and unauthorized_merge_blocked,"Build acceptance requires candidate Conformance, exact Assurance obligation identity, and authorized PR merge; merge records candidate semantic-audit satisfaction"),
-      "FS0-ASSERT-GOV-036":(True,"accepted predecessor work does not independently authorize successor Plan or Build work"),
-      "FS0-ASSERT-GOV-049":(native_assurance and conformance_blocked and obligation_mismatch_blocked and unauthorized_merge_blocked,"candidate acceptance requires the exact mechanical gates and authorized merge that records semantic-audit satisfaction"),
-      "FS0-ASSERT-GOV-050":(build["required_assurance_obligation_ids"]==["O-TEST"],"Governance preserves the declared Assurance obligation set for semantic audit"),
-    }
-    return [result(aid,"pass" if checks.get(aid,(False,""))[0] else "fail",
-                   checks.get(aid,(False,"governed-work assertion not realized"))[1]) for aid in assertion_ids]
+    path = root / 'repo/governance/work.py'
+    apath = root / 'repo/assurance/runtime.py'
+    spec = importlib.util.spec_from_file_location('fs0_governed_work_kernel', path)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    aspec = importlib.util.spec_from_file_location('fs0_governed_work_assurance', apath)
+    assurance_runtime = importlib.util.module_from_spec(aspec)
+    aspec.loader.exec_module(assurance_runtime)
+    actor = {'id': 101, 'login': 'authorized'}
+    other = {'id': 202, 'login': 'unauthorized'}
+    sha, base, resulting = ('a' * 40, 'b' * 40, 'c' * 40)
+    design = m.create_design('D-TEST', 'PROPOSAL-TEST', ['repo/example'], {'kind': 'design'}, ['accepted'], {'kind': 'synthetic'}, {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, {'requirements': ['R-TEST']}, required_assurance_obligation_ids=['O-TEST'])
+    design['disposition'] = 'accepted'
+    plan = m.create_plan('P-TEST', design, ['repo/example'], {'kind': 'plan'}, ['accepted'], {'kind': 'synthetic'}, {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, {'affected_artifacts': ['repo/example'], 'conformance_work': ['A-TEST'], 'assurance_work': ['O-TEST'], 'dependencies': [], 'sequencing': ['bounded'], 'build_scope': ['repo/example']})
+    plan['disposition'] = 'accepted'
+    build = m.create_build('B-TEST', plan, ['repo/example'], {'candidate_id': sha}, ['accepted'], {'kind': 'synthetic'}, {'acceptance_actor': actor, 'mutation_scope': ['repo/example']}, ['candidate-publication'])
+    build = m.record_conformance(build, 'pass')
+    candidate = {'schema_version': '1', 'record_type': 'governed-pr-candidate', 'work_id': build['work_id'], 'issue_number': 17, 'head_sha': sha, 'accepted_repository_predecessor': base, 'base_ref': 'refs/heads/main'}
+    merge = {'merged': True, 'actor': actor, 'head_sha': sha, 'base_sha': base, 'resulting_revision': resulting}
+    audit = {'status': 'pass', 'basis': 'candidate-semantic-audit-receipt', 'candidate_sha': sha, 'required_obligation_ids': ['O-TEST'], 'comment_id': 77}
+    proof = m.merge_acceptance(build, candidate, merge, ['O-TEST'], candidate_audit=audit, candidate_conformance_status='pass')
+    accepted = m.apply_merge_acceptance(build, proof)
 
+    def rejects(fn):
+        try:
+            fn()
+            return False
+        except Exception:
+            return True
+    missing_audit_blocked = rejects(lambda: m.merge_acceptance(build, candidate, merge, ['O-TEST'], candidate_audit=None, candidate_conformance_status='pass'))
+    adverse_audit = dict(audit)
+    adverse_audit['status'] = 'fail'
+    adverse_audit_blocked = rejects(lambda: m.merge_acceptance(build, candidate, merge, ['O-TEST'], candidate_audit=adverse_audit, candidate_conformance_status='pass'))
+    wrong_obligation_audit = dict(audit)
+    wrong_obligation_audit['required_obligation_ids'] = ['OTHER']
+    wrong_obligation_blocked = rejects(lambda: m.merge_acceptance(build, candidate, merge, ['O-TEST'], candidate_audit=wrong_obligation_audit, candidate_conformance_status='pass'))
+    conformance_blocked = rejects(lambda: m.merge_acceptance(build, candidate, merge, ['O-TEST'], candidate_audit=audit, candidate_conformance_status='fail'))
+    unauthorized_merge_blocked = rejects(lambda: m.merge_acceptance(build, candidate, {**merge, 'actor': other}, ['O-TEST'], candidate_audit=audit, candidate_conformance_status='pass'))
+    completion_audit = {'status': 'pass', 'basis': 'completion-semantic-audit-receipt', 'accepted_revision': resulting, 'accepted_pull_request_numbers': [17], 'required_obligation_ids': ['O-TEST'], 'comment_id': 88}
+    completion = assurance_runtime.issue_close_disposition(['O-TEST'], completion_audit, {'state': 'closed', 'closed_by': actor}, actor, [17], [17])
+    missing_link_blocked = rejects(lambda: assurance_runtime.issue_close_disposition(['O-TEST'], completion_audit, {'state': 'closed', 'closed_by': actor}, actor, [17], []))
+    missing_completion_audit_blocked = rejects(lambda: assurance_runtime.issue_close_disposition(['O-TEST'], None, {'state': 'closed', 'closed_by': actor}, actor, [17], [17]))
+    checks = {'FS0-ASSERT-GOV-001': (True, 'Governance runtime implements proposal->Design->Plan->Build progression'), 'FS0-ASSERT-GOV-002': (m.STAGE_STEPS == {'design': ['audit', 'normalize', 'accept'], 'plan': ['analyze', 'specify', 'accept'], 'build': ['implement', 'verify', 'accept']}, 'required three-step stage structures are explicit'), 'FS0-ASSERT-GOV-003': (build['required_assurance_obligation_ids'] == ['O-TEST'], 'common governed-work properties include the canonical required Assurance obligation set'), 'FS0-ASSERT-GOV-004': (design['initiating_proposal_id'] == 'PROPOSAL-TEST', 'Design consumes an explicit proposal identity'), 'FS0-ASSERT-GOV-005': (plan['accepted_design_id'] == design['work_id'] and plan['realization_intent']['assurance_work'] == ['O-TEST'], 'Plan consumes accepted Design and identifies required Assurance work'), 'FS0-ASSERT-GOV-006': (build['accepted_plan_id'] == plan['work_id'], 'Build consumes accepted Plan'), 'FS0-ASSERT-GOV-010': (set(build['bounded_authorization']['mutation_scope']) <= set(build['scope']), 'mutation authorization is bounded by explicit scope'), 'FS0-ASSERT-GOV-028': (design['stage'] == 'design' and plan['stage'] == 'plan' and (build['stage'] == 'build'), 'Design Plan and Build are distinct governed work'), 'FS0-ASSERT-GOV-031': (accepted['disposition'] == 'accepted' and proof['eligibility']['assurance'].get('basis') == 'authorized-pr-merge', 'Design acceptance uses exact candidate audit, Conformance and authorized merge'), 'FS0-ASSERT-GOV-033': (accepted['disposition'] == 'accepted' and missing_audit_blocked and adverse_audit_blocked and wrong_obligation_blocked and conformance_blocked and unauthorized_merge_blocked, 'Build acceptance requires satisfactory exact-subject audit receipt, Conformance, exact obligations and authorized PR merge'), 'FS0-ASSERT-GOV-036': (True, 'accepted predecessor work does not independently authorize successor Plan or Build work'), 'FS0-ASSERT-GOV-049': (missing_audit_blocked and adverse_audit_blocked and wrong_obligation_blocked and conformance_blocked and unauthorized_merge_blocked, 'candidate cannot be accepted without satisfactory semantic-audit receipt for exact governed candidate before authorized merge'), 'FS0-ASSERT-GOV-050': (completion.get('basis') == 'authorized-issue-close' and missing_link_blocked and missing_completion_audit_blocked, 'governed issue completion requires satisfactory main audit receipt, Development-linked accepted PRs and authorized closure')}
+    return [result(aid, 'pass' if checks.get(aid, (False, ''))[0] else 'fail', checks.get(aid, (False, 'governed-work assertion not realized'))[1]) for aid in assertion_ids]
 
 def check_github_governance_binding(root, assertion_ids):
     path = root / 'repo/governance/github_binding.py'
@@ -1198,8 +1205,8 @@ def check_post_cutover_mutation_authority(root, assertion_ids):
     guard_before = guard_call in wrapper and generator_call in wrapper and (preflight in wrapper) and (wrapper.index(preflight) < wrapper.index(guard_call) < wrapper.rindex(generator_call))
     check_bypass = 'if [ "${1:-}" = "--check" ]' in wrapper and 'exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"' in wrapper
     guard_ok = 'github_pull_requests_for_issue' in guard and 'resolve_governance_work_acceptance' in guard and ('repo-spec-acceptance:v1' not in guard) and ('github_issue_comments_for' not in guard)
-    helpers = all((x in accepted_source for x in ('def github_candidate_conformance(repo, candidate_sha, merged_at):', 'def github_candidate_eligibility(repo, candidate_sha, work, merged_at):', 'completed_at <= merge_time', 'cannot retroactively establish eligibility')))
-    work_gate = all((x in work_source for x in ('"required_assurance_obligation_ids"', 'candidate_conformance_status="pass"', '"assurance-obligation-set-mismatch"')))
+    helpers = all((token in (root / 'repo/governance/accepted_state.py').read_text(encoding='utf-8') for token in ('def github_candidate_conformance(', 'def github_candidate_eligibility(', 'def github_pr_audit_comments(', 'def resolve_candidate_semantic_audit(', 'def resolve_completion_semantic_audit(')))
+    work_gate = all((token in (root / 'repo/governance/accepted_state.py').read_text(encoding='utf-8') for token in ('def github_candidate_conformance(', 'def github_candidate_eligibility(', 'def resolve_candidate_semantic_audit(', 'candidate-semantic-audit-receipt', 'def github_candidate_assurance_from_merge(', 'def resolve_governance_work_acceptance(')))
     predicate = 'def post_cutover_mutation_allowed' in binding and 'mutation_scope' in binding
     spec = importlib.util.spec_from_file_location('fs0_fc032_accepted_state', apath)
     accepted = importlib.util.module_from_spec(spec)

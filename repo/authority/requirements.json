@@ -1484,7 +1484,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-049",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "A governed pull request SHALL NOT be merged until its current candidate passes required semantic audit; authorized merge SHALL record candidate Assurance satisfaction.",
+      "statement": "A governed PR SHALL NOT be accepted unless its exact current head has passing Conformance and a satisfactory applicable semantic-audit receipt before authorized merge.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1494,7 +1494,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-050",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "A governed issue SHALL remain open until resulting main passes completion semantic audit; relevant accepted PRs SHALL be Development-linked and authorized closure SHALL record Assurance satisfaction.",
+      "statement": "A governed issue SHALL remain open until exact main has a satisfactory completion-audit receipt and relevant accepted PRs are Development-linked before authorized closure.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1784,7 +1784,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-002",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "A required Assurance obligation SHALL be resolvable in the governed issue and pull-request semantic-audit context for the work that triggers it.",
+      "statement": "A required Assurance obligation SHALL be resolvable through the governed issue or PR audit context and the applicable structured semantic-audit receipt for the exact subject.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1804,7 +1804,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-004",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Semantic-audit outcomes MAY use satisfied, defect, insufficient, or governance-required; an adverse outcome SHALL require further governed work before the applicable merge or issue closure.",
+      "statement": "An adverse semantic-audit receipt SHALL block the applicable merge or issue closure until a later satisfactory receipt applies to the same exact subject.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1814,7 +1814,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-005",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Every governed Assurance audit context SHALL make authorizing authority, review obligation, reviewed subject, GitHub evidence/history, material exclusions where applicable, and disposition event resolvable.",
+      "statement": "Every Assurance audit receipt SHALL make governed work, exact subject, required obligations, outcome, evidence, material exclusions, and audit time resolvable.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1834,7 +1834,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-007",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Assurance findings SHALL be case-specific.",
+      "statement": "An Assurance audit conclusion SHALL be specific to the exact governed audit subject identified by its applicable structured receipt.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -1864,7 +1864,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-010",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "An Assurance finding SHALL NOT independently create, amend, supersede, or withdraw persistent normative authority.",
+      "statement": "An Assurance audit receipt or conclusion SHALL NOT independently create, amend, supersede, or withdraw persistent normative authority.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -1904,7 +1904,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-014",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Assurance audit context, evidence/history, and merge or issue-closure dispositions SHALL be remotely accessible through the fixed FS0 GitHub binding.",
+      "statement": "Candidate and completion semantic-audit receipts, GitHub evidence/history, and their merge or issue-closure dispositions SHALL be remotely accessible.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"

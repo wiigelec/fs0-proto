@@ -343,6 +343,274 @@ def _iso_utc(value):
         return None
     return parsed
 
+AUDIT_RECEIPT_MARKER = "fs0-assurance-audit:v1"
+CANDIDATE_AUDIT_RECEIPT = "candidate-semantic-audit-receipt"
+COMPLETION_AUDIT_RECEIPT = "completion-semantic-audit-receipt"
+
+
+def _positive_int(value):
+    return isinstance(value, int) and not isinstance(value, bool) and value > 0
+
+
+def _valid_obligation_ids(value):
+    return (
+        isinstance(value, list)
+        and all(_nonempty(item) for item in value)
+        and len(value) == len(set(value))
+    )
+
+
+def parse_assurance_audit_receipt_comment(body):
+    if not isinstance(body, str) or AUDIT_RECEIPT_MARKER not in body:
+        return None
+    if body.count(AUDIT_RECEIPT_MARKER) != 1:
+        raise AcceptanceError("Assurance audit marker must occur exactly once")
+    tail = body.split(AUDIT_RECEIPT_MARKER, 1)[1]
+    if not tail.startswith("\n"):
+        raise AcceptanceError("Assurance audit JSON fence must immediately follow marker")
+    lines = tail[1:].splitlines()
+    if not lines or lines[0] not in {"```", "```json"}:
+        raise AcceptanceError("Assurance audit marker must be followed by one JSON fence")
+    try:
+        close_index = lines.index("```", 1)
+    except ValueError:
+        raise AcceptanceError("Assurance audit JSON fence is not closed")
+    if any(line.startswith("```") for line in lines[close_index + 1:]):
+        raise AcceptanceError("Assurance audit comment has extra fenced blocks")
+    try:
+        record = json.loads("\n".join(lines[1:close_index]))
+    except json.JSONDecodeError as exc:
+        raise AcceptanceError(f"Assurance audit receipt is invalid JSON: {exc}") from exc
+    if not isinstance(record, dict):
+        raise AcceptanceError("Assurance audit receipt must be an object")
+
+    common = {
+        "schema_version", "record_type", "work_id", "issue_number",
+        "required_obligation_ids", "outcome", "evidence",
+        "material_exclusions", "audited_at",
+    }
+    if record.get("schema_version") != "1":
+        raise AcceptanceError("Assurance audit receipt schema_version must be 1")
+    if not _nonempty(record.get("work_id")):
+        raise AcceptanceError("Assurance audit receipt work_id is required")
+    if not _positive_int(record.get("issue_number")):
+        raise AcceptanceError("Assurance audit receipt issue_number is invalid")
+    if not _valid_obligation_ids(record.get("required_obligation_ids")):
+        raise AcceptanceError("Assurance audit receipt obligation IDs are invalid")
+    if record.get("outcome") not in {"satisfied", "defect", "insufficient", "governance-required"}:
+        raise AcceptanceError("Assurance audit receipt outcome is invalid")
+    if not isinstance(record.get("evidence"), list):
+        raise AcceptanceError("Assurance audit receipt evidence must be a list")
+    if not isinstance(record.get("material_exclusions"), list):
+        raise AcceptanceError("Assurance audit receipt material_exclusions must be a list")
+    if _iso_utc(record.get("audited_at")) is None:
+        raise AcceptanceError("Assurance audit receipt audited_at is invalid")
+
+    if record.get("record_type") == CANDIDATE_AUDIT_RECEIPT:
+        required = common | {"pull_request_number", "candidate_sha"}
+        if set(record) != required:
+            raise AcceptanceError("candidate semantic-audit receipt fields are not canonical")
+        if not _positive_int(record.get("pull_request_number")):
+            raise AcceptanceError("candidate semantic-audit pull_request_number is invalid")
+        candidate_sha = record.get("candidate_sha")
+        if not isinstance(candidate_sha, str) or not SHA_RE.fullmatch(candidate_sha):
+            raise AcceptanceError("candidate semantic-audit candidate_sha must be exact")
+        record["candidate_sha"] = candidate_sha.lower()
+    elif record.get("record_type") == COMPLETION_AUDIT_RECEIPT:
+        required = common | {"accepted_revision", "accepted_pull_request_numbers"}
+        if set(record) != required:
+            raise AcceptanceError("completion semantic-audit receipt fields are not canonical")
+        accepted_revision = record.get("accepted_revision")
+        if not isinstance(accepted_revision, str) or not SHA_RE.fullmatch(accepted_revision):
+            raise AcceptanceError("completion semantic-audit accepted_revision must be exact")
+        prs = record.get("accepted_pull_request_numbers")
+        if (
+            not isinstance(prs, list) or not prs
+            or any(not _positive_int(item) for item in prs)
+            or len(prs) != len(set(prs))
+        ):
+            raise AcceptanceError("completion semantic-audit accepted PR numbers are invalid")
+        record["accepted_revision"] = accepted_revision.lower()
+        record["accepted_pull_request_numbers"] = sorted(prs)
+    else:
+        raise AcceptanceError("unknown Assurance audit receipt record_type")
+    return record
+
+
+def _audit_comment_actor_matches(comment, actor):
+    if not _valid_actor(actor) or not isinstance(comment, dict):
+        return False
+    user = comment.get("user")
+    if user is None:
+        return True
+    return (
+        isinstance(user, dict)
+        and user.get("id") == actor.get("id")
+        and _positive_int(user.get("id"))
+    )
+
+
+def _comment_time(comment):
+    return _iso_utc(comment.get("created_at")) if isinstance(comment, dict) else None
+
+
+def resolve_candidate_semantic_audit(
+    comments, work, issue_number, pull_request_number, candidate_sha, merged_at
+):
+    required = work.get("required_assurance_obligation_ids")
+    actor = work.get("bounded_authorization", {}).get("acceptance_actor") if isinstance(work.get("bounded_authorization"), dict) else None
+    if (
+        not _valid_obligation_ids(required) or not _valid_actor(actor)
+        or not _positive_int(issue_number) or not _positive_int(pull_request_number)
+        or not isinstance(candidate_sha, str) or not SHA_RE.fullmatch(candidate_sha)
+    ):
+        return {"status": "fail", "basis": "candidate-semantic-audit-receipt", "defects": ["candidate semantic-audit identity is invalid"]}
+    cutoff = _iso_utc(merged_at)
+    if cutoff is None:
+        return {"status": "fail", "basis": "candidate-semantic-audit-receipt", "defects": ["candidate semantic-audit merge time is invalid"]}
+    candidate_sha = candidate_sha.lower()
+    relevant, defects = [], []
+    for comment in comments:
+        body = comment.get("body") if isinstance(comment, dict) else None
+        if not isinstance(body, str) or AUDIT_RECEIPT_MARKER not in body:
+            continue
+        try:
+            receipt = parse_assurance_audit_receipt_comment(body)
+        except AcceptanceError as exc:
+            defects.append(str(exc))
+            continue
+        if receipt.get("record_type") != CANDIDATE_AUDIT_RECEIPT:
+            continue
+        if (
+            receipt.get("work_id") != work.get("work_id")
+            or receipt.get("issue_number") != issue_number
+            or receipt.get("pull_request_number") != pull_request_number
+            or receipt.get("candidate_sha") != candidate_sha
+        ):
+            continue
+        created_at = _comment_time(comment)
+        audited_at = _iso_utc(receipt.get("audited_at"))
+        if created_at is None:
+            defects.append("candidate audit receipt comment lacks created_at")
+            continue
+        if created_at > cutoff:
+            continue
+        if audited_at is None or audited_at > created_at:
+            defects.append("candidate audit receipt audited_at must not follow comment creation")
+            continue
+        if not _audit_comment_actor_matches(comment, actor):
+            defects.append("candidate audit receipt comment author is not authorized actor")
+            continue
+        relevant.append((created_at, comment.get("id") or 0, comment, receipt))
+    if not relevant:
+        return {
+            "status": "fail", "basis": "candidate-semantic-audit-receipt",
+            "candidate_sha": candidate_sha,
+            "required_obligation_ids": list(required),
+            "defects": defects or ["exact candidate lacks a pre-merge semantic-audit receipt"],
+        }
+    relevant.sort(key=lambda item: (item[0], item[1]))
+    _, _, comment, receipt = relevant[-1]
+    if sorted(receipt.get("required_obligation_ids", [])) != sorted(required):
+        defects.append("latest candidate audit receipt obligation set does not match governed work")
+    if receipt.get("outcome") != "satisfied":
+        defects.append("latest applicable candidate semantic-audit receipt is adverse")
+    return {
+        "status": "pass" if not defects else "fail",
+        "basis": "candidate-semantic-audit-receipt",
+        "candidate_sha": candidate_sha,
+        "required_obligation_ids": list(required),
+        "comment_id": comment.get("id"),
+        "comment_url": comment.get("html_url") or comment.get("url"),
+        "receipt": receipt,
+        "defects": defects,
+    }
+
+
+def resolve_completion_semantic_audit(
+    comments, work, issue_number, accepted_revision,
+    accepted_pull_request_numbers, closed_at
+):
+    required = work.get("required_assurance_obligation_ids")
+    actor = work.get("bounded_authorization", {}).get("acceptance_actor") if isinstance(work.get("bounded_authorization"), dict) else None
+    accepted_prs = sorted(set(accepted_pull_request_numbers))
+    if (
+        not _valid_obligation_ids(required) or not _valid_actor(actor)
+        or not _positive_int(issue_number)
+        or not isinstance(accepted_revision, str) or not SHA_RE.fullmatch(accepted_revision)
+        or not accepted_prs or any(not _positive_int(item) for item in accepted_prs)
+    ):
+        return {"status": "fail", "basis": "completion-semantic-audit-receipt", "defects": ["completion semantic-audit identity is invalid"]}
+    cutoff = _iso_utc(closed_at)
+    if cutoff is None:
+        return {"status": "fail", "basis": "completion-semantic-audit-receipt", "defects": ["completion semantic-audit closure time is invalid"]}
+    accepted_revision = accepted_revision.lower()
+    relevant, defects = [], []
+    for comment in comments:
+        body = comment.get("body") if isinstance(comment, dict) else None
+        if not isinstance(body, str) or AUDIT_RECEIPT_MARKER not in body:
+            continue
+        try:
+            receipt = parse_assurance_audit_receipt_comment(body)
+        except AcceptanceError as exc:
+            defects.append(str(exc))
+            continue
+        if receipt.get("record_type") != COMPLETION_AUDIT_RECEIPT:
+            continue
+        if (
+            receipt.get("work_id") != work.get("work_id")
+            or receipt.get("issue_number") != issue_number
+            or receipt.get("accepted_revision") != accepted_revision
+        ):
+            continue
+        created_at = _comment_time(comment)
+        audited_at = _iso_utc(receipt.get("audited_at"))
+        if created_at is None:
+            defects.append("completion audit receipt comment lacks created_at")
+            continue
+        if created_at > cutoff:
+            continue
+        if audited_at is None or audited_at > created_at:
+            defects.append("completion audit receipt audited_at must not follow comment creation")
+            continue
+        if not _audit_comment_actor_matches(comment, actor):
+            defects.append("completion audit receipt comment author is not authorized actor")
+            continue
+        relevant.append((created_at, comment.get("id") or 0, comment, receipt))
+    if not relevant:
+        return {
+            "status": "fail", "basis": "completion-semantic-audit-receipt",
+            "accepted_revision": accepted_revision,
+            "accepted_pull_request_numbers": accepted_prs,
+            "required_obligation_ids": list(required),
+            "defects": defects or ["accepted main lacks a pre-closure completion semantic-audit receipt"],
+        }
+    relevant.sort(key=lambda item: (item[0], item[1]))
+    _, _, comment, receipt = relevant[-1]
+    if sorted(receipt.get("required_obligation_ids", [])) != sorted(required):
+        defects.append("latest completion audit receipt obligation set does not match governed work")
+    if sorted(receipt.get("accepted_pull_request_numbers", [])) != accepted_prs:
+        defects.append("latest completion audit receipt accepted PR set does not match governed work")
+    if receipt.get("outcome") != "satisfied":
+        defects.append("latest applicable completion semantic-audit receipt is adverse")
+    return {
+        "status": "pass" if not defects else "fail",
+        "basis": "completion-semantic-audit-receipt",
+        "accepted_revision": accepted_revision,
+        "accepted_pull_request_numbers": accepted_prs,
+        "required_obligation_ids": list(required),
+        "comment_id": comment.get("id"),
+        "comment_url": comment.get("html_url") or comment.get("url"),
+        "receipt": receipt,
+        "defects": defects,
+    }
+
+
+def github_pr_audit_comments(repo, pull_request_number):
+    if not _positive_int(pull_request_number):
+        raise RuntimeError("pull_request_number must be positive")
+    return _gh_paginated(f"repos/{repo}/issues/{pull_request_number}/comments?per_page=100")
+
 def github_candidate_conformance(repo, candidate_sha, merged_at):
     if not isinstance(candidate_sha, str) or not SHA_RE.fullmatch(candidate_sha):
         return {"status": "fail", "defects": ["candidate SHA is not exact"]}
@@ -450,28 +718,68 @@ def github_candidate_assurance(repo, candidate_sha, work, merged_at=None):
     }
 
 
-def github_candidate_assurance_from_merge(work, merged_by):
+def github_candidate_assurance_from_merge(work, merged_by, eligibility):
     required = work.get("required_assurance_obligation_ids")
-    if not isinstance(required, list) or any(not _nonempty(x) for x in required) or len(required) != len(set(required)):
+    if (
+        not isinstance(required, list)
+        or any(not _nonempty(x) for x in required)
+        or len(required) != len(set(required))
+    ):
         return {"status": "fail", "defects": ["governed work lacks valid Assurance obligation set"]}
-    auth = work.get("bounded_authorization")
-    actor = auth.get("acceptance_actor") if isinstance(auth, dict) else None
+    actor = work.get("bounded_authorization", {}).get("acceptance_actor") if isinstance(work.get("bounded_authorization"), dict) else None
+    audit = eligibility.get("assurance") if isinstance(eligibility, dict) else None
     if not _valid_actor(actor) or not isinstance(merged_by, dict) or merged_by.get("id") != actor.get("id"):
         return {"status": "fail", "required_obligation_ids": list(required), "defects": ["candidate Assurance requires authorized merge"]}
-    return {"status": "pass", "basis": "authorized-pr-merge", "required_obligation_ids": list(required), "defects": []}
-
-def github_candidate_eligibility(repo, candidate_sha, work, merged_at):
-    conformance = github_candidate_conformance(repo, candidate_sha, merged_at)
+    if (
+        not isinstance(audit, dict)
+        or audit.get("status") != "pass"
+        or audit.get("basis") != "candidate-semantic-audit-receipt"
+        or sorted(audit.get("required_obligation_ids", [])) != sorted(required)
+    ):
+        return {"status": "fail", "required_obligation_ids": list(required), "defects": ["candidate Assurance requires satisfactory pre-merge audit receipt"]}
     return {
-        "status": "pass" if conformance.get("status") == "pass" else "fail",
+        "status": "pass", "basis": "authorized-pr-merge",
+        "required_obligation_ids": list(required),
+        "audit_receipt_comment_id": audit.get("comment_id"),
+        "defects": [],
+    }
+
+
+def github_candidate_eligibility(
+    repo, candidate_sha, work, merged_at,
+    pull_request_number=None, issue_number=None,
+):
+    conformance = github_candidate_conformance(repo, candidate_sha, merged_at)
+    if not _positive_int(pull_request_number) or not _positive_int(issue_number):
+        audit = {
+            "status": "fail", "basis": "candidate-semantic-audit-receipt",
+            "defects": ["candidate semantic-audit resolution requires PR and issue identity"],
+        }
+    else:
+        try:
+            audit = resolve_candidate_semantic_audit(
+                github_pr_audit_comments(repo, pull_request_number),
+                work, issue_number, pull_request_number, candidate_sha, merged_at,
+            )
+        except Exception as exc:
+            audit = {
+                "status": "fail", "basis": "candidate-semantic-audit-receipt",
+                "defects": [str(exc)],
+            }
+    defects = list(conformance.get("defects", [])) + list(audit.get("defects", []))
+    return {
+        "status": "pass" if conformance.get("status") == "pass" and audit.get("status") == "pass" else "fail",
         "candidate_sha": candidate_sha.lower() if isinstance(candidate_sha, str) else candidate_sha,
         "merge_timestamp": merged_at,
         "conformance": conformance,
-        "assurance": {"status": "satisfied-by-authorized-merge", "required_obligation_ids": list(work.get("required_assurance_obligation_ids", []))},
-        "defects": list(conformance.get("defects", [])),
+        "assurance": audit,
+        "defects": defects,
     }
 
-def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage, expected_work_id):
+
+def resolve_governance_work_acceptance(
+    issue_body, pull_requests, expected_stage, expected_work_id
+):
     if expected_stage not in {"design", "plan", "build"} or not _nonempty(expected_work_id):
         raise AcceptanceError("invalid requested governed-work acceptance identity")
     fallback_work = None
@@ -529,34 +837,55 @@ def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage
             and str(base.get("sha", "")).lower() == candidate["accepted_repository_predecessor"]
             and isinstance(resulting, str) and bool(SHA_RE.fullmatch(resulting))
         )
-        valid_conf = (
+        valid_eligibility = (
             isinstance(eligibility, dict) and eligibility.get("status") == "pass"
             and str(eligibility.get("candidate_sha", "")).lower() == candidate["head_sha"]
             and isinstance(eligibility.get("conformance"), dict)
             and eligibility["conformance"].get("status") == "pass"
+            and isinstance(eligibility.get("assurance"), dict)
+            and eligibility["assurance"].get("status") == "pass"
+            and eligibility["assurance"].get("basis") == "candidate-semantic-audit-receipt"
         )
         if not valid_merge:
             defects.append({"pull_request_number": number, "error": "merged PR does not satisfy candidate/actor/predecessor binding"})
             continue
-        if not valid_conf:
-            defects.append({"pull_request_number": number, "error": "merged PR lacks passing exact-candidate Conformance"})
+        if not valid_eligibility:
+            defects.append({"pull_request_number": number, "error": "merged PR lacks passing exact-candidate Conformance and semantic-audit receipt"})
             continue
-        assurance = github_candidate_assurance_from_merge(work, merged_by)
+        assurance = github_candidate_assurance_from_merge(work, merged_by, eligibility)
         if assurance.get("status") != "pass":
             defects.append({"pull_request_number": number, "error": "authorized merge did not establish candidate Assurance"})
             continue
         matches.append({
             "schema_version": "1", "record_type": "governed-pr-acceptance", "status": "accepted",
             "work_id": expected_work_id, "issue_number": candidate["issue_number"], "pull_request_number": number,
-            "candidate_head": candidate["head_sha"], "accepted_repository_predecessor": candidate["accepted_repository_predecessor"],
+            "candidate_head": candidate["head_sha"],
+            "accepted_repository_predecessor": candidate["accepted_repository_predecessor"],
             "resulting_accepted_revision": resulting.lower(),
-            "actor": {"id": merged_by.get("id"), "login": merged_by.get("login")}, "merged_at": merged_at,
-            "eligibility": {"status": "pass", "candidate_sha": candidate["head_sha"], "conformance": eligibility["conformance"], "assurance": assurance},
+            "actor": {"id": merged_by.get("id"), "login": merged_by.get("login")},
+            "merged_at": merged_at,
+            "eligibility": {
+                "status": "pass", "candidate_sha": candidate["head_sha"],
+                "conformance": eligibility["conformance"],
+                "assurance": assurance,
+                "audit_receipt": eligibility["assurance"],
+            },
         })
     if not matches:
-        return {"schema_version": "1", "record_type": "governance-work-acceptance-resolution", "status": "invalid", "stage": expected_stage, "work_id": expected_work_id, "acceptance_records": [], "defects": defects or ["governed work has no exact-conforming authorized merged PR acceptance"]}
+        return {
+            "schema_version": "1", "record_type": "governance-work-acceptance-resolution",
+            "status": "invalid", "stage": expected_stage, "work_id": expected_work_id,
+            "acceptance_records": [],
+            "defects": defects or ["governed work has no audited exact-conforming authorized merged PR"],
+        }
     matches.sort(key=lambda x: (x["merged_at"], x["pull_request_number"]))
-    return {"schema_version": "1", "record_type": "governance-work-acceptance-resolution", "status": "accepted", "stage": expected_stage, "work_id": expected_work_id, "acceptance_records": [matches[-1]], "superseded_acceptance_count": len(matches) - 1, "defects": []}
+    return {
+        "schema_version": "1", "record_type": "governance-work-acceptance-resolution",
+        "status": "accepted", "stage": expected_stage, "work_id": expected_work_id,
+        "acceptance_records": [matches[-1]],
+        "superseded_acceptance_count": len(matches) - 1, "defects": [],
+    }
+
 
 def github_pull_requests_for_issue(repo, issue_number):
     if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
@@ -585,9 +914,12 @@ def github_pull_requests_for_issue(repo, issue_number):
         detail["_fs0_governed_binding"] = binding
         detail["_fs0_work"] = work
         detail["_fs0_candidate"] = candidate
-        detail["_fs0_eligibility"] = github_candidate_eligibility(repo, head_sha, work, detail.get("merged_at"))
+        detail["_fs0_eligibility"] = github_candidate_eligibility(
+            repo, head_sha, work, detail.get("merged_at"), number, issue_number
+        )
         out.append(detail)
     return out
+
 
 
 def github_issues(repo):
@@ -1302,7 +1634,7 @@ def resolve_bootstrap_merge_acceptance(repo, bootstrap_state, accepted_sha, pull
 
 def resolve_governed_resulting_acceptance(repo, accepted_sha, pull_requests=None):
     if not isinstance(accepted_sha, str) or not SHA_RE.fullmatch(accepted_sha):
-        return {"status":"invalid","defects":["accepted revision is not an exact Git SHA"]}
+        return {"status": "invalid", "defects": ["accepted revision is not an exact Git SHA"]}
     accepted_sha = accepted_sha.lower()
     pulls = pull_requests if pull_requests is not None else github_resulting_pull_requests(repo, accepted_sha)
     matches, defects = [], []
@@ -1329,7 +1661,10 @@ def resolve_governed_resulting_acceptance(repo, accepted_sha, pull_requests=None
             detail["_fs0_work"] = work
             detail["_fs0_candidate"] = candidate
             if not isinstance(detail.get("_fs0_eligibility"), dict):
-                detail["_fs0_eligibility"] = github_candidate_eligibility(repo, head_sha, work, detail.get("merged_at"))
+                detail["_fs0_eligibility"] = github_candidate_eligibility(
+                    repo, head_sha, work, detail.get("merged_at"),
+                    detail.get("number"), binding.get("issue_number"),
+                )
             resolution = resolve_governance_work_acceptance(work, [detail], work["stage"], work["work_id"])
         except Exception as exc:
             defects.append(str(exc))
@@ -1340,9 +1675,10 @@ def resolve_governed_resulting_acceptance(repo, accepted_sha, pull_requests=None
         else:
             defects.extend(resolution.get("defects", []))
     if len(matches) != 1:
-        defects.append(f"accepted governed revision must resolve to exactly one eligible authorized merged PR; found {len(matches)}")
-        return {"status":"invalid","defects":defects,"acceptance_records":matches}
+        defects.append(f"accepted governed revision must resolve to exactly one audited eligible authorized merged PR; found {len(matches)}")
+        return {"status": "invalid", "defects": defects, "acceptance_records": matches}
     return matches[0]
+
 
 def resolve_remote_main_acceptance(repo, bootstrap_state, accepted_sha, pull_requests=None, provenance_issue=None):
     if not isinstance(bootstrap_state, dict) or bootstrap_state.get("state") != "cutover":
@@ -1510,13 +1846,11 @@ def github_governed_issue_completion(repo, issue_number):
     closed_by = issue.get("closed_by")
     if not _valid_actor(actor) or not isinstance(closed_by, dict) or closed_by.get("id") != actor.get("id"):
         return {"status": "invalid", "work_id": work.get("work_id"), "issue_number": issue_number, "defects": ["governed issue was not closed by authorized actor"]}
+
     pulls = github_pull_requests_for_issue(repo, issue_number)
-    accepted_records = []
-    completion_defects = []
+    accepted_records, completion_defects = [], []
     for pr in pulls:
-        resolution = resolve_governance_work_acceptance(
-            work, [pr], work.get("stage"), work.get("work_id")
-        )
+        resolution = resolve_governance_work_acceptance(work, [pr], work.get("stage"), work.get("work_id"))
         if resolution.get("status") == "accepted":
             accepted_records.extend(resolution.get("acceptance_records", []))
         else:
@@ -1525,19 +1859,34 @@ def github_governed_issue_completion(repo, issue_number):
     accepted_numbers = sorted({x.get("pull_request_number") for x in accepted_records if isinstance(x.get("pull_request_number"), int)})
     if not accepted_numbers:
         return {"status": "invalid", "work_id": work.get("work_id"), "issue_number": issue_number, "defects": completion_defects or ["closed issue lacks accepted governed PR"]}
+    latest = accepted_records[-1]
+    accepted_revision = latest.get("resulting_accepted_revision")
+    comments = _gh_paginated(f"repos/{repo}/issues/{issue_number}/comments?per_page=100")
+    audit = resolve_completion_semantic_audit(
+        comments, work, issue_number, accepted_revision, accepted_numbers, issue.get("closed_at")
+    )
+    if audit.get("status") != "pass":
+        return {"status": "invalid", "work_id": work.get("work_id"), "issue_number": issue_number, "defects": list(audit.get("defects", []))}
     development_numbers = github_issue_development_pull_requests(repo, issue_number)
     if not set(accepted_numbers) <= set(development_numbers):
         return {"status": "invalid", "work_id": work.get("work_id"), "issue_number": issue_number, "defects": ["accepted PRs are not all manually linked through GitHub Development"]}
-    latest = accepted_records[-1]
     return {
         "schema_version": "1", "record_type": "governed-work-completion", "status": "complete",
         "stage": work.get("stage"), "work_id": work.get("work_id"), "issue_number": issue_number,
-        "accepted_pull_request_numbers": accepted_numbers, "development_pull_request_numbers": development_numbers,
-        "resulting_accepted_revision": latest.get("resulting_accepted_revision"), "closed_at": issue.get("closed_at"),
+        "accepted_pull_request_numbers": accepted_numbers,
+        "development_pull_request_numbers": development_numbers,
+        "resulting_accepted_revision": accepted_revision,
+        "closed_at": issue.get("closed_at"),
         "actor": {"id": closed_by.get("id"), "login": closed_by.get("login")},
-        "assurance": {"status": "pass", "basis": "authorized-issue-close", "required_obligation_ids": list(work.get("required_assurance_obligation_ids", []))},
+        "assurance": {
+            "status": "pass", "basis": "authorized-issue-close",
+            "required_obligation_ids": list(work.get("required_assurance_obligation_ids", [])),
+            "audit_receipt_comment_id": audit.get("comment_id"),
+            "audit_receipt": audit,
+        },
         "defects": [],
     }
+
 
 
 def main():

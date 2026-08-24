@@ -154,17 +154,9 @@ def publish_candidate(root: Path, candidate: str, contract=None):
     }
 
 def verify_cycle(
-    root: Path,
-    accepted_plan,
-    pending_build,
-    candidate_publication,
-    conformance_report,
-    triggered_obligation_ids,
-    assurance_cases,
-    assurance_findings,
-    pr_candidate,
-    merge_event,
-    issue_completion=None,
+    root: Path, accepted_plan, pending_build, candidate_publication,
+    conformance_report, triggered_obligation_ids, candidate_audit,
+    pr_candidate, merge_event, issue_completion=None,
 ):
     contract = load_contract(root)
     work = load_module(root / contract["dependencies"]["work"], "fs0_self_change_work")
@@ -173,17 +165,13 @@ def verify_cycle(
         raise SelfChangeError("self-change requires accepted Plan authority")
     build = work.validate_work(dict(pending_build))
     if (
-        build["stage"] != "build"
-        or build["disposition"] != "pending"
+        build["stage"] != "build" or build["disposition"] != "pending"
         or build["accepted_plan_id"] != plan["work_id"]
         or build["predecessor_id"] != plan["work_id"]
     ):
         raise SelfChangeError("pending Build does not derive from accepted Plan")
     candidate = exact_candidate(candidate_publication.get("candidate_id"))
-    if (
-        candidate_publication.get("status") != "published"
-        or candidate_publication.get("candidate_ref") != contract["candidate_ref"]
-    ):
+    if candidate_publication.get("status") != "published" or candidate_publication.get("candidate_ref") != contract["candidate_ref"]:
         raise SelfChangeError("exact candidate is not published")
     if (
         conformance_report.get("status") != "pass"
@@ -197,19 +185,17 @@ def verify_cycle(
         raise SelfChangeError("PR head does not match published candidate")
     accepted = work.merge_acceptance(
         build, pr, dict(merge_event), list(triggered_obligation_ids),
+        candidate_audit=dict(candidate_audit) if isinstance(candidate_audit, dict) else candidate_audit,
         candidate_conformance_status="pass",
     )
     if issue_completion is None:
         return {
-            "schema_version": "1",
-            "record_type": "self-change-cycle-result",
+            "schema_version": "1", "record_type": "self-change-cycle-result",
             "status": "accepted-pending-completion-audit",
-            "candidate_id": candidate,
-            "build_work_id": build["work_id"],
+            "candidate_id": candidate, "build_work_id": build["work_id"],
             "resulting_accepted_revision": accepted["resulting_accepted_revision"],
             "sequence": list(contract["sequence"]),
-            "candidate_ref": contract["candidate_ref"],
-            "accepted_ref": contract["accepted_ref"],
+            "candidate_ref": contract["candidate_ref"], "accepted_ref": contract["accepted_ref"],
         }
     if (
         not isinstance(issue_completion, dict)
@@ -218,19 +204,19 @@ def verify_cycle(
         or issue_completion.get("resulting_accepted_revision") != accepted["resulting_accepted_revision"]
         or not isinstance(issue_completion.get("assurance"), dict)
         or issue_completion["assurance"].get("basis") != "authorized-issue-close"
+        or not isinstance(issue_completion["assurance"].get("audit_receipt"), dict)
+        or issue_completion["assurance"]["audit_receipt"].get("status") != "pass"
     ):
         raise SelfChangeError("governed issue lacks completed main semantic-audit disposition")
     return {
-        "schema_version": "1",
-        "record_type": "self-change-cycle-result",
-        "status": "complete",
-        "candidate_id": candidate,
+        "schema_version": "1", "record_type": "self-change-cycle-result",
+        "status": "complete", "candidate_id": candidate,
         "build_work_id": build["work_id"],
         "resulting_accepted_revision": accepted["resulting_accepted_revision"],
         "sequence": list(contract["sequence"]),
-        "candidate_ref": contract["candidate_ref"],
-        "accepted_ref": contract["accepted_ref"],
+        "candidate_ref": contract["candidate_ref"], "accepted_ref": contract["accepted_ref"],
     }
+
 
 def repository_root():
     root = Path.cwd().resolve()

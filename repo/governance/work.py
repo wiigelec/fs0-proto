@@ -185,16 +185,34 @@ def assurance_gate(triggered_obligation_ids, cases, findings):
         return {"eligible": False, "reason": "unresolved-adverse-assurance", "obligation_ids": adverse}
     return {"eligible": True, "reason": "satisfied", "obligation_ids": []}
 
-def acceptance_eligibility(work, triggered_obligation_ids, cases=None, findings=None, candidate_conformance_status="pass"):
+def acceptance_eligibility(
+    work, triggered_obligation_ids, candidate_audit=None,
+    candidate_conformance_status="pass",
+):
     r = validate_work(dict(work))
     required = r["required_assurance_obligation_ids"]
     if sorted(set(triggered_obligation_ids)) != sorted(required):
-        return {"eligible": False, "reason": "assurance-obligation-set-mismatch", "obligation_ids": sorted(set(required) ^ set(triggered_obligation_ids))}
+        return {
+            "eligible": False, "reason": "assurance-obligation-set-mismatch",
+            "obligation_ids": sorted(set(required) ^ set(triggered_obligation_ids)),
+        }
     if candidate_conformance_status != "pass":
         return {"eligible": False, "reason": "conformance-not-passing", "obligation_ids": []}
     if r["stage"] == "build" and r["verification"]["conformance_status"] == "fail":
         return {"eligible": False, "reason": "conformance-not-passing", "obligation_ids": []}
-    return {"eligible": True, "reason": "mechanically-eligible-for-semantic-audit", "obligation_ids": [], "semantic_audit_required": bool(required)}
+    if required:
+        if (
+            not isinstance(candidate_audit, dict)
+            or candidate_audit.get("status") != "pass"
+            or candidate_audit.get("basis") != "candidate-semantic-audit-receipt"
+            or sorted(candidate_audit.get("required_obligation_ids", [])) != sorted(required)
+        ):
+            return {"eligible": False, "reason": "semantic-audit-not-satisfied", "obligation_ids": list(required)}
+    return {
+        "eligible": True, "reason": "eligible-for-authorized-merge",
+        "obligation_ids": [], "semantic_audit_required": bool(required),
+    }
+
 
 def decide(work, disposition, triggered_obligation_ids, cases, findings):
     if disposition not in {"accepted", "rejected"}:
@@ -212,16 +230,25 @@ def apply_merge_acceptance(work, acceptance):
     r = deepcopy(validate_work(dict(work)))
     if r["disposition"] != "pending":
         raise GovernanceWorkError("work already decided")
-    required = {"schema_version","record_type","status","work_id","issue_number","candidate_head","accepted_repository_predecessor","resulting_accepted_revision","actor","eligibility"}
+    required = {
+        "schema_version", "record_type", "status", "work_id", "issue_number",
+        "candidate_head", "accepted_repository_predecessor",
+        "resulting_accepted_revision", "actor", "eligibility",
+    }
     if not isinstance(acceptance, dict) or not required <= set(acceptance):
         raise GovernanceWorkError("merge acceptance proof is incomplete")
-    if acceptance.get("schema_version") != "1" or acceptance.get("record_type") != "governed-pr-acceptance" or acceptance.get("status") != "accepted" or acceptance.get("work_id") != r["work_id"]:
+    if (
+        acceptance.get("schema_version") != "1"
+        or acceptance.get("record_type") != "governed-pr-acceptance"
+        or acceptance.get("status") != "accepted"
+        or acceptance.get("work_id") != r["work_id"]
+    ):
         raise GovernanceWorkError("merge acceptance proof does not match governed work")
     expected = r["bounded_authorization"]["acceptance_actor"]
     actor = acceptance.get("actor")
     if not _valid_actor(actor) or actor.get("id") != expected.get("id"):
         raise GovernanceWorkError("merge acceptance actor is not authorized")
-    for key in ("candidate_head","accepted_repository_predecessor","resulting_accepted_revision"):
+    for key in ("candidate_head", "accepted_repository_predecessor", "resulting_accepted_revision"):
         value = acceptance.get(key)
         if not isinstance(value, str) or not SHA_RE.fullmatch(value):
             raise GovernanceWorkError(f"merge acceptance {key} must be exact Git SHA")
@@ -231,10 +258,20 @@ def apply_merge_acceptance(work, acceptance):
     if not isinstance(eligibility.get("conformance"), dict) or eligibility["conformance"].get("status") != "pass":
         raise GovernanceWorkError("merge acceptance Conformance proof is not passing")
     assurance = eligibility.get("assurance")
-    if not isinstance(assurance, dict) or assurance.get("status") != "pass" or assurance.get("basis") != "authorized-pr-merge" or sorted(assurance.get("required_obligation_ids", [])) != sorted(r["required_assurance_obligation_ids"]):
+    if (
+        not isinstance(assurance, dict)
+        or assurance.get("status") != "pass"
+        or assurance.get("basis") != "authorized-pr-merge"
+        or sorted(assurance.get("required_obligation_ids", [])) != sorted(r["required_assurance_obligation_ids"])
+    ):
         raise GovernanceWorkError("merge acceptance Assurance disposition does not match governed work")
+    if r["required_assurance_obligation_ids"]:
+        audit = assurance.get("audit_receipt")
+        if not isinstance(audit, dict) or audit.get("status") != "pass" or audit.get("basis") != "candidate-semantic-audit-receipt":
+            raise GovernanceWorkError("merge acceptance lacks satisfactory candidate audit receipt")
     r["disposition"] = "accepted"
     return validate_work(r)
+
 
 SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 
@@ -264,10 +301,16 @@ def validate_pr_candidate(work, candidate):
     out["accepted_repository_predecessor"] = out["accepted_repository_predecessor"].lower()
     return out
 
-def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cases=None, findings=None, candidate_conformance_status="pass"):
+def merge_acceptance(
+    work, candidate, merge_event, triggered_obligation_ids,
+    candidate_audit=None, candidate_conformance_status="pass",
+):
     r = validate_work(dict(work))
     pr = validate_pr_candidate(r, candidate)
-    gate = acceptance_eligibility(r, triggered_obligation_ids, cases, findings, candidate_conformance_status=candidate_conformance_status)
+    gate = acceptance_eligibility(
+        r, triggered_obligation_ids, candidate_audit=candidate_audit,
+        candidate_conformance_status=candidate_conformance_status,
+    )
     if not gate["eligible"]:
         raise GovernanceWorkError("merge acceptance blocked: " + gate["reason"])
     if not isinstance(merge_event, dict):
@@ -287,11 +330,21 @@ def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cas
         raise GovernanceWorkError("merged head does not equal evaluated PR head")
     if merge_event["base_sha"].lower() != pr["accepted_repository_predecessor"]:
         raise GovernanceWorkError("merged base does not equal accepted repository predecessor")
+    assurance = {
+        "status": "pass", "basis": "authorized-pr-merge",
+        "required_obligation_ids": list(r["required_assurance_obligation_ids"]),
+        "audit_receipt": candidate_audit,
+    }
     return {
-        "schema_version": "1", "record_type": "governed-pr-acceptance", "status": "accepted",
-        "work_id": r["work_id"], "issue_number": pr["issue_number"], "candidate_head": pr["head_sha"],
+        "schema_version": "1", "record_type": "governed-pr-acceptance",
+        "status": "accepted", "work_id": r["work_id"], "issue_number": pr["issue_number"],
+        "candidate_head": pr["head_sha"],
         "accepted_repository_predecessor": pr["accepted_repository_predecessor"],
-        "resulting_accepted_revision": merge_event["resulting_revision"].lower(), "actor": deepcopy(actor),
-        "eligibility": {"status": "pass", "conformance": {"status": "pass", "candidate_sha": pr["head_sha"]},
-                        "assurance": {"status": "pass", "basis": "authorized-pr-merge", "required_obligation_ids": list(r["required_assurance_obligation_ids"])}}
+        "resulting_accepted_revision": merge_event["resulting_revision"].lower(),
+        "actor": deepcopy(actor),
+        "eligibility": {
+            "status": "pass",
+            "conformance": {"status": "pass", "candidate_sha": pr["head_sha"]},
+            "assurance": assurance,
+        },
     }

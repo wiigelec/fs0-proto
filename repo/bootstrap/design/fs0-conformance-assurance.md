@@ -160,6 +160,12 @@ For a pull-request candidate, successful Assurance disposition is the authorized
 
 GitHub issue and pull-request discussion/history, review history, check history, Development relationships, merge history, and issue-closure history are the maintained Assurance provenance surfaces. FS0 does not require duplicate repository-tree case or finding artifacts.
 
+A completed candidate semantic audit SHALL emit one structured JSON audit receipt in the pull-request discussion. The receipt SHALL identify the governed work, issue, pull request, exact candidate head, required obligation identities, outcome, evidence, material exclusions, and audit time. A changed candidate head makes an earlier candidate receipt inapplicable.
+
+A completed governed-work semantic audit of `refs/heads/main` SHALL emit one structured JSON audit receipt in the governed issue discussion. The receipt SHALL identify the governed work, issue, exact accepted revision, relevant accepted pull requests, required obligation identities, outcome, evidence, material exclusions, and audit time.
+
+For either disposition, only an applicable receipt created before the merge or issue closure may establish the audit prerequisite. When multiple receipts apply to the same exact subject, the latest applicable receipt controls; an adverse latest receipt requires further governed work. Receipt history is Assurance evidence. Merge and issue closure remain the Governance dispositions.
+
 ## Required Capabilities
 
 FS0 Assurance shall support at least:

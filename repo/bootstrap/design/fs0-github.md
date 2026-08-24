@@ -99,9 +99,11 @@ The mapping is:
 | candidate review surface | pull request |
 | canonical Conformance execution | GitHub Actions workflow |
 | Conformance evidence | workflow/check result tied to exact candidate SHA |
-| Assurance review context and evidence | governed GitHub issue and pull-request discussion/history, review/check history, and durable GitHub relationships |
-| candidate Assurance disposition | authorized merge of the exact conforming pull request after semantic audit |
-| completed-work Assurance disposition | authorized closure of the governed issue after main semantic audit and Development linkage of its relevant accepted pull requests |
+| Assurance review context and evidence | governed GitHub issue and pull-request discussion/history, including structured JSON semantic-audit receipts, review/check history, and durable GitHub relationships |
+| candidate semantic-audit receipt | structured JSON pull-request comment bound to governed work, exact PR head, required obligations, outcome, evidence, exclusions, and audit time |
+| completion semantic-audit receipt | structured JSON governed-issue comment bound to governed work, exact accepted `main` revision, relevant accepted PRs, required obligations, outcome, evidence, exclusions, and audit time |
+| candidate Assurance disposition | authorized merge of the exact conforming pull request after a satisfactory applicable pre-merge audit receipt |
+| completed-work Assurance disposition | authorized closure of the governed issue after a satisfactory applicable pre-closure main audit receipt and Development linkage of its relevant accepted pull requests |
 | Design/Plan/Build stage acceptance | authorized merge of an exact conforming pull request associated with exactly one governed-work issue after candidate semantic audit |
 | bootstrap provenance | dedicated GitHub issue created by the external bootstrap process |
 | bootstrap acceptance | authorized merge of the designated validated bootstrap-cutover pull request |

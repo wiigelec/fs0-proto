@@ -212,8 +212,8 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 - Every accepted requirement has one canonical Assurance correspondence.
 - Required review obligations are identifiable.
 - Triggered obligations are resolvable in the governed issue and pull-request audit context.
-- Candidate semantic audit satisfaction is attributable to the authorized merge of the exact conforming pull request.
-- Completed-work semantic audit satisfaction is attributable to authorized governed-issue closure after relevant accepted pull requests are linked through GitHub Development.
+- Candidate semantic audit completion is evidenced by a structured JSON pull-request receipt bound to the exact candidate and required obligations; satisfaction is attributable to the later authorized merge of that exact conforming candidate.
+- Completed-work semantic audit completion is evidenced by a structured JSON issue receipt bound to the exact accepted revision and relevant accepted PRs; satisfaction is attributable to later authorized governed-issue closure after those PRs are linked through GitHub Development.
 - GitHub issue/pull-request discussion and history, checks, Development links, merge history, and closure history provide remotely accessible Assurance provenance.
 - Assurance cannot independently create persistent semantics.
 
