@@ -178,6 +178,97 @@ def check_exact_candidate(root, assertion_ids):
     detail = 'workflow resolves an exact event candidate SHA, checks out that SHA, and GitHub Actions execution verifies checked-out HEAD equals the declared candidate'
     return [result(aid, 'pass' if ok else 'fail', detail, evidence) for aid in assertion_ids]
 
+def _exact_sha(value):
+    return isinstance(value, str) and bool(re.fullmatch(r'[0-9a-f]{40}', value))
+
+def _positive_int(value):
+    return not isinstance(value, bool) and isinstance(value, int) and value > 0
+
+def _aware_timestamp(value):
+    if not isinstance(value, str) or not value:
+        return False
+    try:
+        text = value[:-1] + '+00:00' if value.endswith('Z') else value
+        parsed = __import__('datetime').datetime.fromisoformat(text)
+    except Exception:
+        return False
+    return parsed.tzinfo is not None and parsed.utcoffset() is not None
+
+def _bootstrap_state_semantics(record):
+    state = record.get('state')
+    candidate = record.get('candidate_revision')
+    first = record.get('first_accepted_fs0_revision')
+    issue = record.get('bootstrap_provenance_issue')
+    acceptance = record.get('bootstrap_acceptance_record')
+    cutover = record.get('cutover_timestamp')
+
+    if state == 'candidate':
+        return (
+            (candidate is None or _exact_sha(candidate))
+            and (issue is None or _positive_int(issue))
+            and first is None
+            and acceptance is None
+            and cutover is None
+        )
+
+    if state != 'cutover':
+        return False
+
+    if candidate is not None:
+        return False
+    if not _exact_sha(first) or not _positive_int(issue):
+        return False
+    if not _aware_timestamp(cutover):
+        return False
+    if not isinstance(acceptance, dict):
+        return False
+
+    actor = acceptance.get('actor')
+    actor_ok = (
+        isinstance(actor, dict)
+        and _positive_int(actor.get('id'))
+        and ('login' not in actor or (
+            isinstance(actor.get('login'), str) and bool(actor['login'].strip())
+        ))
+    )
+    evidence = acceptance.get('evidence')
+    evidence_ok = (
+        isinstance(evidence, list)
+        and len(evidence) >= 2
+        and all(isinstance(x, str) and x for x in evidence)
+        and any(x.startswith('bootstrap-verification:') for x in evidence)
+        and any(x.startswith('semantic-audit:') for x in evidence)
+    )
+    decision_ts = acceptance.get('decision_timestamp')
+    acceptance_ok = (
+        acceptance.get('schema_version') == '1'
+        and acceptance.get('record_type') == 'bootstrap-acceptance'
+        and isinstance(acceptance.get('acceptance_id'), str)
+        and bool(acceptance.get('acceptance_id'))
+        and acceptance.get('stage') == 'bootstrap'
+        and acceptance.get('work_id') == 'FS0-BOOTSTRAP-PROVENANCE'
+        and acceptance.get('candidate_id') == first
+        and acceptance.get('disposition') == 'accepted'
+        and acceptance.get('resulting_accepted_state') == first
+        and actor_ok
+        and evidence_ok
+        and _aware_timestamp(decision_ts)
+    )
+    if not acceptance_ok:
+        return False
+
+    try:
+        dt = __import__('datetime')
+        def parse(v):
+            text = v[:-1] + '+00:00' if v.endswith('Z') else v
+            return dt.datetime.fromisoformat(text)
+        if parse(cutover) < parse(decision_ts):
+            return False
+    except Exception:
+        return False
+
+    return True
+
 def check_bootstrap_state(root, assertion_ids):
     path = root / 'repo/state/bootstrap.json'
     if not path.is_file():
@@ -187,7 +278,7 @@ def check_bootstrap_state(root, assertion_ids):
     except Exception as exc:
         return [result(aid, 'fail', f'bootstrap state is not valid JSON: {exc}') for aid in assertion_ids]
     required = {'schema_version', 'record_type', 'state', 'candidate_revision', 'first_accepted_fs0_revision', 'bootstrap_provenance_issue', 'bootstrap_acceptance_record', 'accepted_ref', 'cutover_timestamp'}
-    state_ok = set(record) == required and record.get('schema_version') == '1' and (record.get('record_type') == 'bootstrap-state') and (record.get('state') in {'candidate', 'cutover'}) and (record.get('accepted_ref') == 'refs/heads/accepted')
+    state_ok = set(record) == required and record.get('schema_version') == '1' and (record.get('record_type') == 'bootstrap-state') and (record.get('state') in {'candidate', 'cutover'}) and (record.get('accepted_ref') == 'refs/heads/accepted') and _bootstrap_state_semantics(record)
     orchestration = load(root / 'repo/conformance/orchestration.json')
     pre_cutover_mode_ok = record.get('state') != 'candidate' or orchestration.get('mode') == 'candidate-bootstrap-verification'
     checks = {'FS0-ASSERT-FC-037': (state_ok, 'repo/state/bootstrap.json contains the required bootstrap-state fields, uses candidate|cutover lifecycle state, and identifies refs/heads/accepted'), 'FS0-ASSERT-CONF-011': (pre_cutover_mode_ok, 'while bootstrap state is candidate, candidate Conformance execution is explicitly bootstrap mechanical verification evidence only')}
