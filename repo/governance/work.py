@@ -192,3 +192,18 @@ def decide(work, disposition, triggered_obligation_ids, cases, findings):
             raise GovernanceWorkError("acceptance blocked: " + gate["reason"])
     r["disposition"] = disposition
     return validate_work(r)
+
+def merge_accept(work, merge_actor, triggered_obligation_ids, cases, findings):
+    r = deepcopy(validate_work(dict(work)))
+    if r["disposition"] != "pending":
+        raise GovernanceWorkError("work already decided")
+    gate = acceptance_eligibility(r, triggered_obligation_ids, cases, findings)
+    if not gate["eligible"]:
+        raise GovernanceWorkError("merge acceptance blocked: " + gate["reason"])
+    expected = r["bounded_authorization"]["acceptance_actor"]
+    if not _valid_actor(merge_actor) or merge_actor.get("id") != expected.get("id"):
+        raise GovernanceWorkError("merge actor is not authorized acceptance_actor")
+    r["disposition"] = "accepted"
+    r["provenance"] = deepcopy(r["provenance"])
+    r["provenance"]["acceptance"] = {"kind":"pull-request-merge","actor":deepcopy(merge_actor)}
+    return validate_work(r)

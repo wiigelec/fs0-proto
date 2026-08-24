@@ -1074,7 +1074,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-008",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Governance acceptance SHALL be explicit, attributable, traceable, and candidate-specific.",
+      "statement": "Governance acceptance SHALL be explicit, attributable, traceable, candidate-specific, and realized by an authorized merge of an eligible governed pull request.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1104,7 +1104,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-011",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "For the FS0 GitHub binding, each Design, Plan, or Build acceptance record SHALL be a structured machine-readable GitHub issue comment on that stage's governed-work issue.",
+      "statement": "Each governed pull request SHALL identify exactly one governed-work issue; one governed-work issue MAY be realized through one or more pull requests.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1114,7 +1114,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-012",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Every machine-readable acceptance comment SHALL use marker repo-spec-acceptance:v1 followed immediately by exactly one fenced JSON object containing the Governance-defined acceptance envelope.",
+      "statement": "A governed pull request MAY contain one or more commits; acceptance applies to the complete current pull-request candidate change set.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1124,7 +1124,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-013",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "A governance-acceptance record SHALL use schema_version 1, record_type governance-acceptance, stage design|plan|build, disposition accepted|rejected, and the Governance envelope fields; accepted Build SHALL set resulting_accepted_state equal to candidate_id, otherwise it SHALL be absent.",
+      "statement": "Required Conformance and Assurance SHALL gate merge eligibility for the complete current governed pull-request candidate.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1134,7 +1134,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-014",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Bootstrap acceptance SHALL use schema_version 1, record_type bootstrap-acceptance, stage bootstrap, disposition accepted|rejected, and Governance envelope. Evidence SHALL name verification and semantic-audit results. Accepted SHALL set resulting_accepted_state=candidate_id; rejected SHALL omit it.",
+      "statement": "Bootstrap acceptance SHALL be the authorized merge of the designated bootstrap-cutover pull request after passing bootstrap mechanical validation.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1144,7 +1144,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-015",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "For repository-changing work, candidate_id SHALL resolve to an exact Git commit SHA.",
+      "statement": "A merge candidate SHALL retain the exact accepted predecessor identities it depends on and SHALL be reevaluated if an applicable predecessor changes.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1154,7 +1154,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-016",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Accepted repository state SHALL be represented by refs/heads/main plus exactly one matching valid acceptance record snapshotted in an immutable Git acceptance receipt tag object bound to that accepted revision.",
+      "statement": "After cutover, refs/heads/main SHALL identify the accepted repository state resulting from the most recent authorized governed pull-request merge.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1164,7 +1164,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-017",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Default-branch position, merge state, pull-request state, review state, comment state, and workflow state SHALL NOT independently create accepted repository state.",
+      "statement": "Closing, approval, workflow success, Conformance success, or Assurance findings SHALL NOT independently create acceptance; authorized merge of an eligible governed PR SHALL.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1174,7 +1174,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-018",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Initial bootstrap acceptance SHALL be recorded on a dedicated external bootstrap provenance issue whose machine-readable bootstrap authorization contains acceptance_actor naming the actor authorized to decide acceptance.",
+      "statement": "Initial bootstrap SHALL use one dedicated provenance issue and one designated bootstrap-cutover pull request targeting refs/heads/main.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1184,7 +1184,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-019",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "For the FS0 GitHub binding, acceptance_actor SHALL contain a positive immutable GitHub numeric user ID; each acceptance actor SHALL equal the applicable bounded_authorization.acceptance_actor or bootstrap_authorization.acceptance_actor.",
+      "statement": "For governed merge acceptance, the GitHub merge actor SHALL equal the governed issue bounded_authorization.acceptance_actor.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "none",
       "assurance_applicability": "required"
@@ -1304,7 +1304,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-031",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Design SHALL explicitly accept or reject the normative delta.",
+      "statement": "Design acceptance SHALL be realized by authorized merge of an eligible Design pull request associated with its governed Design issue.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1344,7 +1344,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-035",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Governance acceptance SHALL remain distinct from merge, issue closure, Conformance success, Assurance findings, review approval, workflow success, and tool declarations.",
+      "statement": "Governance acceptance SHALL be the authorized merge of an eligible governed pull request; Conformance and Assurance are pre-merge eligibility gates.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1364,7 +1364,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-037",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "refs/heads/main SHALL move only after the applicable explicit acceptance decision exists and its immutable acceptance receipt tag object has been published and verified.",
+      "statement": "refs/heads/main SHALL change accepted repository state only through an authorized merge of an eligible governed pull request.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1374,7 +1374,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-038",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "The external bootstrap provenance issue SHALL NOT be represented as FS0-governed Design, Plan, or Build work.",
+      "statement": "The external bootstrap provenance issue SHALL anchor exactly one designated bootstrap-cutover acceptance pull request and SHALL NOT be FS0-governed work.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"

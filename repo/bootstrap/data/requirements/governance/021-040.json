@@ -65,7 +65,7 @@
     },
     {
       "id": "FS0-GOV-031",
-      "statement": "Design SHALL explicitly accept or reject the normative delta.",
+      "statement": "Design acceptance SHALL be realized by authorized merge of an eligible Design pull request associated with its governed Design issue.",
       "c": "mechanical",
       "a": "required"
     },
@@ -89,7 +89,7 @@
     },
     {
       "id": "FS0-GOV-035",
-      "statement": "Governance acceptance SHALL remain distinct from merge, issue closure, Conformance success, Assurance findings, review approval, workflow success, and tool declarations.",
+      "statement": "Governance acceptance SHALL be the authorized merge of an eligible governed pull request; Conformance and Assurance are pre-merge eligibility gates.",
       "c": "mechanical",
       "a": "required"
     },
@@ -101,13 +101,13 @@
     },
     {
       "id": "FS0-GOV-037",
-      "statement": "refs/heads/main SHALL move only after the applicable explicit acceptance decision exists and its immutable acceptance receipt tag object has been published and verified.",
+      "statement": "refs/heads/main SHALL change accepted repository state only through an authorized merge of an eligible governed pull request.",
       "c": "mechanical",
       "a": "none"
     },
     {
       "id": "FS0-GOV-038",
-      "statement": "The external bootstrap provenance issue SHALL NOT be represented as FS0-governed Design, Plan, or Build work.",
+      "statement": "The external bootstrap provenance issue SHALL anchor exactly one designated bootstrap-cutover acceptance pull request and SHALL NOT be FS0-governed work.",
       "c": "mechanical",
       "a": "required"
     },

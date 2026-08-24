@@ -8,146 +8,55 @@ Read `fs0-design.md` first. This chunk does not independently create authority.
 
 ---
 
-# Accepted State and Acceptance Record
+# Accepted State and PR-Merge Acceptance
 
-FS0 requires one minimal authoritative representation of explicit Governance acceptance and accepted repository state.
+FS0 uses one GitHub acceptance model for governed repository changes.
 
-Merge state, issue closure, workflow success, or review approval shall not independently answer whether a candidate is accepted.
+A governed issue is the durable unit of work identity and bounded authorization. Each governed pull request SHALL identify exactly one governed issue. One governed issue MAY be realized through one or more pull requests, and each pull request MAY contain one or more commits.
 
-## Acceptance Record
+The pull request is one candidate realization of its issue. Conformance and required Assurance apply to the complete current pull-request candidate.
 
-Each accepted or rejected governed-stage candidate shall have one structured machine-resolvable acceptance record attached to the governed-work identity for that stage.
+Merging an eligible governed pull request by the issue's authorized acceptance actor is the explicit, attributable, traceable semantic acceptance of that candidate change set.
 
-For the FS0 GitHub binding, a governed Design, Plan, or Build acceptance record shall be represented as a structured GitHub issue comment on that stage's governed-work issue.
+Closing a pull request without merge does not accept it. A governed issue may remain open after one accepted pull request when authorized work or completion conditions remain.
 
-The record shall contain at least:
+## Accepted Inputs and Resulting State
 
-```text
-record kind
-acceptance identity
-Governance stage
-governed-work identity
-exact candidate identity
-disposition
-actor attribution
-evidence references
-decision timestamp
-resulting accepted-state relationship where applicable
-```
+A merge candidate SHALL record the accepted predecessor state it depends on, including applicable accepted Design, accepted Plan, and accepted repository predecessor identities.
 
-The structured comment shall use the Design-defined acceptance-record envelope below. Bootstrap realization shall implement this envelope and shall not invent an alternate acceptance protocol.
+Those predecessor identities are known before merge and SHALL remain intact in the candidate. If an applicable predecessor changes before merge, the candidate SHALL be reevaluated.
 
-## Acceptance Record Envelope
+The candidate SHALL NOT attempt to embed the Git SHA that its own merge will create.
 
-Every machine-readable acceptance comment shall contain exactly one fenced JSON object immediately following the marker:
+For a successful governed merge:
 
 ```text
-repo-spec-acceptance:v1
+candidate identity = pull request + current head SHA
+acceptance event = authorized merge
+resulting accepted repository revision = refs/heads/main after merge
 ```
 
-The JSON object shall contain at least:
+The GitHub merge record provides the attributable actor, time, pull-request identity, candidate head, and resulting repository revision.
 
-```text
-schema_version
-record_type
-acceptance_id
-stage
-work_id
-candidate_id
-disposition
-actor
-evidence
-decision_timestamp
-resulting_accepted_state where applicable
-```
+`refs/heads/main` is the canonical accepted repository state after bootstrap cutover.
 
-For governed Design, Plan, and Build acceptance:
+Conformance success or Assurance findings do not independently create acceptance; they are eligibility gates for merge.
 
-```text
-schema_version = 1
-record_type = governance-acceptance
-stage = design | plan | build
-```
+## Bootstrap
 
-For bootstrap cutover acceptance:
+Initial bootstrap uses the same acceptance interaction.
 
-```text
-schema_version = 1
-record_type = bootstrap-acceptance
-stage = bootstrap
-```
+The bootstrap provenance issue is the one-time work identity and authorization anchor. The bootstrap-cutover pull request is its candidate realization.
 
-`disposition` shall support at least:
+Bootstrap mechanical validation SHALL pass before that pull request is eligible for merge.
 
-```text
-accepted
-rejected
-```
+Because accepted FS0 Assurance does not yet exist, the authorized user's review and merge of the designated bootstrap-cutover pull request is both the required external semantic audit and explicit bootstrap acceptance.
 
-`candidate_id` shall resolve to the exact candidate identity required by the applicable stage and shall be an exact Git commit SHA for repository-changing work.
+After merge, the resulting `refs/heads/main` revision is the first accepted FS0 repository state.
 
-`evidence` shall be a machine-readable collection of evidence references.
+No separate bootstrap acceptance comment, acceptance receipt, or `--accept-bootstrap` decision is required.
 
-`actor` shall provide attributable actor identity.
-
-`decision_timestamp` shall be an unambiguous timestamp.
-
-`resulting_accepted_state`, when present, shall identify the repository revision that acceptance causes to become eligible for publication through the accepted-state ref.
-
-The marker, field names, and enum values in this envelope are part of FS0 bootstrap Design.
-
-Implementation may choose formatting details that do not change parsing or semantics, but shall not change the marker, required fields, record types, stage values, or disposition values without later accepted Governance.
-
-The candidate identity for repository-changing work shall resolve to an exact Git commit SHA.
-
-The acceptance record exists outside the candidate Git commit and therefore may identify that exact candidate without changing its identity.
-
-An acceptance record is Governance state realized through GitHub.
-
-It is not a generated interpretation of merge status, issue closure, review state, or workflow success.
-
-For initial bootstrap cutover, where no FS0 governed-work issue yet has authority, the external bootstrap process shall create one dedicated GitHub issue for bootstrap provenance and place one structured bootstrap acceptance comment on that issue. The comment shall identify the exact candidate FS0 commit, bootstrap verification evidence, bootstrap semantic-audit evidence, actor attribution, disposition, and decision timestamp.
-
-The bootstrap provenance issue is an external bootstrap record surface only. It shall not be represented as FS0 governed Design, Plan, or Build work.
-
-## Accepted Repository State
-
-FS0 shall realize accepted repository state through one dedicated Git ref named:
-
-```text
-refs/heads/main
-```
-
-The `accepted` ref shall point directly to the exact Git commit currently accepted as repository state.
-
-Moving the `accepted` ref is a realization of an already explicit acceptance decision; moving the ref shall not itself create acceptance.
-
-For a post-cutover Build acceptance:
-
-1. the structured Build acceptance record shall identify the exact candidate commit;
-2. the acceptance decision shall be recorded;
-3. only after that decision exists may the `accepted` ref advance to that same commit; and
-4. the resulting ref shall be verified against the acceptance record.
-
-For bootstrap cutover, the external bootstrap acceptance record shall identify the exact first FS0 candidate commit before the `accepted` ref is created at that commit.
-
-The pair:
-
-```text
-structured acceptance record
-+
-accepted Git ref
-```
-
-is the canonical remote representation of accepted repository state.
-
-The canonical answer to:
-
-> What exact repository revision is currently accepted?
-
-is the commit currently referenced by `refs/heads/main`, provided that a corresponding valid acceptance record resolves to the same commit.
-
-The default branch HEAD may equal or advance beyond the accepted revision during candidate publication, but default-branch position shall not independently create acceptance.
+This bootstrap semantic-audit rule is one-time only; post-cutover governed work uses normal Conformance and Assurance eligibility before the same merge-acceptance action.
 
 ---
 
@@ -322,7 +231,7 @@ Acceptance shall be:
 - attributable;
 - traceable;
 - candidate-specific; and
-- separate from merge, issue closure, Conformance success, Assurance findings, or tool declarations.
+- realized by authorized merge after required Conformance and Assurance eligibility gates are satisfied.
 
 Governance acceptance shall depend only on authority accepted before the candidate acquires the authority produced by that acceptance.
 

@@ -98,21 +98,17 @@
     ],
     "bootstrap_cutover": {
       "canonical_entrypoint": "repo/scripts/bootstrap-cutover",
-      "invocation": "./repo/scripts/bootstrap-cutover --accept-bootstrap",
-      "acceptance": "the --accept-bootstrap flag is the explicit user acceptance action after candidate review",
+      "invocation": "./repo/scripts/bootstrap-cutover",
+      "acceptance": "merging the designated validated bootstrap-cutover pull request is the external semantic audit and explicit bootstrap acceptance",
       "transport_boundary": "the helper uses gh only for GitHub API operations and POSIX git for Git transport",
       "success_conditions": [
         "bootstrap provenance issue created",
-        "provenance-bound candidate generation and canonical validation pass",
-        "candidate committed and pushed non-force to main",
-        "explicit bootstrap acceptance comment recorded",
-        "immutable acceptance receipt published and verified",
-        "cutover state embeds the exact validated bootstrap acceptance record",
-        "cutover generation and canonical validation pass",
-        "cutover commit pushed non-force to main",
-        "accepted-state resolution passes",
-        "main is the only persistent branch",
-        "bootstrap provenance issue is closed only after all final verification succeeds"
+        "temporary bootstrap-cutover branch created from main",
+        "complete cutover candidate generated and canonical validation passes",
+        "candidate branch committed and pushed non-force",
+        "designated pull request opened against main",
+        "authorized user reviews and merges the pull request",
+        "resulting main revision is the first accepted FS0 repository state"
       ],
       "failure_behavior": "leave the bootstrap provenance issue open when any step before final verified success fails"
     }

@@ -101,12 +101,12 @@ The mapping is:
 | Conformance evidence | workflow/check result tied to exact candidate SHA |
 | Assurance review case | structured maintained repository artifact |
 | Assurance finding | structured maintained repository artifact, optionally referenced in GitHub discussion |
-| Design/Plan/Build stage acceptance | structured machine-readable GitHub issue comment on the governed-work issue |
+| Design/Plan/Build stage acceptance | authorized merge of an eligible pull request associated with exactly one governed-work issue |
 | bootstrap provenance | dedicated GitHub issue created by the external bootstrap process |
-| bootstrap acceptance | structured machine-readable comment on the bootstrap provenance issue identifying the exact FS0 candidate commit |
-| accepted repository state | dedicated `refs/heads/main` Git ref plus matching acceptance record |
+| bootstrap acceptance | authorized merge of the designated validated bootstrap-cutover pull request |
+| accepted repository state | revision currently referenced by `refs/heads/main` after an authorized governed merge |
 
-GitHub issue, pull-request, merge, review, comment, or workflow state shall not independently create Governance acceptance.
+GitHub merge state creates Governance acceptance only for an eligible governed pull request merged by its authorized acceptance actor; other GitHub state does not independently create acceptance.
 
 GitHub provides identity, collaboration, execution, and publication surfaces.
 
@@ -173,21 +173,18 @@ Create the one accepted FS0 state from which all later framework evolution becom
 
 The bootstrap sequence shall be:
 
-1. verify the user-supplied target Git repository, GitHub remote, authentication, and required technical capabilities;
-2. construct the FS0 candidate from this non-authoritative bootstrap Design input and the canonical bootstrap realization inputs resolved from repository state;
-3. install candidate FS0 maintained artifacts;
-4. generate required orientation and license surfaces;
-5. install the minimum candidate GitHub operating profile;
-6. publish the candidate through the existing user-supplied Git/GitHub environment;
-7. execute candidate mechanical checks as bootstrap verification evidence;
-8. perform external semantic audit as bootstrap audit evidence;
-9. correct defects in Design input or bootstrap realization as appropriate;
-10. repeat until the candidate satisfies FS0 bootstrap criteria;
-11. create the dedicated bootstrap provenance issue and structured bootstrap acceptance comment for one exact candidate revision;
-12. create `refs/heads/main` at that exact accepted revision and verify it against the bootstrap acceptance record;
-13. create the one-way bootstrap cutover marker;
-14. treat FS0 Governance, Conformance, and Assurance as authoritative operating mechanisms only after that cutover;
-15. disable further use of bootstrap authority for ordinary framework evolution.
+1. verify local Git, GitHub remote, authentication, and required technical capabilities before remote publication;
+2. create the dedicated bootstrap provenance issue;
+3. create a temporary bootstrap-cutover branch from the current `refs/heads/main`;
+4. construct the complete cutover candidate on that branch;
+5. generate required maintained and generated surfaces;
+6. execute bootstrap mechanical validation and canonical Conformance;
+7. commit and publish the validated candidate branch;
+8. open one designated bootstrap-cutover pull request targeting `refs/heads/main`;
+9. have the authorized user perform the external semantic review;
+10. merge the pull request to express semantic audit satisfaction and explicit bootstrap acceptance;
+11. treat the resulting `refs/heads/main` revision as the first accepted FS0 repository state;
+12. exhaust bootstrap authority and use FS0 Governance for later framework evolution.
 
 ## One-Way Cutover Marker
 
@@ -197,8 +194,8 @@ The cutover record shall identify at least:
 
 ```text
 cutover state
-first accepted FS0 revision
-bootstrap acceptance record
+bootstrap provenance issue
+designated bootstrap pull request
 accepted Git ref
 cutover timestamp
 ```
