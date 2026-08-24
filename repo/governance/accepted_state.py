@@ -391,10 +391,7 @@ def github_issue_comments_for(repo, issue_number):
     ):
         raise RuntimeError("issue_number must be a positive integer")
 
-    issue = _gh_paginated(f"repos/{repo}/issues/{issue_number}")
-    if len(issue) != 1 or not isinstance(issue[0], dict):
-        raise RuntimeError("bootstrap provenance issue did not resolve exactly once")
-    issue = issue[0]
+    issue = _gh_object(f"repos/{repo}/issues/{issue_number}")
     if "pull_request" in issue:
         raise RuntimeError("bootstrap provenance anchor must resolve to a GitHub issue")
 
@@ -626,10 +623,7 @@ def github_acceptance_receipt(repo, candidate):
             "defects": ["accepted revision lacks immutable acceptance receipt"],
         }
 
-    tag_objects = _gh_paginated(f"repos/{repo}/git/tags/{observed_sha}")
-    if len(tag_objects) != 1 or not isinstance(tag_objects[0], dict):
-        raise RuntimeError("acceptance receipt tag object did not resolve exactly once")
-    tag_object = tag_objects[0]
+    tag_object = _gh_object(f"repos/{repo}/git/tags/{observed_sha}")
 
     defects = []
     target = tag_object.get("object")
@@ -887,6 +881,18 @@ def _gh_paginated(endpoint):
         else:
             raise RuntimeError("GitHub API pagination page is not a list")
     return out
+
+
+def _gh_object(endpoint):
+    if shutil.which("gh") is None:
+        raise RuntimeError(
+            "GitHub CLI (gh) is required for remote Governance and accepted-state resolution"
+        )
+    proc = _run(["gh", "api", endpoint])
+    value = json.loads(proc.stdout)
+    if not isinstance(value, dict):
+        raise RuntimeError("GitHub API object result is not an object")
+    return value
 
 
 def github_issue_comments(repo):
