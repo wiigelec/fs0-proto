@@ -14,8 +14,8 @@ SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 class SelfChangeError(ValueError):
     pass
 
-def _run(args, cwd=None, allowed=(0,)):
-    proc = subprocess.run(args, cwd=cwd, text=True, capture_output=True)
+def _run(args, cwd=None, allowed=(0,), input_text=None):
+    proc = subprocess.run(args, cwd=cwd, text=True, input=input_text, capture_output=True)
     if proc.returncode not in allowed:
         detail = proc.stderr.strip() or proc.stdout.strip()
         raise SelfChangeError(f"{' '.join(args)} failed ({proc.returncode}): {detail}")
@@ -59,6 +59,68 @@ def remote_ref(ref):
     if len(fields) != 2 or fields[1] != ref:
         raise SelfChangeError(f"unexpected ref resolution: {ref}")
     return fields[0].lower()
+
+def _json_fence_objects(body):
+    if not isinstance(body, str):
+        return []
+    objects = []
+    for match in re.finditer(r"```(?:json)?\n(.*?)\n```", body, re.DOTALL):
+        try:
+            value = json.loads(match.group(1))
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            objects.append(value)
+    return objects
+
+def _gh_json(endpoint):
+    proc = _run(["gh","api",endpoint])
+    try:
+        value = json.loads(proc.stdout)
+    except json.JSONDecodeError as exc:
+        raise SelfChangeError(f"GitHub API returned invalid JSON: {exc}") from exc
+    if not isinstance(value, dict):
+        raise SelfChangeError("GitHub API response must be an object")
+    return value
+
+def origin_repository(root):
+    remote = _run(["git","remote","get-url","origin"], cwd=root).stdout.strip()
+    for prefix in ("https://github.com/","git@github.com:"):
+        if remote.startswith(prefix):
+            value = remote[len(prefix):]
+            return value[:-4] if value.endswith(".git") else value
+    raise SelfChangeError("origin must resolve to github.com owner/repository")
+
+def governed_work_from_issue(root, issue_number):
+    issue = _gh_json(f"repos/{origin_repository(root)}/issues/{issue_number}")
+    if "pull_request" in issue:
+        raise SelfChangeError("governed work identity must resolve to a GitHub issue")
+    matches = [obj for obj in _json_fence_objects(issue.get("body")) if obj.get("record_type") == "governed-work"]
+    if len(matches) != 1:
+        raise SelfChangeError("governed issue must expose exactly one governed-work record")
+    work_module = load_module(root / "repo/governance/work.py", "fs0_self_change_binding_work")
+    try:
+        return work_module.validate_work(dict(matches[0]))
+    except Exception as exc:
+        raise SelfChangeError(f"governed issue work record is invalid: {exc}") from exc
+
+def bind_candidate(root, candidate, issue_number):
+    candidate = exact_candidate(candidate)
+    if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
+        raise SelfChangeError("governed issue number must be positive")
+    work = governed_work_from_issue(root, issue_number)
+    predecessor = remote_ref("refs/heads/main")
+    if predecessor is None:
+        raise SelfChangeError("refs/heads/main must exist before governed candidate binding")
+    binding = {
+        "schema_version":"1","record_type":"governed-candidate-binding",
+        "issue_number":issue_number,"accepted_repository_predecessor":predecessor,
+        "base_ref":"refs/heads/main","governed_work":work,
+    }
+    message = "Bind FS0 governed candidate\n\n```json\n" + json.dumps(binding, indent=2, sort_keys=True) + "\n```\n"
+    tree = _run(["git","rev-parse",f"{candidate}^{{tree}}"], cwd=root).stdout.strip()
+    bound = _run(["git","commit-tree",tree,"-p",candidate], cwd=root, input_text=message).stdout.strip().lower()
+    return exact_candidate(bound)
 
 def publish_candidate(root: Path, candidate: str, contract=None):
     contract = contract or load_contract(root)
@@ -163,27 +225,29 @@ def repository_root():
 def main():
     parser = argparse.ArgumentParser(
         prog="repo/scripts/self-change",
-        description="Publish an exact governed candidate for PR review and merge acceptance.",
+        description="Bind and publish an exact governed candidate for PR review and merge acceptance.",
     )
-    parser.add_argument("--candidate", required=True, help="exact candidate commit SHA")
+    parser.add_argument("--candidate", required=True, help="exact realized candidate commit SHA to bind")
+    parser.add_argument("--issue", required=True, type=int, help="governed GitHub issue number")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     root = repository_root()
     report = {
-        "schema_version": "1",
-        "record_type": "self-change-candidate-publication",
-        "status": "error",
-        "candidate_id": None,
-        "errors": [],
+        "schema_version":"1","record_type":"self-change-candidate-publication","status":"error",
+        "source_candidate_id":None,"candidate_id":None,"governed_issue_number":args.issue,"errors":[],
     }
     try:
-        report.update(publish_candidate(root, args.candidate))
+        source = exact_candidate(args.candidate)
+        report["source_candidate_id"] = source
+        report.update(publish_candidate(root, bind_candidate(root, source, args.issue)))
     except Exception as exc:
         report["errors"].append(str(exc))
     if args.json:
         print(json.dumps(report, indent=2))
     else:
         print("FS0 candidate publication: " + report["status"].upper())
+        if report.get("candidate_id"):
+            print("Bound candidate: " + report["candidate_id"])
         for error in report["errors"]:
             print("Error: " + error, file=sys.stderr)
     return 0 if report["status"] == "published" else 1

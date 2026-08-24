@@ -480,34 +480,51 @@ def github_candidate_eligibility(repo, candidate_sha, work, merged_at):
 def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage, expected_work_id):
     if expected_stage not in {"design", "plan", "build"} or not _nonempty(expected_work_id):
         raise AcceptanceError("invalid requested governed-work acceptance identity")
-    work = governed_work_from_issue_body(issue_body)
-    if work.get("stage") != expected_stage or work.get("work_id") != expected_work_id:
-        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":["issue governed-work identity does not match requested stage/work"]}
-    auth = work.get("bounded_authorization")
-    actor = auth.get("acceptance_actor") if isinstance(auth, dict) else None
-    required_assurance = work.get("required_assurance_obligation_ids")
-    if not _valid_actor(actor):
-        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":["issue does not expose one valid acceptance_actor"]}
-    if not isinstance(required_assurance, list) or any(not _nonempty(x) for x in required_assurance):
-        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":["issue does not declare required_assurance_obligation_ids"]}
-
+    fallback_work = None
+    try:
+        fallback_work = issue_body if isinstance(issue_body, dict) and issue_body.get("record_type") == "governed-work" else governed_work_from_issue_body(issue_body)
+    except Exception:
+        fallback_work = None
     matches = []
     defects = []
     for pr in pull_requests:
         if not isinstance(pr, dict):
             continue
+        binding = pr.get("_fs0_governed_binding")
+        bound = binding if isinstance(binding, dict) else None
+        if bound is not None:
+            try:
+                bound = validate_governed_candidate_binding(bound)
+            except AcceptanceError as exc:
+                defects.append({"pull_request_number": pr.get("number"), "error": str(exc)})
+                continue
+            work = bound["governed_work"]
+        elif isinstance(pr.get("_fs0_work"), dict):
+            work = pr["_fs0_work"]
+        elif "_fs0_eligibility" in pr and fallback_work is not None:
+            work = fallback_work
+        else:
+            defects.append({"pull_request_number": pr.get("number"), "error": "merged pull request lacks immutable governed candidate binding"})
+            continue
+        if work.get("stage") != expected_stage or work.get("work_id") != expected_work_id:
+            continue
+        auth = work.get("bounded_authorization")
+        actor = auth.get("acceptance_actor") if isinstance(auth, dict) else None
+        required_assurance = work.get("required_assurance_obligation_ids")
+        if not _valid_actor(actor) or not isinstance(required_assurance, list):
+            defects.append({"pull_request_number": pr.get("number"), "error": "bound work authorization or Assurance gate is invalid"})
+            continue
+        head = pr.get("head")
+        head_sha = str(head.get("sha", "")).lower() if isinstance(head, dict) else ""
         try:
             candidate = pr.get("_fs0_candidate")
             if not isinstance(candidate, dict):
-                candidate = governed_pr_candidate_from_body(pr.get("body"))
+                candidate = _candidate_from_governed_binding(bound, head_sha) if bound is not None else governed_pr_candidate_from_body(pr.get("body"))
         except AcceptanceError:
-            continue
-        if candidate.get("work_id") != expected_work_id:
             continue
         number = pr.get("number")
         merged_at = pr.get("merged_at")
         merged_by = pr.get("merged_by")
-        head = pr.get("head")
         base = pr.get("base")
         resulting = pr.get("merge_commit_sha")
         eligibility = pr.get("_fs0_eligibility")
@@ -515,35 +532,32 @@ def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage
             isinstance(number, int) and not isinstance(number, bool) and number > 0
             and _nonempty(merged_at)
             and isinstance(merged_by, dict) and merged_by.get("id") == actor.get("id")
-            and isinstance(head, dict) and str(head.get("sha", "")).lower() == candidate["head_sha"]
+            and isinstance(head, dict) and head_sha == candidate["head_sha"]
             and isinstance(base, dict) and base.get("ref") == "main"
             and str(base.get("sha", "")).lower() == candidate["accepted_repository_predecessor"]
             and isinstance(resulting, str) and bool(SHA_RE.fullmatch(resulting))
         )
         valid_eligibility = (
-            isinstance(eligibility, dict)
-            and eligibility.get("status") == "pass"
+            isinstance(eligibility, dict) and eligibility.get("status") == "pass"
             and str(eligibility.get("candidate_sha", "")).lower() == candidate["head_sha"]
-            and isinstance(eligibility.get("conformance"), dict)
-            and eligibility["conformance"].get("status") == "pass"
-            and isinstance(eligibility.get("assurance"), dict)
-            and eligibility["assurance"].get("status") == "pass"
+            and isinstance(eligibility.get("conformance"), dict) and eligibility["conformance"].get("status") == "pass"
+            and isinstance(eligibility.get("assurance"), dict) and eligibility["assurance"].get("status") == "pass"
             and sorted(eligibility["assurance"].get("required_obligation_ids", [])) == sorted(required_assurance)
         )
         if not valid_merge:
-            defects.append({"pull_request_number": number, "error": "merged pull request does not satisfy candidate/actor/predecessor binding"})
+            defects.append({"pull_request_number": number, "error": "merged pull request does not satisfy immutable candidate/actor/predecessor binding"})
             continue
         if not valid_eligibility:
-            defects.append({"pull_request_number": number, "error": "merged pull request lacks passing exact-candidate Conformance and required Assurance eligibility", "eligibility": eligibility})
+            defects.append({"pull_request_number": number, "error": "merged pull request lacks passing exact-candidate Conformance and required Assurance eligibility"})
             continue
         matches.append({
-            "schema_version":"1", "record_type":"governed-pr-acceptance", "status":"accepted",
-            "work_id":expected_work_id, "issue_number":candidate["issue_number"],
-            "pull_request_number":number, "candidate_head":candidate["head_sha"],
+            "schema_version":"1","record_type":"governed-pr-acceptance","status":"accepted",
+            "work_id":expected_work_id,"issue_number":candidate["issue_number"],
+            "pull_request_number":number,"candidate_head":candidate["head_sha"],
             "accepted_repository_predecessor":candidate["accepted_repository_predecessor"],
             "resulting_accepted_revision":resulting.lower(),
             "actor":{"id":merged_by.get("id"),"login":merged_by.get("login")},
-            "merged_at":merged_at, "eligibility":eligibility,
+            "merged_at":merged_at,"eligibility":eligibility,
         })
     if not matches:
         return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":defects or ["governed work has no eligible authorized merged PR acceptance"]}
@@ -554,30 +568,31 @@ def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage
 def github_pull_requests_for_issue(repo, issue_number):
     if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
         raise RuntimeError("issue_number must be a positive integer")
-    issue = _gh_object(f"repos/{repo}/issues/{issue_number}")
-    if "pull_request" in issue:
-        raise RuntimeError("governed-work identity must resolve to a GitHub issue")
-    work = governed_work_from_issue_body(issue.get("body"))
-    required = work.get("required_assurance_obligation_ids")
-    if not isinstance(required, list) or any(not _nonempty(x) for x in required):
-        raise RuntimeError("governed-work issue must declare required_assurance_obligation_ids")
     pulls = _gh_paginated(f"repos/{repo}/pulls?state=closed&per_page=100")
     out = []
     for item in pulls:
         if not isinstance(item, dict):
             continue
-        try:
-            candidate = governed_pr_candidate_from_body(item.get("body"))
-        except AcceptanceError:
-            continue
-        if candidate.get("issue_number") != issue_number:
-            continue
         number = item.get("number")
         if isinstance(number, bool) or not isinstance(number, int) or number < 1:
             continue
         detail = _gh_object(f"repos/{repo}/pulls/{number}")
+        head = detail.get("head")
+        head_sha = str(head.get("sha", "")).lower() if isinstance(head, dict) else ""
+        if not SHA_RE.fullmatch(head_sha):
+            continue
+        try:
+            binding = github_candidate_binding(repo, head_sha, "governed-candidate-binding")
+        except AcceptanceError:
+            continue
+        if binding.get("issue_number") != issue_number:
+            continue
+        work = binding["governed_work"]
+        candidate = _candidate_from_governed_binding(binding, head_sha)
+        detail["_fs0_governed_binding"] = binding
+        detail["_fs0_work"] = work
         detail["_fs0_candidate"] = candidate
-        detail["_fs0_eligibility"] = github_candidate_eligibility(repo, candidate["head_sha"], work, detail.get("merged_at"))
+        detail["_fs0_eligibility"] = github_candidate_eligibility(repo, head_sha, work, detail.get("merged_at"))
         out.append(detail)
     return out
 
@@ -1068,6 +1083,83 @@ def bootstrap_cutover_candidate_from_body(body):
         raise AcceptanceError("bootstrap cutover candidate must target refs/heads/main")
     return record
 
+def _candidate_binding_from_message(message, record_type):
+    if not isinstance(message, str):
+        raise AcceptanceError("candidate commit message is unavailable")
+    matches = [obj for obj in _json_fence_objects(message) if obj.get("record_type") == record_type]
+    if len(matches) != 1:
+        raise AcceptanceError(f"candidate commit must contain exactly one {record_type} JSON binding")
+    return matches[0]
+
+def validate_governed_candidate_binding(binding):
+    required = {"schema_version","record_type","issue_number","accepted_repository_predecessor","base_ref","governed_work"}
+    if not isinstance(binding, dict) or set(binding) != required or binding.get("schema_version") != "1" or binding.get("record_type") != "governed-candidate-binding":
+        raise AcceptanceError("governed candidate binding fields are not canonical")
+    issue = binding.get("issue_number")
+    if isinstance(issue, bool) or not isinstance(issue, int) or issue < 1:
+        raise AcceptanceError("governed candidate binding issue_number must be positive")
+    predecessor = binding.get("accepted_repository_predecessor")
+    if not isinstance(predecessor, str) or not SHA_RE.fullmatch(predecessor):
+        raise AcceptanceError("governed candidate binding predecessor must be exact Git SHA")
+    if binding.get("base_ref") != "refs/heads/main":
+        raise AcceptanceError("governed candidate binding must target refs/heads/main")
+    work = binding.get("governed_work")
+    if not isinstance(work, dict) or work.get("record_type") != "governed-work" or work.get("stage") not in {"design","plan","build"} or not _nonempty(work.get("work_id")):
+        raise AcceptanceError("governed candidate binding work identity is invalid")
+    auth = work.get("bounded_authorization")
+    actor = auth.get("acceptance_actor") if isinstance(auth, dict) else None
+    if not _valid_actor(actor):
+        raise AcceptanceError("governed candidate binding lacks valid acceptance_actor")
+    required_assurance = work.get("required_assurance_obligation_ids")
+    if not isinstance(required_assurance, list) or any(not _nonempty(x) for x in required_assurance) or len(required_assurance) != len(set(required_assurance)):
+        raise AcceptanceError("governed candidate binding Assurance gate set is invalid")
+    out = dict(binding)
+    out["accepted_repository_predecessor"] = predecessor.lower()
+    out["governed_work"] = dict(work)
+    return out
+
+def validate_bootstrap_candidate_binding(binding):
+    required = {"schema_version","record_type","bootstrap_provenance_issue","acceptance_actor","accepted_repository_predecessor","base_ref"}
+    if not isinstance(binding, dict) or set(binding) != required or binding.get("schema_version") != "1" or binding.get("record_type") != "bootstrap-candidate-binding":
+        raise AcceptanceError("bootstrap candidate binding fields are not canonical")
+    issue = binding.get("bootstrap_provenance_issue")
+    if isinstance(issue, bool) or not isinstance(issue, int) or issue < 1:
+        raise AcceptanceError("bootstrap candidate binding provenance issue must be positive")
+    if not _valid_actor(binding.get("acceptance_actor")):
+        raise AcceptanceError("bootstrap candidate binding lacks valid acceptance_actor")
+    predecessor = binding.get("accepted_repository_predecessor")
+    if not isinstance(predecessor, str) or not SHA_RE.fullmatch(predecessor):
+        raise AcceptanceError("bootstrap candidate binding predecessor must be exact Git SHA")
+    if binding.get("base_ref") != "refs/heads/main":
+        raise AcceptanceError("bootstrap candidate binding must target refs/heads/main")
+    out = dict(binding)
+    out["accepted_repository_predecessor"] = predecessor.lower()
+    return out
+
+def github_candidate_binding(repo, candidate_sha, record_type):
+    if not isinstance(candidate_sha, str) or not SHA_RE.fullmatch(candidate_sha):
+        raise AcceptanceError("candidate binding lookup requires exact Git SHA")
+    value = _gh_object(f"repos/{repo}/git/commits/{candidate_sha.lower()}")
+    binding = _candidate_binding_from_message(value.get("message"), record_type)
+    if record_type == "governed-candidate-binding":
+        return validate_governed_candidate_binding(binding)
+    if record_type == "bootstrap-candidate-binding":
+        return validate_bootstrap_candidate_binding(binding)
+    raise AcceptanceError("unsupported candidate binding record type")
+
+def _candidate_from_governed_binding(binding, head_sha):
+    binding = validate_governed_candidate_binding(binding)
+    if not isinstance(head_sha, str) or not SHA_RE.fullmatch(head_sha):
+        raise AcceptanceError("governed candidate head must be exact Git SHA")
+    work = binding["governed_work"]
+    return {
+        "schema_version":"1","record_type":"governed-pr-candidate",
+        "work_id":work["work_id"],"issue_number":binding["issue_number"],
+        "head_sha":head_sha.lower(),
+        "accepted_repository_predecessor":binding["accepted_repository_predecessor"],
+        "base_ref":"refs/heads/main",
+    }
+
 def github_resulting_pull_requests(repo, accepted_sha):
     if not isinstance(accepted_sha, str) or not SHA_RE.fullmatch(accepted_sha):
         raise RuntimeError("accepted revision must be an exact Git SHA")
@@ -1079,8 +1171,20 @@ def github_resulting_pull_requests(repo, accepted_sha):
         if isinstance(number, bool) or not isinstance(number, int) or number < 1:
             continue
         detail = _gh_object(f"repos/{repo}/pulls/{number}")
-        if str(detail.get("merge_commit_sha","")).lower() == accepted_sha:
-            out.append(detail)
+        if str(detail.get("merge_commit_sha", "")).lower() != accepted_sha:
+            continue
+        head = detail.get("head")
+        head_sha = str(head.get("sha", "")).lower() if isinstance(head, dict) else ""
+        if SHA_RE.fullmatch(head_sha):
+            try:
+                detail["_fs0_governed_binding"] = github_candidate_binding(repo, head_sha, "governed-candidate-binding")
+            except Exception:
+                pass
+            try:
+                detail["_fs0_bootstrap_binding"] = github_candidate_binding(repo, head_sha, "bootstrap-candidate-binding")
+            except Exception:
+                pass
+        out.append(detail)
     return out
 
 def resolve_bootstrap_merge_acceptance(repo, bootstrap_state, accepted_sha, pull_requests=None, provenance_issue=None):
@@ -1092,59 +1196,75 @@ def resolve_bootstrap_merge_acceptance(repo, bootstrap_state, accepted_sha, pull
     issue_number = bootstrap_state.get("bootstrap_provenance_issue")
     if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
         return {"status":"invalid","defects":["cutover state lacks bootstrap provenance issue"]}
-    try:
-        issue = provenance_issue or _gh_object(f"repos/{repo}/issues/{issue_number}")
-        authorization = bootstrap_authorization_from_issue_body(issue.get("body"))
-    except Exception as exc:
-        return {"status":"invalid","defects":[str(exc)]}
-    actor = authorization["acceptance_actor"]
-    predecessor = authorization["accepted_repository_predecessor"]
     pulls = pull_requests if pull_requests is not None else github_resulting_pull_requests(repo, accepted_sha)
     matches, defects = [], []
     for pr in pulls:
         if not isinstance(pr, dict):
             continue
+        head = pr.get("head")
+        head_sha = str(head.get("sha", "")).lower() if isinstance(head, dict) else ""
+        binding = pr.get("_fs0_bootstrap_binding")
+        if not isinstance(binding, dict):
+            if "_fs0_bootstrap_conformance" in pr:
+                try:
+                    old_candidate = bootstrap_cutover_candidate_from_body(pr.get("body"))
+                    old_auth = bootstrap_authorization_from_issue_body((provenance_issue or {}).get("body"))
+                    binding = {
+                        "schema_version":"1","record_type":"bootstrap-candidate-binding",
+                        "bootstrap_provenance_issue":old_candidate["bootstrap_provenance_issue"],
+                        "acceptance_actor":old_auth["acceptance_actor"],
+                        "accepted_repository_predecessor":old_candidate["accepted_repository_predecessor"],
+                        "base_ref":old_candidate["base_ref"],
+                    }
+                except Exception:
+                    binding = None
+            elif SHA_RE.fullmatch(head_sha):
+                try:
+                    binding = github_candidate_binding(repo, head_sha, "bootstrap-candidate-binding")
+                except Exception as exc:
+                    defects.append(str(exc))
+                    continue
+        if not isinstance(binding, dict):
+            continue
         try:
-            candidate = pr.get("_fs0_bootstrap_candidate")
-            if not isinstance(candidate, dict):
-                candidate = bootstrap_cutover_candidate_from_body(pr.get("body"))
-        except AcceptanceError:
+            binding = validate_bootstrap_candidate_binding(binding)
+        except AcceptanceError as exc:
+            defects.append(str(exc))
             continue
-        if candidate.get("bootstrap_provenance_issue") != issue_number:
+        if binding.get("bootstrap_provenance_issue") != issue_number:
             continue
+        actor = binding["acceptance_actor"]
+        predecessor = binding["accepted_repository_predecessor"]
         number = pr.get("number")
         merged_at = pr.get("merged_at")
         merged_by = pr.get("merged_by")
-        head = pr.get("head")
         base = pr.get("base")
         valid = (
             isinstance(number, int) and not isinstance(number, bool) and number > 0
             and _nonempty(merged_at)
             and isinstance(merged_by, dict) and merged_by.get("id") == actor.get("id")
-            and isinstance(head, dict) and str(head.get("sha","")).lower() == candidate["head_sha"]
+            and isinstance(head, dict) and bool(SHA_RE.fullmatch(head_sha))
             and isinstance(base, dict) and base.get("ref") == "main"
-            and str(base.get("sha","")).lower() == predecessor
-            and candidate["accepted_repository_predecessor"] == predecessor
-            and str(pr.get("merge_commit_sha","")).lower() == accepted_sha
+            and str(base.get("sha", "")).lower() == predecessor
+            and str(pr.get("merge_commit_sha", "")).lower() == accepted_sha
         )
         if not valid:
-            defects.append({"pull_request_number":number,"error":"bootstrap merge binding invalid"})
+            defects.append({"pull_request_number":number,"error":"bootstrap immutable merge binding invalid"})
             continue
         conformance = pr.get("_fs0_bootstrap_conformance")
         if not isinstance(conformance, dict):
-            conformance = github_candidate_conformance(repo, candidate["head_sha"], merged_at)
+            conformance = github_candidate_conformance(repo, head_sha, merged_at)
         if conformance.get("status") != "pass":
             defects.append({"pull_request_number":number,"error":"bootstrap exact-head Conformance did not pass before merge"})
             continue
         matches.append({
             "schema_version":"1","record_type":"bootstrap-pr-acceptance","status":"accepted",
             "bootstrap_provenance_issue":issue_number,"pull_request_number":number,
-            "candidate_head":candidate["head_sha"],"accepted_repository_predecessor":predecessor,
+            "candidate_head":head_sha,"accepted_repository_predecessor":predecessor,
             "resulting_accepted_revision":accepted_sha,
             "actor":{"id":merged_by.get("id"),"login":merged_by.get("login")},
             "merged_at":merged_at,
-            "eligibility":{"status":"pass","mechanical_verification":conformance,
-                           "semantic_audit":{"status":"satisfied-by-authorized-merge"}},
+            "eligibility":{"status":"pass","mechanical_verification":conformance,"semantic_audit":{"status":"satisfied-by-authorized-merge"}},
         })
     if len(matches) != 1:
         defects.append(f"accepted bootstrap revision must resolve to exactly one eligible designated cutover PR; found {len(matches)}")
@@ -1160,24 +1280,28 @@ def resolve_governed_resulting_acceptance(repo, accepted_sha, pull_requests=None
     for pr in pulls:
         if not isinstance(pr, dict):
             continue
+        head = pr.get("head")
+        head_sha = str(head.get("sha", "")).lower() if isinstance(head, dict) else ""
+        binding = pr.get("_fs0_governed_binding")
+        if not isinstance(binding, dict):
+            if not SHA_RE.fullmatch(head_sha):
+                continue
+            try:
+                binding = github_candidate_binding(repo, head_sha, "governed-candidate-binding")
+            except Exception as exc:
+                defects.append(str(exc))
+                continue
         try:
-            candidate = pr.get("_fs0_candidate")
-            if not isinstance(candidate, dict):
-                candidate = governed_pr_candidate_from_body(pr.get("body"))
-        except AcceptanceError:
-            continue
-        try:
-            issue = pr.get("_fs0_issue")
-            if not isinstance(issue, dict):
-                issue = _gh_object(f"repos/{repo}/issues/{candidate['issue_number']}")
-            work = governed_work_from_issue_body(issue.get("body"))
-            if work.get("work_id") != candidate.get("work_id") or work.get("stage") not in {"design","plan","build"}:
-                raise AcceptanceError("governed candidate issue/work binding invalid")
+            binding = validate_governed_candidate_binding(binding)
+            work = binding["governed_work"]
+            candidate = _candidate_from_governed_binding(binding, head_sha)
             detail = dict(pr)
+            detail["_fs0_governed_binding"] = binding
+            detail["_fs0_work"] = work
             detail["_fs0_candidate"] = candidate
             if not isinstance(detail.get("_fs0_eligibility"), dict):
-                detail["_fs0_eligibility"] = github_candidate_eligibility(repo, candidate["head_sha"], work, detail.get("merged_at"))
-            resolution = resolve_governance_work_acceptance(issue.get("body"), [detail], work["stage"], work["work_id"])
+                detail["_fs0_eligibility"] = github_candidate_eligibility(repo, head_sha, work, detail.get("merged_at"))
+            resolution = resolve_governance_work_acceptance(work, [detail], work["stage"], work["work_id"])
         except Exception as exc:
             defects.append(str(exc))
             continue

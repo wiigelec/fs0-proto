@@ -470,7 +470,7 @@ def _fs0_pre_main_provenance_check_governance_state_resolution(root, assertion_i
         for aid in assertion_ids
     ]
 
-def check_governance_state_resolution(root, assertion_ids):
+def _fs0_pre_immutable_binding_check_governance_state_resolution(root, assertion_ids):
     legacy_results = _fs0_pre_main_provenance_check_governance_state_resolution(root, assertion_ids)
     path = root / 'repo/governance/accepted_state.py'
     spec = importlib.util.spec_from_file_location('fs0_main_provenance', path)
@@ -501,6 +501,48 @@ def check_governance_state_resolution(root, assertion_ids):
                 else 'refs/heads/main requires eligible authorized merge provenance'
             )
             out.append(result(aid,'pass' if ok else 'fail',detail,{'eligible_bootstrap':accepted.get('status'),'ineligible_bootstrap':ineligible.get('status'),'direct_push':direct.get('status'),'unproven_main':unproven.get('status'),'proven_main':proven.get('status')}))
+        else:
+            out.append(item)
+    return out
+
+
+def check_governance_state_resolution(root, assertion_ids):
+    legacy_results = _fs0_pre_immutable_binding_check_governance_state_resolution(root, assertion_ids)
+    path = root / "repo/governance/accepted_state.py"
+    spec = importlib.util.spec_from_file_location("fs0_immutable_binding", path)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    work = {
+        "schema_version":"1","record_type":"governed-work","stage":"build",
+        "stage_steps":["implement","verify","accept"],"work_id":"B-IMMUTABLE",
+        "predecessor_id":"P-IMMUTABLE","scope":["repo/governance/work.py"],
+        "material_exclusions":[],"candidate_result":{"candidate":"bound"},
+        "completion_conditions":["done"],"disposition":"pending",
+        "provenance":{"plan":"P-IMMUTABLE"},
+        "bounded_authorization":{"acceptance_actor":{"id":101,"login":"authorized"},"mutation_scope":["repo/governance/work.py"]},
+        "required_assurance_obligation_ids":[],"accepted_plan_id":"P-IMMUTABLE",
+        "verification":{"evidence":["evidence:test"],"conformance_status":"pass"},
+    }
+    head="1"*40; predecessor="2"*40; resulting="3"*40
+    binding={"schema_version":"1","record_type":"governed-candidate-binding","issue_number":23,"accepted_repository_predecessor":predecessor,"base_ref":"refs/heads/main","governed_work":work}
+    eligibility={"status":"pass","candidate_sha":head,"conformance":{"status":"pass","candidate_sha":head},"assurance":{"status":"pass","candidate_sha":head,"required_obligation_ids":[]}}
+    pr={"number":9,"body":"MUTABLE PR BODY MAY CHANGE","merged_at":"2026-01-01T00:20:00Z","merged_by":{"id":101,"login":"authorized"},"head":{"sha":head},"base":{"ref":"main","sha":predecessor},"merge_commit_sha":resulting,"_fs0_governed_binding":binding,"_fs0_eligibility":eligibility,"_fs0_issue":{"body":"MUTABLE ISSUE BODY MAY CHANGE"}}
+    immutable_accept=m.resolve_governed_resulting_acceptance("o/r",resulting,[pr])
+    forged=dict(pr)
+    forged_binding=dict(binding); forged_work=dict(work); forged_auth=dict(work["bounded_authorization"])
+    forged_auth["acceptance_actor"]={"id":202,"login":"later-editor"}
+    forged_work["bounded_authorization"]=forged_auth; forged_binding["governed_work"]=forged_work
+    forged["_fs0_governed_binding"]=forged_binding
+    forged_resolution=m.resolve_governed_resulting_acceptance("o/r",resulting,[forged])
+    source=path.read_text(encoding="utf-8")
+    self_change=(root/"repo/governance/self_change.py").read_text(encoding="utf-8")
+    bootstrap=(root/"repo/governance/bootstrap_cutover.py").read_text(encoding="utf-8")
+    immutable_ok=(immutable_accept.get("status")=="accepted" and forged_resolution.get("status")=="invalid" and "governed-candidate-binding" in source and "github_candidate_binding" in source and "governed-candidate-binding" in self_change and "bootstrap-candidate-binding" in bootstrap)
+    out=[]
+    for item in legacy_results:
+        aid=item.get("assertion_id") if isinstance(item,dict) else None
+        if aid in {"FS0-ASSERT-GOV-016","FS0-ASSERT-GOV-037"}:
+            out.append(result(aid,"pass" if immutable_ok else "fail","accepted main and governed merge acceptance use immutable candidate-bound Governance metadata; later issue/PR body edits cannot create or rewrite acceptance",{"immutable_bound_acceptance":immutable_accept.get("status"),"forged_post_merge_authorization":forged_resolution.get("status"),"commit_binding_helpers":"github_candidate_binding" in source}))
         else:
             out.append(item)
     return out

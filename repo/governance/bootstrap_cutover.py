@@ -145,6 +145,18 @@ def bootstrap_pr_body(issue_number, candidate, base):
               "accepted_repository_predecessor":base,"base_ref":"refs/heads/main"}
     return f"Governed by bootstrap provenance issue #{issue_number}.\n\nThis exact PR head is the designated bootstrap-cutover candidate. Merging is bootstrap acceptance only when exact-head remote FS0 Conformance has passed.\n\n```json\n" + json.dumps(record, indent=2) + "\n```\n"
 
+def bootstrap_candidate_binding(issue_number, actor_id, actor_login, base):
+    return {
+        "schema_version":"1","record_type":"bootstrap-candidate-binding",
+        "bootstrap_provenance_issue":issue_number,
+        "acceptance_actor":{"id":actor_id,"login":actor_login},
+        "accepted_repository_predecessor":base,"base_ref":"refs/heads/main",
+    }
+
+def bootstrap_candidate_commit_message(issue_number, actor_id, actor_login, base):
+    binding = bootstrap_candidate_binding(issue_number, actor_id, actor_login, base)
+    return "Prepare FS0 bootstrap cutover\n\n```json\n" + json.dumps(binding, indent=2, sort_keys=True) + "\n```\n"
+
 def main():
     parser = argparse.ArgumentParser(
         description="Create the one-time FS0 bootstrap cutover PR."
@@ -336,7 +348,7 @@ def main():
 
         current_step += 1
         step(current_step, "COMMIT", "commit exact cutover candidate")
-        git("commit", "-m", "Prepare FS0 bootstrap cutover")
+        run(["git", "commit", "-F", "-"], input_text=bootstrap_candidate_commit_message(issue_number, actor_id, actor_login, base))
         candidate = git("rev-parse", "HEAD").stdout.strip().lower()
         result["commit_sha"] = candidate
         result["commit_count"] = 1
