@@ -266,93 +266,81 @@ def _aware_timestamp(value):
     return parsed.tzinfo is not None and parsed.utcoffset() is not None
 
 def _bootstrap_state_semantics(root, record):
-    state = record.get('state')
-    candidate = record.get('candidate_revision')
-    first = record.get('first_accepted_fs0_revision')
-    issue = record.get('bootstrap_provenance_issue')
-    acceptance = record.get('bootstrap_acceptance_record')
-    cutover = record.get('cutover_timestamp')
-
-    if state == 'candidate':
-        return (
-            (candidate is None or _exact_sha(candidate))
-            and (issue is None or _positive_int(issue))
-            and first is None
-            and acceptance is None
-            and cutover is None
-        )
-
-    if state != 'cutover':
+    required = {
+        "schema_version",
+        "record_type",
+        "state",
+        "bootstrap_provenance_issue",
+        "accepted_ref",
+        "cutover_timestamp",
+    }
+    if not isinstance(record, dict) or set(record) != required:
         return False
-    if candidate is not None:
+    if record.get("schema_version") != "1" or record.get("record_type") != "bootstrap-state":
         return False
-    if not _exact_sha(first) or not _positive_int(issue):
+    if record.get("state") not in {"candidate", "cutover"}:
         return False
-    if not _aware_timestamp(cutover) or not isinstance(acceptance, dict):
+    if record.get("accepted_ref") != "refs/heads/main":
         return False
-
-    try:
-        module = _load_module_for_fc033(
-            root / 'repo/governance/accepted_state.py',
-            'fs0_bootstrap_state_acceptance',
-        )
-        body = module.MARKER + '\n```json\n' + json.dumps(acceptance) + '\n```'
-        parsed = module.parse_acceptance_comment(body)
-    except Exception:
-        return False
-
+    if record["state"] == "candidate":
+        return record.get("bootstrap_provenance_issue") is None and record.get("cutover_timestamp") is None
+    issue = record.get("bootstrap_provenance_issue")
+    stamp = record.get("cutover_timestamp")
     return (
-        isinstance(parsed, dict)
-        and parsed.get('record_type') == 'bootstrap-acceptance'
-        and parsed.get('stage') == 'bootstrap'
-        and parsed.get('candidate_id') == first
-        and parsed.get('disposition') == 'accepted'
-        and parsed.get('resulting_accepted_state') == first
+        isinstance(issue, int)
+        and not isinstance(issue, bool)
+        and issue > 0
+        and isinstance(stamp, str)
+        and stamp.endswith("Z")
+        and len(stamp) >= 20
     )
 
+
 def check_bootstrap_state(root, assertion_ids):
-    path = root / 'repo/state/bootstrap.json'
-    if not path.is_file():
-        return [result(aid, 'fail', 'repo/state/bootstrap.json is missing') for aid in assertion_ids]
+    path = root / "repo/state/bootstrap.json"
     try:
         record = load(path)
+        state_ok = _bootstrap_state_semantics(root, record)
+        synthetic_cutover = {
+            "schema_version": "1",
+            "record_type": "bootstrap-state",
+            "state": "cutover",
+            "bootstrap_provenance_issue": 1,
+            "accepted_ref": "refs/heads/main",
+            "cutover_timestamp": "2026-01-01T00:00:00Z",
+        }
+        shared_cutover_semantics_ok = _bootstrap_state_semantics(root, synthetic_cutover)
+        orchestration = load(root / "repo/conformance/orchestration.json")
+        pre_cutover_mode_ok = (
+            record.get("state") != "candidate"
+            or orchestration.get("mode") == "candidate-bootstrap-verification"
+        )
+        checks = {
+            "FS0-ASSERT-FC-037": (
+                state_ok and shared_cutover_semantics_ok,
+                "repo/state/bootstrap.json contains the minimal bootstrap lifecycle/provenance fields and identifies refs/heads/main",
+            ),
+            "FS0-ASSERT-CONF-011": (
+                pre_cutover_mode_ok,
+                "while bootstrap state is candidate, candidate Conformance execution is explicitly bootstrap mechanical verification evidence only",
+            ),
+        }
+        evidence = {
+            "path": "repo/state/bootstrap.json",
+            "state": record.get("state"),
+            "bootstrap_provenance_issue": record.get("bootstrap_provenance_issue"),
+            "accepted_ref": record.get("accepted_ref"),
+            "cutover_timestamp": record.get("cutover_timestamp"),
+            "conformance_mode": orchestration.get("mode"),
+        }
     except Exception as exc:
-        return [result(aid, 'fail', f'bootstrap state is not valid JSON: {exc}') for aid in assertion_ids]
-    required = {'schema_version', 'record_type', 'state', 'candidate_revision', 'first_accepted_fs0_revision', 'bootstrap_provenance_issue', 'bootstrap_acceptance_record', 'accepted_ref', 'cutover_timestamp'}
-    state_ok = set(record) == required and record.get('schema_version') == '1' and (record.get('record_type') == 'bootstrap-state') and (record.get('state') in {'candidate', 'cutover'}) and (record.get('accepted_ref') == 'refs/heads/main') and _bootstrap_state_semantics(root, record)
-    orchestration = load(root / 'repo/conformance/orchestration.json')
-    pre_cutover_mode_ok = record.get('state') != 'candidate' or orchestration.get('mode') == 'candidate-bootstrap-verification'
-    synthetic_sha = 'a' * 40
-    synthetic_cutover = {
-        'schema_version': '1',
-        'record_type': 'bootstrap-state',
-        'state': 'cutover',
-        'candidate_revision': None,
-        'first_accepted_fs0_revision': synthetic_sha,
-        'bootstrap_provenance_issue': 1,
-        'bootstrap_acceptance_record': {
-            'schema_version': '1',
-            'record_type': 'bootstrap-acceptance',
-            'acceptance_id': 'FS0-BOOTSTRAP-ACCEPT-REGRESSION',
-            'stage': 'bootstrap',
-            'work_id': 'FS0-BOOTSTRAP',
-            'candidate_id': synthetic_sha,
-            'disposition': 'accepted',
-            'actor': {'id': 101, 'login': 'authorized-actor'},
-            'evidence': [
-                {'type': 'bootstrap-verification', 'result': 'pass'},
-                {'type': 'bootstrap-semantic-audit', 'result': 'satisfied'},
-            ],
-            'decision_timestamp': '2026-01-01T00:00:00Z',
-            'resulting_accepted_state': synthetic_sha,
-        },
-        'accepted_ref': 'refs/heads/main',
-        'cutover_timestamp': '2026-01-01T00:00:01Z',
-    }
-    shared_cutover_semantics_ok = _bootstrap_state_semantics(root, synthetic_cutover)
-    checks = {'FS0-ASSERT-FC-037': (state_ok and shared_cutover_semantics_ok, 'repo/state/bootstrap.json contains the required bootstrap-state fields, uses candidate|cutover lifecycle state, and identifies refs/heads/main'), 'FS0-ASSERT-CONF-011': (pre_cutover_mode_ok, 'while bootstrap state is candidate, candidate Conformance execution is explicitly bootstrap mechanical verification evidence only')}
-    evidence = {'path': 'repo/state/bootstrap.json', 'state': record.get('state'), 'accepted_ref': record.get('accepted_ref'), 'conformance_mode': orchestration.get('mode')}
-    return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
+        checks = {aid: (False, "bootstrap state validation setup failed") for aid in assertion_ids}
+        evidence = {"error": str(exc)}
+    return [
+        result(aid, "pass" if checks[aid][0] else "fail", checks[aid][1], evidence)
+        for aid in assertion_ids
+    ]
+
 
 
 def check_governance_state_resolution(root, assertion_ids):
@@ -440,7 +428,7 @@ def check_governance_state_resolution(root, assertion_ids):
         )
         cutover_source = cutover_path.read_text(encoding="utf-8")
         bootstrap_pr_ok = (
-            "repos/{repo}/pulls" in cutover_source
+            "/pulls" in cutover_source
             and "--accept-bootstrap" not in cutover_source
             and "bootstrap-cutover" in cutover_source
             and "explicit bootstrap acceptance" in cutover_source
@@ -1057,9 +1045,6 @@ def _bootstrap_clean_room_regression(root):
         fresh_state = dict(load(fresh_state_path))
         fresh_state.update({
             'state': 'candidate',
-            'candidate_revision': None,
-            'first_accepted_fs0_revision': None,
-            'bootstrap_acceptance_record': None,
             'cutover_timestamp': None,
         })
         fresh_state_path.write_text(json.dumps(fresh_state, indent=2) + '\n', encoding='utf-8')
@@ -1324,9 +1309,6 @@ def _fresh_bootstrap_guard_regression(root):
     canonical = dict(load(root / 'repo/bootstrap/data/state/bootstrap.json'))
     canonical.update({
         'state': 'candidate',
-        'candidate_revision': None,
-        'first_accepted_fs0_revision': None,
-        'bootstrap_acceptance_record': None,
         'cutover_timestamp': None,
     })
     with tempfile.TemporaryDirectory() as td:

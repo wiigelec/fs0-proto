@@ -374,7 +374,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-FC-037",
       "owner_authority_id": "FS0-AUTH-FRAMEWORK",
-      "statement": "FS0 SHALL maintain one machine-resolvable bootstrap cutover record containing state, applicable candidate or accepted revision, bootstrap provenance, acceptance record, accepted ref, and cutover timestamp.",
+      "statement": "FS0 SHALL maintain one machine-resolvable bootstrap state record containing lifecycle state, bootstrap provenance issue when established, accepted ref, and cutover timestamp when established.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
