@@ -309,9 +309,6 @@ def authorize(root: Path):
         fail(
             "accepted_plan_id does not resolve to Governance Plan work"
         )
-    if plan.get("disposition") != "accepted":
-        fail("resolved Governance Plan is not accepted")
-
     plan_scope = plan.get(
         "realization_intent", {}
     ).get("build_scope", [])
@@ -320,22 +317,19 @@ def authorize(root: Path):
             "Governance Build scope exceeds accepted Plan build_scope"
         )
 
-    comments = accepted_state.github_issue_comments_for(
+    pull_requests = accepted_state.github_pull_requests_for_issue(
         repo,
         plan_issue.get("number"),
     )
-    plan_acceptance = (
-        accepted_state.resolve_governance_work_acceptance(
-            plan_issue.get("body"),
-            comments,
-            "plan",
-            accepted_plan_id,
-        )
+    plan_acceptance = accepted_state.resolve_governance_work_acceptance(
+        plan_issue.get("body"),
+        pull_requests,
+        "plan",
+        accepted_plan_id,
     )
     if plan_acceptance.get("status") != "accepted":
         fail(
-            "resolved Governance Plan lacks exactly one explicit "
-            "authorized accepted Governance record"
+            "resolved Governance Plan lacks authorized merged-PR acceptance"
         )
 
     if not recovery_authority_allowed(
@@ -369,11 +363,9 @@ def authorize(root: Path):
         "governance_issue_number": build_issue_number,
         "accepted_plan_id": accepted_plan_id,
         "accepted_plan_issue_number": plan_issue.get("number"),
-        "plan_acceptance_id": (
-            plan_acceptance[
-                "acceptance_records"
-            ][0]["record"]["acceptance_id"]
-        ),
+        "plan_acceptance_pr_number": plan_acceptance[
+            "acceptance_records"
+        ][0]["pull_request_number"],
         "authority_purpose": plan.get("authority_purpose"),
         "changed_guarded_paths": changed,
         "recovery_authority_required": (

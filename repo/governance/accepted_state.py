@@ -269,109 +269,107 @@ def governed_work_from_issue_body(body):
     return matches[0]
 
 
-def resolve_governance_work_acceptance(issue_body, comments, expected_stage, expected_work_id):
-    if expected_stage not in {"design", "plan", "build"}:
-        raise AcceptanceError("expected_stage must be design|plan|build")
-    if not _nonempty(expected_work_id):
-        raise AcceptanceError("expected_work_id must be non-empty")
+def governed_pr_candidate_from_body(body):
+    matches = [obj for obj in _json_fence_objects(body) if obj.get("record_type") == "governed-pr-candidate"]
+    if len(matches) != 1:
+        raise AcceptanceError("pull request must expose exactly one governed-pr-candidate JSON record")
+    candidate = matches[0]
+    required = {"schema_version","record_type","work_id","issue_number","head_sha","accepted_repository_predecessor","base_ref"}
+    if set(candidate) != required:
+        raise AcceptanceError("governed PR candidate fields are not canonical")
+    if candidate.get("schema_version") != "1" or not _nonempty(candidate.get("work_id")):
+        raise AcceptanceError("invalid governed PR candidate identity")
+    issue_number = candidate.get("issue_number")
+    if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
+        raise AcceptanceError("governed PR candidate issue_number must be positive")
+    for key in ("head_sha", "accepted_repository_predecessor"):
+        value = candidate.get(key)
+        if not isinstance(value, str) or not SHA_RE.fullmatch(value):
+            raise AcceptanceError(f"governed PR candidate {key} must be an exact Git SHA")
+        candidate[key] = value.lower()
+    if candidate.get("base_ref") != "refs/heads/main":
+        raise AcceptanceError("governed PR candidate must target refs/heads/main")
+    return candidate
 
-    authorized_actor = _authorized_actor(
-        issue_body,
-        "governance-acceptance",
-    )
-    if authorized_actor is None:
-        return {
-            "schema_version": "1",
-            "record_type": "governance-work-acceptance-resolution",
-            "status": "invalid",
-            "stage": expected_stage,
-            "work_id": expected_work_id,
-            "acceptance_records": [],
-            "defects": [
-                "issue does not expose exactly one machine-resolvable acceptance_actor"
-            ],
-        }
+
+def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage, expected_work_id):
+    if expected_stage not in {"design", "plan", "build"} or not _nonempty(expected_work_id):
+        raise AcceptanceError("invalid requested governed-work acceptance identity")
+    work = governed_work_from_issue_body(issue_body)
+    if work.get("stage") != expected_stage or work.get("work_id") != expected_work_id:
+        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":["issue governed-work identity does not match requested stage/work"]}
+    auth = work.get("bounded_authorization")
+    actor = auth.get("acceptance_actor") if isinstance(auth, dict) else None
+    if not _valid_actor(actor):
+        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":["issue does not expose one valid acceptance_actor"]}
 
     matches = []
     defects = []
-    seen_ids = set()
-
-    for comment in comments:
-        body = comment.get("body") if isinstance(comment, dict) else None
-        if not isinstance(body, str) or MARKER not in body:
+    for pr in pull_requests:
+        if not isinstance(pr, dict):
             continue
-        # Authenticate before parsing or uniqueness checks. Untrusted
-        # commenters cannot create either acceptance or a resolution defect.
-        if not _github_actor_matches_comment(comment, authorized_actor):
-            continue
-
         try:
-            record = parse_acceptance_comment(body)
-        except AcceptanceError as exc:
-            defects.append({
-                "comment_id": comment.get("id") if isinstance(comment, dict) else None,
-                "error": str(exc),
-            })
+            candidate = pr.get("_fs0_candidate")
+            if not isinstance(candidate, dict):
+                candidate = governed_pr_candidate_from_body(pr.get("body"))
+        except AcceptanceError:
             continue
-
-        if (
-            record.get("record_type") != "governance-acceptance"
-            or record.get("stage") != expected_stage
-            or record.get("work_id") != expected_work_id
-        ):
+        if candidate.get("work_id") != expected_work_id:
             continue
-
-        acceptance_id = record["acceptance_id"]
-        if acceptance_id in seen_ids:
-            defects.append({
-                "comment_id": comment.get("id") if isinstance(comment, dict) else None,
-                "error": f"duplicate acceptance_id: {acceptance_id}",
-            })
+        number = pr.get("number")
+        merged_at = pr.get("merged_at")
+        merged_by = pr.get("merged_by")
+        head = pr.get("head")
+        base = pr.get("base")
+        resulting = pr.get("merge_commit_sha")
+        valid = (
+            isinstance(number, int) and not isinstance(number, bool) and number > 0
+            and _nonempty(merged_at)
+            and isinstance(merged_by, dict) and merged_by.get("id") == actor.get("id")
+            and isinstance(head, dict) and str(head.get("sha", "")).lower() == candidate["head_sha"]
+            and isinstance(base, dict) and base.get("ref") == "main"
+            and str(base.get("sha", "")).lower() == candidate["accepted_repository_predecessor"]
+            and isinstance(resulting, str) and bool(SHA_RE.fullmatch(resulting))
+        )
+        if not valid:
+            defects.append({"pull_request_number": number, "error": "merged pull request does not satisfy candidate/actor/predecessor binding"})
             continue
-        seen_ids.add(acceptance_id)
+        matches.append({
+            "schema_version":"1","record_type":"governed-pr-acceptance","status":"accepted",
+            "work_id":expected_work_id,"issue_number":candidate["issue_number"],
+            "pull_request_number":number,"candidate_head":candidate["head_sha"],
+            "accepted_repository_predecessor":candidate["accepted_repository_predecessor"],
+            "resulting_accepted_revision":resulting.lower(),
+            "actor":{"id":merged_by.get("id"),"login":merged_by.get("login")},
+            "merged_at":merged_at,
+        })
+    if not matches:
+        return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"invalid","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[],"defects":defects or ["governed work has no authorized merged PR acceptance"]}
+    matches.sort(key=lambda x: (x["merged_at"], x["pull_request_number"]))
+    return {"schema_version":"1","record_type":"governance-work-acceptance-resolution","status":"accepted","stage":expected_stage,"work_id":expected_work_id,"acceptance_records":[matches[-1]],"superseded_acceptance_count":len(matches)-1,"defects":[]}
 
-        if record.get("actor") != authorized_actor:
-            defects.append({
-                "comment_id": comment.get("id") if isinstance(comment, dict) else None,
-                "error": "acceptance actor does not match issue authorization",
-            })
+
+def github_pull_requests_for_issue(repo, issue_number):
+    if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
+        raise RuntimeError("issue_number must be a positive integer")
+    pulls = _gh_paginated(f"repos/{repo}/pulls?state=closed&per_page=100")
+    out = []
+    for item in pulls:
+        if not isinstance(item, dict):
             continue
-
-        if record.get("disposition") == "accepted":
-            matches.append({
-                "record": record,
-                "comment_id": comment.get("id") if isinstance(comment, dict) else None,
-                "comment_url": (
-                    comment.get("html_url") or comment.get("url")
-                    if isinstance(comment, dict)
-                    else None
-                ),
-            })
-
-    if defects or len(matches) != 1:
-        if len(matches) != 1:
-            defects.append(
-                "governed work must have exactly one matching accepted Governance record"
-            )
-        return {
-            "schema_version": "1",
-            "record_type": "governance-work-acceptance-resolution",
-            "status": "invalid",
-            "stage": expected_stage,
-            "work_id": expected_work_id,
-            "acceptance_records": matches,
-            "defects": defects,
-        }
-
-    return {
-        "schema_version": "1",
-        "record_type": "governance-work-acceptance-resolution",
-        "status": "accepted",
-        "stage": expected_stage,
-        "work_id": expected_work_id,
-        "acceptance_records": matches,
-        "defects": [],
-    }
+        try:
+            candidate = governed_pr_candidate_from_body(item.get("body"))
+        except AcceptanceError:
+            continue
+        if candidate.get("issue_number") != issue_number:
+            continue
+        number = item.get("number")
+        if isinstance(number, bool) or not isinstance(number, int) or number < 1:
+            continue
+        detail = _gh_object(f"repos/{repo}/pulls/{number}")
+        detail["_fs0_candidate"] = candidate
+        out.append(detail)
+    return out
 
 
 def github_issues(repo):

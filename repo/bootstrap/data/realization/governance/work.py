@@ -188,10 +188,29 @@ def decide(work, disposition, triggered_obligation_ids, cases, findings):
     if r["disposition"] != "pending":
         raise GovernanceWorkError("work already decided")
     if disposition == "accepted":
-        gate = acceptance_eligibility(r, triggered_obligation_ids, cases, findings)
-        if not gate["eligible"]:
-            raise GovernanceWorkError("acceptance blocked: " + gate["reason"])
-    r["disposition"] = disposition
+        raise GovernanceWorkError("accepted disposition is established only by authorized governed PR merge")
+    r["disposition"] = "rejected"
+    return validate_work(r)
+
+
+def apply_merge_acceptance(work, acceptance):
+    r = deepcopy(validate_work(dict(work)))
+    if r["disposition"] != "pending":
+        raise GovernanceWorkError("work already decided")
+    required = {"schema_version","record_type","status","work_id","issue_number","candidate_head","accepted_repository_predecessor","resulting_accepted_revision","actor"}
+    if not isinstance(acceptance, dict) or not required <= set(acceptance):
+        raise GovernanceWorkError("merge acceptance proof is incomplete")
+    if acceptance.get("schema_version") != "1" or acceptance.get("record_type") != "governed-pr-acceptance" or acceptance.get("status") != "accepted" or acceptance.get("work_id") != r["work_id"]:
+        raise GovernanceWorkError("merge acceptance proof does not match governed work")
+    expected = r["bounded_authorization"]["acceptance_actor"]
+    actor = acceptance.get("actor")
+    if not _valid_actor(actor) or actor.get("id") != expected.get("id"):
+        raise GovernanceWorkError("merge acceptance actor is not authorized")
+    for key in ("candidate_head","accepted_repository_predecessor","resulting_accepted_revision"):
+        value = acceptance.get(key)
+        if not isinstance(value, str) or not SHA_RE.fullmatch(value):
+            raise GovernanceWorkError(f"merge acceptance {key} must be exact Git SHA")
+    r["disposition"] = "accepted"
     return validate_work(r)
 
 SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
