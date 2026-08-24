@@ -29,7 +29,7 @@ stage acceptance
 Conformance execution
 Assurance review cases/findings
 GitHub bootstrap operating realization
-acceptance-record resolution rules
+governed merge-acceptance resolution rules
 accepted Git ref resolution
 bootstrap cutover record
 repository orientation surfaces
@@ -225,8 +225,8 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 - Candidate revisions are exact and remotely resolvable.
 - Canonical Conformance executes remotely.
 - Assurance evidence/findings are remotely accessible.
-- Explicit acceptance can be resolved independently of merge state.
-- `refs/heads/main` resolves the accepted repository revision and agrees with its acceptance record.
+- Explicit acceptance is resolvable as the authorized merge of an eligible governed pull request, including the accepted candidate identity and attributable acceptance actor.
+- `refs/heads/main` resolves the accepted repository revision produced by the most recent authorized governed merge.
 - Unauthorized successor work is distinguishable from authorized work.
 
 ## Self-Hosting
@@ -296,7 +296,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 2. whether any omitted capability is actually required to complete that cycle;
 3. whether the bootstrap exception is sufficiently bounded;
 4. whether GitHub operating requirements accidentally redefine portable Governance semantics;
-5. whether explicit acceptance can be represented remotely without equating acceptance with merge;
+5. whether explicit acceptance is unambiguously realized by authorized merge of an eligible governed pull request without requiring a separate acceptance comment, receipt, or publication action;
 6. whether the minimum Conformance kernel satisfies all required Conformance closures;
 7. whether the minimum Assurance kernel can perform the semantic reviews needed for Design, Plan, and Build acceptance;
 8. whether candidate and accepted repository states are unambiguously identifiable;
@@ -305,7 +305,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 11. whether any current repo-spec mechanism should be reused conceptually to reduce bootstrap risk;
 12. whether the proposed FS1 demonstration is sufficiently independent to prove genuine self-hosting; and
 13. whether any bootstrap-only shortcut would remain as an undeclared permanent authority path after cutover;
-14. whether the structured acceptance-record plus `refs/heads/main` model is sufficient to distinguish merge and publication from Governance acceptance;
+14. whether the eligible authorized merge plus `refs/heads/main` model is sufficient to distinguish candidate eligibility, the acceptance event, and the resulting accepted repository state;
 15. whether the fixed FS0 GitHub binding is minimal but complete enough to generate realization scripts without inventing Governance semantics; and
 16. whether pre-cutover verification is clearly distinguished from governed FS0 Conformance and Assurance.
 17. whether the installed FS0 operating substrate is sufficient for complete self-hosting without the external bootstrap environment;
@@ -320,7 +320,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 26. whether the complete successor Design Proposal seed set is installed before cutover and can drive the remainder of repo-spec without later bootstrap semantics;
 27. whether every seed proposal is explicitly non-authoritative and machine-enumerable through the proposal registry;
 28. whether the minimum structured record contracts are sufficient for the bootstrap implementation to avoid inventing authority, requirement, correspondence, state, or proposal fields; and
-29. whether bootstrap acceptance is unambiguously located as a structured comment on the dedicated bootstrap provenance issue.
+29. whether bootstrap acceptance is unambiguously the authorized merge of the designated validated bootstrap-cutover pull request associated with the dedicated bootstrap provenance issue.
 30. whether the retained bootstrap payload contains only bootstrap Design input, canonical realization inputs, and bootstrap implementation required for FS0 construction and maintenance;
 31. whether generated artifacts remain semantically distinct from non-authoritative bootstrap maintenance source; and
 32. whether post-cutover authoritative determination is independent of reading the bootstrap payload.
@@ -331,6 +331,6 @@ Before generating bootstrap scripts, this proposal should be audited for:
 37. whether exactly one canonical bootstrap invocation surface is machine-resolvable from repository state;
 38. whether the canonical bootstrap invocation surface contains only invocation concerns and delegates substantive behavior to separately identified implementation; and
 39. whether substantive bootstrap implementation is machine-resolvably distinct from the canonical invocation surface without Design prescribing filesystem placement.
-40. whether acceptance-record marker, fields, record types, stage values, and dispositions are defined by Design rather than invented by implementation;
+40. whether merge-acceptance candidate identity, authorized actor, eligibility conditions, acceptance event, and resulting-state semantics are defined by Design rather than invented by implementation;
 41. whether bootstrap candidate construction explicitly consumes both bootstrap Design input and canonical bootstrap realization inputs; and
 42. whether the bounded FS0 generation mechanism is distinguished from a deferred generalized successor-framework projection architecture.
