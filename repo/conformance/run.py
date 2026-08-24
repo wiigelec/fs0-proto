@@ -1155,7 +1155,14 @@ def _fresh_bootstrap_guard_regression(root):
     spec = importlib.util.spec_from_file_location('fs0_fresh_bootstrap_guard', guard_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    canonical = load(root / 'repo/bootstrap/data/state/bootstrap.json')
+    canonical = dict(load(root / 'repo/bootstrap/data/state/bootstrap.json'))
+    canonical.update({
+        'state': 'candidate',
+        'candidate_revision': None,
+        'first_accepted_fs0_revision': None,
+        'bootstrap_acceptance_record': None,
+        'cutover_timestamp': None,
+    })
     with tempfile.TemporaryDirectory() as td:
         fresh = Path(td)
         subprocess.run(['git', 'init'], cwd=fresh, text=True, capture_output=True, check=True)
