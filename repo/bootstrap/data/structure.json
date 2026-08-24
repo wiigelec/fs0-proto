@@ -259,6 +259,16 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/realization/governance/bootstrap-cutover",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/bootstrap/data/realization/governance/bootstrap_cutover.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py",
       "object_type": "file",
       "presence": "required"
@@ -597,6 +607,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/governance/bootstrap_cutover.py",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/governance/bootstrap_mutation_guard.py",
       "object_type": "file",
       "presence": "required"
@@ -685,6 +700,11 @@
     },
     {
       "path": "repo/scripts/accepted-state",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
+      "path": "repo/scripts/bootstrap-cutover",
       "object_type": "file",
       "presence": "required"
     },

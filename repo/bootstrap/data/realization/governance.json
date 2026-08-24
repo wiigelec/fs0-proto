@@ -51,6 +51,16 @@
       "source": "governance/self-change",
       "target": "repo/scripts/self-change",
       "mode": "0755"
+    },
+    {
+      "source": "governance/bootstrap_cutover.py",
+      "target": "repo/governance/bootstrap_cutover.py",
+      "mode": "0755"
+    },
+    {
+      "source": "governance/bootstrap-cutover",
+      "target": "repo/scripts/bootstrap-cutover",
+      "mode": "0755"
     }
   ]
 }
