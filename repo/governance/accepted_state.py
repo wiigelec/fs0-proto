@@ -37,6 +37,61 @@ def _valid_actor(value):
     return _nonempty(value) or (isinstance(value, dict) and bool(value))
 
 
+def _github_comment_has_identity(comment):
+    if not isinstance(comment, dict):
+        return False
+    user = comment.get("user")
+    return (
+        isinstance(user, dict)
+        and isinstance(user.get("id"), int)
+        and user.get("id") > 0
+        and _nonempty(user.get("login"))
+    )
+
+
+def _github_actor_matches_comment(comment, actor):
+    # Synthetic repository-local Conformance callers may omit transport metadata.
+    # Production GitHub retrieval below admits only comments with id + login.
+    if not isinstance(comment, dict):
+        return False
+    user = comment.get("user")
+    if user is None:
+        return True
+    if not _github_comment_has_identity(comment):
+        return False
+
+    login = user["login"]
+    user_id = user["id"]
+
+    if isinstance(actor, str):
+        return actor.strip().casefold() == login.strip().casefold()
+    if not isinstance(actor, dict):
+        return False
+
+    compared = False
+    for key in ("login", "github_login"):
+        value = actor.get(key)
+        if value is not None:
+            if not _nonempty(value) or value.strip().casefold() != login.strip().casefold():
+                return False
+            compared = True
+
+    for key in ("id", "github_user_id", "user_id"):
+        value = actor.get(key)
+        if value is not None:
+            if isinstance(value, bool):
+                return False
+            try:
+                actor_id = int(value)
+            except (TypeError, ValueError):
+                return False
+            if actor_id != user_id:
+                return False
+            compared = True
+
+    return compared
+
+
 def _valid_timestamp(value):
     if not _nonempty(value):
         return False
@@ -44,10 +99,10 @@ def _valid_timestamp(value):
     if text.endswith("Z"):
         text = text[:-1] + "+00:00"
     try:
-        datetime.fromisoformat(text)
+        parsed = datetime.fromisoformat(text)
     except ValueError:
         return False
-    return True
+    return parsed.utcoffset() is not None
 
 
 def _json_fence_objects(body):
@@ -283,6 +338,11 @@ def resolve_governance_work_acceptance(issue_body, comments, expected_stage, exp
             continue
         seen_ids.add(acceptance_id)
 
+        if not _github_actor_matches_comment(comment, authorized_actor):
+            # Unauthenticated/non-authorized commenters cannot create acceptance
+            # records merely by copying an authorized actor value.
+            continue
+
         if record.get("actor") != authorized_actor:
             defects.append({
                 "comment_id": comment.get("id") if isinstance(comment, dict) else None,
@@ -339,9 +399,10 @@ def github_issues(repo):
 def github_issue_comments_for(repo, issue_number):
     if not isinstance(issue_number, int) or issue_number < 1:
         raise RuntimeError("issue_number must be a positive integer")
-    return _gh_paginated(
+    comments = _gh_paginated(
         f"repos/{repo}/issues/{issue_number}/comments?per_page=100"
     )
+    return [item for item in comments if _github_comment_has_identity(item)]
 
 def resolve_accepted_state(accepted_sha, comments):
     if accepted_sha is None:
@@ -365,7 +426,7 @@ def resolve_accepted_state(accepted_sha, comments):
         }
 
     accepted_sha = accepted_sha.lower()
-    parsed = []
+    matches = []
     defects = []
     acceptance_ids = set()
 
@@ -373,13 +434,47 @@ def resolve_accepted_state(accepted_sha, comments):
         body = comment.get("body") if isinstance(comment, dict) else None
         if not isinstance(body, str) or MARKER not in body:
             continue
+
+        # Repository-wide issue comments are untrusted discovery input. A
+        # malformed marker outside the authoritative acceptance path cannot
+        # invalidate otherwise valid accepted state.
         try:
             record = parse_acceptance_comment(body)
-        except AcceptanceError as exc:
+        except AcceptanceError:
+            continue
+
+        authorized_actor = _authorized_actor(
+            comment.get("issue_body"),
+            record["record_type"],
+        )
+        if authorized_actor is None:
+            continue
+
+        # Bind semantic actor identity to GitHub's authenticated comment author.
+        if not _github_actor_matches_comment(comment, authorized_actor):
+            continue
+
+        state_producing = (
+            record["record_type"] == "bootstrap-acceptance"
+            or (
+                record["record_type"] == "governance-acceptance"
+                and record["stage"] == "build"
+            )
+        )
+        relevant = (
+            state_producing
+            and record["disposition"] == "accepted"
+            and record.get("resulting_accepted_state") == accepted_sha
+            and record["candidate_id"] == accepted_sha
+        )
+        if not relevant:
+            continue
+
+        if record["actor"] != authorized_actor:
             defects.append(
                 {
-                    "comment_id": comment.get("id") if isinstance(comment, dict) else None,
-                    "error": str(exc),
+                    "comment_id": comment.get("id"),
+                    "error": "acceptance actor does not match issue authorization",
                 }
             )
             continue
@@ -395,25 +490,7 @@ def resolve_accepted_state(accepted_sha, comments):
             continue
         acceptance_ids.add(acceptance_id)
 
-        authorized_actor = _authorized_actor(comment.get("issue_body"), record["record_type"])
-        if authorized_actor is None:
-            defects.append(
-                {
-                    "comment_id": comment.get("id"),
-                    "error": "issue does not expose exactly one machine-resolvable acceptance_actor",
-                }
-            )
-            continue
-        if record["actor"] != authorized_actor:
-            defects.append(
-                {
-                    "comment_id": comment.get("id"),
-                    "error": "acceptance actor does not match issue authorization",
-                }
-            )
-            continue
-
-        parsed.append(
+        matches.append(
             {
                 "record": record,
                 "comment_id": comment.get("id"),
@@ -421,24 +498,6 @@ def resolve_accepted_state(accepted_sha, comments):
                 "comment_url": comment.get("html_url") or comment.get("url"),
             }
         )
-
-    matches = []
-    for item in parsed:
-        record = item["record"]
-        state_producing = (
-            record["record_type"] == "bootstrap-acceptance"
-            or (
-                record["record_type"] == "governance-acceptance"
-                and record["stage"] == "build"
-            )
-        )
-        if (
-            state_producing
-            and record["disposition"] == "accepted"
-            and record.get("resulting_accepted_state") == accepted_sha
-            and record["candidate_id"] == accepted_sha
-        ):
-            matches.append(item)
 
     if defects or not matches:
         if not matches:
@@ -462,7 +521,6 @@ def resolve_accepted_state(accepted_sha, comments):
         "acceptance_records": matches,
         "defects": [],
     }
-
 
 def _run(args, allowed=(0,)):
     proc = subprocess.run(args, text=True, capture_output=True)
@@ -531,7 +589,11 @@ def github_issue_comments(repo):
     comments = _gh_paginated(f"repos/{repo}/issues/comments?per_page=100")
     out = []
     for item in comments:
-        if not isinstance(item, dict) or item.get("issue_url") not in issue_by_url:
+        if (
+            not isinstance(item, dict)
+            or item.get("issue_url") not in issue_by_url
+            or not _github_comment_has_identity(item)
+        ):
             continue
         enriched = dict(item)
         enriched["issue_body"] = issue_by_url[item["issue_url"]].get("body")
