@@ -455,6 +455,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/bootstrap/data/root/script-transfer-handoff.json",
+      "object_type": "file",
+      "presence": "required"
+    },
+    {
       "path": "repo/bootstrap/data/self_change_contract.json",
       "object_type": "file",
       "presence": "required"
@@ -758,6 +763,12 @@
       "path": "repo/state/repository-structure-binding.json",
       "object_type": "file",
       "presence": "required"
+    },
+    {
+      "path": "user",
+      "object_type": "directory",
+      "presence": "permitted",
+      "descendants": "complete-subtree"
     }
   ]
 }
