@@ -12,24 +12,44 @@
       "invocation": "python3 ~/Downloads/<script>.py",
       "working_directory": "repository root",
       "terminal_output": {
-        "standard": "fs0-script-transfer-terminal-v1",
+        "standard": "fs0-script-transfer-terminal-v2",
         "status_line": "FS0 Script Transfer: <START|PASS|FAILED>",
+        "step_line": "[<NN>/<TOTAL>] <PHASE> <description>",
+        "step_result_line": "PASS|FAIL followed by a concise machine-relevant detail",
+        "command_line": "$ <exact command>",
+        "captured_output_line": "OUT|ERR | <captured command output line>",
+        "phases": [
+          "PRECHECK",
+          "MUTATE",
+          "GENERATE",
+          "VALIDATE",
+          "COMMIT",
+          "PUBLISH",
+          "VERIFY"
+        ],
         "required_summary_fields": [
           "Operation",
           "Repository",
           "Branch",
           "Expected HEAD",
           "Observed HEAD",
+          "Files Changed",
+          "Validation",
           "Commit",
           "Remote HEAD",
           "Result JSON"
         ],
         "behavior": [
-          "emit START before repository mutation",
-          "emit PASS only after commit, push, and exact remote-head verification",
-          "emit FAILED on any precondition, mutation, validation, commit, push, or verification failure",
+          "emit START and operation identity before any repository mutation",
+          "announce every material precondition, mutation, generation, validation, commit, publication, and verification step before execution",
+          "show exact external commands before execution",
+          "show captured stdout and stderr beneath the command using OUT and ERR prefixes when output is non-empty",
+          "emit an explicit PASS or FAIL result for every announced step",
+          "do not leave long-running validation, commit, push, or remote verification activity silent",
+          "emit PASS only after commit, normal non-force push, and exact remote-head verification",
+          "emit FAILED immediately after the failing step and include the failure in the result JSON",
           "write the machine-readable result JSON on both PASS and FAILED when possible",
-          "send command diagnostics to captured result data rather than interleaving unstructured terminal noise"
+          "preserve a concise final summary after the step transcript"
         ]
       }
     },
@@ -70,7 +90,7 @@
       "write a machine-readable JSON result even on failure when possible",
       "stop on validation failure, conflicting dirty state, authority conflict, or remote race",
       "inspect the uploaded result JSON before authorizing the next mutation",
-      "emit standardized terminal output conforming to fs0-script-transfer-terminal-v1"
+      "emit standardized verbose terminal output conforming to fs0-script-transfer-terminal-v2"
     ]
   },
   "result_record": {
