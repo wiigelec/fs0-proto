@@ -328,42 +328,55 @@ def _github_json_directory(repo, path, revision):
     return records
 
 
-def github_candidate_conformance(repo, candidate_sha):
+def _iso_utc(value):
+    if not _nonempty(value):
+        return None
+    text = value.strip()
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.utcoffset() is None:
+        return None
+    return parsed
+
+def github_candidate_conformance(repo, candidate_sha, merged_at):
     if not isinstance(candidate_sha, str) or not SHA_RE.fullmatch(candidate_sha):
         return {"status": "fail", "defects": ["candidate SHA is not exact"]}
     candidate_sha = candidate_sha.lower()
-    value = _gh_json(
-        f"repos/{repo}/actions/runs?head_sha={candidate_sha}&event=pull_request&status=completed&per_page=100"
-    )
+    merge_time = _iso_utc(merged_at)
+    if merge_time is None:
+        return {"status": "fail", "candidate_sha": candidate_sha, "defects": ["merge timestamp is not an unambiguous ISO-8601 time"]}
+    value = _gh_json(f"repos/{repo}/actions/runs?head_sha={candidate_sha}&event=pull_request&status=completed&per_page=100")
     runs = value.get("workflow_runs") if isinstance(value, dict) else None
     if not isinstance(runs, list):
         return {"status": "fail", "defects": ["GitHub Actions run list is unavailable"]}
-    matching = [
-        run for run in runs
-        if isinstance(run, dict)
-        and run.get("name") == "FS0 Conformance"
-        and run.get("event") == "pull_request"
-        and str(run.get("head_sha", "")).lower() == candidate_sha
-        and str(run.get("path", "")).endswith(".github/workflows/fs0-conformance.yml")
-    ]
+    matching = []
+    post_merge_successes = []
+    for run in runs:
+        if not (isinstance(run, dict) and run.get("name") == "FS0 Conformance" and run.get("event") == "pull_request" and str(run.get("head_sha", "")).lower() == candidate_sha and str(run.get("path", "")).endswith(".github/workflows/fs0-conformance.yml")):
+            continue
+        completed_at = _iso_utc(run.get("updated_at") or run.get("run_started_at"))
+        if completed_at is None:
+            continue
+        if completed_at <= merge_time:
+            matching.append((completed_at, run))
+        elif run.get("conclusion") == "success":
+            post_merge_successes.append((completed_at, run))
     if not matching:
-        return {
-            "status": "fail", "candidate_sha": candidate_sha,
-            "defects": ["exact candidate lacks completed FS0 Conformance pull-request run"],
-        }
-    matching.sort(key=lambda run: (
-        run.get("run_number", 0), run.get("run_attempt", 0), run.get("id", 0)
-    ))
-    latest = matching[-1]
+        defects = ["exact candidate lacks completed pre-merge FS0 Conformance pull-request run"]
+        if post_merge_successes:
+            defects.append("successful exact-candidate Conformance exists only after merge and cannot retroactively establish eligibility")
+        return {"status": "fail", "candidate_sha": candidate_sha, "merge_timestamp": merged_at, "defects": defects}
+    matching.sort(key=lambda item: (item[0], item[1].get("run_number", 0), item[1].get("run_attempt", 0), item[1].get("id", 0)))
+    completed_at, latest = matching[-1]
     passed = latest.get("conclusion") == "success"
-    return {
-        "status": "pass" if passed else "fail",
-        "candidate_sha": candidate_sha,
-        "workflow_run_id": latest.get("id"),
-        "workflow_run_url": latest.get("html_url"),
-        "conclusion": latest.get("conclusion"),
-        "defects": [] if passed else ["latest exact-candidate FS0 Conformance run is not successful"],
-    }
+    return {"status": "pass" if passed else "fail", "candidate_sha": candidate_sha, "merge_timestamp": merged_at,
+            "workflow_run_id": latest.get("id"), "workflow_run_url": latest.get("html_url"),
+            "completed_at": completed_at.isoformat(), "conclusion": latest.get("conclusion"),
+            "defects": [] if passed else ["latest exact-candidate Conformance completed before merge is not successful"]}
 
 
 def github_candidate_assurance(repo, candidate_sha, work):
@@ -456,17 +469,13 @@ def github_candidate_assurance(repo, candidate_sha, work):
     }
 
 
-def github_candidate_eligibility(repo, candidate_sha, work):
-    conformance = github_candidate_conformance(repo, candidate_sha)
+def github_candidate_eligibility(repo, candidate_sha, work, merged_at):
+    conformance = github_candidate_conformance(repo, candidate_sha, merged_at)
     assurance = github_candidate_assurance(repo, candidate_sha, work)
     defects = list(conformance.get("defects", [])) + list(assurance.get("defects", []))
-    return {
-        "status": "pass" if conformance.get("status") == "pass" and assurance.get("status") == "pass" else "fail",
-        "candidate_sha": candidate_sha.lower() if isinstance(candidate_sha, str) else candidate_sha,
-        "conformance": conformance,
-        "assurance": assurance,
-        "defects": defects,
-    }
+    return {"status": "pass" if conformance.get("status") == "pass" and assurance.get("status") == "pass" else "fail",
+            "candidate_sha": candidate_sha.lower() if isinstance(candidate_sha, str) else candidate_sha,
+            "merge_timestamp": merged_at, "conformance": conformance, "assurance": assurance, "defects": defects}
 
 def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage, expected_work_id):
     if expected_stage not in {"design", "plan", "build"} or not _nonempty(expected_work_id):
@@ -549,6 +558,9 @@ def github_pull_requests_for_issue(repo, issue_number):
     if "pull_request" in issue:
         raise RuntimeError("governed-work identity must resolve to a GitHub issue")
     work = governed_work_from_issue_body(issue.get("body"))
+    required = work.get("required_assurance_obligation_ids")
+    if not isinstance(required, list) or any(not _nonempty(x) for x in required):
+        raise RuntimeError("governed-work issue must declare required_assurance_obligation_ids")
     pulls = _gh_paginated(f"repos/{repo}/pulls?state=closed&per_page=100")
     out = []
     for item in pulls:
@@ -565,7 +577,7 @@ def github_pull_requests_for_issue(repo, issue_number):
             continue
         detail = _gh_object(f"repos/{repo}/pulls/{number}")
         detail["_fs0_candidate"] = candidate
-        detail["_fs0_eligibility"] = github_candidate_eligibility(repo, candidate["head_sha"], work)
+        detail["_fs0_eligibility"] = github_candidate_eligibility(repo, candidate["head_sha"], work, detail.get("merged_at"))
         out.append(detail)
     return out
 

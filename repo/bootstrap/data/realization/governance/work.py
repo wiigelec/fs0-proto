@@ -35,6 +35,7 @@ def validate_work(r):
         "schema_version", "record_type", "stage", "stage_steps", "work_id",
         "predecessor_id", "scope", "material_exclusions", "candidate_result",
         "completion_conditions", "disposition", "provenance", "bounded_authorization",
+        "required_assurance_obligation_ids",
     }
     if not isinstance(r, dict) or not common <= set(r):
         raise GovernanceWorkError("governed work lacks required fields")
@@ -59,14 +60,16 @@ def validate_work(r):
         raise GovernanceWorkError("provenance must be non-empty")
     auth = r.get("bounded_authorization")
     if not isinstance(auth, dict) or not _valid_actor(auth.get("acceptance_actor")):
-        raise GovernanceWorkError(
-            "bounded_authorization.acceptance_actor requires positive GitHub user id"
-        )
+        raise GovernanceWorkError("bounded_authorization.acceptance_actor requires positive GitHub user id")
     if not _string_list(auth.get("mutation_scope", [])):
         raise GovernanceWorkError("mutation_scope must be a string list")
     if not set(auth.get("mutation_scope", [])) <= set(r["scope"]):
         raise GovernanceWorkError("mutation_scope exceeds work scope")
-
+    required_assurance = r.get("required_assurance_obligation_ids")
+    if not _string_list(required_assurance):
+        raise GovernanceWorkError("required_assurance_obligation_ids must be a string list")
+    if len(required_assurance) != len(set(required_assurance)):
+        raise GovernanceWorkError("required_assurance_obligation_ids must be unique")
     if stage == "design":
         if not _nonempty(r.get("initiating_proposal_id")) or not isinstance(r.get("normative_delta"), dict):
             raise GovernanceWorkError("Design requires initiating proposal and normative_delta")
@@ -79,6 +82,8 @@ def validate_work(r):
             raise GovernanceWorkError("Plan realization_intent incomplete")
         if any(not _string_list(intent.get(f)) for f in fields) or not intent["build_scope"]:
             raise GovernanceWorkError("Plan realization_intent fields invalid")
+        if sorted(intent.get("assurance_work", [])) != sorted(required_assurance):
+            raise GovernanceWorkError("Plan realization_intent.assurance_work must equal required_assurance_obligation_ids")
     else:
         if not _nonempty(r.get("accepted_plan_id")):
             raise GovernanceWorkError("Build requires accepted_plan_id")
@@ -90,7 +95,8 @@ def validate_work(r):
     return r
 
 def create_design(work_id, proposal_id, scope, candidate_result, completion_conditions,
-                  provenance, bounded_authorization, normative_delta, material_exclusions=None):
+                  provenance, bounded_authorization, normative_delta, material_exclusions=None,
+                  required_assurance_obligation_ids=None):
     return validate_work({
         "schema_version": "1", "record_type": "governed-work", "stage": "design",
         "stage_steps": STAGE_STEPS["design"], "work_id": work_id, "predecessor_id": proposal_id,
@@ -98,14 +104,17 @@ def create_design(work_id, proposal_id, scope, candidate_result, completion_cond
         "candidate_result": deepcopy(candidate_result), "completion_conditions": list(completion_conditions),
         "disposition": "pending", "provenance": deepcopy(provenance),
         "bounded_authorization": deepcopy(bounded_authorization),
+        "required_assurance_obligation_ids": list(required_assurance_obligation_ids or []),
         "initiating_proposal_id": proposal_id, "normative_delta": deepcopy(normative_delta),
     })
 
 def create_plan(work_id, accepted_design, scope, candidate_result, completion_conditions,
-                provenance, bounded_authorization, realization_intent, material_exclusions=None):
+                provenance, bounded_authorization, realization_intent, material_exclusions=None,
+                required_assurance_obligation_ids=None):
     d = validate_work(dict(accepted_design))
     if d["stage"] != "design" or d["disposition"] != "accepted":
         raise GovernanceWorkError("Plan requires accepted Design")
+    required = list(realization_intent.get("assurance_work", []) if required_assurance_obligation_ids is None else required_assurance_obligation_ids)
     return validate_work({
         "schema_version": "1", "record_type": "governed-work", "stage": "plan",
         "stage_steps": STAGE_STEPS["plan"], "work_id": work_id, "predecessor_id": d["work_id"],
@@ -113,16 +122,19 @@ def create_plan(work_id, accepted_design, scope, candidate_result, completion_co
         "candidate_result": deepcopy(candidate_result), "completion_conditions": list(completion_conditions),
         "disposition": "pending", "provenance": deepcopy(provenance),
         "bounded_authorization": deepcopy(bounded_authorization),
+        "required_assurance_obligation_ids": required,
         "accepted_design_id": d["work_id"], "realization_intent": deepcopy(realization_intent),
     })
 
 def create_build(work_id, accepted_plan, scope, candidate_result, completion_conditions,
-                 provenance, bounded_authorization, evidence, material_exclusions=None):
+                 provenance, bounded_authorization, evidence, material_exclusions=None,
+                 required_assurance_obligation_ids=None):
     p = validate_work(dict(accepted_plan))
     if p["stage"] != "plan" or p["disposition"] != "accepted":
         raise GovernanceWorkError("Build requires accepted Plan")
     if not set(scope) <= set(p["realization_intent"]["build_scope"]):
         raise GovernanceWorkError("Build scope exceeds accepted Plan build_scope")
+    required = list(p["required_assurance_obligation_ids"] if required_assurance_obligation_ids is None else required_assurance_obligation_ids)
     return validate_work({
         "schema_version": "1", "record_type": "governed-work", "stage": "build",
         "stage_steps": STAGE_STEPS["build"], "work_id": work_id, "predecessor_id": p["work_id"],
@@ -130,6 +142,7 @@ def create_build(work_id, accepted_plan, scope, candidate_result, completion_con
         "candidate_result": deepcopy(candidate_result), "completion_conditions": list(completion_conditions),
         "disposition": "pending", "provenance": deepcopy(provenance),
         "bounded_authorization": deepcopy(bounded_authorization),
+        "required_assurance_obligation_ids": required,
         "accepted_plan_id": p["work_id"],
         "verification": {"evidence": list(evidence), "conformance_status": "pending"},
     })
@@ -172,12 +185,17 @@ def assurance_gate(triggered_obligation_ids, cases, findings):
         return {"eligible": False, "reason": "unresolved-adverse-assurance", "obligation_ids": adverse}
     return {"eligible": True, "reason": "satisfied", "obligation_ids": []}
 
-def acceptance_eligibility(work, triggered_obligation_ids, cases, findings):
+def acceptance_eligibility(work, triggered_obligation_ids, cases, findings, candidate_conformance_status="pass"):
     r = validate_work(dict(work))
-    gate = assurance_gate(triggered_obligation_ids, cases, findings)
+    required = r["required_assurance_obligation_ids"]
+    if sorted(set(triggered_obligation_ids)) != sorted(required):
+        return {"eligible": False, "reason": "assurance-obligation-set-mismatch", "obligation_ids": sorted(set(required) ^ set(triggered_obligation_ids))}
+    gate = assurance_gate(required, cases, findings)
     if not gate["eligible"]:
         return gate
-    if r["stage"] == "build" and r["verification"]["conformance_status"] != "pass":
+    if candidate_conformance_status != "pass":
+        return {"eligible": False, "reason": "conformance-not-passing", "obligation_ids": []}
+    if r["stage"] == "build" and r["verification"]["conformance_status"] == "fail":
         return {"eligible": False, "reason": "conformance-not-passing", "obligation_ids": []}
     return {"eligible": True, "reason": "satisfied", "obligation_ids": []}
 
@@ -197,7 +215,7 @@ def apply_merge_acceptance(work, acceptance):
     r = deepcopy(validate_work(dict(work)))
     if r["disposition"] != "pending":
         raise GovernanceWorkError("work already decided")
-    required = {"schema_version","record_type","status","work_id","issue_number","candidate_head","accepted_repository_predecessor","resulting_accepted_revision","actor"}
+    required = {"schema_version","record_type","status","work_id","issue_number","candidate_head","accepted_repository_predecessor","resulting_accepted_revision","actor","eligibility"}
     if not isinstance(acceptance, dict) or not required <= set(acceptance):
         raise GovernanceWorkError("merge acceptance proof is incomplete")
     if acceptance.get("schema_version") != "1" or acceptance.get("record_type") != "governed-pr-acceptance" or acceptance.get("status") != "accepted" or acceptance.get("work_id") != r["work_id"]:
@@ -210,6 +228,14 @@ def apply_merge_acceptance(work, acceptance):
         value = acceptance.get(key)
         if not isinstance(value, str) or not SHA_RE.fullmatch(value):
             raise GovernanceWorkError(f"merge acceptance {key} must be exact Git SHA")
+    eligibility = acceptance.get("eligibility")
+    if not isinstance(eligibility, dict) or eligibility.get("status") != "pass":
+        raise GovernanceWorkError("merge acceptance proof lacks passing eligibility")
+    if not isinstance(eligibility.get("conformance"), dict) or eligibility["conformance"].get("status") != "pass":
+        raise GovernanceWorkError("merge acceptance Conformance proof is not passing")
+    assurance = eligibility.get("assurance")
+    if not isinstance(assurance, dict) or assurance.get("status") != "pass" or sorted(assurance.get("required_obligation_ids", [])) != sorted(r["required_assurance_obligation_ids"]):
+        raise GovernanceWorkError("merge acceptance Assurance proof does not match governed work")
     r["disposition"] = "accepted"
     return validate_work(r)
 
@@ -241,10 +267,10 @@ def validate_pr_candidate(work, candidate):
     out["accepted_repository_predecessor"] = out["accepted_repository_predecessor"].lower()
     return out
 
-def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cases, findings):
+def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cases, findings, candidate_conformance_status="pass"):
     r = validate_work(dict(work))
     pr = validate_pr_candidate(r, candidate)
-    gate = acceptance_eligibility(r, triggered_obligation_ids, cases, findings)
+    gate = acceptance_eligibility(r, triggered_obligation_ids, cases, findings, candidate_conformance_status=candidate_conformance_status)
     if not gate["eligible"]:
         raise GovernanceWorkError("merge acceptance blocked: " + gate["reason"])
     if not isinstance(merge_event, dict):
@@ -265,13 +291,10 @@ def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cas
     if merge_event["base_sha"].lower() != pr["accepted_repository_predecessor"]:
         raise GovernanceWorkError("merged base does not equal accepted repository predecessor")
     return {
-        "schema_version": "1",
-        "record_type": "governed-pr-acceptance",
-        "status": "accepted",
-        "work_id": r["work_id"],
-        "issue_number": pr["issue_number"],
-        "candidate_head": pr["head_sha"],
+        "schema_version": "1", "record_type": "governed-pr-acceptance", "status": "accepted",
+        "work_id": r["work_id"], "issue_number": pr["issue_number"], "candidate_head": pr["head_sha"],
         "accepted_repository_predecessor": pr["accepted_repository_predecessor"],
-        "resulting_accepted_revision": merge_event["resulting_revision"].lower(),
-        "actor": deepcopy(actor),
+        "resulting_accepted_revision": merge_event["resulting_revision"].lower(), "actor": deepcopy(actor),
+        "eligibility": {"status": "pass", "conformance": {"status": "pass", "candidate_sha": pr["head_sha"]},
+                        "assurance": {"status": "pass", "required_obligation_ids": list(r["required_assurance_obligation_ids"])}},
     }

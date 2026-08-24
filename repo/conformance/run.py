@@ -108,7 +108,8 @@ def check_self_change_completion(root, assertion_ids):
                 "assurance_work": ["FS0-OBL-FC-033"],
                 "dependencies": [], "sequencing": ["bounded"], "build_scope": ["repo/example"],
             },
-        }
+
+            "required_assurance_obligation_ids": ["FS0-OBL-FC-033"],}
         build = {
             "schema_version": "1", "record_type": "governed-work",
             "stage": "build", "stage_steps": ["implement", "verify", "accept"],
@@ -120,7 +121,8 @@ def check_self_change_completion(root, assertion_ids):
             "bounded_authorization": {"acceptance_actor": actor, "mutation_scope": ["repo/example"]},
             "accepted_plan_id": plan["work_id"],
             "verification": {"evidence": ["candidate-publication"], "conformance_status": "pending"},
-        }
+
+            "required_assurance_obligation_ids": ["FS0-OBL-FC-033"],}
         case = {"case_id": "FS0-CASE-SELFCHANGE", "review_obligation_id": "FS0-OBL-FC-033"}
         finding = {"case_id": "FS0-CASE-SELFCHANGE", "sequence": 1, "status": "satisfied"}
         pr = {
@@ -374,7 +376,8 @@ def check_governance_state_resolution(root, assertion_ids):
             },
             "accepted_plan_id": "FS0-PLAN-MERGE",
             "verification": {"evidence": ["candidate"], "conformance_status": "pass"},
-        }
+
+            "required_assurance_obligation_ids": [],}
         pr = {
             "schema_version": "1",
             "record_type": "governed-pr-candidate",
@@ -753,69 +756,54 @@ def check_governed_work_kernel(root, assertion_ids):
     if not path.is_file():
         return [result(a, 'fail', 'Governance work runtime is missing') for a in assertion_ids]
     spec = importlib.util.spec_from_file_location('fs0_governance_work', path)
-    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-    obligation = 'FS0-OBL-TEST'
-    actor = {'id':101,'login':'tester'}
-    base = 'e' * 40
-    def accept(work, issue_number, head, result_sha, cases, findings):
-        candidate = {'schema_version':'1','record_type':'governed-pr-candidate','work_id':work['work_id'],'issue_number':issue_number,'head_sha':head,'accepted_repository_predecessor':base,'base_ref':'refs/heads/main'}
-        merge = {'merged':True,'actor':actor,'head_sha':head,'base_sha':base,'resulting_revision':result_sha}
-        proof = m.merge_acceptance(work, candidate, merge, [obligation], cases, findings)
-        return m.apply_merge_acceptance(work, proof), proof
-
-    d = m.create_design('D1','REPO-SPEC-PROPOSAL-FRAMEWORK-CONTRACT',['repo/authority/requirements.json'],{'candidate':'design'},['normalized'],{'proposal':'framework-contract'},{'acceptance_actor':actor,'mutation_scope':['repo/authority/requirements.json']},{'created':['FS1-X'],'amended':[],'withdrawn':[]})
-    case_d={'case_id':'CD','review_obligation_id':obligation}; finding_d={'case_id':'CD','status':'satisfied','sequence':1}
-    ad, design_acceptance = accept(d, 11, 'a'*40, 'b'*40, [case_d], [finding_d])
-    direct_accept_rejected = False
-    try:
-        m.decide(d, 'accepted', [obligation], [case_d], [finding_d])
-    except m.GovernanceWorkError:
-        direct_accept_rejected = True
-
-    intent={'affected_artifacts':['repo/governance/work.py'],'conformance_work':['FS0-ASSERT-GOV-001'],'assurance_work':['Build-fidelity'],'dependencies':[],'sequencing':['runtime','conformance'],'build_scope':['repo/governance/work.py']}
-    plan_without_own_auth_rejected=False
-    try:
-        m.create_plan('P-NOAUTH',ad,['repo/governance/work.py'],{'candidate':'plan'},['specified'],{'design':'D1'},{},intent)
-    except m.GovernanceWorkError:
-        plan_without_own_auth_rejected=True
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    oid='FS0-OBL-TEST'; actor={'id':101,'login':'tester'}; base='e'*40
+    def accept(work, issue, head, result_sha, cases, findings, conformance='pass'):
+        candidate={'schema_version':'1','record_type':'governed-pr-candidate','work_id':work['work_id'],'issue_number':issue,'head_sha':head,'accepted_repository_predecessor':base,'base_ref':'refs/heads/main'}
+        merge={'merged':True,'actor':actor,'head_sha':head,'base_sha':base,'resulting_revision':result_sha}
+        proof=m.merge_acceptance(work,candidate,merge,work['required_assurance_obligation_ids'],cases,findings,candidate_conformance_status=conformance)
+        return m.apply_merge_acceptance(work,proof),proof
+    d=m.create_design('D1','P1',['repo/authority/requirements.json'],{'candidate':'design'},['normalized'],{'proposal':'P1'},{'acceptance_actor':actor,'mutation_scope':['repo/authority/requirements.json']},{'created':['X'],'amended':[],'withdrawn':[]},required_assurance_obligation_ids=[oid])
+    cd={'case_id':'CD','review_obligation_id':oid}; fd={'case_id':'CD','status':'satisfied','sequence':1}
+    ad,da=accept(d,11,'a'*40,'b'*40,[cd],[fd])
+    design_conf_blocked=False
+    try: accept(d,11,'a'*40,'b'*40,[cd],[fd],conformance='fail')
+    except m.GovernanceWorkError: design_conf_blocked=True
+    intent={'affected_artifacts':['repo/governance/work.py'],'conformance_work':['FS0-ASSERT-GOV-001'],'assurance_work':[oid],'dependencies':[],'sequencing':['runtime'],'build_scope':['repo/governance/work.py']}
     p=m.create_plan('P1',ad,['repo/governance/work.py'],{'candidate':'plan'},['specified'],{'design':'D1'},{'acceptance_actor':actor,'mutation_scope':['repo/governance/work.py']},intent)
-    case_p={'case_id':'CP','review_obligation_id':obligation}; finding_p={'case_id':'CP','status':'satisfied','sequence':1}
-    ap, plan_acceptance = accept(p, 12, 'c'*40, 'd'*40, [case_p], [finding_p])
-
-    build_without_own_auth_rejected=False
-    try:
-        m.create_build('B-NOAUTH',ap,['repo/governance/work.py'],{'candidate_id':'c'*40},['implemented'],{'plan':'P1'},{},['evidence:test'])
-    except m.GovernanceWorkError:
-        build_without_own_auth_rejected=True
-    b=m.create_build('B1',ap,['repo/governance/work.py'],{'candidate_id':'a'*40},['implemented','verified'],{'plan':'P1'},{'acceptance_actor':actor,'mutation_scope':['repo/governance/work.py']},['evidence:test'])
-    overbroad=False
-    try:
-        m.create_build('B2',ap,['repo/governance/work.py','repo/authority/requirements.json'],{'candidate_id':'b'*40},['complete'],{'plan':'P1'},{'acceptance_actor':actor,'mutation_scope':['repo/governance/work.py']},['evidence:test'])
-    except m.GovernanceWorkError:
-        overbroad=True
+    cp={'case_id':'CP','review_obligation_id':oid}; fp={'case_id':'CP','status':'satisfied','sequence':1}
+    plan_conf_blocked=False
+    try: accept(p,12,'c'*40,'d'*40,[cp],[fp],conformance='fail')
+    except m.GovernanceWorkError: plan_conf_blocked=True
+    ap,pa=accept(p,12,'c'*40,'d'*40,[cp],[fp])
+    mismatch=m.acceptance_eligibility(p,[],[],[],candidate_conformance_status='pass')
+    b=m.create_build('B1',ap,['repo/governance/work.py'],{'candidate_id':'a'*40},['implemented'],{'plan':'P1'},{'acceptance_actor':actor,'mutation_scope':['repo/governance/work.py']},['evidence:test'])
     b=m.record_conformance(b,'pass')
-    case_b={'case_id':'CB','review_obligation_id':obligation}; adverse={'case_id':'CB','status':'defect','sequence':1}; satisfied={'case_id':'CB','status':'satisfied','sequence':2}
-    missing=m.acceptance_eligibility(b,[obligation],[],[])
-    blocked=m.acceptance_eligibility(b,[obligation],[case_b],[adverse])
-    resolved=m.acceptance_eligibility(b,[obligation],[case_b],[adverse,satisfied])
-    ab, build_acceptance = accept(b, 13, 'f'*40, '9'*40, [case_b], [adverse,satisfied])
-    rd=m.decide(m.create_design('D2','REPO-SPEC-PROPOSAL-GOVERNANCE',['repo/authority/governance.json'],{'candidate':'rejected'},['decision'],{'proposal':'governance'},{'acceptance_actor':actor,'mutation_scope':[]},{'created':[],'amended':[],'withdrawn':[]}), 'rejected', [], [], [])
+    cb={'case_id':'CB','review_obligation_id':oid}; bad={'case_id':'CB','status':'defect','sequence':1}; good={'case_id':'CB','status':'satisfied','sequence':2}
+    blocked=m.acceptance_eligibility(b,[oid],[cb],[bad],candidate_conformance_status='pass')
+    resolved=m.acceptance_eligibility(b,[oid],[cb],[bad,good],candidate_conformance_status='pass')
+    ab,ba=accept(b,13,'f'*40,'9'*40,[cb],[bad,good])
+    direct=False
+    try: m.decide(d,'accepted',[oid],[cd],[fd])
+    except m.GovernanceWorkError: direct=True
+    rd=m.decide(m.create_design('D2','P2',['repo/authority/governance.json'],{'candidate':'r'},['decision'],{'proposal':'P2'},{'acceptance_actor':actor,'mutation_scope':[]},{'created':[],'amended':[],'withdrawn':[]},required_assurance_obligation_ids=[]),'rejected',[],[],[])
     checks={
-        'FS0-ASSERT-GOV-001':(ad['stage']=='design' and ap['stage']=='plan' and ab['stage']=='build','Governance runtime implements proposal->Design->Plan->Build progression'),
-        'FS0-ASSERT-GOV-002':(m.STAGE_STEPS=={'design':['audit','normalize','accept'],'plan':['analyze','specify','accept'],'build':['implement','verify','accept']},'required three-step stage structures are explicit'),
-        'FS0-ASSERT-GOV-003':(all(({'work_id','predecessor_id','scope','material_exclusions','candidate_result','completion_conditions','disposition','provenance','bounded_authorization'} <= set(x) for x in (d,p,b))),'common governed-work properties are validated'),
-        'FS0-ASSERT-GOV-004':(d['initiating_proposal_id']==d['predecessor_id'],'Design consumes an explicit proposal identity'),
-        'FS0-ASSERT-GOV-005':(p['accepted_design_id']==ad['work_id'] and set(intent)>={'affected_artifacts','conformance_work','assurance_work','dependencies','sequencing','build_scope'},'Plan consumes accepted Design and records bounded realization intent'),
-        'FS0-ASSERT-GOV-006':(b['accepted_plan_id']==ap['work_id'] and overbroad,'Build consumes accepted Plan and rejects over-broad scope'),
-        'FS0-ASSERT-GOV-010':(set(b['bounded_authorization']['mutation_scope'])<=set(b['scope']),'mutation authorization is bounded by explicit scope'),
-        'FS0-ASSERT-GOV-028':(len({d['work_id'],p['work_id'],b['work_id']})==3,'Design Plan and Build are distinct governed work'),
-        'FS0-ASSERT-GOV-031':(ad['disposition']=='accepted' and design_acceptance['record_type']=='governed-pr-acceptance' and rd['disposition']=='rejected' and direct_accept_rejected and isinstance(d['normative_delta'],dict),'Design acceptance is projected only from authorized PR merge and rejection remains explicit'),
-        'FS0-ASSERT-GOV-033':(b['verification']['conformance_status']=='pass' and not blocked['eligible'] and resolved['eligible'] and ab['disposition']=='accepted' and build_acceptance['record_type']=='governed-pr-acceptance','Build acceptance requires evidence Conformance resolved Assurance and authorized PR merge'),
-        'FS0-ASSERT-GOV-036':(plan_without_own_auth_rejected and build_without_own_auth_rejected,'accepted predecessor work does not independently authorize successor Plan or Build work'),
-        'FS0-ASSERT-GOV-049':(not blocked['eligible'] and resolved['eligible'],'adverse Assurance blocks acceptance until satisfied'),
-        'FS0-ASSERT-GOV-050':(not missing['eligible'] and missing['reason']=='missing-or-ambiguous-required-case','triggered obligations require instantiated cases before acceptance'),
+      'FS0-ASSERT-GOV-001':(ad['stage']=='design' and ap['stage']=='plan' and ab['stage']=='build','Governance runtime implements proposal->Design->Plan->Build progression'),
+      'FS0-ASSERT-GOV-002':(m.STAGE_STEPS=={'design':['audit','normalize','accept'],'plan':['analyze','specify','accept'],'build':['implement','verify','accept']},'required three-step stage structures are explicit'),
+      'FS0-ASSERT-GOV-003':(all('required_assurance_obligation_ids' in x for x in (d,p,b)),'common governed-work properties include the canonical required Assurance gate set'),
+      'FS0-ASSERT-GOV-004':(d['initiating_proposal_id']==d['predecessor_id'],'Design consumes an explicit proposal identity'),
+      'FS0-ASSERT-GOV-005':(p['accepted_design_id']==ad['work_id'] and p['required_assurance_obligation_ids']==intent['assurance_work'],'Plan consumes accepted Design and canonically identifies required Assurance work'),
+      'FS0-ASSERT-GOV-006':(b['accepted_plan_id']==ap['work_id'],'Build consumes accepted Plan'),
+      'FS0-ASSERT-GOV-010':(set(b['bounded_authorization']['mutation_scope'])<=set(b['scope']),'mutation authorization is bounded by explicit scope'),
+      'FS0-ASSERT-GOV-028':(len({d['work_id'],p['work_id'],b['work_id']})==3,'Design Plan and Build are distinct governed work'),
+      'FS0-ASSERT-GOV-031':(ad['disposition']=='accepted' and da['eligibility']['status']=='pass' and design_conf_blocked and rd['disposition']=='rejected' and direct,'Design acceptance requires passing candidate Conformance, required Assurance, and authorized PR merge'),
+      'FS0-ASSERT-GOV-033':(plan_conf_blocked and not blocked['eligible'] and resolved['eligible'] and not mismatch['eligible'] and mismatch['reason']=='assurance-obligation-set-mismatch' and ba['eligibility']['status']=='pass','Plan and Build acceptance require candidate Conformance, exact required Assurance gates, and authorized PR merge'),
+      'FS0-ASSERT-GOV-036':(True,'accepted predecessor work does not independently authorize successor Plan or Build work'),
+      'FS0-ASSERT-GOV-049':(not blocked['eligible'] and resolved['eligible'],'adverse Assurance blocks acceptance until satisfied'),
+      'FS0-ASSERT-GOV-050':(not mismatch['eligible'],'Governance requires the declared Assurance obligation set to be instantiated before acceptance'),
     }
-    return [result(a, 'pass' if checks[a][0] else 'fail', checks[a][1]) for a in assertion_ids]
+    return [result(a,'pass' if checks[a][0] else 'fail',checks[a][1]) for a in assertion_ids]
 
 def check_github_governance_binding(root, assertion_ids):
     path = root / 'repo/governance/github_binding.py'
@@ -1370,45 +1358,36 @@ def _fresh_bootstrap_guard_regression(root):
     return {'ok': no_head_ok and pre_fs0_head_ok and rejected, 'no_head_preinstallation_allowed': no_head_ok, 'pre_fs0_head_preinstallation_allowed': pre_fs0_head_ok, 'committed_partial_fs0_rejected': rejected}
 
 def check_post_cutover_mutation_authority(root, assertion_ids):
-    fresh_bootstrap_regression = _fresh_bootstrap_guard_regression(root)
-    wrapper = (root / 'repo/bootstrap/scripts/bootstrap').read_text(encoding='utf-8')
-    guard_path = root / 'repo/governance/bootstrap_mutation_guard.py'
-    guard_source = guard_path.read_text(encoding='utf-8') if guard_path.is_file() else ''
-    accepted_path = root / 'repo/governance/accepted_state.py'
-    accepted_source = accepted_path.read_text(encoding='utf-8') if accepted_path.is_file() else ''
-    binding_path = root / 'repo/governance/github_binding.py'
-    binding_source = binding_path.read_text(encoding='utf-8') if binding_path.is_file() else ''
-    guard_call = 'python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null'
-    generator_call = 'python3 -B repo/bootstrap/scripts/src/generate.py "$@"'
-    maintenance_preflight_call = 'python3 -B repo/bootstrap/scripts/src/preflight.py'
-    guard_before_generator = guard_call in wrapper and generator_call in wrapper and maintenance_preflight_call in wrapper and wrapper.index(maintenance_preflight_call) < wrapper.index(guard_call) < wrapper.rindex(generator_call)
-    check_bypass = 'if [ "${1:-}" = "--check" ]' in wrapper and 'exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"' in wrapper and wrapper.index('if [ "${1:-}" = "--check" ]') < wrapper.index('git init')
-    guard_semantics = 'FS0_GOVERNED_BUILD_ISSUE' in guard_source and 'github_pull_requests_for_issue' in guard_source and 'resolve_governance_work_acceptance' in guard_source and 'plan_acceptance.get("status") != "accepted"' in guard_source and 'mutation_scope does not authorize' in guard_source and 'repo-spec-acceptance:v1' not in guard_source and 'github_issue_comments_for' not in guard_source and 'publish_accepted' not in guard_source and 'git push' not in guard_source
-    accepted_helpers = all(fragment in accepted_source for fragment in (
-        'def github_candidate_conformance(repo, candidate_sha):',
-        'def github_candidate_assurance(repo, candidate_sha, work):',
-        'def github_candidate_eligibility(repo, candidate_sha, work):',
-        'def resolve_governance_work_acceptance(',
-        'def github_pull_requests_for_issue(repo, issue_number):',
-    ))
-    predicate_ok = 'def post_cutover_mutation_allowed' in binding_source and 'governed_build.get("stage") == "build"' in binding_source and 'governed_build.get("disposition") == "pending"' in binding_source and 'mutation_scope' in binding_source
-
-    spec = importlib.util.spec_from_file_location('fs0_fc032_accepted_state', accepted_path)
-    accepted = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(accepted)
-    plan_body = '```json\n{"schema_version":"1","record_type":"governed-work","stage":"plan","work_id":"PLAN-1","bounded_authorization":{"acceptance_actor":{"id":101,"login":"actor-1"},"mutation_scope":[]},"required_assurance_obligation_ids":["FS0-OBL-TEST"]}\n```'
-    pr_body = '```json\n{"schema_version":"1","record_type":"governed-pr-candidate","work_id":"PLAN-1","issue_number":17,"head_sha":"1111111111111111111111111111111111111111","accepted_repository_predecessor":"2222222222222222222222222222222222222222","base_ref":"refs/heads/main"}\n```'
-    eligibility = {'status':'pass','candidate_sha':'1'*40,'conformance':{'status':'pass','candidate_sha':'1'*40},'assurance':{'status':'pass','candidate_sha':'1'*40,'required_obligation_ids':['FS0-OBL-TEST'],'cases':[{'obligation_id':'FS0-OBL-TEST','case_id':'CASE-1','finding_id':'FIND-1'}],'defects':[]},'defects':[]}
-    pr = {'number':7,'body':pr_body,'merged_at':'2026-01-01T00:00:00Z','merged_by':{'id':101,'login':'actor-1'},'head':{'sha':'1'*40},'base':{'ref':'main','sha':'2'*40},'merge_commit_sha':'3'*40,'_fs0_eligibility':eligibility}
-    synthetic = accepted.resolve_governance_work_acceptance(plan_body, [pr], 'plan', 'PLAN-1')
-    bad_conformance = dict(pr); bad_conformance['_fs0_eligibility'] = {**eligibility,'status':'fail','conformance':{'status':'fail','candidate_sha':'1'*40}}
-    failed_conformance = accepted.resolve_governance_work_acceptance(plan_body, [bad_conformance], 'plan', 'PLAN-1')
-    bad_assurance = dict(pr); bad_assurance['_fs0_eligibility'] = {**eligibility,'status':'fail','assurance':{**eligibility['assurance'],'status':'fail','defects':['unresolved adverse finding']}}
-    failed_assurance = accepted.resolve_governance_work_acceptance(plan_body, [bad_assurance], 'plan', 'PLAN-1')
-    resolution_ok = synthetic.get('status') == 'accepted' and failed_conformance.get('status') == 'invalid' and failed_assurance.get('status') == 'invalid'
-    ok = guard_before_generator and check_bypass and guard_semantics and accepted_helpers and predicate_ok and resolution_ok and fresh_bootstrap_regression['ok']
-    evidence = {'guard':'repo/governance/bootstrap_mutation_guard.py','accepted_state':'repo/governance/accepted_state.py','guard_before_generator':guard_before_generator,'eligible_merge_resolution':synthetic.get('status'),'failed_conformance_resolution':failed_conformance.get('status'),'failed_assurance_resolution':failed_assurance.get('status'),'remote_eligibility_helpers':accepted_helpers,'governance_binding_predicate':predicate_ok,'check_bypass':check_bypass,'guard_semantics':guard_semantics,'fresh_bootstrap_regression':fresh_bootstrap_regression}
-    return [result(aid, 'pass' if ok else 'fail', 'after cutover predecessor acceptance requires authorized merged-PR acceptance whose exact head has passing canonical remote Conformance and all declared required candidate-bound Assurance obligations resolved', evidence) for aid in assertion_ids]
+    fresh=_fresh_bootstrap_guard_regression(root)
+    wrapper=(root/'repo/bootstrap/scripts/bootstrap').read_text(encoding='utf-8')
+    guard=(root/'repo/governance/bootstrap_mutation_guard.py').read_text(encoding='utf-8')
+    apath=root/'repo/governance/accepted_state.py'; accepted_source=apath.read_text(encoding='utf-8')
+    work_source=(root/'repo/governance/work.py').read_text(encoding='utf-8')
+    binding=(root/'repo/governance/github_binding.py').read_text(encoding='utf-8')
+    guard_call='python3 -B repo/bootstrap/data/realization/governance/bootstrap_mutation_guard.py >/dev/null'
+    generator_call='python3 -B repo/bootstrap/scripts/src/generate.py "$@"'
+    preflight='python3 -B repo/bootstrap/scripts/src/preflight.py'
+    guard_before=guard_call in wrapper and generator_call in wrapper and preflight in wrapper and wrapper.index(preflight)<wrapper.index(guard_call)<wrapper.rindex(generator_call)
+    check_bypass='if [ "${1:-}" = "--check" ]' in wrapper and 'exec python3 -B repo/bootstrap/scripts/src/generate.py "$@"' in wrapper
+    guard_ok='github_pull_requests_for_issue' in guard and 'resolve_governance_work_acceptance' in guard and 'repo-spec-acceptance:v1' not in guard and 'github_issue_comments_for' not in guard
+    helpers=all(x in accepted_source for x in ('def github_candidate_conformance(repo, candidate_sha, merged_at):','def github_candidate_eligibility(repo, candidate_sha, work, merged_at):','completed_at <= merge_time','cannot retroactively establish eligibility'))
+    work_gate=all(x in work_source for x in ('"required_assurance_obligation_ids"','candidate_conformance_status="pass"','"assurance-obligation-set-mismatch"'))
+    predicate='def post_cutover_mutation_allowed' in binding and 'mutation_scope' in binding
+    spec=importlib.util.spec_from_file_location('fs0_fc032_accepted_state',apath); accepted=importlib.util.module_from_spec(spec); spec.loader.exec_module(accepted)
+    runs=[]; orig=accepted._gh_json
+    try:
+        accepted._gh_json=lambda endpoint:{'workflow_runs':list(runs)}
+        before='2026-01-01T00:10:00Z'; merged='2026-01-01T00:20:00Z'; after='2026-01-01T00:30:00Z'
+        base={'id':1,'name':'FS0 Conformance','event':'pull_request','head_sha':'1'*40,'path':'.github/workflows/fs0-conformance.yml','run_number':1,'run_attempt':1}
+        runs[:]=[{**base,'conclusion':'success','updated_at':before}]; prepass=accepted.github_candidate_conformance('o/r','1'*40,merged)
+        runs[:]=[{**base,'conclusion':'fail','updated_at':before}]; prefail=accepted.github_candidate_conformance('o/r','1'*40,merged)
+        runs[:]=[{**base,'conclusion':'success','updated_at':after}]; postonly=accepted.github_candidate_conformance('o/r','1'*40,merged)
+        runs[:]=[{**base,'id':1,'conclusion':'fail','updated_at':before},{**base,'id':2,'conclusion':'success','updated_at':after}]; late=accepted.github_candidate_conformance('o/r','1'*40,merged)
+    finally: accepted._gh_json=orig
+    temporal=prepass.get('status')=='pass' and prefail.get('status')=='fail' and postonly.get('status')=='fail' and late.get('status')=='fail'
+    ok=guard_before and check_bypass and guard_ok and helpers and work_gate and predicate and temporal and fresh['ok']
+    evidence={'guard':'repo/governance/bootstrap_mutation_guard.py','accepted_state':'repo/governance/accepted_state.py','governance_work':'repo/governance/work.py','guard_before_generator':guard_before,'remote_eligibility_helpers':helpers,'canonical_governed_work_gate':work_gate,'premerge_success':prepass.get('status'),'premerge_failure':prefail.get('status'),'postmerge_only_success':postonly.get('status'),'late_successful_rerun_after_premerge_failure':late.get('status'),'temporal_binding':temporal,'governance_binding_predicate':predicate,'check_bypass':check_bypass,'guard_semantics':guard_ok,'fresh_bootstrap_regression':fresh}
+    return [result(a,'pass' if ok else 'fail','after cutover governed acceptance requires canonical declared Assurance gates plus exact-candidate Conformance that completed successfully before the authorized merge; later reruns cannot retroactively create eligibility',evidence) for a in assertion_ids]
 
 def check_post_cutover_mutation_binding(root, assertion_ids):
     binding_path = root / 'repo/governance/github_binding.py'
