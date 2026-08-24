@@ -13,6 +13,6 @@
       "candidate",
       "cutover"
     ],
-    "accepted_ref": "refs/heads/accepted"
+    "accepted_ref": "refs/heads/main"
   }
 }

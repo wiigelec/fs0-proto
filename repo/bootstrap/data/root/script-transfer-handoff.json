@@ -41,6 +41,7 @@
         ],
         "behavior": [
           "emit START and operation identity before any repository mutation",
+          "visually separate phases with the standard stage header and clean blank-line spacing",
           "announce every material precondition, mutation, generation, validation, commit, publication, and verification step before execution",
           "show exact external commands before execution",
           "show captured stdout and stderr beneath the command using OUT and ERR prefixes when output is non-empty",
@@ -50,7 +51,9 @@
           "emit FAILED immediately after the failing step and include the failure in the result JSON",
           "write the machine-readable result JSON on both PASS and FAILED when possible",
           "preserve a concise final summary after the step transcript"
-        ]
+        ],
+        "stage_header_line": "===== <PHASE> =====",
+        "stage_spacing": "emit one blank line before each phase header and one blank line after each completed phase"
       }
     },
     "local_to_web": {
@@ -72,7 +75,8 @@
       "mutate only explicitly authorized paths",
       "preserve unrelated user work",
       "do not force-push or rewrite history unless separately and explicitly authorized",
-      "do not embed or persist secrets"
+      "do not embed or persist secrets",
+      "when parsing git status --porcelain output, preserve its leading fixed-width status columns; never call .strip() on the complete porcelain output before slicing status/path fields; split lines and remove only line terminators"
     ],
     "validation_rules": [
       "run task-specific regression checks",

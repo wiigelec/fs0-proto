@@ -853,14 +853,14 @@ def origin_repository(root):
 
 def accepted_ref(root):
     proc = _run(
-        ["git", "ls-remote", "--heads", "origin", "refs/heads/accepted"],
+        ["git", "ls-remote", "--heads", "origin", "refs/heads/main"],
         allowed=(0,),
     )
     text = proc.stdout.strip()
     if not text:
         return None
     parts = text.split()
-    if len(parts) != 2 or parts[1] != "refs/heads/accepted":
+    if len(parts) != 2 or parts[1] != "refs/heads/main":
         raise RuntimeError("unexpected accepted-ref resolution")
     return parts[0].lower()
 
@@ -935,7 +935,21 @@ def main():
         else:
             repo = origin_repository(root)
             report = resolve_published_state(repo, sha)
-            report["provenance_resolution"] = "immutable-acceptance-receipt"
+            if report.get("status") == "accepted":
+                report["provenance_resolution"] = "immutable-acceptance-receipt"
+            else:
+                bootstrap = committed_bootstrap_state(root, sha)
+                fallback = (
+                    bootstrap.get("first_accepted_fs0_revision")
+                    if bootstrap.get("state") == "cutover"
+                    else None
+                )
+                if fallback:
+                    report = resolve_published_state(repo, fallback)
+                    report["repository_revision"] = sha
+                    report["provenance_resolution"] = (
+                        "bootstrap-cutover-to-immutable-acceptance-receipt"
+                    )
     except Exception as exc:
         report = {
             "schema_version": "1",

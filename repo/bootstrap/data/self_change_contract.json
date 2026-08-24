@@ -10,7 +10,7 @@
     "accepted-state-publication"
   ],
   "candidate_ref": "refs/heads/candidate",
-  "accepted_ref": "refs/heads/accepted",
+  "accepted_ref": "refs/heads/main",
   "entrypoint": "repo/scripts/self-change",
   "implementation": "repo/governance/self_change.py",
   "dependencies": {

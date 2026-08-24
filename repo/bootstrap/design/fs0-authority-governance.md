@@ -115,7 +115,7 @@ The bootstrap provenance issue is an external bootstrap record surface only. It 
 FS0 shall realize accepted repository state through one dedicated Git ref named:
 
 ```text
-refs/heads/accepted
+refs/heads/main
 ```
 
 The `accepted` ref shall point directly to the exact Git commit currently accepted as repository state.
@@ -145,7 +145,7 @@ The canonical answer to:
 
 > What exact repository revision is currently accepted?
 
-is the commit currently referenced by `refs/heads/accepted`, provided that a corresponding valid acceptance record resolves to the same commit.
+is the commit currently referenced by `refs/heads/main`, provided that a corresponding valid acceptance record resolves to the same commit.
 
 The default branch HEAD may equal or advance beyond the accepted revision during candidate publication, but default-branch position shall not independently create acceptance.
 

@@ -88,18 +88,6 @@
         "REPO-SPEC-PROPOSAL-ASSURANCE"
       ],
       "predecessor_id": "REPO-SPEC-PROPOSAL-ASSURANCE",
-      "successor_id": "REPO-SPEC-PROPOSAL-REPO-COMPRESS"
-    },
-    {
-      "proposal_id": "REPO-SPEC-PROPOSAL-REPO-COMPRESS",
-      "order": 70,
-      "installed_path": "repo/proposals/repo-compress.json",
-      "markdown_projection": "repo/proposals/repo-compress.md",
-      "lifecycle_state": "available",
-      "bootstrap_provenance": "bootstrap-seed",
-      "authority_state": "none",
-      "reconstruction_dependencies": [],
-      "predecessor_id": "REPO-SPEC-PROPOSAL-SUCCESSOR-CONCEPTS",
       "successor_id": null
     }
   ]

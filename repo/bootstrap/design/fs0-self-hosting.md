@@ -226,7 +226,7 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 - Canonical Conformance executes remotely.
 - Assurance evidence/findings are remotely accessible.
 - Explicit acceptance can be resolved independently of merge state.
-- `refs/heads/accepted` resolves the accepted repository revision and agrees with its acceptance record.
+- `refs/heads/main` resolves the accepted repository revision and agrees with its acceptance record.
 - Unauthorized successor work is distinguishable from authorized work.
 
 ## Self-Hosting
@@ -305,7 +305,7 @@ Before generating bootstrap scripts, this proposal should be audited for:
 11. whether any current repo-spec mechanism should be reused conceptually to reduce bootstrap risk;
 12. whether the proposed FS1 demonstration is sufficiently independent to prove genuine self-hosting; and
 13. whether any bootstrap-only shortcut would remain as an undeclared permanent authority path after cutover;
-14. whether the structured acceptance-record plus `refs/heads/accepted` model is sufficient to distinguish merge and publication from Governance acceptance;
+14. whether the structured acceptance-record plus `refs/heads/main` model is sufficient to distinguish merge and publication from Governance acceptance;
 15. whether the fixed FS0 GitHub binding is minimal but complete enough to generate realization scripts without inventing Governance semantics; and
 16. whether pre-cutover verification is clearly distinguished from governed FS0 Conformance and Assurance.
 17. whether the installed FS0 operating substrate is sufficient for complete self-hosting without the external bootstrap environment;

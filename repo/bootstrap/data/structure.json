@@ -196,11 +196,6 @@
       "presence": "required"
     },
     {
-      "path": "repo/bootstrap/data/proposals/repo-compress.json",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
       "path": "repo/bootstrap/data/proposals/successor-concepts.json",
       "object_type": "file",
       "presence": "required"
@@ -689,16 +684,6 @@
     },
     {
       "path": "repo/proposals/registry.json",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
-      "path": "repo/proposals/repo-compress.json",
-      "object_type": "file",
-      "presence": "required"
-    },
-    {
-      "path": "repo/proposals/repo-compress.md",
       "object_type": "file",
       "presence": "required"
     },

@@ -56,12 +56,12 @@ def exact_commit(root, value):
 
 
 def remote_accepted_ref():
-    proc = _run(["git", "ls-remote", "--heads", "origin", "refs/heads/accepted"])
+    proc = _run(["git", "ls-remote", "--heads", "origin", "refs/heads/main"])
     text = proc.stdout.strip()
     if not text:
         return None
     fields = text.split()
-    if len(fields) != 2 or fields[1] != "refs/heads/accepted":
+    if len(fields) != 2 or fields[1] != "refs/heads/main":
         raise RuntimeError("unexpected accepted-ref resolution")
     return fields[0].lower()
 
@@ -227,7 +227,14 @@ def main():
         current = remote_accepted_ref()
         report["previous_accepted_revision"] = current
 
-        if current is None:
+        candidate_bootstrap = module.committed_bootstrap_state(root, candidate)
+        initial_bootstrap_publication = (
+            candidate_bootstrap.get("state") == "candidate"
+            and current == candidate
+            and candidate_bootstrap.get("first_accepted_fs0_revision") is None
+            and candidate_bootstrap.get("bootstrap_acceptance_record") is None
+        )
+        if initial_bootstrap_publication:
             provenance_issue, comments = module.bootstrap_acceptance_comments(
                 root, repo, candidate
             )
@@ -248,8 +255,18 @@ def main():
         if current is not None and current != candidate:
             current_state = module.resolve_published_state(repo, current)
             if current_state.get("status") != "accepted":
+                current_bootstrap = module.committed_bootstrap_state(root, current)
+                fallback = (
+                    current_bootstrap.get("first_accepted_fs0_revision")
+                    if current_bootstrap.get("state") == "cutover"
+                    else None
+                )
+                if fallback:
+                    current_state = module.resolve_published_state(repo, fallback)
+                    report["previous_repository_revision"] = current
+            if current_state.get("status") != "accepted":
                 raise RuntimeError(
-                    "current accepted ref is not backed by a valid immutable acceptance receipt"
+                    "current main state is not backed by a valid immutable acceptance receipt"
                 )
             report["previous_resolved_state"] = current_state
 
@@ -266,7 +283,7 @@ def main():
 
         if decision["action"] in {"create", "advance"}:
             proc = _run(
-                ["git", "push", "origin", f"{candidate}:refs/heads/accepted"],
+                ["git", "push", "origin", f"{candidate}:refs/heads/main"],
                 allowed=(0,),
             )
             report["push_output"] = (proc.stdout + proc.stderr).strip()

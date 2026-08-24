@@ -50,4 +50,8 @@ Bootstrap Design source remains under `repo/bootstrap/design/` for bootstrap con
 
 Read `repo/state/bootstrap.json` to determine whether the repository is still in bootstrap `candidate` state or has reached `cutover`.
 
-After publication, resolve accepted repository state through `refs/heads/accepted` and its immutable acceptance receipt tag `refs/tags/fs0-acceptance/<accepted-sha>`. The receipt snapshots the explicit acceptance decision and GitHub provenance; the default branch, merge state, CI result, or technical write access does not substitute for Governance acceptance.
+After publication, resolve accepted repository state from `main` and its immutable acceptance receipt tag `refs/tags/fs0-acceptance/<accepted-sha>`. The receipt snapshots the explicit acceptance decision and GitHub provenance; the default branch, merge state, CI result, or technical write access does not substitute for Governance acceptance.
+
+## Branch model
+
+`main` is the single persistent repository branch. Candidate branches are temporary review/publication surfaces and may be deleted after acceptance. Immutable `refs/tags/fs0-acceptance/<sha>` receipts preserve acceptance history without a second persistent accepted branch.

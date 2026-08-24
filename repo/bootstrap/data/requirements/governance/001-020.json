@@ -95,7 +95,7 @@
     },
     {
       "id": "FS0-GOV-016",
-      "statement": "Accepted repository state SHALL be represented by refs/heads/accepted plus exactly one matching valid acceptance record snapshotted in an immutable Git acceptance receipt tag object bound to that accepted revision.",
+      "statement": "Accepted repository state SHALL be represented by refs/heads/main plus exactly one matching valid acceptance record snapshotted in an immutable Git acceptance receipt tag object bound to that accepted revision.",
       "c": "mechanical",
       "a": "none"
     },

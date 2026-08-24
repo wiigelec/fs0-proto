@@ -16,7 +16,7 @@
     "REPO-SPEC-PROPOSAL-ASSURANCE"
   ],
   "predecessor_id": "REPO-SPEC-PROPOSAL-ASSURANCE",
-  "successor_id": "REPO-SPEC-PROPOSAL-REPO-COMPRESS",
+  "successor_id": null,
   "source_provenance": {
     "repository": "wiigelec/repo-spec",
     "revision": "e9ec83c62e8ea15f0160ac1ab56f1305171623d3",

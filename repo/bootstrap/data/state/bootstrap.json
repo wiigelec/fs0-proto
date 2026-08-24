@@ -6,6 +6,6 @@
   "first_accepted_fs0_revision": null,
   "bootstrap_provenance_issue": null,
   "bootstrap_acceptance_record": null,
-  "accepted_ref": "refs/heads/accepted",
+  "accepted_ref": "refs/heads/main",
   "cutover_timestamp": null
 }

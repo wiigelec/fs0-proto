@@ -1154,7 +1154,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-016",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Accepted repository state SHALL be represented by refs/heads/accepted plus exactly one matching valid acceptance record snapshotted in an immutable Git acceptance receipt tag object bound to that accepted revision.",
+      "statement": "Accepted repository state SHALL be represented by refs/heads/main plus exactly one matching valid acceptance record snapshotted in an immutable Git acceptance receipt tag object bound to that accepted revision.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1364,7 +1364,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-037",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "refs/heads/accepted SHALL move only after the applicable explicit acceptance decision exists and its immutable acceptance receipt tag object has been published and verified.",
+      "statement": "refs/heads/main SHALL move only after the applicable explicit acceptance decision exists and its immutable acceptance receipt tag object has been published and verified.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
