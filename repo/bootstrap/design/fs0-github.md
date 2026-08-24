@@ -190,15 +190,16 @@ The bootstrap sequence shall be:
 
 FS0 shall maintain a machine-resolvable bootstrap cutover record.
 
-The cutover record shall identify at least:
+The committed cutover record shall identify at least:
 
 ```text
 cutover state
 bootstrap provenance issue
-designated bootstrap pull request
 accepted Git ref
 cutover timestamp
 ```
+
+The bootstrap-cutover operation and GitHub remote state shall machine-resolvably identify the designated bootstrap pull request, its exact candidate head SHA, and its association with the bootstrap provenance issue. The designated pull request identity need not be embedded in the committed cutover record because that pull request is created only after the exact cutover candidate has been committed and published.
 
 The only valid bootstrap lifecycle is:
 
