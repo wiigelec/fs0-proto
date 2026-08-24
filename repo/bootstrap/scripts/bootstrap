@@ -20,7 +20,7 @@ if [ "${1:-}" = "--check" ]; then
 fi
 
 initial_commit=0
-if [ ! -d .git ]; then
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
     initial_commit=1
 elif ! git rev-parse --verify 'HEAD^{commit}' >/dev/null 2>&1; then
     initial_commit=1
@@ -32,7 +32,7 @@ else
     python3 -B repo/bootstrap/scripts/src/preflight.py
 fi
 
-if [ ! -d .git ]; then
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
     git init >/dev/null
 fi
 

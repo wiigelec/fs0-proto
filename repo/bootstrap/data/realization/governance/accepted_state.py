@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime
@@ -566,6 +567,10 @@ def accepted_ref(root):
 
 
 def _gh_paginated(endpoint):
+    if shutil.which("gh") is None:
+        raise RuntimeError(
+            "GitHub CLI (gh) is required for remote Governance and accepted-state resolution"
+        )
     proc = _run(["gh", "api", "--paginate", "--slurp", endpoint])
     pages = json.loads(proc.stdout)
     if not isinstance(pages, list):

@@ -45,11 +45,14 @@ def main() -> int:
         run(["git", "var", "GIT_AUTHOR_IDENT"], cwd=root)
         run(["git", "var", "GIT_COMMITTER_IDENT"], cwd=root)
     else:
-        if not (root / ".git").is_dir():
-            raise SystemExit(
-                "FS0 bootstrap prerequisite failed: target Git repository is missing"
-            )
         run(["git", "rev-parse", "--git-dir"], cwd=root)
+        top = Path(
+            run(["git", "rev-parse", "--show-toplevel"], cwd=root).stdout.strip()
+        ).resolve()
+        if top != root:
+            raise SystemExit(
+                "FS0 bootstrap prerequisite failed: current directory is not repository root"
+            )
 
     result = {
         "schema_version": "1",
