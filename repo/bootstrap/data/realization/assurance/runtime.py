@@ -2,18 +2,22 @@
 from __future__ import annotations
 
 import hashlib
-import json
-from pathlib import Path
 
 REVIEW_TYPES = {
     "requirement-quality", "ambiguity", "contradiction", "Design-fidelity",
     "Plan-fidelity", "Build-fidelity", "Conformance-interpretation",
     "evidence-sufficiency",
 }
-FINDING_STATUSES = {"satisfied", "defect", "insufficient", "governance-required"}
-CASES_DIR = "repo/assurance/cases"
-FINDINGS_DIR = "repo/assurance/findings"
-
+AUDIT_OUTCOMES = {"satisfied", "defect", "insufficient", "governance-required"}
+ASSURANCE_EVIDENCE_SURFACES = {
+    "github-issue-history",
+    "github-pull-request-history",
+    "github-review-history",
+    "github-check-history",
+    "github-development-links",
+    "github-merge-history",
+    "github-issue-closure-history",
+}
 
 class AssuranceError(ValueError):
     pass
@@ -23,46 +27,24 @@ def _nonempty(value):
     return isinstance(value, str) and bool(value.strip())
 
 
-def validate_case(record):
-    required = {
-        "schema_version", "record_type", "case_id", "authorizing_authority_id",
-        "review_obligation_id", "review_type", "reviewed_subject", "evidence",
-        "finding_identity",
-    }
-    if not isinstance(record, dict) or not required <= set(record):
-        raise AssuranceError("Assurance case lacks required fields")
-    if record["schema_version"] != "1" or record["record_type"] != "assurance-review-case":
-        raise AssuranceError("invalid Assurance case envelope")
-    for key in ("case_id", "authorizing_authority_id", "review_obligation_id", "finding_identity"):
-        if not _nonempty(record.get(key)):
-            raise AssuranceError(f"{key} must be non-empty")
-    if record.get("review_type") not in REVIEW_TYPES:
-        raise AssuranceError("invalid Assurance review_type")
-    if not isinstance(record["reviewed_subject"], dict) or not record["reviewed_subject"]:
-        raise AssuranceError("reviewed_subject must be a non-empty object")
-    if not isinstance(record["evidence"], list):
-        raise AssuranceError("evidence must be a list")
-    exclusions = record.get("material_exclusions")
-    if exclusions is not None and not isinstance(exclusions, list):
-        raise AssuranceError("material_exclusions must be a list when present")
-    if record["reviewed_subject"].get("authority_id") == record["authorizing_authority_id"]:
-        raise AssuranceError("review subject cannot authorize its own review")
-    return record
+def _valid_actor(value):
+    if not isinstance(value, dict):
+        return False
+    actor_id = value.get("id")
+    return (
+        not isinstance(actor_id, bool)
+        and isinstance(actor_id, int)
+        and actor_id > 0
+        and ("login" not in value or _nonempty(value.get("login")))
+    )
 
 
-def validate_finding(record):
-    required = {"schema_version", "record_type", "finding_id", "case_id", "status", "sequence"}
-    if not isinstance(record, dict) or not required <= set(record):
-        raise AssuranceError("Assurance finding lacks required fields")
-    if record["schema_version"] != "1" or record["record_type"] != "assurance-finding":
-        raise AssuranceError("invalid Assurance finding envelope")
-    if not _nonempty(record.get("finding_id")) or not _nonempty(record.get("case_id")):
-        raise AssuranceError("finding_id and case_id must be non-empty")
-    if record.get("status") not in FINDING_STATUSES:
-        raise AssuranceError("invalid Assurance finding status")
-    if not isinstance(record.get("sequence"), int) or record["sequence"] < 1:
-        raise AssuranceError("finding sequence must be positive")
-    return record
+def _exact_sha(value):
+    return (
+        isinstance(value, str)
+        and len(value) == 40
+        and all(ch in "0123456789abcdefABCDEF" for ch in value)
+    )
 
 
 def triggered_obligation_ids(correspondence_records, subject_requirement_ids):
@@ -74,8 +56,43 @@ def triggered_obligation_ids(correspondence_records, subject_requirement_ids):
     return out
 
 
+def validate_review_context(record):
+    required = {
+        "schema_version", "record_type", "context_id", "authorizing_authority_id",
+        "review_obligation_id", "review_type", "reviewed_subject", "evidence",
+        "material_exclusions",
+    }
+    if not isinstance(record, dict) or set(record) != required:
+        raise AssuranceError("Assurance review context fields are not canonical")
+    if record.get("schema_version") != "1" or record.get("record_type") != "assurance-review-context":
+        raise AssuranceError("invalid Assurance review context envelope")
+    for key in ("context_id", "authorizing_authority_id", "review_obligation_id"):
+        if not _nonempty(record.get(key)):
+            raise AssuranceError(f"{key} must be non-empty")
+    if record.get("review_type") not in REVIEW_TYPES:
+        raise AssuranceError("invalid Assurance review_type")
+    subject = record.get("reviewed_subject")
+    if not isinstance(subject, dict) or not subject:
+        raise AssuranceError("reviewed_subject must be non-empty")
+    if subject.get("authority_id") == record["authorizing_authority_id"]:
+        raise AssuranceError("review subject cannot authorize its own review")
+    if not isinstance(record.get("evidence"), list):
+        raise AssuranceError("evidence must be a list")
+    if not isinstance(record.get("material_exclusions"), list):
+        raise AssuranceError("material_exclusions must be a list")
+    issue_number = subject.get("issue_number")
+    if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
+        raise AssuranceError("reviewed subject requires positive issue_number")
+    pr_number = subject.get("pull_request_number")
+    if pr_number is not None and (isinstance(pr_number, bool) or not isinstance(pr_number, int) or pr_number < 1):
+        raise AssuranceError("pull_request_number must be positive when present")
+    candidate_sha = subject.get("candidate_sha")
+    if candidate_sha is not None and not _exact_sha(candidate_sha):
+        raise AssuranceError("candidate_sha must be exact when present")
+    return record
 
-def instantiate_review_cases(
+
+def instantiate_review_contexts(
     work_id,
     subject_requirement_ids,
     correspondence_records,
@@ -83,109 +100,89 @@ def instantiate_review_cases(
     authorizing_authority_id,
     review_type_by_obligation,
     evidence,
+    issue_number,
+    pull_request_number=None,
     candidate_sha=None,
-    repo_pin_sha=None,
 ):
     if not _nonempty(work_id) or not _nonempty(authorizing_authority_id):
         raise AssuranceError("work_id and authorizing_authority_id must be non-empty")
-    if not isinstance(review_type_by_obligation, dict):
-        raise AssuranceError("review_type_by_obligation must be an object")
-    if not isinstance(evidence, list):
-        raise AssuranceError("evidence must be a list")
-    for label, value in (("candidate_sha", candidate_sha), ("repo_pin_sha", repo_pin_sha)):
-        if value is not None:
-            if not isinstance(value, str) or len(value) != 40 or any(ch not in "0123456789abcdefABCDEF" for ch in value):
-                raise AssuranceError(f"{label} must be an exact Git SHA when supplied")
-    candidate_sha = candidate_sha.lower() if isinstance(candidate_sha, str) else None
-    repo_pin_sha = repo_pin_sha.lower() if isinstance(repo_pin_sha, str) else None
+    if not isinstance(review_type_by_obligation, dict) or not isinstance(evidence, list):
+        raise AssuranceError("review mapping/evidence invalid")
+    if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
+        raise AssuranceError("issue_number must be positive")
     obligation_by_id = {
         item.get("obligation_id"): item
         for item in obligation_records
         if isinstance(item, dict) and _nonempty(item.get("obligation_id"))
     }
     triggered = triggered_obligation_ids(correspondence_records, subject_requirement_ids)
-    cases = []
+    contexts = []
     for obligation_id in triggered:
         obligation = obligation_by_id.get(obligation_id)
         if obligation is None:
             raise AssuranceError(f"triggered obligation does not resolve: {obligation_id}")
         review_type = review_type_by_obligation.get(obligation_id)
         if review_type not in REVIEW_TYPES:
-            raise AssuranceError(f"triggered obligation lacks supported review type: {obligation_id}")
-        digest = hashlib.sha256(f"{work_id}\0{obligation_id}".encode("utf-8")).hexdigest()[:24]
-        reviewed_subject = {
+            raise AssuranceError(f"triggered obligation lacks review type: {obligation_id}")
+        digest = hashlib.sha256(f"{work_id}\0{obligation_id}".encode()).hexdigest()[:24]
+        subject = {
             "work_id": work_id,
             "requirement_id": obligation.get("requirement_id"),
+            "issue_number": issue_number,
         }
+        if pull_request_number is not None:
+            subject["pull_request_number"] = pull_request_number
         if candidate_sha is not None:
-            reviewed_subject["candidate_sha"] = candidate_sha
-        if repo_pin_sha is not None:
-            reviewed_subject["repo_pin_sha"] = repo_pin_sha
-        case = {
-            "schema_version": "1", "record_type": "assurance-review-case",
-            "case_id": f"FS0-CASE-{digest}",
+            if not _exact_sha(candidate_sha):
+                raise AssuranceError("candidate_sha must be exact")
+            subject["candidate_sha"] = candidate_sha.lower()
+        contexts.append(validate_review_context({
+            "schema_version": "1",
+            "record_type": "assurance-review-context",
+            "context_id": f"FS0-AUDIT-{digest}",
             "authorizing_authority_id": authorizing_authority_id,
             "review_obligation_id": obligation_id,
             "review_type": review_type,
-            "reviewed_subject": reviewed_subject,
+            "reviewed_subject": subject,
             "evidence": list(evidence),
             "material_exclusions": [],
-            "finding_identity": f"FS0-FINDING-{digest}-1",
-        }
-        cases.append(validate_case(case))
-    return cases
+        }))
+    return contexts
 
 
-def write_case(root, record):
-    case = validate_case(dict(record))
-    directory = Path(root) / CASES_DIR
-    directory.mkdir(parents=True, exist_ok=True)
-    path = directory / f"{case['case_id']}.json"
-    path.write_text(json.dumps(case, indent=2) + "\\n", encoding="utf-8")
-    return path
+def candidate_merge_disposition(required_obligation_ids, merge_event, authorized_actor, candidate_sha):
+    if not _valid_actor(authorized_actor) or not _exact_sha(candidate_sha):
+        raise AssuranceError("candidate Assurance identity is invalid")
+    if not isinstance(merge_event, dict) or merge_event.get("merged") is not True:
+        raise AssuranceError("candidate Assurance requires actual merge")
+    actor = merge_event.get("actor")
+    if not _valid_actor(actor) or actor.get("id") != authorized_actor.get("id"):
+        raise AssuranceError("merge actor is not authorized")
+    if str(merge_event.get("head_sha", "")).lower() != candidate_sha.lower():
+        raise AssuranceError("merge did not accept reviewed candidate head")
+    return {
+        "status": "satisfied",
+        "basis": "authorized-pr-merge",
+        "candidate_sha": candidate_sha.lower(),
+        "required_obligation_ids": list(required_obligation_ids),
+    }
 
 
-def write_finding(root, record):
-    finding = validate_finding(dict(record))
-    directory = Path(root) / FINDINGS_DIR
-    directory.mkdir(parents=True, exist_ok=True)
-    path = directory / f"{finding['finding_id']}.json"
-    path.write_text(json.dumps(finding, indent=2) + "\\n", encoding="utf-8")
-    return path
-
-
-def resolution_status(case_id, findings):
-    relevant = [validate_finding(dict(x)) for x in findings if x.get("case_id") == case_id]
-    if not relevant:
-        return "missing"
-    seqs = [x["sequence"] for x in relevant]
-    if len(seqs) != len(set(seqs)):
-        raise AssuranceError("finding sequence must be unique within a case")
-    latest = max(relevant, key=lambda x: x["sequence"])
-    return "resolved" if latest["status"] == "satisfied" else "adverse"
-
-
-def load_artifacts(root, relative_dir, validator):
-    directory = Path(root) / relative_dir
-    if not directory.exists():
-        return []
-    if not directory.is_dir():
-        raise AssuranceError(f"{relative_dir} must be a directory")
-    records = []
-    for path in sorted(directory.iterdir()):
-        if not path.is_file() or path.suffix != ".json":
-            raise AssuranceError(f"unexpected Assurance artifact: {path}")
-        try:
-            record = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            raise AssuranceError(f"invalid Assurance artifact {path}: {exc}") from exc
-        records.append(validator(record))
-    return records
-
-
-def load_cases(root):
-    return load_artifacts(root, CASES_DIR, validate_case)
-
-
-def load_findings(root):
-    return load_artifacts(root, FINDINGS_DIR, validate_finding)
+def issue_close_disposition(required_obligation_ids, issue, authorized_actor, accepted_prs, development_prs):
+    if not _valid_actor(authorized_actor):
+        raise AssuranceError("authorized actor invalid")
+    if not isinstance(issue, dict) or issue.get("state") != "closed":
+        raise AssuranceError("completed-work Assurance requires closed issue")
+    closed_by = issue.get("closed_by")
+    if not _valid_actor(closed_by) or closed_by.get("id") != authorized_actor.get("id"):
+        raise AssuranceError("issue close actor is not authorized")
+    accepted = set(accepted_prs)
+    development = set(development_prs)
+    if not accepted or not accepted <= development:
+        raise AssuranceError("accepted PRs must be Development-linked")
+    return {
+        "status": "satisfied",
+        "basis": "authorized-issue-close",
+        "required_obligation_ids": list(required_obligation_ids),
+        "development_pull_request_numbers": sorted(development),
+    }

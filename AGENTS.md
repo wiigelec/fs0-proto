@@ -9,7 +9,7 @@ This file provides operational guidance for AI and automated agents working in a
 2. Read the applicable normative authority under `repo/authority/`.
 3. Use `repo/proposals/registry.json` to discover installed successor Design Proposals and their canonical structured read representations.
 4. Use `repo/bootstrap/design/` only for bootstrap Design-chunk discovery and maintenance context; it is not post-cutover authority.
-5. After publication, resolve accepted state from `main` together with the immutable receipt tag `refs/tags/fs0-acceptance/<accepted-sha>`.
+5. After cutover, resolve accepted state from `main` and its authorized governed PR merge history; resolve governed-work completion from the issue, its Development-linked accepted PRs, and authorized closure history.
 
 ## Authority
 
@@ -17,7 +17,7 @@ This file provides operational guidance for AI and automated agents working in a
 - Read the applicable records under `repo/authority/` before interpreting normative requirements.
 - Do not treat `README.md`, `AGENTS.md`, implementation code, generated output, workflow state, issue state, merge state, or the default branch as independent normative authority.
 - Do not infer that one repository or GitHub state class has another state class's semantics merely because the states coincide.
-- A merge, issue closure, CI success, or agent declaration does not itself create acceptance.
+- A merge creates Governance acceptance only when it is the authorized merge of the exact conforming governed PR after semantic audit. Authorized issue closure records completed-work Assurance satisfaction, not a second repository acceptance.
 
 ## Mutation
 

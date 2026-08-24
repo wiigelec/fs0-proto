@@ -27,7 +27,7 @@ Assurance correspondence
 governed work
 stage acceptance
 Conformance execution
-Assurance review cases/findings
+Assurance audit contexts, GitHub evidence/history, and merge/issue-closure dispositions
 GitHub bootstrap operating realization
 governed merge-acceptance resolution rules
 accepted Git ref resolution
@@ -138,9 +138,9 @@ Use FS0 to:
 - implement the accepted Plan;
 - produce a candidate remote revision;
 - execute canonical GitHub Conformance;
-- execute required Assurance cases;
-- resolve findings; and
-- explicitly accept the Build result.
+- perform the required semantic audit of the exact pull-request candidate;
+- merge only after the candidate audit is satisfactory; and
+- perform the completion semantic audit on resulting `main` before governed-issue closure.
 
 ### 5. Publish Accepted State
 
@@ -211,8 +211,10 @@ FS0 bootstrap is complete only when all of the following are true, including ins
 
 - Every accepted requirement has one canonical Assurance correspondence.
 - Required review obligations are identifiable.
-- Triggered obligations are instantiated as review cases.
-- Findings are attributable, scoped, and evidence-linked.
+- Triggered obligations are resolvable in the governed issue and pull-request audit context.
+- Candidate semantic audit satisfaction is attributable to the authorized merge of the exact conforming pull request.
+- Completed-work semantic audit satisfaction is attributable to authorized governed-issue closure after relevant accepted pull requests are linked through GitHub Development.
+- GitHub issue/pull-request discussion and history, checks, Development links, merge history, and closure history provide remotely accessible Assurance provenance.
 - Assurance cannot independently create persistent semantics.
 
 ## GitHub Operation

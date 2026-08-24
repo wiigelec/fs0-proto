@@ -133,7 +133,7 @@ After cutover, FS0 shall be capable of:
 - changing its own maintained framework implementation when authorized;
 - changing its own GitHub realization when authorized;
 - executing remote Conformance against the candidate;
-- recording required Assurance findings;
+- performing required semantic audits and resolving their GitHub merge/issue-closure dispositions;
 - explicitly accepting or rejecting the candidate; and
 - publishing the resulting accepted repository state.
 
@@ -216,7 +216,7 @@ FS0 operating substrate is sufficient only if an authorized agent operating thro
 4. create bounded candidate work;
 5. publish candidate repository changes;
 6. execute and inspect remote Conformance;
-7. create or inspect required Assurance state;
+7. create or inspect required Assurance audit context, GitHub evidence/history, and disposition state;
 8. perform authorized privileged GitHub mutations;
 9. record explicit acceptance; and
 10. publish the successor accepted state without access to the bootstrap environment.

@@ -54,21 +54,9 @@
       "descendants": "closed"
     },
     {
-      "path": "repo/assurance/cases",
-      "object_type": "directory",
-      "presence": "permitted",
-      "descendants": "complete-subtree"
-    },
-    {
       "path": "repo/assurance/correspondence.json",
       "object_type": "file",
       "presence": "required"
-    },
-    {
-      "path": "repo/assurance/findings",
-      "object_type": "directory",
-      "presence": "permitted",
-      "descendants": "complete-subtree"
     },
     {
       "path": "repo/assurance/obligations.json",
@@ -733,11 +721,6 @@
       "path": "repo/state/bootstrap.json",
       "object_type": "file",
       "presence": "required"
-    },
-    {
-      "path": "repo/state/repo-pin.json",
-      "object_type": "file",
-      "presence": "permitted"
     },
     {
       "path": "repo/state/repository-structure-binding.json",

@@ -77,7 +77,7 @@
     },
     {
       "id": "FS0-GOV-033",
-      "statement": "Build SHALL produce required evidence, invoke required Conformance and all triggered Assurance cases, and SHALL NOT be accepted while any required case has an adverse finding that remains unresolved.",
+      "statement": "Build SHALL produce required evidence, invoke required Conformance, perform required semantic audit, and continue governed work rather than merge when that audit is adverse.",
       "c": "mechanical",
       "a": "required"
     },
@@ -89,7 +89,7 @@
     },
     {
       "id": "FS0-GOV-035",
-      "statement": "Governance acceptance SHALL be the authorized merge of an eligible governed pull request; Conformance and Assurance are pre-merge eligibility gates.",
+      "statement": "Governance acceptance SHALL be authorized merge of the exact conforming governed pull request after semantic audit; that merge SHALL also record candidate Assurance satisfaction.",
       "c": "mechanical",
       "a": "required"
     },

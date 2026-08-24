@@ -150,11 +150,15 @@ If Assurance is required:
 ```text
 accepted authorizing authority
 → review obligation
-→ review case
-→ review subject + evidence
-→ finding
+→ governed issue / pull-request audit context
+→ review subject + GitHub evidence/history
+→ semantic audit
 → Governance disposition
 ```
+
+For a pull-request candidate, successful Assurance disposition is the authorized merge of the exact conforming candidate after semantic audit. For completed governed work, successful Assurance disposition is authorized closure of the governed issue after semantic audit of the resulting accepted `refs/heads/main` state and Development linkage of the relevant accepted pull requests.
+
+GitHub issue and pull-request discussion/history, review history, check history, Development relationships, merge history, and issue-closure history are the maintained Assurance provenance surfaces. FS0 does not require duplicate repository-tree case or finding artifacts.
 
 ## Required Capabilities
 
@@ -169,35 +173,35 @@ FS0 Assurance shall support at least:
 - Conformance interpretation review; and
 - evidence-sufficiency review.
 
-## Minimum Finding Vocabulary
+## Minimum Audit Outcome Vocabulary
 
-FS0 may use a minimal finding vocabulary:
+FS0 may use a minimal semantic-audit outcome vocabulary:
 
 - `satisfied`;
 - `defect`;
 - `insufficient`; and
 - `governance-required`.
 
-The final finding taxonomy is deferred.
+Adverse outcomes require further governed work before the applicable merge or issue closure. The final finding taxonomy is deferred.
 
 ## Required Scope Rules
 
-Every governed review case shall identify:
+Every governed semantic-audit context shall make resolvable:
 
 - authorizing authority;
 - review obligation;
 - reviewed subject;
-- evidence;
+- evidence/history;
 - exclusions where material; and
-- finding identity.
+- the applicable Governance disposition event.
 
-A review subject shall not authorize its own review.
+The governed issue and its associated pull request provide the durable review identity and context. A review subject shall not authorize its own review.
 
 ## Required Boundary
 
-Assurance findings are case-specific.
+Assurance audit conclusions are context-specific.
 
-A finding shall not independently create, amend, supersede, or withdraw persistent normative authority.
+Audit discussion or conclusions shall not independently create, amend, supersede, or withdraw persistent normative authority.
 
 Persistent semantic change shall route through Governance Design.
 

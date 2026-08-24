@@ -14,11 +14,13 @@ FS0 uses one GitHub acceptance model for governed repository changes.
 
 A governed issue is the durable unit of work identity and bounded authorization. Each governed pull request SHALL identify exactly one governed issue. One governed issue MAY be realized through one or more pull requests, and each pull request MAY contain one or more commits.
 
-The pull request is one candidate realization of its issue. Conformance and required Assurance apply to the complete current pull-request candidate.
+The pull request is one candidate realization of its issue. Conformance applies to the complete current pull-request candidate, and required Assurance is performed as semantic audit of that same current candidate.
 
-Merging an eligible governed pull request by the issue's authorized acceptance actor is the explicit, attributable, traceable semantic acceptance of that candidate change set.
+A required candidate semantic audit that passes is expressed by the issue's authorized acceptance actor merging the exact conforming pull-request candidate. The authorized merge is simultaneously the candidate Assurance satisfaction disposition and the explicit, attributable, traceable semantic acceptance of that candidate change set. No separate Assurance approval artifact is required.
 
-Closing a pull request without merge does not accept it. A governed issue may remain open after one accepted pull request when authorized work or completion conditions remain.
+Closing a pull request without merge does not accept it. A governed issue remains open after accepted pull requests until the resulting accepted `refs/heads/main` state has passed the governed-work completion semantic audit. Relevant accepted pull requests SHALL be linked to the issue through GitHub Development before completion. Authorized issue closure after that audit records completed-work Assurance satisfaction and completion; it does not create a second repository acceptance event.
+
+If either semantic audit identifies a defect, corrective work SHALL remain within the existing issue's bounded scope or route through a separately authorized parallel governed issue when the correction exceeds that scope.
 
 ## Accepted Inputs and Resulting State
 
@@ -40,7 +42,7 @@ The GitHub merge record provides the attributable actor, time, pull-request iden
 
 `refs/heads/main` is the canonical accepted repository state after bootstrap cutover.
 
-Conformance success or Assurance findings do not independently create acceptance; they are eligibility gates for merge.
+Conformance success or audit discussion does not independently create acceptance. Exact-candidate Conformance is the mechanical merge gate; authorized merge after semantic audit records candidate Assurance satisfaction and acceptance. Authorized governed-issue closure later records completed-work Assurance satisfaction without changing the accepted revision.
 
 ## Bootstrap
 
@@ -231,7 +233,7 @@ Acceptance shall be:
 - attributable;
 - traceable;
 - candidate-specific; and
-- realized by authorized merge after required Conformance and Assurance eligibility gates are satisfied.
+- realized by authorized merge after exact-candidate Conformance passes and required candidate semantic audit is satisfactory; the merge itself records candidate Assurance satisfaction.
 
 Governance acceptance shall depend only on authority accepted before the candidate acquires the authority produced by that acceptance.
 

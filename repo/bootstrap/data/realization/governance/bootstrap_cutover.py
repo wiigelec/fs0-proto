@@ -147,41 +147,18 @@ def bootstrap_pr_body(issue_number, candidate, base):
 
 
 
-REPO_PIN_PATH = Path("repo/state/repo-pin.json")
-
-
-def bootstrap_repo_pin(source_commit):
+def bootstrap_candidate_binding(issue_number, actor_id, actor_login, base):
     return {
-        "source_commit": source_commit,
-        "prior_sha": None,
-        "timestamp": now(),
-    }
-
-
-def bootstrap_candidate_binding(issue_number, actor_id, actor_login, base, repo_pin_sha):
-    return {
-        "schema_version": "1",
-        "record_type": "bootstrap-candidate-binding",
+        "schema_version": "1", "record_type": "bootstrap-candidate-binding",
         "bootstrap_provenance_issue": issue_number,
         "acceptance_actor": {"id": actor_id, "login": actor_login},
-        "accepted_repository_predecessor": base,
-        "base_ref": "refs/heads/main",
-        "repo_pin_sha": repo_pin_sha,
+        "accepted_repository_predecessor": base, "base_ref": "refs/heads/main",
     }
 
 
-def bootstrap_candidate_commit_message(issue_number, actor_id, actor_login, base, repo_pin_sha):
-    return (
-        "Pin FS0 bootstrap cutover\n\n```json\n"
-        + json.dumps(
-            bootstrap_candidate_binding(
-                issue_number, actor_id, actor_login, base, repo_pin_sha
-            ),
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n```\n"
-    )
+def bootstrap_candidate_commit_message(issue_number, actor_id, actor_login, base):
+    return "Bind FS0 bootstrap cutover candidate\n\n```json\n" + json.dumps(bootstrap_candidate_binding(issue_number, actor_id, actor_login, base), indent=2, sort_keys=True) + "\n```\n"
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -380,22 +357,16 @@ def main():
         passed(source_candidate)
 
         current_step += 1
-        step(current_step, "COMMIT", "create final bootstrap repo pin commit")
-        pin_record = bootstrap_repo_pin(source_candidate)
-        pin_path = repo_root / REPO_PIN_PATH
-        pin_path.write_text(json.dumps(pin_record, indent=2) + "\n", encoding="utf-8")
-        git("add", "--", str(REPO_PIN_PATH))
-        repo_pin_sha = git("hash-object", str(REPO_PIN_PATH)).stdout.strip().lower()
+        step(current_step, "COMMIT", "create final bootstrap candidate binding commit")
         run(
-            ["git", "commit", "-F", "-"],
+            ["git", "commit", "--allow-empty", "-F", "-"],
             input_text=bootstrap_candidate_commit_message(
-                issue_number, actor_id, actor_login, base, repo_pin_sha
+                issue_number, actor_id, actor_login, base
             ),
         )
         candidate = git("rev-parse", "HEAD").stdout.strip().lower()
         result["commit_sha"] = candidate
         result["commit_count"] = 2
-        result["repo_pin_sha"] = repo_pin_sha
         passed(candidate)
 
         phase("PUBLISH")

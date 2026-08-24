@@ -1324,7 +1324,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-033",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Build SHALL produce required evidence, invoke required Conformance and all triggered Assurance cases, and SHALL NOT be accepted while any required case has an adverse finding that remains unresolved.",
+      "statement": "Build SHALL produce required evidence, invoke required Conformance, perform required semantic audit, and continue governed work rather than merge when that audit is adverse.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1344,7 +1344,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-035",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Governance acceptance SHALL be the authorized merge of an eligible governed pull request; Conformance and Assurance are pre-merge eligibility gates.",
+      "statement": "Governance acceptance SHALL be authorized merge of the exact conforming governed pull request after semantic audit; that merge SHALL also record candidate Assurance satisfaction.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1484,7 +1484,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-049",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Design, Plan, and Build SHALL NOT be accepted while any required Assurance case for that governed work has an adverse finding that remains unresolved.",
+      "statement": "A governed pull request SHALL NOT be merged until its current candidate passes required semantic audit; authorized merge SHALL record candidate Assurance satisfaction.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1494,7 +1494,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-GOV-050",
       "owner_authority_id": "FS0-AUTH-GOVERNANCE",
-      "statement": "Before Design, Plan, or Build acceptance, every Assurance obligation triggered by that governed work SHALL have an instantiated review case.",
+      "statement": "A governed issue SHALL remain open until resulting main passes completion semantic audit; relevant accepted PRs SHALL be Development-linked and authorized closure SHALL record Assurance satisfaction.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1784,7 +1784,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-002",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "An Assurance obligation SHALL trigger when governed Design, Plan, or Build work includes or relies on a subject governed by its requirement; each triggered obligation SHALL instantiate a case-specific review case.",
+      "statement": "A required Assurance obligation SHALL be resolvable in the governed issue and pull-request semantic-audit context for the work that triggers it.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1804,7 +1804,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-004",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Assurance findings SHALL be satisfied, defect, insufficient, or governance-required; defect, insufficient, and governance-required SHALL be adverse until a later case-specific finding records satisfied.",
+      "statement": "Semantic-audit outcomes MAY use satisfied, defect, insufficient, or governance-required; an adverse outcome SHALL require further governed work before the applicable merge or issue closure.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "none"
@@ -1814,7 +1814,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-005",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Every governed Assurance case SHALL identify authorizing authority, review obligation, reviewed subject, evidence, material exclusions where applicable, and finding identity.",
+      "statement": "Every governed Assurance audit context SHALL make authorizing authority, review obligation, reviewed subject, GitHub evidence/history, material exclusions where applicable, and disposition event resolvable.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1854,7 +1854,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-009",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "In the fixed FS0 GitHub binding, each Assurance review case and finding SHALL be a structured maintained repository artifact.",
+      "statement": "In the fixed FS0 GitHub binding, maintained Assurance provenance SHALL use governed issue and pull-request state/history rather than duplicate repository-tree case or finding artifacts.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"
@@ -1904,7 +1904,7 @@
       "record_type": "requirement",
       "requirement_id": "FS0-ASSUR-014",
       "owner_authority_id": "FS0-AUTH-ASSURANCE",
-      "statement": "Assurance review cases and findings SHALL be remotely accessible in the fixed FS0 GitHub binding.",
+      "statement": "Assurance audit context, evidence/history, and merge or issue-closure dispositions SHALL be remotely accessible through the fixed FS0 GitHub binding.",
       "lifecycle_state": "accepted",
       "conformance_applicability": "mechanical",
       "assurance_applicability": "required"

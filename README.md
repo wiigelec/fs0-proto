@@ -50,7 +50,7 @@ Bootstrap Design source remains under `repo/bootstrap/design/` for bootstrap con
 
 Read `repo/state/bootstrap.json` to determine whether the repository is still in bootstrap `candidate` state or has reached `cutover`.
 
-After cutover, `refs/heads/main` is the canonical accepted repository state. An eligible governed pull request becomes accepted when it is merged by its authorized acceptance actor. Conformance and required Assurance establish merge eligibility; they do not independently create acceptance. Technical write access does not enlarge Governance authorization.
+After cutover, `refs/heads/main` is the canonical accepted repository state. A governed pull request becomes accepted when its exact candidate has passed canonical Conformance and semantic audit and is merged by its authorized acceptance actor. The merge itself records candidate Assurance satisfaction and acceptance. The governed issue remains open until the resulting main state passes completion semantic audit; relevant accepted PRs are then linked through GitHub Development and authorized issue closure records completed-work Assurance satisfaction. Technical write access does not enlarge Governance authorization.
 
 ## Branch model
 

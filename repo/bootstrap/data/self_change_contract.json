@@ -5,8 +5,10 @@
     "accepted-authority",
     "candidate-publication",
     "conformance",
-    "assurance",
-    "authorized-pr-merge"
+    "candidate-semantic-audit",
+    "authorized-pr-merge",
+    "main-semantic-audit",
+    "authorized-issue-close"
   ],
   "candidate_ref": "refs/heads/candidate",
   "accepted_ref": "refs/heads/main",

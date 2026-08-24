@@ -185,19 +185,16 @@ def assurance_gate(triggered_obligation_ids, cases, findings):
         return {"eligible": False, "reason": "unresolved-adverse-assurance", "obligation_ids": adverse}
     return {"eligible": True, "reason": "satisfied", "obligation_ids": []}
 
-def acceptance_eligibility(work, triggered_obligation_ids, cases, findings, candidate_conformance_status="pass"):
+def acceptance_eligibility(work, triggered_obligation_ids, cases=None, findings=None, candidate_conformance_status="pass"):
     r = validate_work(dict(work))
     required = r["required_assurance_obligation_ids"]
     if sorted(set(triggered_obligation_ids)) != sorted(required):
         return {"eligible": False, "reason": "assurance-obligation-set-mismatch", "obligation_ids": sorted(set(required) ^ set(triggered_obligation_ids))}
-    gate = assurance_gate(required, cases, findings)
-    if not gate["eligible"]:
-        return gate
     if candidate_conformance_status != "pass":
         return {"eligible": False, "reason": "conformance-not-passing", "obligation_ids": []}
     if r["stage"] == "build" and r["verification"]["conformance_status"] == "fail":
         return {"eligible": False, "reason": "conformance-not-passing", "obligation_ids": []}
-    return {"eligible": True, "reason": "satisfied", "obligation_ids": []}
+    return {"eligible": True, "reason": "mechanically-eligible-for-semantic-audit", "obligation_ids": [], "semantic_audit_required": bool(required)}
 
 def decide(work, disposition, triggered_obligation_ids, cases, findings):
     if disposition not in {"accepted", "rejected"}:
@@ -234,8 +231,8 @@ def apply_merge_acceptance(work, acceptance):
     if not isinstance(eligibility.get("conformance"), dict) or eligibility["conformance"].get("status") != "pass":
         raise GovernanceWorkError("merge acceptance Conformance proof is not passing")
     assurance = eligibility.get("assurance")
-    if not isinstance(assurance, dict) or assurance.get("status") != "pass" or sorted(assurance.get("required_obligation_ids", [])) != sorted(r["required_assurance_obligation_ids"]):
-        raise GovernanceWorkError("merge acceptance Assurance proof does not match governed work")
+    if not isinstance(assurance, dict) or assurance.get("status") != "pass" or assurance.get("basis") != "authorized-pr-merge" or sorted(assurance.get("required_obligation_ids", [])) != sorted(r["required_assurance_obligation_ids"]):
+        raise GovernanceWorkError("merge acceptance Assurance disposition does not match governed work")
     r["disposition"] = "accepted"
     return validate_work(r)
 
@@ -267,7 +264,7 @@ def validate_pr_candidate(work, candidate):
     out["accepted_repository_predecessor"] = out["accepted_repository_predecessor"].lower()
     return out
 
-def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cases, findings, candidate_conformance_status="pass"):
+def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cases=None, findings=None, candidate_conformance_status="pass"):
     r = validate_work(dict(work))
     pr = validate_pr_candidate(r, candidate)
     gate = acceptance_eligibility(r, triggered_obligation_ids, cases, findings, candidate_conformance_status=candidate_conformance_status)
@@ -296,5 +293,5 @@ def merge_acceptance(work, candidate, merge_event, triggered_obligation_ids, cas
         "accepted_repository_predecessor": pr["accepted_repository_predecessor"],
         "resulting_accepted_revision": merge_event["resulting_revision"].lower(), "actor": deepcopy(actor),
         "eligibility": {"status": "pass", "conformance": {"status": "pass", "candidate_sha": pr["head_sha"]},
-                        "assurance": {"status": "pass", "required_obligation_ids": list(r["required_assurance_obligation_ids"])}},
+                        "assurance": {"status": "pass", "basis": "authorized-pr-merge", "required_obligation_ids": list(r["required_assurance_obligation_ids"])}}
     }

@@ -5,13 +5,13 @@
   "requirements": [
     {
       "id": "FS0-GOV-049",
-      "statement": "Design, Plan, and Build SHALL NOT be accepted while any required Assurance case for that governed work has an adverse finding that remains unresolved.",
+      "statement": "A governed pull request SHALL NOT be merged until its current candidate passes required semantic audit; authorized merge SHALL record candidate Assurance satisfaction.",
       "c": "mechanical",
       "a": "required"
     },
     {
       "id": "FS0-GOV-050",
-      "statement": "Before Design, Plan, or Build acceptance, every Assurance obligation triggered by that governed work SHALL have an instantiated review case.",
+      "statement": "A governed issue SHALL remain open until resulting main passes completion semantic audit; relevant accepted PRs SHALL be Development-linked and authorized closure SHALL record Assurance satisfaction.",
       "c": "mechanical",
       "a": "required"
     }

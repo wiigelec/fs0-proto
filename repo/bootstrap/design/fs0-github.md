@@ -99,14 +99,15 @@ The mapping is:
 | candidate review surface | pull request |
 | canonical Conformance execution | GitHub Actions workflow |
 | Conformance evidence | workflow/check result tied to exact candidate SHA |
-| Assurance review case | structured maintained repository artifact |
-| Assurance finding | structured maintained repository artifact, optionally referenced in GitHub discussion |
-| Design/Plan/Build stage acceptance | authorized merge of an eligible pull request associated with exactly one governed-work issue |
+| Assurance review context and evidence | governed GitHub issue and pull-request discussion/history, review/check history, and durable GitHub relationships |
+| candidate Assurance disposition | authorized merge of the exact conforming pull request after semantic audit |
+| completed-work Assurance disposition | authorized closure of the governed issue after main semantic audit and Development linkage of its relevant accepted pull requests |
+| Design/Plan/Build stage acceptance | authorized merge of an exact conforming pull request associated with exactly one governed-work issue after candidate semantic audit |
 | bootstrap provenance | dedicated GitHub issue created by the external bootstrap process |
 | bootstrap acceptance | authorized merge of the designated validated bootstrap-cutover pull request |
 | accepted repository state | revision currently referenced by `refs/heads/main` after an authorized governed merge |
 
-GitHub merge state creates Governance acceptance only for an eligible governed pull request merged by its authorized acceptance actor; other GitHub state does not independently create acceptance.
+GitHub merge state creates Governance acceptance only for an exact conforming governed pull request merged by its authorized acceptance actor after semantic audit. That merge is also the candidate Assurance satisfaction disposition. Later authorized issue closure records completed-work Assurance satisfaction and completion but does not create or alter repository acceptance.
 
 GitHub provides identity, collaboration, execution, and publication surfaces.
 
@@ -124,7 +125,7 @@ FS0 must make these questions answerable from repository/GitHub state without re
 6. What Build work is authorized?
 7. What exact revision is under review?
 8. What Conformance evidence applies to that revision?
-9. What Assurance cases and findings apply to that revision?
+9. What Assurance audit context, GitHub evidence/history, and disposition apply to that revision?
 10. Has the candidate been explicitly accepted?
 11. What resulting revision became accepted?
 12. What work remains unauthorized?

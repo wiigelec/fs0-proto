@@ -11,7 +11,7 @@
     },
     {
       "id": "FS0-ASSUR-002",
-      "statement": "An Assurance obligation SHALL trigger when governed Design, Plan, or Build work includes or relies on a subject governed by its requirement; each triggered obligation SHALL instantiate a case-specific review case.",
+      "statement": "A required Assurance obligation SHALL be resolvable in the governed issue and pull-request semantic-audit context for the work that triggers it.",
       "c": "mechanical",
       "a": "required"
     },
@@ -23,13 +23,13 @@
     },
     {
       "id": "FS0-ASSUR-004",
-      "statement": "Assurance findings SHALL be satisfied, defect, insufficient, or governance-required; defect, insufficient, and governance-required SHALL be adverse until a later case-specific finding records satisfied.",
+      "statement": "Semantic-audit outcomes MAY use satisfied, defect, insufficient, or governance-required; an adverse outcome SHALL require further governed work before the applicable merge or issue closure.",
       "c": "mechanical",
       "a": "none"
     },
     {
       "id": "FS0-ASSUR-005",
-      "statement": "Every governed Assurance case SHALL identify authorizing authority, review obligation, reviewed subject, evidence, material exclusions where applicable, and finding identity.",
+      "statement": "Every governed Assurance audit context SHALL make authorizing authority, review obligation, reviewed subject, GitHub evidence/history, material exclusions where applicable, and disposition event resolvable.",
       "c": "mechanical",
       "a": "required"
     },
@@ -53,7 +53,7 @@
     },
     {
       "id": "FS0-ASSUR-009",
-      "statement": "In the fixed FS0 GitHub binding, each Assurance review case and finding SHALL be a structured maintained repository artifact.",
+      "statement": "In the fixed FS0 GitHub binding, maintained Assurance provenance SHALL use governed issue and pull-request state/history rather than duplicate repository-tree case or finding artifacts.",
       "c": "mechanical",
       "a": "required"
     },
@@ -83,7 +83,7 @@
     },
     {
       "id": "FS0-ASSUR-014",
-      "statement": "Assurance review cases and findings SHALL be remotely accessible in the fixed FS0 GitHub binding.",
+      "statement": "Assurance audit context, evidence/history, and merge or issue-closure dispositions SHALL be remotely accessible through the fixed FS0 GitHub binding.",
       "c": "mechanical",
       "a": "required"
     },
