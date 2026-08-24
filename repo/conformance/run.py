@@ -156,7 +156,7 @@ def check_exact_candidate(root, assertion_ids):
     text = workflow.read_text(encoding='utf-8') if workflow.is_file() else ''
     expected_env = "FS0_CANDIDATE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
     expected_ref = 'ref: ${{ env.FS0_CANDIDATE_SHA }}'
-    structural_ok = workflow.is_file() and expected_env in text and (expected_ref in text) and ('uses: actions/checkout@v4' in text) and ('./repo/scripts/validate --verbose' in text)
+    structural_ok = workflow.is_file() and expected_env in text and (expected_ref in text) and ('uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262' in text) and ('./repo/scripts/validate --verbose' in text)
     runtime = os.environ.get('GITHUB_ACTIONS') == 'true'
     evidence = {'workflow': '.github/workflows/fs0-conformance.yml', 'binding': 'FS0_CANDIDATE_SHA', 'runtime': runtime}
     runtime_ok = True
