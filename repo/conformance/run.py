@@ -189,7 +189,7 @@ def check_bootstrap_state(root, assertion_ids):
     required = {'schema_version', 'record_type', 'state', 'candidate_revision', 'first_accepted_fs0_revision', 'bootstrap_provenance_issue', 'bootstrap_acceptance_record', 'accepted_ref', 'cutover_timestamp'}
     state_ok = set(record) == required and record.get('schema_version') == '1' and (record.get('record_type') == 'bootstrap-state') and (record.get('state') in {'candidate', 'cutover'}) and (record.get('accepted_ref') == 'refs/heads/accepted')
     orchestration = load(root / 'repo/conformance/orchestration.json')
-    pre_cutover_mode_ok = record.get('state') == 'candidate' and orchestration.get('mode') == 'candidate-bootstrap-verification'
+    pre_cutover_mode_ok = record.get('state') != 'candidate' or orchestration.get('mode') == 'candidate-bootstrap-verification'
     checks = {'FS0-ASSERT-FC-037': (state_ok, 'repo/state/bootstrap.json contains the required bootstrap-state fields, uses candidate|cutover lifecycle state, and identifies refs/heads/accepted'), 'FS0-ASSERT-CONF-011': (pre_cutover_mode_ok, 'while bootstrap state is candidate, candidate Conformance execution is explicitly bootstrap mechanical verification evidence only')}
     evidence = {'path': 'repo/state/bootstrap.json', 'state': record.get('state'), 'accepted_ref': record.get('accepted_ref'), 'conformance_mode': orchestration.get('mode')}
     return [result(aid, 'pass' if checks[aid][0] else 'fail', checks[aid][1], evidence) for aid in assertion_ids]
