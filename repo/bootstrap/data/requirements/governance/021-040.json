@@ -101,7 +101,7 @@
     },
     {
       "id": "FS0-GOV-037",
-      "statement": "refs/heads/accepted SHALL move only after the applicable explicit acceptance decision exists.",
+      "statement": "refs/heads/accepted SHALL move only after the applicable explicit acceptance decision exists and its immutable acceptance receipt tag object has been published and verified.",
       "c": "mechanical",
       "a": "none"
     },

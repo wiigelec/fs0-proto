@@ -96,11 +96,11 @@ def publication_decision(candidate, current_accepted, comments, accepted_state_m
         for item in candidate_report.get("acceptance_records", [])
         if state_producing_record(item.get("record", {}), candidate)
     ]
-    if not matching:
+    if len(matching) != 1:
         return {
             "allowed": False,
             "action": "deny",
-            "reason": "candidate acceptance record is not state-producing",
+            "reason": "candidate must have exactly one state-producing acceptance record",
             "candidate_report": candidate_report,
         }
 
@@ -120,22 +120,14 @@ def publication_decision(candidate, current_accepted, comments, accepted_state_m
             "candidate_report": candidate_report,
         }
 
-    current_report = accepted_state_module.resolve_accepted_state(current_accepted, comments)
-    if current_report.get("status") != "accepted":
-        return {
-            "allowed": False,
-            "action": "deny",
-            "reason": "current accepted ref is not backed by a valid acceptance record",
-            "candidate_report": candidate_report,
-            "current_report": current_report,
-        }
-
     return {
         "allowed": True,
         "action": "advance",
-        "reason": "explicit candidate acceptance exists before accepted-ref advance",
+        "reason": (
+            "explicit candidate acceptance exists; caller must verify the current "
+            "accepted revision through its immutable receipt"
+        ),
         "candidate_report": candidate_report,
-        "current_report": current_report,
     }
 
 
@@ -148,6 +140,57 @@ def ensure_fast_forward(current_accepted, candidate):
     )
     if proc.returncode != 0:
         raise RuntimeError("accepted ref may advance only by fast-forward")
+
+
+def receipt_source(decision):
+    records = decision.get("candidate_report", {}).get("acceptance_records", [])
+    if len(records) != 1:
+        raise RuntimeError("publication decision does not expose exactly one receipt source")
+    return records[0]
+
+
+def ensure_acceptance_receipt(candidate, acceptance_item, module, report):
+    payload = module.acceptance_receipt_payload(candidate, acceptance_item)
+    tag_text = module.acceptance_receipt_tag_text(candidate, payload)
+    expected_sha = module.acceptance_receipt_object_sha(candidate, payload)
+    receipt_ref = module.acceptance_receipt_ref(candidate)
+
+    report["acceptance_receipt_ref"] = receipt_ref
+    report["acceptance_receipt_object_sha"] = expected_sha
+
+    observed = module.remote_acceptance_receipt_sha(candidate)
+    if observed is not None:
+        if observed != expected_sha:
+            raise RuntimeError("conflicting immutable acceptance receipt already exists")
+        report["acceptance_receipt_action"] = "reuse"
+        return expected_sha
+
+    proc = subprocess.run(
+        ["git", "mktag"],
+        text=True,
+        input=tag_text,
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        detail = proc.stderr.strip() or proc.stdout.strip()
+        raise RuntimeError(f"git mktag failed ({proc.returncode}): {detail}")
+    actual_sha = proc.stdout.strip().lower()
+    if actual_sha != expected_sha:
+        raise RuntimeError("git mktag produced unexpected acceptance receipt object")
+
+    pushed = _run(
+        ["git", "push", "origin", f"{actual_sha}:{receipt_ref}"],
+        allowed=(0,),
+    )
+    report["acceptance_receipt_push_output"] = (
+        pushed.stdout + pushed.stderr
+    ).strip()
+    report["acceptance_receipt_action"] = "create"
+
+    verified = module.remote_acceptance_receipt_sha(candidate)
+    if verified != expected_sha:
+        raise RuntimeError("remote acceptance receipt verification failed")
+    return expected_sha
 
 
 def main():
@@ -202,10 +245,21 @@ def main():
         if not decision["allowed"]:
             raise RuntimeError(decision["reason"])
 
+        if current is not None and current != candidate:
+            current_state = module.resolve_published_state(repo, current)
+            if current_state.get("status") != "accepted":
+                raise RuntimeError(
+                    "current accepted ref is not backed by a valid immutable acceptance receipt"
+                )
+            report["previous_resolved_state"] = current_state
+
         ensure_fast_forward(current, candidate)
 
-        # Re-read the remote ref immediately before mutation. A concurrent change
-        # aborts publication rather than being silently incorporated.
+        # Publish and verify the immutable receipt before accepted-ref movement.
+        acceptance_item = receipt_source(decision)
+        ensure_acceptance_receipt(candidate, acceptance_item, module, report)
+
+        # Re-read the accepted ref immediately before mutation.
         observed = remote_accepted_ref()
         if observed != current:
             raise RuntimeError("accepted ref changed concurrently; refusing publication")
@@ -223,18 +277,12 @@ def main():
         if final != candidate:
             raise RuntimeError("accepted ref does not match candidate after publication")
 
-        # Canonical accepted state must resolve from ref + matching record after push.
-        if current is None:
-            provenance_issue_after, comments_after = module.bootstrap_acceptance_comments(
-                root, repo, final
-            )
-            if provenance_issue_after != report.get("bootstrap_provenance_issue"):
-                raise RuntimeError("bootstrap provenance anchor changed during publication")
-        else:
-            comments_after = module.github_issue_comments(repo)
-        resolved = module.resolve_accepted_state(final, comments_after)
+        # Canonical accepted state resolves from accepted ref + immutable receipt.
+        resolved = module.resolve_published_state(repo, final)
         if resolved.get("status") != "accepted":
-            raise RuntimeError("published accepted ref does not resolve to canonical accepted state")
+            raise RuntimeError(
+                "published accepted ref does not resolve through immutable acceptance receipt"
+            )
 
         report["status"] = "published"
         report["published_revision"] = final

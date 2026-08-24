@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import argparse
 import json
 import re
@@ -11,6 +12,7 @@ from datetime import datetime
 from pathlib import Path
 
 MARKER = "repo-spec-acceptance:v1"
+RECEIPT_REF_PREFIX = "refs/tags/fs0-acceptance/"
 SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 REQUIRED_FIELDS = {
     "schema_version",
@@ -406,6 +408,7 @@ def github_issue_comments_for(repo, issue_number):
         enriched = dict(item)
         enriched["issue_body"] = issue.get("body")
         enriched["issue_url"] = issue.get("url")
+        enriched["issue_number"] = issue.get("number", issue_number)
         out.append(enriched)
     return out
 
@@ -443,6 +446,260 @@ def bootstrap_acceptance_comments(root, repo, revision):
     state = committed_bootstrap_state(root, revision)
     issue_number = bootstrap_provenance_issue_number(state)
     return issue_number, github_issue_comments_for(repo, issue_number)
+
+def acceptance_receipt_tag_name(candidate):
+    if not isinstance(candidate, str) or not SHA_RE.fullmatch(candidate):
+        raise AcceptanceError("receipt candidate_id must be an exact 40-hex Git commit SHA")
+    return "fs0-acceptance/" + candidate.lower()
+
+
+def acceptance_receipt_ref(candidate):
+    return "refs/tags/" + acceptance_receipt_tag_name(candidate)
+
+
+def _positive_int(value):
+    return isinstance(value, int) and not isinstance(value, bool) and value > 0
+
+
+def acceptance_receipt_payload(candidate, acceptance_item):
+    candidate = acceptance_receipt_tag_name(candidate).split("/", 1)[1]
+    if not isinstance(acceptance_item, dict):
+        raise AcceptanceError("acceptance receipt source must be a record wrapper")
+    record = acceptance_item.get("record")
+    if not isinstance(record, dict):
+        raise AcceptanceError("acceptance receipt source lacks acceptance record")
+
+    body = MARKER + "\n```json\n" + json.dumps(record) + "\n```\n"
+    record = parse_acceptance_comment(body)
+    state_producing = (
+        record["record_type"] == "bootstrap-acceptance"
+        or (
+            record["record_type"] == "governance-acceptance"
+            and record["stage"] == "build"
+        )
+    )
+    if (
+        not state_producing
+        or record["disposition"] != "accepted"
+        or record["candidate_id"] != candidate
+        or record.get("resulting_accepted_state") != candidate
+    ):
+        raise AcceptanceError("receipt source is not the accepted state-producing record")
+
+    authorized_actor = acceptance_item.get("authorized_actor")
+    if authorized_actor != record["actor"] or not _valid_actor(authorized_actor):
+        raise AcceptanceError("receipt authorization actor does not match acceptance actor")
+
+    github_user_id = acceptance_item.get("github_user_id")
+    if not _positive_int(github_user_id) or github_user_id != record["actor"]["id"]:
+        raise AcceptanceError("receipt GitHub user id does not match acceptance actor")
+
+    issue_number = acceptance_item.get("issue_number")
+    comment_id = acceptance_item.get("comment_id")
+    issue_url = acceptance_item.get("issue_url")
+    comment_url = acceptance_item.get("comment_url")
+    if not _positive_int(issue_number) or not _positive_int(comment_id):
+        raise AcceptanceError("receipt provenance requires positive issue/comment ids")
+    if not _nonempty(issue_url) or not _nonempty(comment_url):
+        raise AcceptanceError("receipt provenance requires issue/comment URLs")
+
+    return {
+        "schema_version": "1",
+        "record_type": "acceptance-receipt",
+        "candidate_id": candidate,
+        "acceptance_id": record["acceptance_id"],
+        "acceptance_record": record,
+        "authorization_actor": authorized_actor,
+        "github_user_id": github_user_id,
+        "github_provenance": {
+            "issue_number": issue_number,
+            "issue_url": issue_url,
+            "comment_id": comment_id,
+            "comment_url": comment_url,
+        },
+    }
+
+
+def validate_acceptance_receipt_payload(candidate, payload):
+    candidate = acceptance_receipt_tag_name(candidate).split("/", 1)[1]
+    if not isinstance(payload, dict):
+        raise AcceptanceError("acceptance receipt must be a JSON object")
+    expected_fields = {
+        "schema_version",
+        "record_type",
+        "candidate_id",
+        "acceptance_id",
+        "acceptance_record",
+        "authorization_actor",
+        "github_user_id",
+        "github_provenance",
+    }
+    if set(payload) != expected_fields:
+        raise AcceptanceError("acceptance receipt fields are not canonical")
+    if payload.get("schema_version") != "1" or payload.get("record_type") != "acceptance-receipt":
+        raise AcceptanceError("acceptance receipt envelope is invalid")
+    if payload.get("candidate_id") != candidate:
+        raise AcceptanceError("acceptance receipt candidate does not match accepted revision")
+
+    provenance = payload.get("github_provenance")
+    item = {
+        "record": payload.get("acceptance_record"),
+        "authorized_actor": payload.get("authorization_actor"),
+        "github_user_id": payload.get("github_user_id"),
+        "issue_number": provenance.get("issue_number") if isinstance(provenance, dict) else None,
+        "issue_url": provenance.get("issue_url") if isinstance(provenance, dict) else None,
+        "comment_id": provenance.get("comment_id") if isinstance(provenance, dict) else None,
+        "comment_url": provenance.get("comment_url") if isinstance(provenance, dict) else None,
+    }
+    canonical = acceptance_receipt_payload(candidate, item)
+    if payload != canonical:
+        raise AcceptanceError("acceptance receipt is not the canonical snapshot")
+    if payload.get("acceptance_id") != canonical["acceptance_record"]["acceptance_id"]:
+        raise AcceptanceError("acceptance receipt acceptance_id mismatch")
+    return canonical
+
+
+def canonical_acceptance_receipt_message(payload):
+    return json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ) + "\n"
+
+
+def _decision_epoch(timestamp):
+    text = timestamp.strip()
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    parsed = datetime.fromisoformat(text)
+    if parsed.utcoffset() is None:
+        raise AcceptanceError("receipt decision timestamp must be timezone-aware")
+    return int(parsed.timestamp())
+
+
+def acceptance_receipt_tag_text(candidate, payload):
+    payload = validate_acceptance_receipt_payload(candidate, payload)
+    candidate = payload["candidate_id"]
+    tag_name = acceptance_receipt_tag_name(candidate)
+    epoch = _decision_epoch(payload["acceptance_record"]["decision_timestamp"])
+    message = canonical_acceptance_receipt_message(payload)
+    return (
+        f"object {candidate}\n"
+        "type commit\n"
+        f"tag {tag_name}\n"
+        f"tagger FS0 Governance <fs0@invalid> {epoch} +0000\n"
+        "\n"
+        + message
+    )
+
+
+def acceptance_receipt_object_sha(candidate, payload):
+    raw = acceptance_receipt_tag_text(candidate, payload).encode("utf-8")
+    header = f"tag {len(raw)}\0".encode("ascii")
+    return hashlib.sha1(header + raw).hexdigest()
+
+
+def remote_acceptance_receipt_sha(candidate):
+    ref = acceptance_receipt_ref(candidate)
+    proc = _run(["git", "ls-remote", "origin", ref], allowed=(0,))
+    text = proc.stdout.strip()
+    if not text:
+        return None
+    fields = text.split()
+    if len(fields) != 2 or fields[1] != ref:
+        raise RuntimeError("unexpected acceptance-receipt ref resolution")
+    if not SHA_RE.fullmatch(fields[0]):
+        raise RuntimeError("acceptance-receipt ref does not name a Git object")
+    return fields[0].lower()
+
+
+def github_acceptance_receipt(repo, candidate):
+    candidate = acceptance_receipt_tag_name(candidate).split("/", 1)[1]
+    observed_sha = remote_acceptance_receipt_sha(candidate)
+    if observed_sha is None:
+        return {
+            "status": "invalid",
+            "receipt_ref": acceptance_receipt_ref(candidate),
+            "receipt_object_sha": None,
+            "payload": None,
+            "defects": ["accepted revision lacks immutable acceptance receipt"],
+        }
+
+    tag_objects = _gh_paginated(f"repos/{repo}/git/tags/{observed_sha}")
+    if len(tag_objects) != 1 or not isinstance(tag_objects[0], dict):
+        raise RuntimeError("acceptance receipt tag object did not resolve exactly once")
+    tag_object = tag_objects[0]
+
+    defects = []
+    target = tag_object.get("object")
+    if (
+        not isinstance(target, dict)
+        or target.get("type") != "commit"
+        or str(target.get("sha", "")).lower() != candidate
+    ):
+        defects.append("acceptance receipt tag does not target accepted revision")
+    if tag_object.get("tag") != acceptance_receipt_tag_name(candidate):
+        defects.append("acceptance receipt tag name is not canonical")
+
+    try:
+        payload = json.loads(tag_object.get("message"))
+        payload = validate_acceptance_receipt_payload(candidate, payload)
+        expected_sha = acceptance_receipt_object_sha(candidate, payload)
+        if expected_sha != observed_sha:
+            defects.append("acceptance receipt Git object hash does not match canonical receipt")
+    except (TypeError, json.JSONDecodeError, AcceptanceError) as exc:
+        payload = None
+        defects.append(str(exc))
+
+    return {
+        "status": "valid" if not defects else "invalid",
+        "receipt_ref": acceptance_receipt_ref(candidate),
+        "receipt_object_sha": observed_sha,
+        "payload": payload,
+        "defects": defects,
+    }
+
+
+def resolve_published_state(repo, accepted_sha):
+    if accepted_sha is None:
+        return resolve_accepted_state(None, [])
+    if not isinstance(accepted_sha, str) or not SHA_RE.fullmatch(accepted_sha):
+        return resolve_accepted_state(accepted_sha, [])
+
+    receipt = github_acceptance_receipt(repo, accepted_sha.lower())
+    if receipt.get("status") != "valid":
+        return {
+            "schema_version": "1",
+            "record_type": "accepted-state-resolution",
+            "status": "invalid",
+            "accepted_revision": accepted_sha.lower(),
+            "acceptance_records": [],
+            "acceptance_receipt": receipt,
+            "defects": list(receipt.get("defects", [])),
+        }
+
+    payload = receipt["payload"]
+    record = payload["acceptance_record"]
+    return {
+        "schema_version": "1",
+        "record_type": "accepted-state-resolution",
+        "status": "accepted",
+        "accepted_revision": accepted_sha.lower(),
+        "acceptance_records": [
+            {
+                "record": record,
+                "receipt_snapshot": True,
+                "issue_number": payload["github_provenance"]["issue_number"],
+                "comment_id": payload["github_provenance"]["comment_id"],
+                "issue_url": payload["github_provenance"]["issue_url"],
+                "comment_url": payload["github_provenance"]["comment_url"],
+            }
+        ],
+        "acceptance_receipt": receipt,
+        "defects": [],
+    }
+
 
 def resolve_accepted_state(accepted_sha, comments):
     if accepted_sha is None:
@@ -530,19 +787,28 @@ def resolve_accepted_state(accepted_sha, comments):
             continue
         acceptance_ids.add(acceptance_id)
 
+        comment_user = comment.get("user") if isinstance(comment, dict) else None
+        github_user_id = (
+            comment_user.get("id")
+            if isinstance(comment_user, dict)
+            else record["actor"]["id"]
+        )
         matches.append(
             {
                 "record": record,
+                "authorized_actor": authorized_actor,
+                "github_user_id": github_user_id,
+                "issue_number": comment.get("issue_number"),
                 "comment_id": comment.get("id"),
                 "issue_url": comment.get("issue_url"),
                 "comment_url": comment.get("html_url") or comment.get("url"),
             }
         )
 
-    if defects or not matches:
-        if not matches:
+    if defects or len(matches) != 1:
+        if len(matches) != 1:
             defects.append(
-                "accepted ref has no matching accepted bootstrap/build acceptance record"
+                "accepted ref must have exactly one matching accepted bootstrap/build acceptance record"
             )
         return {
             "schema_version": "1",
@@ -640,7 +906,9 @@ def github_issue_comments(repo):
         ):
             continue
         enriched = dict(item)
-        enriched["issue_body"] = issue_by_url[item["issue_url"]].get("body")
+        issue = issue_by_url[item["issue_url"]]
+        enriched["issue_body"] = issue.get("body")
+        enriched["issue_number"] = issue.get("number")
         out.append(enriched)
     return out
 
@@ -660,18 +928,8 @@ def main():
             report = resolve_accepted_state(None, [])
         else:
             repo = origin_repository(root)
-            state = committed_bootstrap_state(root, sha)
-            if state.get("state") == "candidate":
-                issue_number, comments = bootstrap_acceptance_comments(root, repo, sha)
-                report = resolve_accepted_state(sha, comments)
-                report["provenance_issue_number"] = issue_number
-                report["provenance_resolution"] = "committed-bootstrap-anchor"
-            else:
-                # Post-cutover Build acceptance remains tied to governed-work
-                # discovery. Initial bootstrap authority is never globally discovered.
-                comments = github_issue_comments(repo)
-                report = resolve_accepted_state(sha, comments)
-                report["provenance_resolution"] = "post-cutover-governance"
+            report = resolve_published_state(repo, sha)
+            report["provenance_resolution"] = "immutable-acceptance-receipt"
     except Exception as exc:
         report = {
             "schema_version": "1",

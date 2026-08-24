@@ -9,7 +9,7 @@ This file provides operational guidance for AI and automated agents working in a
 2. Read the applicable normative authority under `repo/authority/`.
 3. Use `repo/proposals/registry.json` to discover installed successor Design Proposals and their canonical structured read representations.
 4. Use `repo/bootstrap/design/` only for bootstrap Design-chunk discovery and maintenance context; it is not post-cutover authority.
-5. After cutover, resolve accepted state through the acceptance record identified by `repo/state/bootstrap.json` together with `refs/heads/accepted`.
+5. After publication, resolve accepted state through `refs/heads/accepted` together with the immutable receipt tag `refs/tags/fs0-acceptance/<accepted-sha>`.
 
 ## Authority
 
