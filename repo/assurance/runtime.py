@@ -84,6 +84,7 @@ def instantiate_review_cases(
     review_type_by_obligation,
     evidence,
     candidate_sha=None,
+    repo_pin_sha=None,
 ):
     if not _nonempty(work_id) or not _nonempty(authorizing_authority_id):
         raise AssuranceError("work_id and authorizing_authority_id must be non-empty")
@@ -91,11 +92,12 @@ def instantiate_review_cases(
         raise AssuranceError("review_type_by_obligation must be an object")
     if not isinstance(evidence, list):
         raise AssuranceError("evidence must be a list")
-    if candidate_sha is not None:
-        if not isinstance(candidate_sha, str) or len(candidate_sha) != 40 or any(ch not in "0123456789abcdefABCDEF" for ch in candidate_sha):
-            raise AssuranceError("candidate_sha must be an exact Git SHA when supplied")
-        candidate_sha = candidate_sha.lower()
-
+    for label, value in (("candidate_sha", candidate_sha), ("repo_pin_sha", repo_pin_sha)):
+        if value is not None:
+            if not isinstance(value, str) or len(value) != 40 or any(ch not in "0123456789abcdefABCDEF" for ch in value):
+                raise AssuranceError(f"{label} must be an exact Git SHA when supplied")
+    candidate_sha = candidate_sha.lower() if isinstance(candidate_sha, str) else None
+    repo_pin_sha = repo_pin_sha.lower() if isinstance(repo_pin_sha, str) else None
     obligation_by_id = {
         item.get("obligation_id"): item
         for item in obligation_records
@@ -111,16 +113,24 @@ def instantiate_review_cases(
         if review_type not in REVIEW_TYPES:
             raise AssuranceError(f"triggered obligation lacks supported review type: {obligation_id}")
         digest = hashlib.sha256(f"{work_id}\0{obligation_id}".encode("utf-8")).hexdigest()[:24]
-        reviewed_subject = {"work_id": work_id, "requirement_id": obligation.get("requirement_id")}
+        reviewed_subject = {
+            "work_id": work_id,
+            "requirement_id": obligation.get("requirement_id"),
+        }
         if candidate_sha is not None:
             reviewed_subject["candidate_sha"] = candidate_sha
+        if repo_pin_sha is not None:
+            reviewed_subject["repo_pin_sha"] = repo_pin_sha
         case = {
             "schema_version": "1", "record_type": "assurance-review-case",
             "case_id": f"FS0-CASE-{digest}",
             "authorizing_authority_id": authorizing_authority_id,
-            "review_obligation_id": obligation_id, "review_type": review_type,
-            "reviewed_subject": reviewed_subject, "evidence": list(evidence),
-            "material_exclusions": [], "finding_identity": f"FS0-FINDING-{digest}-1",
+            "review_obligation_id": obligation_id,
+            "review_type": review_type,
+            "reviewed_subject": reviewed_subject,
+            "evidence": list(evidence),
+            "material_exclusions": [],
+            "finding_identity": f"FS0-FINDING-{digest}-1",
         }
         cases.append(validate_case(case))
     return cases

@@ -479,10 +479,11 @@ def _fs0_pre_immutable_binding_check_governance_state_resolution(root, assertion
     sha='3'*40; head='1'*40; predecessor='2'*40
     state={'state':'cutover','bootstrap_provenance_issue':17}
     issue_body='```json\n{"schema_version":"1","record_type":"bootstrap-authorization","acceptance_actor":{"id":101,"login":"tester"},"accepted_repository_predecessor":"'+predecessor+'","accepted_ref":"refs/heads/main"}\n```'
-    pr_body='```json\n{"schema_version":"1","record_type":"bootstrap-cutover-candidate","bootstrap_provenance_issue":17,"head_sha":"'+head+'","accepted_repository_predecessor":"'+predecessor+'","base_ref":"refs/heads/main"}\n```'
+    pr_body='```json\n{"schema_version":"1","record_type":"bootstrap-cutover-candidate","bootstrap_provenance_issue":17,"head_sha":"'+head+'","accepted_repository_predecessor":"'+predecessor+'","base_ref":"refs/heads/main","repo_pin_sha":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}\n```'
     issue={'number':17,'body':issue_body}
+    bootstrap_binding={'schema_version':'1','record_type':'bootstrap-candidate-binding','bootstrap_provenance_issue':17,'acceptance_actor':{'id':101,'login':'tester'},'accepted_repository_predecessor':predecessor,'base_ref':'refs/heads/main','repo_pin_sha':'f'*40}
     conf={'status':'pass','candidate_sha':head,'defects':[]}
-    pr={'number':7,'body':pr_body,'merged_at':'2026-01-01T00:20:00Z','merged_by':{'id':101,'login':'tester'},'head':{'sha':head},'base':{'ref':'main','sha':predecessor},'merge_commit_sha':sha,'_fs0_bootstrap_conformance':conf}
+    pr={'number':7,'body':pr_body,'merged_at':'2026-01-01T00:20:00Z','merged_by':{'id':101,'login':'tester'},'head':{'sha':head},'base':{'ref':'main','sha':predecessor},'merge_commit_sha':sha,'_fs0_bootstrap_conformance':conf,'_fs0_bootstrap_binding':bootstrap_binding}
     accepted=m.resolve_bootstrap_merge_acceptance('o/r',state,sha,[pr],issue)
     bad=dict(pr); bad['_fs0_bootstrap_conformance']={'status':'fail','candidate_sha':head,'defects':['failed']}
     ineligible=m.resolve_bootstrap_merge_acceptance('o/r',state,sha,[bad],issue)
@@ -524,7 +525,7 @@ def check_governance_state_resolution(root, assertion_ids):
         "verification":{"evidence":["evidence:test"],"conformance_status":"pass"},
     }
     head="1"*40; predecessor="2"*40; resulting="3"*40
-    binding={"schema_version":"1","record_type":"governed-candidate-binding","issue_number":23,"accepted_repository_predecessor":predecessor,"base_ref":"refs/heads/main","governed_work":work}
+    binding={"schema_version":"1","record_type":"governed-candidate-binding","issue_number":23,"accepted_repository_predecessor":predecessor,"base_ref":"refs/heads/main","repo_pin_sha":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","governed_work":work}
     eligibility={"status":"pass","candidate_sha":head,"conformance":{"status":"pass","candidate_sha":head},"assurance":{"status":"pass","candidate_sha":head,"required_obligation_ids":[]}}
     pr={"number":9,"body":"MUTABLE PR BODY MAY CHANGE","merged_at":"2026-01-01T00:20:00Z","merged_by":{"id":101,"login":"authorized"},"head":{"sha":head},"base":{"ref":"main","sha":predecessor},"merge_commit_sha":resulting,"_fs0_governed_binding":binding,"_fs0_eligibility":eligibility,"_fs0_issue":{"body":"MUTABLE ISSUE BODY MAY CHANGE"}}
     immutable_accept=m.resolve_governed_resulting_acceptance("o/r",resulting,[pr])
@@ -542,7 +543,7 @@ def check_governance_state_resolution(root, assertion_ids):
     for item in legacy_results:
         aid=item.get("assertion_id") if isinstance(item,dict) else None
         if aid in {"FS0-ASSERT-GOV-016","FS0-ASSERT-GOV-037"}:
-            out.append(result(aid,"pass" if immutable_ok else "fail","accepted main and governed merge acceptance use immutable candidate-bound Governance metadata; later issue/PR body edits cannot create or rewrite acceptance",{"immutable_bound_acceptance":immutable_accept.get("status"),"forged_post_merge_authorization":forged_resolution.get("status"),"commit_binding_helpers":"github_candidate_binding" in source}))
+            out.append(result(aid,"pass" if (immutable_ok and "repo/state/repo-pin.json" in source and "github_issue_assurance_records" in source) else "fail","accepted main and governed merge acceptance use immutable candidate-bound Governance metadata; later issue/PR body edits cannot create or rewrite acceptance",{"immutable_bound_acceptance":immutable_accept.get("status"),"forged_post_merge_authorization":forged_resolution.get("status"),"commit_binding_helpers":"github_candidate_binding" in source}))
         else:
             out.append(item)
     return out

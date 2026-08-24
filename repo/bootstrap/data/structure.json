@@ -735,6 +735,11 @@
       "presence": "required"
     },
     {
+      "path": "repo/state/repo-pin.json",
+      "object_type": "file",
+      "presence": "permitted"
+    },
+    {
       "path": "repo/state/repository-structure-binding.json",
       "object_type": "file",
       "presence": "required"

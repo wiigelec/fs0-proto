@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -379,67 +380,47 @@ def github_candidate_conformance(repo, candidate_sha, merged_at):
             "defects": [] if passed else ["latest exact-candidate Conformance completed before merge is not successful"]}
 
 
-def github_candidate_assurance(repo, candidate_sha, work):
+def github_candidate_assurance(repo, candidate_sha, work, merged_at=None):
     required = work.get("required_assurance_obligation_ids")
     if not isinstance(required, list) or any(not _nonempty(x) for x in required):
         return {"status": "fail", "defects": ["governed work lacks required_assurance_obligation_ids"]}
     if len(required) != len(set(required)):
         return {"status": "fail", "defects": ["required Assurance obligation IDs are duplicated"]}
-    candidate_sha = candidate_sha.lower()
+    try:
+        binding = github_candidate_binding(repo, candidate_sha, "governed-candidate-binding")
+        pin, pin_sha = github_repo_pin(repo, candidate_sha)
+    except Exception as exc:
+        return {"status": "fail", "candidate_sha": candidate_sha, "defects": [str(exc)]}
+    if binding["governed_work"] != work:
+        return {"status": "fail", "candidate_sha": candidate_sha, "defects": ["candidate work snapshot mismatch"]}
     if not required:
         return {
-            "status": "pass", "candidate_sha": candidate_sha,
+            "status": "pass", "candidate_sha": candidate_sha.lower(), "repo_pin_sha": pin_sha,
             "required_obligation_ids": [], "cases": [], "defects": [],
         }
-    try:
-        registry = _github_file_json(repo, "repo/assurance/obligations.json", candidate_sha)
-        definitions = registry.get("obligations")
-        if not isinstance(definitions, list):
-            raise RuntimeError("Assurance obligation registry is invalid")
-        known = {
-            item.get("obligation_id") for item in definitions
-            if isinstance(item, dict) and _nonempty(item.get("obligation_id"))
-        }
-        unknown = sorted(set(required) - known)
-        if unknown:
-            return {
-                "status": "fail", "candidate_sha": candidate_sha,
-                "required_obligation_ids": list(required), "cases": [],
-                "defects": ["unresolved required Assurance obligation IDs: " + ", ".join(unknown)],
-            }
-        cases = _github_json_directory(repo, "repo/assurance/cases", candidate_sha)
-        findings = _github_json_directory(repo, "repo/assurance/findings", candidate_sha)
-    except Exception as exc:
-        return {
-            "status": "fail", "candidate_sha": candidate_sha,
-            "required_obligation_ids": list(required), "cases": [],
-            "defects": [str(exc)],
-        }
-
+    cases, findings, defects = github_issue_assurance_records(
+        repo, binding["issue_number"], merged_at
+    )
     case_results = []
-    defects = []
     for obligation_id in required:
         matching = [
             case for case in cases
-            if isinstance(case, dict)
-            and case.get("record_type") == "assurance-review-case"
-            and case.get("review_obligation_id") == obligation_id
+            if case.get("review_obligation_id") == obligation_id
             and isinstance(case.get("reviewed_subject"), dict)
             and case["reviewed_subject"].get("work_id") == work.get("work_id")
-            and str(case["reviewed_subject"].get("candidate_sha", "")).lower() == candidate_sha
+            and str(case["reviewed_subject"].get("candidate_sha", "")).lower() == candidate_sha.lower()
+            and str(case["reviewed_subject"].get("repo_pin_sha", "")).lower() == pin_sha
         ]
         if len(matching) != 1:
             defects.append(
-                f"{obligation_id}: expected exactly one candidate-bound Assurance case, found {len(matching)}"
+                f"{obligation_id}: expected exactly one exact-head/repo-pin Assurance case, found {len(matching)}"
             )
             continue
         case = matching[0]
         case_id = case.get("case_id")
         related = [
             finding for finding in findings
-            if isinstance(finding, dict)
-            and finding.get("record_type") == "assurance-finding"
-            and finding.get("case_id") == case_id
+            if finding.get("case_id") == case_id
         ]
         seqs = [item.get("sequence") for item in related]
         if (
@@ -459,10 +440,10 @@ def github_candidate_assurance(repo, candidate_sha, work):
             "finding_id": latest.get("finding_id"),
             "finding_sequence": latest.get("sequence"),
         })
-
     return {
         "status": "pass" if not defects else "fail",
-        "candidate_sha": candidate_sha,
+        "candidate_sha": candidate_sha.lower(),
+        "repo_pin_sha": pin_sha,
         "required_obligation_ids": list(required),
         "cases": case_results,
         "defects": defects,
@@ -471,11 +452,16 @@ def github_candidate_assurance(repo, candidate_sha, work):
 
 def github_candidate_eligibility(repo, candidate_sha, work, merged_at):
     conformance = github_candidate_conformance(repo, candidate_sha, merged_at)
-    assurance = github_candidate_assurance(repo, candidate_sha, work)
+    assurance = github_candidate_assurance(repo, candidate_sha, work, merged_at)
     defects = list(conformance.get("defects", [])) + list(assurance.get("defects", []))
-    return {"status": "pass" if conformance.get("status") == "pass" and assurance.get("status") == "pass" else "fail",
-            "candidate_sha": candidate_sha.lower() if isinstance(candidate_sha, str) else candidate_sha,
-            "merge_timestamp": merged_at, "conformance": conformance, "assurance": assurance, "defects": defects}
+    return {
+        "status": "pass" if conformance.get("status") == "pass" and assurance.get("status") == "pass" else "fail",
+        "candidate_sha": candidate_sha.lower() if isinstance(candidate_sha, str) else candidate_sha,
+        "merge_timestamp": merged_at,
+        "conformance": conformance,
+        "assurance": assurance,
+        "defects": defects,
+    }
 
 def resolve_governance_work_acceptance(issue_body, pull_requests, expected_stage, expected_work_id):
     if expected_stage not in {"design", "plan", "build"} or not _nonempty(expected_work_id):
@@ -1091,10 +1077,150 @@ def _candidate_binding_from_message(message, record_type):
         raise AcceptanceError(f"candidate commit must contain exactly one {record_type} JSON binding")
     return matches[0]
 
+REPO_PIN_PATH = "repo/state/repo-pin.json"
+PIN_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+ASSURANCE_CASE_MARKER = "fs0-assurance-case:v1"
+ASSURANCE_FINDING_MARKER = "fs0-assurance-finding:v1"
+
+
+def validate_repo_pin(record):
+    if not isinstance(record, dict) or set(record) != {"source_commit", "prior_sha", "timestamp"}:
+        raise AcceptanceError("repo pin fields are not canonical")
+    source = record.get("source_commit")
+    if not isinstance(source, str) or not SHA_RE.fullmatch(source):
+        raise AcceptanceError("repo pin source_commit must be exact Git SHA")
+    prior = record.get("prior_sha")
+    if prior is not None and (not isinstance(prior, str) or not PIN_SHA_RE.fullmatch(prior)):
+        raise AcceptanceError("repo pin prior_sha must be null or exact Git blob SHA")
+    if _iso_utc(record.get("timestamp")) is None:
+        raise AcceptanceError("repo pin timestamp must be an unambiguous ISO-8601 time")
+    return {
+        "source_commit": source.lower(),
+        "prior_sha": prior.lower() if isinstance(prior, str) else None,
+        "timestamp": record["timestamp"],
+    }
+
+
+def github_repo_pin(repo, revision):
+    value = _gh_object(f"repos/{repo}/contents/{REPO_PIN_PATH}?ref={revision}")
+    blob_sha = value.get("sha")
+    if not isinstance(blob_sha, str) or not PIN_SHA_RE.fullmatch(blob_sha):
+        raise AcceptanceError("repo pin blob SHA is unavailable")
+    content = value.get("content")
+    if value.get("encoding") != "base64" or not isinstance(content, str):
+        raise AcceptanceError("repo pin content is unavailable")
+    import base64
+    try:
+        record = json.loads(base64.b64decode(content).decode("utf-8"))
+    except Exception as exc:
+        raise AcceptanceError(f"repo pin content is invalid: {exc}") from exc
+    return validate_repo_pin(record), blob_sha.lower()
+
+
+def _comment_record(comment, marker, record_type):
+    if not isinstance(comment, dict):
+        return None
+    body = comment.get("body")
+    if not isinstance(body, str) or marker not in body:
+        return None
+    objects = [
+        obj for obj in _json_fence_objects(body)
+        if isinstance(obj, dict) and obj.get("record_type") == record_type
+    ]
+    return objects[0] if len(objects) == 1 else None
+
+
+def github_issue_assurance_records(repo, issue_number, merged_at):
+    comments = _gh_paginated(f"repos/{repo}/issues/{issue_number}/comments?per_page=100")
+    merge_time = _iso_utc(merged_at)
+    cases, findings, defects = [], [], []
+    for comment in comments:
+        created = _iso_utc(comment.get("created_at"))
+        updated = _iso_utc(comment.get("updated_at"))
+        if merge_time is not None and (
+            created is None or updated is None or created > merge_time or updated > merge_time
+        ):
+            continue
+        case = _comment_record(comment, ASSURANCE_CASE_MARKER, "assurance-review-case")
+        finding = _comment_record(comment, ASSURANCE_FINDING_MARKER, "assurance-finding")
+        if case is not None:
+            cases.append(case)
+        if finding is not None:
+            findings.append(finding)
+    return cases, findings, defects
+
+
+def verify_action_candidate_binding(root):
+    if os.environ.get("GITHUB_EVENT_NAME") != "pull_request":
+        return {"status": "pass", "mode": "not-pull-request", "defects": []}
+    repo = os.environ.get("GITHUB_REPOSITORY")
+    candidate_sha = os.environ.get("FS0_CANDIDATE_SHA")
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    if not isinstance(repo, str) or not repo or not isinstance(candidate_sha, str) or not SHA_RE.fullmatch(candidate_sha):
+        return {"status": "fail", "defects": ["GitHub Actions candidate environment is incomplete"]}
+    try:
+        event = json.loads(Path(event_path).read_text(encoding="utf-8"))
+    except Exception as exc:
+        return {"status": "fail", "defects": [f"GitHub event is unavailable: {exc}"]}
+    pr = event.get("pull_request") if isinstance(event, dict) else None
+    if not isinstance(pr, dict):
+        return {"status": "fail", "defects": ["GitHub event lacks pull_request"]}
+    base = pr.get("base")
+    if not isinstance(base, dict) or base.get("ref") != "main":
+        return {"status": "fail", "defects": ["candidate PR does not target main"]}
+    try:
+        pin, pin_sha = github_repo_pin(repo, candidate_sha)
+    except Exception as exc:
+        return {"status": "fail", "defects": [str(exc)]}
+    try:
+        governed = github_candidate_binding(repo, candidate_sha, "governed-candidate-binding")
+    except Exception:
+        governed = None
+    if governed is not None:
+        issue_number = governed["issue_number"]
+        try:
+            issue = _gh_object(f"repos/{repo}/issues/{issue_number}")
+            current_work = governed_work_from_issue_body(issue.get("body"))
+            if current_work != governed["governed_work"]:
+                raise AcceptanceError("governed issue no longer matches candidate snapshot")
+            if governed["repo_pin_sha"] != pin_sha:
+                raise AcceptanceError("governed binding repo pin SHA mismatch")
+            if pin["prior_sha"] is None:
+                raise AcceptanceError("ordinary governed candidate cannot carry bootstrap pin")
+            return {
+                "status": "pass", "mode": "governed", "issue_number": issue_number,
+                "candidate_sha": candidate_sha.lower(), "repo_pin_sha": pin_sha, "defects": [],
+            }
+        except Exception as exc:
+            return {"status": "fail", "mode": "governed", "defects": [str(exc)]}
+    try:
+        bootstrap = github_candidate_binding(repo, candidate_sha, "bootstrap-candidate-binding")
+        issue = _gh_object(f"repos/{repo}/issues/{bootstrap['bootstrap_provenance_issue']}")
+        auth = bootstrap_authorization_from_issue_body(issue.get("body"))
+        if auth["acceptance_actor"].get("id") != bootstrap["acceptance_actor"].get("id"):
+            raise AcceptanceError("bootstrap issue actor does not match candidate binding")
+        if bootstrap["repo_pin_sha"] != pin_sha:
+            raise AcceptanceError("bootstrap binding repo pin SHA mismatch")
+        if pin["prior_sha"] is not None:
+            raise AcceptanceError("bootstrap cutover repo pin must have prior_sha null")
+        return {
+            "status": "pass", "mode": "bootstrap",
+            "issue_number": bootstrap["bootstrap_provenance_issue"],
+            "candidate_sha": candidate_sha.lower(), "repo_pin_sha": pin_sha, "defects": [],
+        }
+    except Exception as exc:
+        return {"status": "fail", "mode": "bootstrap", "defects": [str(exc)]}
+
 def validate_governed_candidate_binding(binding):
-    required = {"schema_version","record_type","issue_number","accepted_repository_predecessor","base_ref","governed_work"}
-    if not isinstance(binding, dict) or set(binding) != required or binding.get("schema_version") != "1" or binding.get("record_type") != "governed-candidate-binding":
+    required = {
+        "schema_version", "record_type", "issue_number",
+        "accepted_repository_predecessor", "base_ref",
+        "repo_pin_sha", "governed_work",
+    }
+    if not isinstance(binding, dict) or set(binding) != required:
         raise AcceptanceError("governed candidate binding fields are not canonical")
+    if binding.get("schema_version") != "1" or binding.get("record_type") != "governed-candidate-binding":
+        raise AcceptanceError("governed candidate binding envelope is invalid")
     issue = binding.get("issue_number")
     if isinstance(issue, bool) or not isinstance(issue, int) or issue < 1:
         raise AcceptanceError("governed candidate binding issue_number must be positive")
@@ -1103,49 +1229,69 @@ def validate_governed_candidate_binding(binding):
         raise AcceptanceError("governed candidate binding predecessor must be exact Git SHA")
     if binding.get("base_ref") != "refs/heads/main":
         raise AcceptanceError("governed candidate binding must target refs/heads/main")
+    pin_sha = binding.get("repo_pin_sha")
+    if not isinstance(pin_sha, str) or not PIN_SHA_RE.fullmatch(pin_sha):
+        raise AcceptanceError("governed candidate binding repo_pin_sha must be exact Git blob SHA")
     work = binding.get("governed_work")
-    if not isinstance(work, dict) or work.get("record_type") != "governed-work" or work.get("stage") not in {"design","plan","build"} or not _nonempty(work.get("work_id")):
+    if not isinstance(work, dict) or work.get("record_type") != "governed-work":
         raise AcceptanceError("governed candidate binding work identity is invalid")
     auth = work.get("bounded_authorization")
     actor = auth.get("acceptance_actor") if isinstance(auth, dict) else None
     if not _valid_actor(actor):
         raise AcceptanceError("governed candidate binding lacks valid acceptance_actor")
     required_assurance = work.get("required_assurance_obligation_ids")
-    if not isinstance(required_assurance, list) or any(not _nonempty(x) for x in required_assurance) or len(required_assurance) != len(set(required_assurance)):
+    if not isinstance(required_assurance, list) or len(required_assurance) != len(set(required_assurance)):
         raise AcceptanceError("governed candidate binding Assurance gate set is invalid")
     out = dict(binding)
     out["accepted_repository_predecessor"] = predecessor.lower()
+    out["repo_pin_sha"] = pin_sha.lower()
     out["governed_work"] = dict(work)
     return out
 
 def validate_bootstrap_candidate_binding(binding):
-    required = {"schema_version","record_type","bootstrap_provenance_issue","acceptance_actor","accepted_repository_predecessor","base_ref"}
-    if not isinstance(binding, dict) or set(binding) != required or binding.get("schema_version") != "1" or binding.get("record_type") != "bootstrap-candidate-binding":
+    required = {
+        "schema_version", "record_type", "bootstrap_provenance_issue",
+        "acceptance_actor", "accepted_repository_predecessor",
+        "base_ref", "repo_pin_sha",
+    }
+    if not isinstance(binding, dict) or set(binding) != required:
         raise AcceptanceError("bootstrap candidate binding fields are not canonical")
+    if binding.get("schema_version") != "1" or binding.get("record_type") != "bootstrap-candidate-binding":
+        raise AcceptanceError("bootstrap candidate binding envelope is invalid")
     issue = binding.get("bootstrap_provenance_issue")
     if isinstance(issue, bool) or not isinstance(issue, int) or issue < 1:
-        raise AcceptanceError("bootstrap candidate binding provenance issue must be positive")
+        raise AcceptanceError("bootstrap provenance issue must be positive")
     if not _valid_actor(binding.get("acceptance_actor")):
         raise AcceptanceError("bootstrap candidate binding lacks valid acceptance_actor")
     predecessor = binding.get("accepted_repository_predecessor")
     if not isinstance(predecessor, str) or not SHA_RE.fullmatch(predecessor):
-        raise AcceptanceError("bootstrap candidate binding predecessor must be exact Git SHA")
+        raise AcceptanceError("bootstrap predecessor must be exact Git SHA")
     if binding.get("base_ref") != "refs/heads/main":
         raise AcceptanceError("bootstrap candidate binding must target refs/heads/main")
+    pin_sha = binding.get("repo_pin_sha")
+    if not isinstance(pin_sha, str) or not PIN_SHA_RE.fullmatch(pin_sha):
+        raise AcceptanceError("bootstrap repo_pin_sha must be exact Git blob SHA")
     out = dict(binding)
     out["accepted_repository_predecessor"] = predecessor.lower()
+    out["repo_pin_sha"] = pin_sha.lower()
     return out
 
 def github_candidate_binding(repo, candidate_sha, record_type):
     if not isinstance(candidate_sha, str) or not SHA_RE.fullmatch(candidate_sha):
         raise AcceptanceError("candidate binding lookup requires exact Git SHA")
-    value = _gh_object(f"repos/{repo}/git/commits/{candidate_sha.lower()}")
+    candidate_sha = candidate_sha.lower()
+    value = _gh_object(f"repos/{repo}/git/commits/{candidate_sha}")
     binding = _candidate_binding_from_message(value.get("message"), record_type)
     if record_type == "governed-candidate-binding":
-        return validate_governed_candidate_binding(binding)
-    if record_type == "bootstrap-candidate-binding":
-        return validate_bootstrap_candidate_binding(binding)
-    raise AcceptanceError("unsupported candidate binding record type")
+        binding = validate_governed_candidate_binding(binding)
+    elif record_type == "bootstrap-candidate-binding":
+        binding = validate_bootstrap_candidate_binding(binding)
+    else:
+        raise AcceptanceError("unsupported candidate binding record type")
+    _, pin_sha = github_repo_pin(repo, candidate_sha)
+    if binding["repo_pin_sha"] != pin_sha:
+        raise AcceptanceError("candidate binding does not name exact repo-pin blob")
+    return binding
 
 def _candidate_from_governed_binding(binding, head_sha):
     binding = validate_governed_candidate_binding(binding)
@@ -1443,19 +1589,50 @@ def github_issue_comments(repo):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="repo/scripts/accepted-state", description="Resolve canonical FS0 accepted repository state from refs/heads/main.")
+    parser = argparse.ArgumentParser(
+        prog="repo/scripts/accepted-state",
+        description="Resolve canonical FS0 accepted repository state from refs/heads/main.",
+    )
     parser.add_argument("--json", action="store_true", help="emit structured JSON")
+    parser.add_argument(
+        "--verify-action-binding",
+        action="store_true",
+        help="verify exact PR-head repo pin and governing issue correspondence",
+    )
     args = parser.parse_args()
+    if args.verify_action_binding:
+        try:
+            report = verify_action_candidate_binding(repository_root())
+        except Exception as exc:
+            report = {"status": "fail", "defects": [str(exc)]}
+        if args.json:
+            print(json.dumps(report, indent=2))
+        else:
+            print("FS0 candidate binding: " + report.get("status", "fail").upper())
+            for defect in report.get("defects", []):
+                print("Defect: " + str(defect), file=sys.stderr)
+        return 0 if report.get("status") == "pass" else 1
     try:
         root = repository_root()
         sha = accepted_ref(root)
         if sha is None:
-            report = {"schema_version":"1","record_type":"accepted-state-resolution","status":"unpublished","accepted_revision":None,"accepted_ref":"refs/heads/main","defects":[]}
+            report = {
+                "schema_version": "1", "record_type": "accepted-state-resolution",
+                "status": "unpublished", "accepted_revision": None,
+                "accepted_ref": "refs/heads/main", "defects": [],
+            }
         else:
             bootstrap = committed_bootstrap_state(root, sha)
-            report = resolve_remote_main_acceptance(origin_repository(root), bootstrap, sha) if bootstrap.get("state") == "cutover" else resolve_main_revision(bootstrap, sha, None)
+            if bootstrap.get("state") == "cutover":
+                report = resolve_remote_main_acceptance(origin_repository(root), bootstrap, sha)
+            else:
+                report = resolve_main_revision(bootstrap, sha, None)
     except Exception as exc:
-        report = {"schema_version":"1","record_type":"accepted-state-resolution","status":"error","accepted_revision":None,"accepted_ref":"refs/heads/main","defects":[str(exc)]}
+        report = {
+            "schema_version": "1", "record_type": "accepted-state-resolution",
+            "status": "error", "accepted_revision": None,
+            "accepted_ref": "refs/heads/main", "defects": [str(exc)],
+        }
     if args.json:
         print(json.dumps(report, indent=2))
     else:

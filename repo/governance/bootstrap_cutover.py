@@ -145,17 +145,43 @@ def bootstrap_pr_body(issue_number, candidate, base):
               "accepted_repository_predecessor":base,"base_ref":"refs/heads/main"}
     return f"Governed by bootstrap provenance issue #{issue_number}.\n\nThis exact PR head is the designated bootstrap-cutover candidate. Merging is bootstrap acceptance only when exact-head remote FS0 Conformance has passed.\n\n```json\n" + json.dumps(record, indent=2) + "\n```\n"
 
-def bootstrap_candidate_binding(issue_number, actor_id, actor_login, base):
+
+
+REPO_PIN_PATH = Path("repo/state/repo-pin.json")
+
+
+def bootstrap_repo_pin(source_commit):
     return {
-        "schema_version":"1","record_type":"bootstrap-candidate-binding",
-        "bootstrap_provenance_issue":issue_number,
-        "acceptance_actor":{"id":actor_id,"login":actor_login},
-        "accepted_repository_predecessor":base,"base_ref":"refs/heads/main",
+        "source_commit": source_commit,
+        "prior_sha": None,
+        "timestamp": now(),
     }
 
-def bootstrap_candidate_commit_message(issue_number, actor_id, actor_login, base):
-    binding = bootstrap_candidate_binding(issue_number, actor_id, actor_login, base)
-    return "Prepare FS0 bootstrap cutover\n\n```json\n" + json.dumps(binding, indent=2, sort_keys=True) + "\n```\n"
+
+def bootstrap_candidate_binding(issue_number, actor_id, actor_login, base, repo_pin_sha):
+    return {
+        "schema_version": "1",
+        "record_type": "bootstrap-candidate-binding",
+        "bootstrap_provenance_issue": issue_number,
+        "acceptance_actor": {"id": actor_id, "login": actor_login},
+        "accepted_repository_predecessor": base,
+        "base_ref": "refs/heads/main",
+        "repo_pin_sha": repo_pin_sha,
+    }
+
+
+def bootstrap_candidate_commit_message(issue_number, actor_id, actor_login, base, repo_pin_sha):
+    return (
+        "Pin FS0 bootstrap cutover\n\n```json\n"
+        + json.dumps(
+            bootstrap_candidate_binding(
+                issue_number, actor_id, actor_login, base, repo_pin_sha
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n```\n"
+    )
 
 def main():
     parser = argparse.ArgumentParser(
@@ -347,11 +373,29 @@ def main():
         passed("candidate staged")
 
         current_step += 1
-        step(current_step, "COMMIT", "commit exact cutover candidate")
-        run(["git", "commit", "-F", "-"], input_text=bootstrap_candidate_commit_message(issue_number, actor_id, actor_login, base))
+        step(current_step, "COMMIT", "commit cutover mutation state")
+        run(["git", "commit", "-m", "Prepare FS0 bootstrap cutover state"])
+        source_candidate = git("rev-parse", "HEAD").stdout.strip().lower()
+        result["commit_count"] = 1
+        passed(source_candidate)
+
+        current_step += 1
+        step(current_step, "COMMIT", "create final bootstrap repo pin commit")
+        pin_record = bootstrap_repo_pin(source_candidate)
+        pin_path = repo_root / REPO_PIN_PATH
+        pin_path.write_text(json.dumps(pin_record, indent=2) + "\n", encoding="utf-8")
+        git("add", "--", str(REPO_PIN_PATH))
+        repo_pin_sha = git("hash-object", str(REPO_PIN_PATH)).stdout.strip().lower()
+        run(
+            ["git", "commit", "-F", "-"],
+            input_text=bootstrap_candidate_commit_message(
+                issue_number, actor_id, actor_login, base, repo_pin_sha
+            ),
+        )
         candidate = git("rev-parse", "HEAD").stdout.strip().lower()
         result["commit_sha"] = candidate
-        result["commit_count"] = 1
+        result["commit_count"] = 2
+        result["repo_pin_sha"] = repo_pin_sha
         passed(candidate)
 
         phase("PUBLISH")

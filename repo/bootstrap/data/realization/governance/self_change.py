@@ -104,23 +104,82 @@ def governed_work_from_issue(root, issue_number):
     except Exception as exc:
         raise SelfChangeError(f"governed issue work record is invalid: {exc}") from exc
 
-def bind_candidate(root, candidate, issue_number):
-    candidate = exact_candidate(candidate)
-    if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
-        raise SelfChangeError("governed issue number must be positive")
+REPO_PIN_PATH = Path("repo/state/repo-pin.json")
+
+
+def utc_timestamp():
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def repo_pin_blob_at(root, revision):
+    proc = _run(
+        ["git", "rev-parse", f"{revision}:repo/state/repo-pin.json"],
+        cwd=root, allowed=(0, 128),
+    )
+    if proc.returncode != 0:
+        return None
+    value = proc.stdout.strip().lower()
+    return value if SHA_RE.fullmatch(value) else None
+
+
+def create_pinned_candidate(root, source_candidate, issue_number):
+    source_candidate = exact_candidate(source_candidate)
     work = governed_work_from_issue(root, issue_number)
     predecessor = remote_ref("refs/heads/main")
     if predecessor is None:
-        raise SelfChangeError("refs/heads/main must exist before governed candidate binding")
-    binding = {
-        "schema_version":"1","record_type":"governed-candidate-binding",
-        "issue_number":issue_number,"accepted_repository_predecessor":predecessor,
-        "base_ref":"refs/heads/main","governed_work":work,
+        raise SelfChangeError("refs/heads/main must exist before governed candidate pinning")
+    prior_sha = repo_pin_blob_at(root, predecessor)
+    if prior_sha is None:
+        raise SelfChangeError("governed candidate requires prior accepted repo pin")
+    pin = {
+        "source_commit": source_candidate,
+        "prior_sha": prior_sha,
+        "timestamp": utc_timestamp(),
     }
-    message = "Bind FS0 governed candidate\n\n```json\n" + json.dumps(binding, indent=2, sort_keys=True) + "\n```\n"
-    tree = _run(["git","rev-parse",f"{candidate}^{{tree}}"], cwd=root).stdout.strip()
-    bound = _run(["git","commit-tree",tree,"-p",candidate], cwd=root, input_text=message).stdout.strip().lower()
-    return exact_candidate(bound)
+    content = json.dumps(pin, indent=2) + "\n"
+    pin_sha = _run(["git", "hash-object", "-w", "--stdin"], cwd=root, input_text=content).stdout.strip().lower()
+
+    index = root / ".git" / "fs0-repo-pin-index"
+    env = dict(__import__("os").environ)
+    env["GIT_INDEX_FILE"] = str(index)
+    try:
+        subprocess.run(["git", "read-tree", source_candidate], cwd=root, env=env, check=True)
+        subprocess.run(
+            ["git", "update-index", "--add", "--cacheinfo", "100644", pin_sha, str(REPO_PIN_PATH)],
+            cwd=root, env=env, check=True,
+        )
+        tree = subprocess.run(
+            ["git", "write-tree"], cwd=root, env=env, text=True,
+            capture_output=True, check=True,
+        ).stdout.strip()
+    finally:
+        try:
+            index.unlink()
+        except FileNotFoundError:
+            pass
+
+    binding = {
+        "schema_version": "1", "record_type": "governed-candidate-binding",
+        "issue_number": issue_number,
+        "accepted_repository_predecessor": predecessor,
+        "base_ref": "refs/heads/main",
+        "repo_pin_sha": pin_sha,
+        "governed_work": work,
+    }
+    message = (
+        "Pin FS0 governed candidate\n\n"
+        "```json\n" + json.dumps(binding, indent=2, sort_keys=True) + "\n```\n"
+    )
+    pinned = _run(
+        ["git", "commit-tree", tree, "-p", source_candidate],
+        cwd=root, input_text=message,
+    ).stdout.strip().lower()
+    return exact_candidate(pinned), pin_sha
+
+def bind_candidate(root, candidate, issue_number):
+    pinned, _ = create_pinned_candidate(root, candidate, issue_number)
+    return pinned
 
 def publish_candidate(root: Path, candidate: str, contract=None):
     contract = contract or load_contract(root)
@@ -225,21 +284,24 @@ def repository_root():
 def main():
     parser = argparse.ArgumentParser(
         prog="repo/scripts/self-change",
-        description="Bind and publish an exact governed candidate for PR review and merge acceptance.",
+        description="Create and publish a final repo-pin commit for a governed candidate.",
     )
-    parser.add_argument("--candidate", required=True, help="exact realized candidate commit SHA to bind")
+    parser.add_argument("--candidate", required=True, help="exact last mutation commit SHA")
     parser.add_argument("--issue", required=True, type=int, help="governed GitHub issue number")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     root = repository_root()
     report = {
-        "schema_version":"1","record_type":"self-change-candidate-publication","status":"error",
-        "source_candidate_id":None,"candidate_id":None,"governed_issue_number":args.issue,"errors":[],
+        "schema_version": "1", "record_type": "self-change-candidate-publication",
+        "status": "error", "source_candidate_id": None, "candidate_id": None,
+        "repo_pin_sha": None, "governed_issue_number": args.issue, "errors": [],
     }
     try:
         source = exact_candidate(args.candidate)
         report["source_candidate_id"] = source
-        report.update(publish_candidate(root, bind_candidate(root, source, args.issue)))
+        pinned, pin_sha = create_pinned_candidate(root, source, args.issue)
+        report["repo_pin_sha"] = pin_sha
+        report.update(publish_candidate(root, pinned))
     except Exception as exc:
         report["errors"].append(str(exc))
     if args.json:
@@ -247,7 +309,8 @@ def main():
     else:
         print("FS0 candidate publication: " + report["status"].upper())
         if report.get("candidate_id"):
-            print("Bound candidate: " + report["candidate_id"])
+            print("Pinned candidate: " + report["candidate_id"])
+            print("Repo pin: " + report["repo_pin_sha"])
         for error in report["errors"]:
             print("Error: " + error, file=sys.stderr)
     return 0 if report["status"] == "published" else 1
