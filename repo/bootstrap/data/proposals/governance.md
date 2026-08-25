@@ -833,6 +833,42 @@ Governance may consume outputs from both keystones but shall not absorb their re
 **DP020-DETAIL-153**
 The Governance architecture should be normalized before lifecycle coupling to Conformance and Assurance is accepted.
 
+### Normative Statement Contract
+
+**DP020-DETAIL-154**
+An accepted normative requirement shall represent exactly one independently governable normative rule.
+
+**DP020-DETAIL-155**
+A normative requirement statement shall be self-contained and shall identify an explicit normative subject, normative force, and required, prohibited, or expressly permitted behavior.
+
+**DP020-DETAIL-156**
+The normative force vocabulary for accepted normative requirement statements shall be `SHALL`, `SHALL NOT`, and `MAY`.
+
+**DP020-DETAIL-157**
+`SHALL` expresses required behavior, `SHALL NOT` expresses prohibited behavior, and `MAY` expresses explicit permission. Advisory or probabilistic force such as `SHOULD`, `SHOULD NOT`, `normally`, `generally`, or equivalent ambiguous obligation strength shall not be used in an accepted normative requirement unless separately defined by accepted authority.
+
+**DP020-DETAIL-158**
+A normative requirement may include conditions, scope qualifiers, and exceptions only when they are necessary to determine when the single normative rule applies.
+
+**DP020-DETAIL-159**
+A normative requirement shall not combine two or more obligations that could be independently conformed, assured, accepted, amended, superseded, or withdrawn.
+
+**DP020-DETAIL-160**
+Multiple subjects or behaviors may appear in one normative requirement only when they form one inseparable governed rule and cannot be independently dispositioned without changing that rule's meaning.
+
+**DP020-DETAIL-161**
+A normative requirement statement shall not depend on positional context such as preceding prose, following prose, section proximity, or unstated convention for its normative meaning. References required for meaning shall use stable resolvable identities.
+
+**DP020-DETAIL-162**
+A normative requirement statement shall contain normative semantics only. Rationale, explanatory commentary, examples, implementation instructions, pseudo-code, validation procedure, evidence, and review findings shall be represented outside the normative statement.
+
+**DP020-DETAIL-163**
+No arbitrary word or character count defines normative-statement validity. A normative statement shall be no longer than necessary to express its single rule unambiguously and no shorter than necessary to stand on its own.
+
+**DP020-DETAIL-164**
+Conformance may mechanically enforce structural properties of the normative-statement contract, including identity, required normative-force vocabulary, and forbidden structural forms. Assurance shall evaluate semantic atomicity, standalone sufficiency, ambiguity, inappropriate bundling, and whether splitting or combining statements would better preserve independently governable semantics.
+
+
 ## Alternatives Considered
 
 **Section ID:** `ALTERNATIVES`
