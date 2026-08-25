@@ -20,11 +20,11 @@
     ],
     "implementation": [
       "Parse the YAML-like metadata header using a minimal deterministic parser for the known Design Proposal metadata keys.",
-      "Verify doc_id format, artifact_type, canonical_format, dependencies, exact 16 level-two headers in canonical order, stable Section ID values, and unique DP statement IDs.",
+      "Verify stable doc_id format, artifact_type, canonical_format, declared dependencies, and unique well-formed DP statement identities without enforcing deferred canonical-header or section-format quality rules.",
       "Resolve declared proposal dependencies from the functional-set Design inputs.",
       "Given a functional-set Design input, verify path, exact revision token, doc_id, and existence/ownership of every selected statement.",
       "Return a non-normative DesignIndex containing addresses and source locations only.",
-      "Expose a Design Assurance subject summary containing exact proposal revision, declared dependencies, section completeness, and statement index without deciding semantic readiness mechanically."
+      "Expose a Design Assurance subject summary containing exact proposal revision, declared dependencies, and statement index without deciding semantic readiness mechanically."
     ],
     "validation_ids": [
       "VAL-001",

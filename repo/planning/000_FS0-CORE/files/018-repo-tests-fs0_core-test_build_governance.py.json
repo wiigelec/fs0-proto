@@ -72,7 +72,11 @@
       "FS0-NR-191",
       "FS0-NR-193",
       "FS0-NR-194",
-      "FS0-NR-195"
+      "FS0-NR-195",
+      "FS0-NR-256",
+      "FS0-NR-257",
+      "FS0-NR-258",
+      "FS0-NR-259"
     ],
     "implementation": [
       "Open a BuildSession around a minimal accepted Plan and temporary repository.",

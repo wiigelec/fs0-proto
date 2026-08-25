@@ -54,7 +54,11 @@
       "FS0-NR-194",
       "FS0-NR-195",
       "FS0-NR-210",
-      "FS0-NR-226"
+      "FS0-NR-226",
+      "FS0-NR-256",
+      "FS0-NR-257",
+      "FS0-NR-258",
+      "FS0-NR-259"
     ],
     "implementation": [
       "Define governed artifact identities and acceptance records for Design readiness, Planning acceptance, and Build acceptance.",

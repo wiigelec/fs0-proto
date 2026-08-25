@@ -1474,6 +1474,56 @@
           "applicability": "required"
         }
       }
+    },
+    {
+      "id": "FS0-NR-256",
+      "statement": "Accepted Design and Planning artifacts MAY be committed after a Plan's declared implementation predecessor and before Build begins.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-257",
+      "statement": "Accepted Design or Planning artifact commits after the declared implementation predecessor SHALL NOT by themselves change that implementation predecessor.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-258",
+      "statement": "Build SHALL verify that repository changes between the declared implementation predecessor and Build start state are confined to governed Design and Planning artifact namespaces before treating those changes as pre-Build artifact-only state.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-259",
+      "statement": "Build SHALL reject pre-Build artifact-only classification when repository changes between the declared implementation predecessor and Build start state mutate implementation realization outside governed Design and Planning artifact namespaces.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
     }
   ]
 }

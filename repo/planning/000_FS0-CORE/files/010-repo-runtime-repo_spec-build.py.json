@@ -28,7 +28,11 @@
       "FS0-NR-189",
       "FS0-NR-190",
       "FS0-NR-191",
-      "FS0-NR-193"
+      "FS0-NR-193",
+      "FS0-NR-256",
+      "FS0-NR-257",
+      "FS0-NR-258",
+      "FS0-NR-259"
     ],
     "implementation": [
       "Define BuildSession from an accepted immutable Plan plus implementation predecessor.",

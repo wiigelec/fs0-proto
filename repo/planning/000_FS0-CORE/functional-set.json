@@ -9,13 +9,13 @@
     "description": "Irreducible standalone self-hosting repo-spec core. FS0-Core implements only the runtime capabilities required to consume selected Design, load one functionality-defined functional set and closed modular Plan, represent stable normative identities and applicability, execute bounded Build work against an accepted predecessor, perform basic Conformance and governed semantic Assurance, record explicit non-circular acceptance with minimum lineage, and govern the next functionality-defined functional-set cycle."
   },
   "accepted_predecessor": {
-    "repository_revision": "65b6477dc3ed10cd6ebb83e83653e995f63b47fd"
+    "repository_revision": "7e64e7fe600ded62153ad4b5e009ce03bba1ba41"
   },
   "design_inputs": [
     {
       "doc_id": "DP-001",
       "path": "repo/proposals/design-proposal.md",
-      "revision": "323a51777f6dabd97f0ff23e53f38acdb11abb02",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
       "statements": [
         "DP001-REQUIREMENTS-001",
         "DP001-REQUIREMENTS-002",
@@ -49,7 +49,7 @@
     {
       "doc_id": "DP-010",
       "path": "repo/proposals/framework-contract.md",
-      "revision": "65b6477dc3ed10cd6ebb83e83653e995f63b47fd",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
       "statements": [
         "DP010-DETAIL-083",
         "DP010-DETAIL-084",
@@ -70,7 +70,7 @@
     {
       "doc_id": "DP-020",
       "path": "repo/proposals/governance.md",
-      "revision": "323a51777f6dabd97f0ff23e53f38acdb11abb02",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
       "statements": [
         "DP020-DETAIL-010",
         "DP020-DETAIL-011",
@@ -167,13 +167,17 @@
         "DP020-DETAIL-172",
         "DP020-DETAIL-173",
         "DP020-DETAIL-174",
-        "DP020-DETAIL-175"
+        "DP020-DETAIL-175",
+        "DP020-DETAIL-185",
+        "DP020-DETAIL-186",
+        "DP020-DETAIL-187",
+        "DP020-DETAIL-188"
       ]
     },
     {
       "doc_id": "DP-030",
       "path": "repo/proposals/conformance.md",
-      "revision": "323a51777f6dabd97f0ff23e53f38acdb11abb02",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
       "statements": [
         "DP030-DETAIL-265",
         "DP030-DETAIL-266",
@@ -190,7 +194,7 @@
     {
       "doc_id": "DP-040",
       "path": "repo/proposals/assurance.md",
-      "revision": "323a51777f6dabd97f0ff23e53f38acdb11abb02",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
       "statements": [
         "DP040-DETAIL-206",
         "DP040-DETAIL-207",

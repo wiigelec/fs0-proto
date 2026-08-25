@@ -134,6 +134,16 @@
         "FS0-NR-254",
         "FS0-NR-255"
       ]
+    },
+    {
+      "id": "INV-010",
+      "statement": "Committed Design and Planning artifacts between the declared implementation predecessor and Build start do not become implementation realization; any non-artifact mutation invalidates that bridge.",
+      "requirement_ids": [
+        "FS0-NR-256",
+        "FS0-NR-257",
+        "FS0-NR-258",
+        "FS0-NR-259"
+      ]
     }
   ]
 }

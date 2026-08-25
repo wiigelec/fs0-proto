@@ -11,7 +11,7 @@
     "path": "repo/planning/000_FS0-CORE/functional-set.json"
   },
   "implementation_predecessor": {
-    "repository_revision": "65b6477dc3ed10cd6ebb83e83653e995f63b47fd"
+    "repository_revision": "7e64e7fe600ded62153ad4b5e009ce03bba1ba41"
   },
   "documents": {
     "requirements": "requirements.json",
