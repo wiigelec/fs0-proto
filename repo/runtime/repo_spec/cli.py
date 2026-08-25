@@ -67,9 +67,14 @@ def _conformance_from_dict(value: dict) -> ConformanceReport:
 
 
 def _auto_build_manifest(repo: Repository, plan) -> dict:
+    planned_paths = {fc.path for fc in plan.file_changes}
     mutations = []
     for mutation in repo.changed_paths(plan.implementation_predecessor, repo.head):
-        if mutation.path.startswith("repo/proposals/") or mutation.path.startswith("repo/planning/"):
+        artifact_only = (
+            mutation.path.startswith("repo/proposals/")
+            or mutation.path.startswith("repo/planning/")
+        )
+        if artifact_only and mutation.path not in planned_paths:
             continue
         mutations.append({"path": mutation.path, "operation": mutation.operation})
     return {
@@ -350,8 +355,63 @@ def _validate_core(repo: Repository) -> dict:
     if tests.returncode:
         raise RuntimeError(tests.stderr or tests.stdout)
 
+    planning_assurance = make_report(
+        phase="Planning",
+        subject_id=plan.id,
+        disposition="PASS",
+        rationale="Canonical FS0-Core validation confirms the resolved Plan is coherent with its bound Design scope.",
+        evidence_refs=(
+            "core:design-conformance",
+            "core:functional-set-conformance",
+            "core:plan-conformance",
+            "core:unit-tests",
+        ),
+    )
+    predecessor_authority = plan.implementation_predecessor
+    accepted_plan_authority = f"accepted-plan:{plan.id}"
+    planning_graph = AuthorizationGraph(
+        [Authority(predecessor_authority), Authority("core-governor")],
+        [Delegation(predecessor_authority, "core-governor", "accept:Planning")],
+    )
+    planning_acceptance = accept(
+        acceptance_id="FS0-CORE-PLAN-ACCEPT",
+        stage="Planning",
+        subject_id=plan.id,
+        actor="core-governor",
+        predecessor_authority=predecessor_authority,
+        resulting_state=accepted_plan_authority,
+        authority_graph=planning_graph,
+        conformance=plan_report,
+        assurance=planning_assurance,
+        evidence_refs=("core:plan-conformance", "core:planning-assurance"),
+    )
+
     manifest = _auto_build_manifest(repo, plan)
     build_report = build_conformance(plan, manifest)
+    build_assurance = make_report(
+        phase="Build",
+        subject_id=manifest["build_id"],
+        disposition="PASS",
+        rationale="Canonical FS0-Core validation confirms the complete observed Build remains within the accepted Plan.",
+        evidence_refs=("core:build-manifest", "core:build-conformance", "core:unit-tests"),
+    )
+    build_graph = AuthorizationGraph(
+        [Authority(accepted_plan_authority), Authority("core-governor")],
+        [Delegation(accepted_plan_authority, "core-governor", "accept:Build")],
+    )
+    build_acceptance = accept(
+        acceptance_id="FS0-CORE-BUILD-ACCEPT",
+        stage="Build",
+        subject_id=manifest["build_id"],
+        actor="core-governor",
+        predecessor_authority=accepted_plan_authority,
+        resulting_state=repo.head,
+        authority_graph=build_graph,
+        conformance=build_report,
+        assurance=build_assurance,
+        evidence_refs=("core:build-conformance", "core:build-assurance"),
+    )
+
     self_host = _self_host_check()
     return {
         "status": "PASS",
@@ -359,7 +419,13 @@ def _validate_core(repo: Repository) -> dict:
         "functional_set_conformance": functional_report.disposition,
         "plan_conformance": plan_report.disposition,
         "tests": "PASS",
+        "planning_assurance": planning_assurance.disposition,
+        "planning_acceptance": planning_acceptance.decision,
         "build_conformance": build_report.disposition,
+        "build_assurance": build_assurance.disposition,
+        "build_acceptance": build_acceptance.decision,
+        "implementation_predecessor": manifest["implementation_predecessor"],
+        "resulting_revision": manifest["resulting_revision"],
         "self_host": self_host["status"],
     }
 

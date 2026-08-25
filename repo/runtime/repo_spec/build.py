@@ -56,8 +56,13 @@ class BuildSession:
     def observe_committed_mutations(self, resulting_revision: str | None = None) -> tuple[dict, ...]:
         end = resulting_revision or self.repository.head
         observed = []
+        planned_paths = {fc.path for fc in self.plan.file_changes}
         for mutation in self.repository.changed_paths(self.plan.implementation_predecessor, end):
-            if mutation.path.startswith("repo/proposals/") or mutation.path.startswith("repo/planning/"):
+            artifact_only = (
+                mutation.path.startswith("repo/proposals/")
+                or mutation.path.startswith("repo/planning/")
+            )
+            if artifact_only and mutation.path not in planned_paths:
                 continue
             self.require_authorized(mutation.path, mutation.operation)
             observed.append({"path": mutation.path, "operation": mutation.operation})

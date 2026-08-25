@@ -71,6 +71,24 @@ class BuildGovernanceTests(unittest.TestCase):
                 "mutations": [{"path": "README.md", "operation": "modify"}],
             })
 
+    def test_missing_planned_manifest_mutation_fails(self):
+        mutations = [
+            {"path": fc.path, "operation": fc.operation}
+            for fc in self.plan.file_changes[:-1]
+        ]
+        with self.assertRaises(Exception):
+            build_conformance(self.plan, {
+                "schema_version": "1",
+                "artifact_type": "build-manifest",
+                "build_id": "INCOMPLETE",
+                "plan_id": self.plan.id,
+                "actor": "builder",
+                "implementation_predecessor": self.plan.implementation_predecessor,
+                "build_start_revision": PRE_BUILD,
+                "resulting_revision": self.repo.head,
+                "mutations": mutations,
+            })
+
     def test_non_circular_build_acceptance(self):
         conf = build_conformance(self.plan, {
             "schema_version": "1",
@@ -81,7 +99,10 @@ class BuildGovernanceTests(unittest.TestCase):
             "implementation_predecessor": self.plan.implementation_predecessor,
             "build_start_revision": PRE_BUILD,
             "resulting_revision": self.repo.head,
-            "mutations": [],
+            "mutations": [
+                {"path": fc.path, "operation": fc.operation}
+                for fc in self.plan.file_changes
+            ],
         })
         assurance = make_report(
             phase="Build",
@@ -117,7 +138,10 @@ class BuildGovernanceTests(unittest.TestCase):
             "implementation_predecessor": self.plan.implementation_predecessor,
             "build_start_revision": PRE_BUILD,
             "resulting_revision": self.repo.head,
-            "mutations": [],
+            "mutations": [
+                {"path": fc.path, "operation": fc.operation}
+                for fc in self.plan.file_changes
+            ],
         })
         assurance = make_report(
             phase="Build",

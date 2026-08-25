@@ -78,13 +78,32 @@ def build_conformance(plan: LogicalPlan, manifest: dict) -> ConformanceReport:
         raise ConformanceError("invalid-build-manifest", "Build manifest must be a build-manifest object")
     if manifest.get("plan_id") != plan.id:
         raise ConformanceError("build-manifest-plan-mismatch", "Build manifest plan_id does not match accepted Plan")
+    if manifest.get("implementation_predecessor") != plan.implementation_predecessor:
+        raise ConformanceError(
+            "build-manifest-predecessor-mismatch",
+            "Build manifest implementation_predecessor does not match accepted Plan",
+        )
+
+    mutations = manifest.get("mutations")
+    if not isinstance(mutations, list):
+        raise ConformanceError("invalid-build-mutations", "Build manifest mutations must be an array")
+
     planned = {(fc.path, fc.operation) for fc in plan.file_changes}
     observed = set()
-    for item in manifest.get("mutations", []):
+    for item in mutations:
         if not isinstance(item, dict):
             raise ConformanceError("invalid-build-mutation", "Build manifest mutations must be objects")
         pair = (item.get("path"), item.get("operation"))
         if pair not in planned:
             raise ConformanceError("unauthorized-build-mutation", f"unplanned mutation: {pair}")
+        if pair in observed:
+            raise ConformanceError("duplicate-build-mutation", f"duplicate mutation: {pair}")
         observed.add(pair)
+
+    missing = sorted(planned - observed)
+    if missing:
+        raise ConformanceError(
+            "missing-build-mutation",
+            f"planned mutations absent from Build manifest: {missing}",
+        )
     return _pass("build", manifest.get("build_id", "unknown"), (plan.id,))
