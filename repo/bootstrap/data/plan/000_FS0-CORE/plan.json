@@ -4,7 +4,7 @@
   "plan": {
     "id": "FS0-CORE-PLAN",
     "title": "FS0-Core Implementation Plan",
-    "description": "Implement the standalone self-hosting repo-spec core required to plan, build, validate, assure, and accept all later functionality-defined functional sets without relying on the current implementation as Planning input."
+    "description": "Revised isolated target-state implementation contract for the standalone self-hosting repo-spec core. It incorporates Planning Assurance corrections for delegated authority, default-deny governed state, provenance, Design Assurance, rejection/lifecycle semantics, repository revision ownership, and durable Build/Conformance evidence."
   },
   "functional_set": {
     "id": "FS0-CORE",
@@ -34,7 +34,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -70,7 +71,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -94,7 +96,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -106,7 +109,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -118,7 +122,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -130,7 +135,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -178,7 +184,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -190,7 +197,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -202,7 +210,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -226,7 +235,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -238,7 +248,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -322,7 +333,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -346,7 +358,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -370,7 +383,8 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
@@ -400,7 +414,7 @@
     },
     {
       "id": "FS0-NR-033",
-      "statement": "Maintained governed framework state SHALL require accepted authorization or an explicitly governed extension point.",
+      "statement": "Maintained governed framework state SHALL require accepted authorization or an explicitly governed extension point; governed state for which authorization cannot be resolved SHALL be rejected by default.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -430,13 +444,171 @@
           "applicability": "required"
         },
         "assurance": {
-          "applicability": "required"
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable; Assurance may review surrounding semantics but is not required for this requirement."
         }
       }
     },
     {
       "id": "FS0-NR-036",
       "statement": "A candidate Build SHALL become the next accepted repository state only after required Conformance and Assurance evidence and explicit Governance acceptance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-037",
+      "statement": "Each Governance, Conformance, and Assurance keystone SHALL exercise only authority delegated by accepted repository-framework authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-038",
+      "statement": "Delegated authority relationships SHALL be machine-resolvable without inference from implementation behavior, file proximity, history, generated output, reviewer preference, or other non-authoritative state.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-039",
+      "statement": "Every maintained derived framework primitive SHALL resolve through explicit provenance to accepted normative authority that authorizes its existence or use and identifies the keystone responsibility it serves.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-040",
+      "statement": "Neither product authority nor product implementation SHALL independently define or amend repository-framework authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-041",
+      "statement": "Accepted repository-framework authority and governed artifacts participating in authoritative lineage SHALL have stable machine-resolvable identities.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-042",
+      "statement": "Governance rejection SHALL preserve the rejected candidate, the reason for rejection, and provenance to the governed work, and rejected results SHALL NOT become accepted through downstream activity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-043",
+      "statement": "Governed state and authorization scope SHALL be explicitly represented; a governed work item SHALL NOT independently authorize unrelated or successor work.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-044",
+      "statement": "Stable identities SHALL exist for Design Proposal revisions, Planning work, accepted Plans, Build governed work, and accepted Build results sufficient to preserve authoritative lineage.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-045",
+      "statement": "Each Planning-distilled normative requirement SHALL have a governed Conformance applicability determination and Assurance applicability determination; any `none` disposition SHALL include a governed rationale.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "This requirement governs the existence and structure of applicability dispositions; the individual semantic correctness of a disposition is reviewed under Planning Assurance."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-046",
+      "statement": "Governance SHALL support normative-authority creation, amendment, supersession, and withdrawal while preserving historical resolution and SHALL NOT reuse normative identities in a way that obscures previously accepted authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-047",
+      "statement": "Design Assurance SHALL determine semantic planning-readiness by reviewing clarity, completeness, consistency, architecture and boundaries, ambiguity, omissions, alternatives, tradeoffs, risks, and blocking Design questions without performing Planning decomposition.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-048",
+      "statement": "Conformance findings used for Planning or Build acceptance SHALL have a durable machine-readable evidence representation identifying subject, checks performed, disposition, and evidence sufficient for Governance lineage.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-049",
+      "statement": "Build SHALL produce a durable mutation manifest identifying the implementation predecessor, accepted Plan, every observed path mutation and operation, generated consequences, and resulting candidate state for Conformance and Governance lineage.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -521,21 +693,25 @@
         "FS0-NR-002",
         "FS0-NR-003",
         "FS0-NR-004",
-        "FS0-NR-005"
+        "FS0-NR-005",
+        "FS0-NR-047"
       ],
       "implementation": [
         "Parse the YAML-like metadata header using a minimal deterministic parser for the known Design Proposal metadata keys.",
         "Verify doc_id format, artifact_type, canonical_format, dependencies, exact 16 level-two headers in canonical order, stable Section ID values, and unique DP statement IDs.",
         "Resolve declared proposal dependencies from the functional-set Design inputs.",
         "Given a functional-set Design input, verify path, exact revision token, doc_id, and existence/ownership of every selected statement.",
-        "Return a non-normative DesignIndex containing addresses and source locations only."
+        "Return a non-normative DesignIndex containing addresses and source locations only.",
+        "Expose a Design Assurance subject summary containing exact proposal revision, declared dependencies, section completeness, and statement index without deciding semantic readiness mechanically."
       ],
       "validation_ids": [
         "VAL-001",
         "VAL-006",
         "VAL-010"
       ],
-      "depends_on_paths": [],
+      "depends_on_paths": [
+        "repo/runtime/repo_spec/repository.py"
+      ],
       "generated_consequences": []
     },
     {
@@ -576,14 +752,26 @@
         "FS0-NR-013",
         "FS0-NR-014",
         "FS0-NR-031",
-        "FS0-NR-033"
+        "FS0-NR-033",
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-040",
+        "FS0-NR-041",
+        "FS0-NR-045",
+        "FS0-NR-046"
       ],
       "implementation": [
         "Define immutable NormativeRequirement records with stable ID, one obligation statement, Conformance disposition, and Assurance disposition.",
         "Validate requirement IDs and uniqueness.",
         "Require rationale whenever either applicability is none.",
         "Represent controlling-owner and normative dependency relationships separately from Design addresses.",
-        "Provide cycle detection over normative dependency edges and enforce one controlling owner per independently governed invariant."
+        "Provide cycle detection over normative dependency edges and enforce one controlling owner per independently governed invariant.",
+        "Represent stable authority identities and explicit delegation edges; reject unresolved delegated authority and authority edges inferred from implementation or historical state.",
+        "Represent derived primitive provenance to authorizing normative authority and keystone responsibility.",
+        "Represent normative lifecycle status and predecessor/successor identity for creation, amendment, supersession, and withdrawal while preserving historical resolution.",
+        "Enforce default-deny lookup: governed framework state without resolvable accepted authorization or a governed extension point is rejected rather than inferred as authorized.",
+        "Represent framework authority and product authority as distinct domains and reject product-originating attempts to define framework authority."
       ],
       "validation_ids": [
         "VAL-003",
@@ -637,14 +825,17 @@
         "FS0-NR-027",
         "FS0-NR-029",
         "FS0-NR-031",
-        "FS0-NR-032"
+        "FS0-NR-032",
+        "FS0-NR-047"
       ],
       "implementation": [
         "Define AssuranceFinding and AssuranceReport records with phase, subject identity, disposition, rationale, and evidence references.",
         "Support design, planning, and build review phases.",
         "Require Planning Assurance to explicitly address Design fidelity, functional-set coherence/manageability, normative distillation, semantic invention, file-scope completeness, implementation detail, invariants, validation, and executability.",
         "Require Build Assurance to address Plan fidelity, Design-through-Plan fidelity, operational adequacy, material edge/failure behavior, unauthorized improvisation, and evidence sufficiency.",
-        "Do not mutate normative authority; findings route persistent meaning defects to Design and distillation/intent defects to Planning."
+        "Do not mutate normative authority; findings route persistent meaning defects to Design and distillation/intent defects to Planning.",
+        "Require Design Assurance reports to address clarity, completeness, consistency, architecture/boundaries, ambiguity, omissions, alternatives/tradeoffs, risks, and blocking questions.",
+        "For FS0 bootstrap only, accept the pre-Build Planning Assurance decision as externally produced Governance evidence; the candidate runtime's planning-assure command validates capability for later functional sets and cannot self-authorize the Plan that creates it."
       ],
       "validation_ids": [
         "VAL-006",
@@ -666,7 +857,15 @@
         "FS0-NR-019",
         "FS0-NR-026",
         "FS0-NR-028",
-        "FS0-NR-031"
+        "FS0-NR-031",
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-041",
+        "FS0-NR-043",
+        "FS0-NR-045",
+        "FS0-NR-048",
+        "FS0-NR-049"
       ],
       "implementation": [
         "Expose conformance entry points for design, functional-set, plan, and build subjects.",
@@ -674,12 +873,16 @@
         "Functional-set Conformance delegates scope and reference checks to functional_set.py.",
         "Plan Conformance delegates schema, identity, path, dependency, and executability checks to plan.py.",
         "Build Conformance compares actual mutation manifest to accepted Plan paths, validates generated consequences, executes applicable syntax/parse/compile commands, executes Plan validation commands, repository validation, and end-to-end operational checks.",
-        "Produce structured mechanical findings only; never create or amend semantics."
+        "Produce structured mechanical findings only; never create or amend semantics.",
+        "Serialize each Conformance execution to a conformance-report.schema.json-valid report with stable identity and subject/evidence references.",
+        "Mechanically enforce default-deny governed-state authorization where authorization relationships are structurally resolvable.",
+        "Validate Build mutation manifests against build-manifest.schema.json and accepted Plan scope."
       ],
       "depends_on_paths": [
         "repo/runtime/repo_spec/design.py",
         "repo/runtime/repo_spec/functional_set.py",
-        "repo/runtime/repo_spec/plan.py"
+        "repo/runtime/repo_spec/plan.py",
+        "repo/runtime/repo_spec/repository.py"
       ],
       "validation_ids": [
         "VAL-006",
@@ -697,7 +900,8 @@
         "FS0-NR-024",
         "FS0-NR-025",
         "FS0-NR-026",
-        "FS0-NR-027"
+        "FS0-NR-027",
+        "FS0-NR-049"
       ],
       "implementation": [
         "Define BuildSession from an accepted immutable Plan plus implementation predecessor.",
@@ -706,12 +910,15 @@
         "Record every observed mutation into a mutation manifest and reject paths/operations outside the Plan.",
         "Do not synthesize source from pseudo-code automatically; Build actors implement the Plan, while this module enforces authorization and records evidence.",
         "Route discovered upstream defects through typed errors rather than expanding scope.",
-        "Finalize only after Build Conformance and Build Assurance reports pass."
+        "Finalize only after Build Conformance and Build Assurance reports pass.",
+        "Persist the observed mutation manifest in the schema-defined representation before Build Conformance.",
+        "Use repository.py for predecessor/Planning-descendant checks and mutation observation; do not scatter Git-state interpretation across Build logic."
       ],
       "depends_on_paths": [
-        "repo/runtime/repo_spec/plan.py",
+        "repo/runtime/repo_spec/assurance.py",
         "repo/runtime/repo_spec/conformance.py",
-        "repo/runtime/repo_spec/assurance.py"
+        "repo/runtime/repo_spec/plan.py",
+        "repo/runtime/repo_spec/repository.py"
       ],
       "validation_ids": [
         "VAL-006",
@@ -733,7 +940,19 @@
         "FS0-NR-033",
         "FS0-NR-034",
         "FS0-NR-035",
-        "FS0-NR-036"
+        "FS0-NR-036",
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-040",
+        "FS0-NR-041",
+        "FS0-NR-042",
+        "FS0-NR-043",
+        "FS0-NR-044",
+        "FS0-NR-045",
+        "FS0-NR-046",
+        "FS0-NR-048",
+        "FS0-NR-049"
       ],
       "implementation": [
         "Define governed artifact identities and acceptance records for Design readiness, Planning acceptance, and Build acceptance.",
@@ -741,12 +960,19 @@
         "Reject acceptance prerequisites that depend on authority created only by the candidate acceptance itself.",
         "Record lineage from functional-set Design inputs through Planning normative requirements, accepted Plan revision, Build mutation manifest, Conformance evidence, Assurance evidence, and accepted implementation state.",
         "Enforce keystone separation: Governance consumes Conformance and Assurance evidence but does not perform their judgments.",
-        "Advance accepted implementation state only on explicit Build acceptance."
+        "Advance accepted implementation state only on explicit Build acceptance.",
+        "Represent explicit rejection records preserving candidate identity, rejection reason, and provenance; rejection never promotes state.",
+        "Represent governed state and authorization scope explicitly and apply default-deny when no accepted authority or governed extension point resolves.",
+        "Resolve keystone delegation through explicit accepted authority relationships before permitting governed actions.",
+        "Maintain stable identities for Design revisions, Planning work, accepted Plans, Build work, and Build results.",
+        "Maintain normative lifecycle history for creation, amendment, supersession, and withdrawal without identity reuse.",
+        "Reference durable Conformance reports, Assurance reports, and Build mutation manifests in acceptance lineage."
       ],
       "depends_on_paths": [
-        "repo/runtime/repo_spec/plan.py",
+        "repo/runtime/repo_spec/assurance.py",
         "repo/runtime/repo_spec/conformance.py",
-        "repo/runtime/repo_spec/assurance.py"
+        "repo/runtime/repo_spec/plan.py",
+        "repo/runtime/repo_spec/repository.py"
       ],
       "validation_ids": [
         "VAL-006",
@@ -771,7 +997,7 @@
         "FS0-NR-036"
       ],
       "implementation": [
-        "Provide subcommands: design-check, functional-set-check, plan-check, planning-assure, plan-accept, build-open, build-check, build-assure, build-accept, status.",
+        "Provide subcommands: design-check, design-assure, functional-set-check, plan-check, planning-assure, plan-accept, build-open, build-check, build-assure, build-accept, status.",
         "All commands accept explicit repository root and artifact paths; no hidden current-directory authority.",
         "Return nonzero on failed Conformance/Assurance/acceptance and emit deterministic JSON summaries suitable for agent use.",
         "CLI dispatches to domain modules and contains no independent policy semantics."
@@ -827,6 +1053,7 @@
       ],
       "validation_ids": [
         "VAL-004",
+        "VAL-006",
         "VAL-007",
         "VAL-010"
       ],
@@ -850,6 +1077,7 @@
       ],
       "validation_ids": [
         "VAL-005",
+        "VAL-006",
         "VAL-010"
       ],
       "depends_on_paths": [],
@@ -899,13 +1127,24 @@
         "FS0-NR-018",
         "FS0-NR-019",
         "FS0-NR-020",
-        "FS0-NR-022"
+        "FS0-NR-022",
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-040",
+        "FS0-NR-041",
+        "FS0-NR-045",
+        "FS0-NR-046",
+        "FS0-NR-047"
       ],
       "implementation": [
         "Construct minimal temporary functional-set and Plan artifacts.",
         "Assert core/extension identity rules, scope-only functional-set behavior, normative ID uniqueness, applicability rationale, owner uniqueness, and dependency cycle rejection.",
         "Assert duplicate/conflicting paths, missing implementation steps, unresolved validation IDs, missing dependency paths, and predecessor mismatch fail Plan Conformance.",
-        "Assert Planning Assurance requires every semantic criterion before pass."
+        "Assert Planning Assurance requires every semantic criterion before pass.",
+        "Assert delegated authority must resolve explicitly, derived primitives without authority provenance fail, and product authority cannot define framework authority.",
+        "Assert Design Assurance cannot pass until every required semantic-readiness criterion is explicitly dispositioned.",
+        "Assert lifecycle history preserves superseded/withdrawn normative identities and rejects identity reuse."
       ],
       "depends_on_paths": [
         "repo/runtime/repo_spec/functional_set.py",
@@ -937,7 +1176,19 @@
         "FS0-NR-033",
         "FS0-NR-034",
         "FS0-NR-035",
-        "FS0-NR-036"
+        "FS0-NR-036",
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-040",
+        "FS0-NR-041",
+        "FS0-NR-042",
+        "FS0-NR-043",
+        "FS0-NR-044",
+        "FS0-NR-045",
+        "FS0-NR-046",
+        "FS0-NR-048",
+        "FS0-NR-049"
       ],
       "implementation": [
         "Open a BuildSession around a minimal accepted Plan and temporary repository.",
@@ -945,7 +1196,10 @@
         "Assert Build cannot finalize without required mechanical and semantic evidence.",
         "Assert acceptance cannot self-authorize or arise from incidental repository state.",
         "Assert successful acceptance preserves full lineage and advances the accepted implementation state.",
-        "Assert Assurance findings cannot directly mutate normative authority."
+        "Assert Assurance findings cannot directly mutate normative authority.",
+        "Assert governed state with no resolvable accepted authorization or governed extension point is rejected by default.",
+        "Assert rejection preserves candidate, reason, and provenance and does not advance accepted state.",
+        "Assert Conformance reports and Build manifests are durable, identity-bearing, and resolvable from acceptance lineage."
       ],
       "depends_on_paths": [
         "repo/runtime/repo_spec/build.py",
@@ -955,6 +1209,86 @@
         "VAL-006"
       ],
       "generated_consequences": []
+    },
+    {
+      "path": "repo/runtime/repo_spec/repository.py",
+      "operation": "create",
+      "purpose": "Own explicit repository/revision semantics used for exact Design reads, implementation-predecessor checks, mutation observation, and resulting revision identity.",
+      "requirement_ids": [
+        "FS0-NR-003",
+        "FS0-NR-015",
+        "FS0-NR-019",
+        "FS0-NR-034",
+        "FS0-NR-041",
+        "FS0-NR-043",
+        "FS0-NR-049"
+      ],
+      "implementation": [
+        "Define Repository rooted at an explicit filesystem path and reject implicit authority from process current working directory.",
+        "Validate full Git revision identities and expose content-at-revision reads for Design Proposal resolution without replacing Markdown as semantic authority.",
+        "Expose exact HEAD, ancestry/descendant checks needed to distinguish implementation predecessor from later Planning-artifact-only commits, and clean/dirty working-state inspection.",
+        "Capture changed paths and operation classes relative to the declared implementation predecessor for Build mutation manifests.",
+        "Expose resulting candidate revision/state identity only as repository facts; Governance decides whether that state is accepted.",
+        "Raise typed errors when revisions are missing, ambiguous, inaccessible, or incompatible with the declared predecessor."
+      ],
+      "depends_on_paths": [
+        "repo/runtime/repo_spec/errors.py",
+        "repo/runtime/repo_spec/jsonio.py"
+      ],
+      "generated_consequences": [],
+      "validation_ids": [
+        "VAL-006",
+        "VAL-008",
+        "VAL-009",
+        "VAL-010"
+      ]
+    },
+    {
+      "path": "repo/bootstrap/data/plan/conformance-report.schema.json",
+      "operation": "create",
+      "purpose": "Define durable machine-readable Conformance evidence for Design, functional-set, Plan, and Build acceptance decisions.",
+      "requirement_ids": [
+        "FS0-NR-028",
+        "FS0-NR-034",
+        "FS0-NR-036",
+        "FS0-NR-048"
+      ],
+      "implementation": [
+        "Define Draft 2020-12 JSON schema with stable report identity, phase/subject identity, exact subject revision where applicable, check records, pass/fail disposition, evidence references, and deterministic diagnostics.",
+        "Require findings to remain mechanical and forbid fields that purport to create or amend normative semantics.",
+        "Allow Governance acceptance records to reference reports by stable identity and repository path/revision."
+      ],
+      "depends_on_paths": [],
+      "generated_consequences": [],
+      "validation_ids": [
+        "VAL-006",
+        "VAL-010",
+        "VAL-011"
+      ]
+    },
+    {
+      "path": "repo/bootstrap/data/plan/build-manifest.schema.json",
+      "operation": "create",
+      "purpose": "Define durable Build mutation evidence required for Plan-scope Conformance and Governance lineage.",
+      "requirement_ids": [
+        "FS0-NR-023",
+        "FS0-NR-026",
+        "FS0-NR-034",
+        "FS0-NR-049"
+      ],
+      "implementation": [
+        "Define Draft 2020-12 JSON schema for manifest identity, implementation predecessor, accepted Plan identity/revision, candidate state, and ordered observed mutations.",
+        "Each mutation records repository-relative path, observed operation, applicable planned operation, and generated consequence relationship where relevant.",
+        "Require every manifest path to be unique and prohibit absolute or parent-traversal paths."
+      ],
+      "depends_on_paths": [],
+      "generated_consequences": [],
+      "validation_ids": [
+        "VAL-006",
+        "VAL-008",
+        "VAL-010",
+        "VAL-011"
+      ]
     }
   ],
   "execution": {
@@ -966,6 +1300,7 @@
           "repo/runtime/repo_spec/__init__.py",
           "repo/runtime/repo_spec/errors.py",
           "repo/runtime/repo_spec/jsonio.py",
+          "repo/runtime/repo_spec/repository.py",
           "repo/runtime/repo_spec/design.py",
           "repo/runtime/repo_spec/functional_set.py"
         ]
@@ -995,7 +1330,9 @@
         "description": "Define durable Assurance and acceptance evidence schemas.",
         "paths": [
           "repo/bootstrap/data/plan/assurance-report.schema.json",
-          "repo/bootstrap/data/plan/acceptance.schema.json"
+          "repo/bootstrap/data/plan/acceptance.schema.json",
+          "repo/bootstrap/data/plan/conformance-report.schema.json",
+          "repo/bootstrap/data/plan/build-manifest.schema.json"
         ]
       },
       {
@@ -1028,7 +1365,10 @@
           "repo/bootstrap/data/plan/acceptance.schema.json",
           "repo/tests/fs0_core/test_design.py",
           "repo/tests/fs0_core/test_planning.py",
-          "repo/tests/fs0_core/test_build_governance.py"
+          "repo/tests/fs0_core/test_build_governance.py",
+          "repo/runtime/repo_spec/repository.py",
+          "repo/bootstrap/data/plan/conformance-report.schema.json",
+          "repo/bootstrap/data/plan/build-manifest.schema.json"
         ]
       }
     ]
@@ -1085,6 +1425,34 @@
         "FS0-NR-034",
         "FS0-NR-036"
       ]
+    },
+    {
+      "id": "INV-007",
+      "statement": "Governed framework state is default-deny: absence of resolvable accepted authorization or a governed extension point is a rejection condition, not permission to infer authority.",
+      "requirement_ids": [
+        "FS0-NR-033",
+        "FS0-NR-038",
+        "FS0-NR-043"
+      ]
+    },
+    {
+      "id": "INV-008",
+      "statement": "Every maintained derived framework primitive and governed action resolves through explicit authority provenance and delegation; implementation and product state cannot manufacture framework authority.",
+      "requirement_ids": [
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-040"
+      ]
+    },
+    {
+      "id": "INV-009",
+      "statement": "Rejection and normative lifecycle transitions preserve historical identity and provenance without silently promoting rejected or superseded state.",
+      "requirement_ids": [
+        "FS0-NR-042",
+        "FS0-NR-044",
+        "FS0-NR-046"
+      ]
     }
   ],
   "validation": [
@@ -1136,9 +1504,9 @@
     {
       "id": "VAL-004",
       "kind": "schema",
-      "description": "Validate the Assurance report schema.",
+      "description": "Check Assurance report schema JSON syntax; semantic schema-contract behavior is verified by the FS0 unit suite.",
       "command": "python3 -m json.tool repo/bootstrap/data/plan/assurance-report.schema.json >/dev/null",
-      "success_criteria": "The schema is valid JSON and runtime schema self-check accepts its used Draft 2020-12 constructs.",
+      "success_criteria": "The schema parses as JSON; FS0 unit tests validate all Draft 2020-12 constructs used by the schema and reject invalid report examples.",
       "requirement_ids": [
         "FS0-NR-020",
         "FS0-NR-029"
@@ -1147,9 +1515,9 @@
     {
       "id": "VAL-005",
       "kind": "schema",
-      "description": "Validate the Governance acceptance schema.",
+      "description": "Check Governance acceptance schema JSON syntax; semantic schema-contract behavior is verified by the FS0 unit suite.",
       "command": "python3 -m json.tool repo/bootstrap/data/plan/acceptance.schema.json >/dev/null",
-      "success_criteria": "The schema is valid JSON and runtime schema self-check accepts its used Draft 2020-12 constructs.",
+      "success_criteria": "The schema parses as JSON; FS0 unit tests validate all schema constructs and reject circular or incomplete acceptance examples.",
       "requirement_ids": [
         "FS0-NR-021",
         "FS0-NR-034",
@@ -1199,17 +1567,30 @@
         "FS0-NR-033",
         "FS0-NR-034",
         "FS0-NR-035",
-        "FS0-NR-036"
+        "FS0-NR-036",
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-040",
+        "FS0-NR-041",
+        "FS0-NR-042",
+        "FS0-NR-043",
+        "FS0-NR-044",
+        "FS0-NR-045",
+        "FS0-NR-046",
+        "FS0-NR-047",
+        "FS0-NR-048",
+        "FS0-NR-049"
       ]
     },
     {
       "id": "VAL-007",
       "kind": "assurance",
-      "description": "Perform Planning Assurance against the accepted functional set and Plan.",
-      "command": "PYTHONPATH=repo/runtime python3 -m repo_spec planning-assure repo/bootstrap/data/plan/000_FS0-CORE/plan.json",
-      "success_criteria": "A PASS Assurance report addresses every required Planning Assurance criterion and identifies no unresolved Design or Planning defect.",
+      "description": "Bootstrap Planning Assurance for FS0-Core performed against Design + functional-set + Plan before candidate FS0 runtime exists.",
+      "success_criteria": "An explicit PASS review addresses exact Design fidelity, functional-set coherence/manageability, normative distillation, semantic invention, exact file-scope completeness, implementation-detail sufficiency, invariants, validation, and executability; unresolved defects route to Design or Planning.",
       "requirement_ids": [
-        "FS0-NR-020"
+        "FS0-NR-020",
+        "FS0-NR-047"
       ]
     },
     {
@@ -1226,9 +1607,9 @@
     {
       "id": "VAL-009",
       "kind": "operational",
-      "description": "Demonstrate that FS0-Core can open and validate the next Planning\u2192Build cycle using a temporary extension functional set and Plan.",
+      "description": "Demonstrate that FS0-Core can execute the next full Design\u2192Planning\u2192Build governance cycle using temporary extension artifacts.",
       "command": "PYTHONPATH=repo/runtime python3 -m repo_spec status --self-host-check",
-      "success_criteria": "The runtime can validate a new extension functional set, validate its Plan, open a BuildSession, enforce scope, and produce evidence sufficient for acceptance without out-of-band framework logic.",
+      "success_criteria": "The runtime can validate and Design-assure a proposal, validate a new extension functional set and Plan, Planning-assure and explicitly accept that Plan, open a BuildSession, enforce default-deny authority and mutation scope, produce durable Build/Conformance/Assurance evidence, and explicitly accept the resulting state without out-of-band framework logic.",
       "requirement_ids": [
         "FS0-NR-007",
         "FS0-NR-023",
@@ -1278,7 +1659,31 @@
         "FS0-NR-033",
         "FS0-NR-034",
         "FS0-NR-035",
-        "FS0-NR-036"
+        "FS0-NR-036",
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-040",
+        "FS0-NR-041",
+        "FS0-NR-042",
+        "FS0-NR-043",
+        "FS0-NR-044",
+        "FS0-NR-045",
+        "FS0-NR-046",
+        "FS0-NR-047",
+        "FS0-NR-048",
+        "FS0-NR-049"
+      ]
+    },
+    {
+      "id": "VAL-011",
+      "kind": "schema",
+      "description": "Check Conformance-report and Build-manifest schema syntax and validate their used schema contracts through the FS0 unit suite.",
+      "command": "python3 -m json.tool repo/bootstrap/data/plan/conformance-report.schema.json >/dev/null && python3 -m json.tool repo/bootstrap/data/plan/build-manifest.schema.json >/dev/null",
+      "success_criteria": "Both evidence schemas parse as JSON and FS0 unit tests accept valid examples and reject invalid identity, path, evidence, and mutation records.",
+      "requirement_ids": [
+        "FS0-NR-048",
+        "FS0-NR-049"
       ]
     }
   ],
@@ -1328,6 +1733,34 @@
       "statement": "Governance can record explicit non-circular Build acceptance that advances the accepted implementation state and preserves resolvable lineage.",
       "validation_ids": [
         "VAL-005",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-007",
+      "statement": "Default-deny governed-state authorization, explicit delegation resolution, derived-primitive provenance, product/framework separation, rejection preservation, and normative lifecycle history are all mechanically and semantically demonstrated.",
+      "validation_ids": [
+        "VAL-006",
+        "VAL-009",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-008",
+      "statement": "Durable Conformance reports and Build mutation manifests are schema-valid and resolvable from Governance acceptance lineage.",
+      "validation_ids": [
+        "VAL-006",
+        "VAL-008",
+        "VAL-011",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-009",
+      "statement": "FS0 bootstrap Planning Assurance is completed without relying on the candidate FS0 runtime, while the built runtime demonstrates Planning Assurance capability for subsequent functional sets.",
+      "validation_ids": [
+        "VAL-007",
+        "VAL-009",
         "VAL-010"
       ]
     }
