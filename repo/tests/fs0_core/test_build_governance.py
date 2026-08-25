@@ -143,6 +143,31 @@ class BuildGovernanceTests(unittest.TestCase):
                 evidence_refs=("conf:test", "assurance:test"),
             )
 
+    def test_evidence_schema_contract_shapes(self):
+        import json
+        import re
+
+        planning = ROOT / "repo/planning"
+        assurance = json.loads((planning / "assurance-report.schema.json").read_text())
+        conformance = json.loads((planning / "conformance-report.schema.json").read_text())
+        manifest = json.loads((planning / "build-manifest.schema.json").read_text())
+        acceptance = json.loads((planning / "acceptance.schema.json").read_text())
+
+        for schema in (assurance, conformance, manifest, acceptance):
+            self.assertEqual(schema["$schema"], "https://json-schema.org/draft/2020-12/schema")
+            self.assertEqual(schema["type"], "object")
+            self.assertFalse(schema["additionalProperties"])
+            self.assertTrue(schema["required"])
+
+        path_pattern = manifest["properties"]["mutations"]["items"]["properties"]["path"]["pattern"]
+        self.assertIsNotNone(re.fullmatch(path_pattern, "repo/runtime/good.py"))
+        self.assertIsNone(re.fullmatch(path_pattern, "../escape"))
+        self.assertIsNone(re.fullmatch(path_pattern, "/absolute"))
+        self.assertEqual(acceptance["properties"]["decision"]["const"], "ACCEPT")
+        self.assertEqual(set(assurance["properties"]["disposition"]["enum"]), {"PASS", "FAIL"})
+        self.assertEqual(set(conformance["properties"]["subject"]["properties"]["type"]["enum"]),
+                         {"design", "functional-set", "plan", "build"})
+
 
 if __name__ == "__main__":
     unittest.main()
