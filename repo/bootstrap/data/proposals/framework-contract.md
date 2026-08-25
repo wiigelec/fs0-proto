@@ -320,7 +320,7 @@ An Assurance finding may affect disposition of the specific case under review wh
 An Assurance finding shall not independently create or amend persistent normative authority.
 
 **DP010-DETAIL-045**
-A finding that requires persistent normative change shall return through Governance.
+A finding that shows intended Design meaning must change shall route to Design; a finding that shows accepted normative distillation is defective while Design meaning remains sound shall route to Planning through Governance.
 
 **DP010-DETAIL-046**
 Detailed Assurance artifacts, reviewer roles, finding taxonomy, interpretation rules, review lifecycle, evidence requirements, and adjudication mechanics belong in the Assurance Architecture Proposal.

@@ -283,7 +283,7 @@ The primary Governance lifecycle shall be:
 The Design Proposal is the non-authoritative entry point.
 
 **DP020-DETAIL-045**
-Design, Plan, and Build are distinct governed stages.
+Design, Planning, and Build are distinct governed stages.
 
 **DP020-DETAIL-046**
 Their responsibilities are:
@@ -385,23 +385,25 @@ Governance shall route defects to the stage responsible for the defective respon
 Work shall return to Design when:
 
 **DP020-DETAIL-063**
-- accepted normative authority is ambiguous;
-- accepted normative authority is contradictory;
-- required semantics are missing;
+- Design meaning is ambiguous;
+- Design meaning is contradictory;
+- required Design semantics are missing;
 - a new semantic choice is required; or
-- accepted semantics require amendment.
+- intended Design semantics require amendment.
 
-### Plan Routing
+### Planning Routing
 
 **DP020-DETAIL-064**
-Work shall return to Plan when:
+Work shall return to Planning when:
 
 **DP020-DETAIL-065**
-- realization work is missing;
+- functional-set scope is incorrect or incomplete;
+- normative distillation is incorrect or incomplete while Design meaning remains sound;
+- planned implementation work is missing;
 - dependency analysis is incomplete;
 - sequencing is incorrect;
-- realization strategy must change; and
-- accepted normative semantics do not need to change.
+- implementation intent or validation intent must change; and
+- intended Design semantics do not need to change.
 
 ### Build Routing
 
@@ -419,7 +421,7 @@ The governing routing rule is:
 
 **DP020-DETAIL-068**
 **Semantic defect → Design**
-**Realization-intent defect → Plan**
+**Planning-intent defect → Planning**
 **Realization defect → Build**
 
 ### No Downstream Invention
@@ -457,7 +459,8 @@ The lineage shall make it possible to determine:
 **DP020-DETAIL-076**
 - why a change exists;
 - what proposal initiated it;
-- what normative authority changed;
+- which Design Proposal revisions and Design statement IDs bounded the functional set;
+- what normative requirements Planning distilled from that Design scope;
 - what accepted Plan authorized realization;
 - what Build realized that Plan; and
 - what Conformance and Assurance evidence supported acceptance.
@@ -468,7 +471,7 @@ The lineage shall make it possible to determine:
 Governed work shall not exist without resolvable authority.
 
 **DP020-DETAIL-078**
-Each governed Plan work item shall resolve to accepted normative authority that requires or authorizes it.
+Each governed Plan work item shall resolve through the accepted Plan to the Planning-distilled normative requirement or other explicit Plan intent that requires or authorizes it.
 
 **DP020-DETAIL-079**
 Each governed Build change shall resolve to an accepted Plan work item that authorizes the change.

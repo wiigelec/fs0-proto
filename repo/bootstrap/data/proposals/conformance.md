@@ -126,8 +126,9 @@ Conformance shall not assume authority beyond that delegated by the Framework Co
 This proposal assumes the candidate Governance lifecycle:
 
 **DP030-DETAIL-004**
-**Design Proposal**
-→ **Design**
+**Design**
+→ **Design Proposal**
+→ **Planning**
 → **Plan**
 → **Build**
 Design produces planning-ready Markdown Design Proposals.
@@ -948,11 +949,11 @@ A conceptual package may resemble:
 
 **DP030-DETAIL-181**
 {
-"normative_requirement_id": "REPO-VAL-021",
+"normative_requirement_id": "<planning-assigned-normative-requirement-id>",
 "conformance_applicability": "mechanical",
 "assertions": [
-"CONF-ASSERT-0041",
-"CONF-ASSERT-0042"
+"<assertion-id-a>",
+"<assertion-id-b>"
 ]
 }
 
@@ -1158,17 +1159,17 @@ When Conformance exposes a defect:
 ### Normative Semantic Defect
 
 **DP030-DETAIL-225**
-Route to Governance Design.
+Route to Design when intended Design meaning is defective.
 
 ### Realization-Intent Defect
 
 **DP030-DETAIL-226**
-Route to Governance Plan.
+Route to Planning when Design meaning remains sound but normative distillation or implementation intent is defective.
 
 ### Realization Defect
 
 **DP030-DETAIL-227**
-Route to Governance Build.
+Route to Build when Design and Planning intent remain sound but realization is defective.
 
 **DP030-DETAIL-228**
 Conformance reports mechanically established facts.
@@ -1345,9 +1346,9 @@ The current repository should be audited against this proposal by determining:
 22. Which generated artifacts should remain subordinate projections of canonical correspondence.
 23. Which current findings fail to identify both assertion and normative requirement identity.
 24. Which existing self-tests already verify authority, coverage, evidence, or execution closure.
-25. Whether each candidate CONF requirement represents one independently identifiable obligation.
-26. Whether any candidate CONF requirement duplicates or logically follows from another.
-27. Which candidate CONF requirements require Assurance for semantic evaluation.
+25. Whether each Planning-distilled normative requirement selected for Conformance represents one independently identifiable obligation.
+26. Whether any Planning-distilled normative requirement selected for Conformance duplicates or logically follows from another.
+27. Which Planning-distilled normative requirements selected for Conformance also require Assurance for semantic evaluation.
 28. What minimum Conformance authority must be accepted before Governance may require closure at Build acceptance.
 
 ### Explicitly Deferred Concerns
@@ -1372,7 +1373,7 @@ The following concerns are intentionally outside this Conformance proposal:
 - exact Assurance correspondence model;
 - migration sequencing from the current validation architecture; and
 - bootstrap accommodations.
-These concerns may be defined by subordinate Conformance authority during detailed Design and Plan.
+These concerns may be defined by later Design or by Planning when they are implementation choices rather than Design semantics.
 
 ### Relationship to Assurance
 

@@ -127,8 +127,9 @@ Assurance shall not assume authority beyond that delegated by the Framework Cont
 This proposal assumes the Governance lifecycle:
 
 **DP040-DETAIL-004**
-**Design Proposal**
-→ **Design**
+**Design**
+→ **Design Proposal**
+→ **Planning**
 → **Plan**
 → **Build**
 Governance owns persistent normative change.
@@ -192,6 +193,8 @@ The primary relationship is:
 
 **DP040-DETAIL-015**
 Assurance owns governed semantic review and case-specific semantic judgment.
+
+Assurance authority and reviewed subject are distinct. The accepted framework may authorize an Assurance review of a non-authoritative candidate artifact. In Design Assurance, the authorizing authority is accepted framework Assurance/Governance authority while the reviewed subject is the candidate Design Proposal; the Design Proposal does not need to be normative authority in order to be reviewed.
 
 **DP040-DETAIL-016**
 Assurance may:
@@ -977,18 +980,18 @@ Routing follows the responsibility owning the defect.
 ### Semantic Authority Defect
 
 **DP040-DETAIL-169**
-**Assurance → Governance Design**
+**Assurance → Design**
 
 ### Realization-Intent Defect
 
 **DP040-DETAIL-170**
-**Assurance → Governance Plan**
+**Assurance → Planning**
 when accepted semantics remain sound.
 
 ### Realization Defect
 
 **DP040-DETAIL-171**
-**Assurance → Governance Build**
+**Assurance → Build**
 when Design and Plan remain sound.
 
 ### Case-Specific Finding
@@ -1085,7 +1088,7 @@ The following proposal-local statements are Design input. Their labels are non-n
 ### Governance Routing
 
 **DP040-DETAIL-191**
-**An Assurance finding requiring persistent normative semantic change SHALL route through Governance Design.**
+**An Assurance finding showing that intended Design meaning must change SHALL route to Design; a finding showing defective normative distillation while Design meaning remains sound SHALL route to Planning.**
 
 ### Interpretation Boundary
 
@@ -1139,10 +1142,10 @@ The current repository should be audited against this proposal by determining:
 23. Which mechanically complete evidence sets may remain semantically insufficient.
 24. Which Governance stage gates should require Assurance.
 25. Which Assurance correspondence mappings are duplicated across metadata, review tooling, templates, or generated documentation.
-26. Whether each candidate ASSUR requirement represents one independently identifiable obligation.
-27. Whether any candidate ASSUR requirement duplicates or logically follows from another.
-28. Which candidate ASSUR requirements can be structurally enforced through Conformance.
-29. What minimum Assurance authority must be accepted before Governance may require Assurance at Design, Plan, or Build acceptance.
+26. Whether each Planning-distilled normative requirement selected for Assurance represents one independently identifiable obligation.
+27. Whether any Planning-distilled normative requirement selected for Assurance duplicates or logically follows from another.
+28. Which Planning-distilled normative requirements selected for Assurance also have mechanically decidable Conformance obligations.
+29. What framework authority must authorize Assurance at Design-readiness, Planning-acceptance, or Build-acceptance decisions.
 
 ### Explicitly Deferred Concerns
 
@@ -1166,7 +1169,7 @@ The following concerns are intentionally outside this Assurance proposal:
 - exact generated report format;
 - migration sequencing from current review practices; and
 - bootstrap accommodations.
-These concerns may be defined by subordinate Assurance authority during detailed Design and Plan.
+These concerns may be defined by later Design or by Planning when they are implementation choices rather than Design semantics.
 
 ### Relationship to the Framework
 
