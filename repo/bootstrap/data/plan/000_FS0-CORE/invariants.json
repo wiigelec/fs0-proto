@@ -5,199 +5,58 @@
   "invariants": [
     {
       "id": "INV-001",
-      "statement": "Design Proposal Markdown and DP statement IDs remain non-normative inputs; only Planning-created normative requirements become Plan authority.",
+      "statement": "Selected Design remains authoritative while Planning owns normative distillation and Build owns realization.",
       "requirement_ids": [
         "FS0-NR-001",
-        "FS0-NR-009",
-        "FS0-NR-010",
+        "FS0-NR-006",
+        "FS0-NR-007",
+        "FS0-NR-008",
         "FS0-NR-025",
         "FS0-NR-029",
-        "FS0-NR-030"
+        "FS0-NR-100",
+        "FS0-NR-102",
+        "FS0-NR-104"
       ]
     },
     {
       "id": "INV-002",
-      "statement": "The implementation predecessor is distinct from the later repository revision containing accepted Planning artifacts.",
+      "statement": "Each Planning cycle selects exactly one coherent functional set and later functional sets technically depend on FS0-Core.",
       "requirement_ids": [
-        "FS0-NR-006",
-        "FS0-NR-007",
-        "FS0-NR-008",
-        "FS0-NR-071",
-        "FS0-NR-144"
+        "FS0-NR-013",
+        "FS0-NR-015",
+        "FS0-NR-016",
+        "FS0-NR-017",
+        "FS0-NR-018"
       ]
     },
     {
       "id": "INV-003",
-      "statement": "Build mutation authority is exactly the accepted Plan file scope; Planning-artifact commits do not implicitly expand implementation authority.",
+      "statement": "The accepted Plan is one closed logical document graph rooted at plan.json and authorizes only explicitly planned mutation scope.",
       "requirement_ids": [
+        "FS0-NR-071",
+        "FS0-NR-072",
+        "FS0-NR-079",
+        "FS0-NR-080",
+        "FS0-NR-081",
         "FS0-NR-097",
-        "FS0-NR-098",
-        "FS0-NR-099",
-        "FS0-NR-108",
-        "FS0-NR-137"
-      ]
-    },
-    {
-      "id": "INV-004",
-      "statement": "Governance, Conformance, and Assurance remain separate authorities and none may create authority reserved to another keystone.",
-      "requirement_ids": [
-        "FS0-NR-127",
-        "FS0-NR-128",
-        "FS0-NR-129",
-        "FS0-NR-203",
-        "FS0-NR-137"
-      ]
-    },
-    {
-      "id": "INV-005",
-      "statement": "No candidate acceptance may depend on authority that exists only as a consequence of that same acceptance.",
-      "requirement_ids": [
-        "FS0-NR-144"
-      ]
-    },
-    {
-      "id": "INV-006",
-      "statement": "A successful accepted Build becomes the implementation predecessor for the next functional set while preserving complete lineage to Design, Plan, evidence, and acceptance.",
-      "requirement_ids": [
-        "FS0-NR-140",
-        "FS0-NR-141",
-        "FS0-NR-142",
-        "FS0-NR-143",
-        "FS0-NR-145",
-        "FS0-NR-146",
-        "FS0-NR-147"
-      ]
-    },
-    {
-      "id": "INV-007",
-      "statement": "Governed framework state is default-deny: absence of resolvable accepted authorization or a governed extension point is a rejection condition, not permission to infer authority.",
-      "requirement_ids": [
-        "FS0-NR-138",
-        "FS0-NR-139",
-        "FS0-NR-131",
-        "FS0-NR-152",
-        "FS0-NR-153",
-        "FS0-NR-154",
-        "FS0-NR-155"
-      ]
-    },
-    {
-      "id": "INV-008",
-      "statement": "Every maintained derived framework primitive and governed action resolves through explicit authority provenance and delegation; implementation and product state cannot manufacture framework authority.",
-      "requirement_ids": [
-        "FS0-NR-130",
-        "FS0-NR-131",
-        "FS0-NR-132",
-        "FS0-NR-204",
-        "FS0-NR-133",
-        "FS0-NR-134",
-        "FS0-NR-205",
-        "FS0-NR-135",
-        "FS0-NR-206"
-      ]
-    },
-    {
-      "id": "INV-009",
-      "statement": "Rejection and normative lifecycle transitions preserve historical identity and provenance without silently promoting rejected or superseded state.",
-      "requirement_ids": [
-        "FS0-NR-148",
-        "FS0-NR-149",
-        "FS0-NR-150",
-        "FS0-NR-151",
-        "FS0-NR-156",
-        "FS0-NR-157",
-        "FS0-NR-158",
-        "FS0-NR-159",
-        "FS0-NR-160",
-        "FS0-NR-164",
-        "FS0-NR-165",
-        "FS0-NR-166",
-        "FS0-NR-167",
-        "FS0-NR-168",
-        "FS0-NR-169",
-        "FS0-NR-170",
-        "FS0-NR-171"
-      ]
-    },
-    {
-      "id": "INV-010",
-      "statement": "Every accepted normative identity represents one independently governable, self-contained rule using accepted normative force and containing no implementation or evidentiary material.",
-      "requirement_ids": [
-        "FS0-NR-033",
-        "FS0-NR-034",
-        "FS0-NR-035",
-        "FS0-NR-036",
-        "FS0-NR-037",
-        "FS0-NR-038",
-        "FS0-NR-039",
-        "FS0-NR-040",
-        "FS0-NR-041",
-        "FS0-NR-042",
-        "FS0-NR-043",
-        "FS0-NR-044",
-        "FS0-NR-045",
-        "FS0-NR-046",
-        "FS0-NR-047",
-        "FS0-NR-048",
-        "FS0-NR-049",
-        "FS0-NR-050",
-        "FS0-NR-051",
-        "FS0-NR-052",
-        "FS0-NR-053",
-        "FS0-NR-054",
-        "FS0-NR-055",
-        "FS0-NR-056",
-        "FS0-NR-057",
-        "FS0-NR-058",
-        "FS0-NR-059",
-        "FS0-NR-060",
-        "FS0-NR-061",
-        "FS0-NR-062",
-        "FS0-NR-063",
-        "FS0-NR-064",
-        "FS0-NR-065",
-        "FS0-NR-066",
-        "FS0-NR-067",
-        "FS0-NR-068",
-        "FS0-NR-069",
-        "FS0-NR-070"
-      ]
-    },
-    {
-      "id": "INV-011",
-      "statement": "Governance authority derives from accepted authority relationships rather than from actor capability or repository/platform manipulation capability.",
-      "requirement_ids": [
-        "FS0-NR-194",
-        "FS0-NR-195",
-        "FS0-NR-196",
-        "FS0-NR-197",
-        "FS0-NR-198",
-        "FS0-NR-199",
-        "FS0-NR-200"
-      ]
-    },
-    {
-      "id": "INV-012",
-      "statement": "The accepted Plan is one logical governed artifact whose authority is exactly the closed document graph rooted at plan.json.",
-      "requirement_ids": [
         "FS0-NR-210",
         "FS0-NR-211",
         "FS0-NR-212",
         "FS0-NR-213",
         "FS0-NR-214",
         "FS0-NR-215",
+        "FS0-NR-216",
+        "FS0-NR-217",
+        "FS0-NR-218",
+        "FS0-NR-219",
+        "FS0-NR-220",
+        "FS0-NR-221",
+        "FS0-NR-222",
         "FS0-NR-223",
         "FS0-NR-224",
         "FS0-NR-225",
         "FS0-NR-226",
-        "FS0-NR-227"
-      ]
-    },
-    {
-      "id": "INV-013",
-      "statement": "Every file realization Plan document governs exactly one target path, and complete-Plan Conformance rejects missing, duplicate, conflicting, unreachable, or unauthorized fragments.",
-      "requirement_ids": [
-        "FS0-NR-222",
+        "FS0-NR-227",
         "FS0-NR-228",
         "FS0-NR-229",
         "FS0-NR-230",
@@ -206,8 +65,89 @@
       ]
     },
     {
-      "id": "INV-014",
-      "statement": "FS0 bootstrap acceptance depends on durable externally produced Design Assurance, Planning Conformance, and Planning Assurance evidence under pre-existing authority, never on candidate runtime self-authorization.",
+      "id": "INV-004",
+      "statement": "Build consumes one accepted Plan, uses its predecessor, remains inside its mutation scope, and does not invent upstream authority.",
+      "requirement_ids": [
+        "FS0-NR-098",
+        "FS0-NR-099",
+        "FS0-NR-101",
+        "FS0-NR-102",
+        "FS0-NR-103",
+        "FS0-NR-104",
+        "FS0-NR-108",
+        "FS0-NR-109",
+        "FS0-NR-110",
+        "FS0-NR-111",
+        "FS0-NR-112",
+        "FS0-NR-113"
+      ]
+    },
+    {
+      "id": "INV-005",
+      "statement": "Governance, Conformance, and Assurance remain authority-separated and governed Core state is default-deny.",
+      "requirement_ids": [
+        "FS0-NR-127",
+        "FS0-NR-128",
+        "FS0-NR-129",
+        "FS0-NR-130",
+        "FS0-NR-131",
+        "FS0-NR-136",
+        "FS0-NR-137",
+        "FS0-NR-138",
+        "FS0-NR-139",
+        "FS0-NR-194",
+        "FS0-NR-195"
+      ]
+    },
+    {
+      "id": "INV-006",
+      "statement": "Acceptance is explicit, non-circular, bounded, and preserves the minimum resolvable Design-to-Build lineage.",
+      "requirement_ids": [
+        "FS0-NR-093",
+        "FS0-NR-094",
+        "FS0-NR-095",
+        "FS0-NR-096",
+        "FS0-NR-140",
+        "FS0-NR-141",
+        "FS0-NR-142",
+        "FS0-NR-143",
+        "FS0-NR-144",
+        "FS0-NR-145",
+        "FS0-NR-146",
+        "FS0-NR-147",
+        "FS0-NR-151",
+        "FS0-NR-152",
+        "FS0-NR-153",
+        "FS0-NR-154",
+        "FS0-NR-155",
+        "FS0-NR-156",
+        "FS0-NR-157",
+        "FS0-NR-158",
+        "FS0-NR-159",
+        "FS0-NR-160"
+      ]
+    },
+    {
+      "id": "INV-007",
+      "statement": "Each Core normative requirement has stable identity and explicit Conformance and Assurance applicability.",
+      "requirement_ids": [
+        "FS0-NR-025",
+        "FS0-NR-033",
+        "FS0-NR-034",
+        "FS0-NR-035",
+        "FS0-NR-036",
+        "FS0-NR-037",
+        "FS0-NR-038",
+        "FS0-NR-039",
+        "FS0-NR-161",
+        "FS0-NR-162",
+        "FS0-NR-163",
+        "FS0-NR-164"
+      ]
+    },
+    {
+      "id": "INV-008",
+      "statement": "FS0 bootstrap acceptance uses pre-existing external authority and evidence rather than candidate-runtime self-authorization.",
       "requirement_ids": [
         "FS0-NR-233",
         "FS0-NR-234",
@@ -226,16 +166,18 @@
         "FS0-NR-247",
         "FS0-NR-248",
         "FS0-NR-249",
-        "FS0-NR-250"
-      ]
-    },
-    {
-      "id": "INV-015",
-      "statement": "Governed bootstrap Planning artifacts may be consumed by FS0 Build without becoming Build realization or replacing the Plan-declared pre-Planning implementation predecessor.",
-      "requirement_ids": [
+        "FS0-NR-250",
         "FS0-NR-251",
         "FS0-NR-252",
         "FS0-NR-253"
+      ]
+    },
+    {
+      "id": "INV-009",
+      "statement": "The built Core demonstrates enough maintained Conformance and Assurance capability to govern one successor functional-set cycle.",
+      "requirement_ids": [
+        "FS0-NR-254",
+        "FS0-NR-255"
       ]
     }
   ]

@@ -4,7 +4,7 @@
   "plan": {
     "id": "FS0-CORE-PLAN",
     "title": "FS0-Core Implementation Plan",
-    "description": "Atomic redistillation of the isolated FS0-Core target-state implementation contract under the accepted Governance normative-statement contract. Each normative identity now represents one independently governable rule."
+    "description": "FS0-Core irreducible end-to-end workflow kernel. The Plan implements only capabilities required for a later functional set to be technically planable, buildable, mechanically conformable, semantically reviewable, and governably acceptable using Core alone. Mature validation correspondence, generalized provenance hardening, rich normative lifecycle management, and other non-prerequisite Design semantics remain deferred."
   },
   "functional_set": {
     "id": "FS0-CORE",

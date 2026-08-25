@@ -19,18 +19,7 @@
       "FS0-NR-010",
       "FS0-NR-011",
       "FS0-NR-012",
-      "FS0-NR-172",
-      "FS0-NR-173",
-      "FS0-NR-174",
-      "FS0-NR-175",
-      "FS0-NR-176",
-      "FS0-NR-207",
-      "FS0-NR-177",
-      "FS0-NR-178",
-      "FS0-NR-179",
-      "FS0-NR-208",
-      "FS0-NR-180",
-      "FS0-NR-181"
+      "FS0-NR-172"
     ],
     "implementation": [
       "Parse the YAML-like metadata header using a minimal deterministic parser for the known Design Proposal metadata keys.",
