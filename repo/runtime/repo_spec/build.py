@@ -1,7 +1,7 @@
 """Plan-bound Build authorization and mutation evidence."""
 
 from __future__ import annotations
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from .assurance import AssuranceReport, require_pass as require_assurance_pass
 from .conformance import ConformanceReport, build_conformance, require_pass as require_conformance_pass
@@ -16,7 +16,6 @@ class BuildSession:
     build_id: str
     actor: str
     build_start_revision: str
-    _recorded: list[dict] = field(default_factory=list)
 
     @classmethod
     def open(
@@ -47,12 +46,6 @@ class BuildSession:
         if not self.authorized(path, operation):
             raise BuildError("mutation-not-authorized", f"{operation} is not authorized for {path}", path=path)
 
-    def record_mutation(self, path: str, operation: str) -> None:
-        self.require_authorized(path, operation)
-        entry = {"path": path, "operation": operation}
-        if entry not in self._recorded:
-            self._recorded.append(entry)
-
     def observe_committed_mutations(self, resulting_revision: str | None = None) -> tuple[dict, ...]:
         end = resulting_revision or self.repository.head
         observed = []
@@ -71,9 +64,6 @@ class BuildSession:
     def manifest(self, *, resulting_revision: str | None = None) -> dict:
         resulting = resulting_revision or self.repository.head
         mutations = list(self.observe_committed_mutations(resulting))
-        for item in self._recorded:
-            if item not in mutations:
-                mutations.append(dict(item))
         return {
             "schema_version": "1",
             "artifact_type": "build-manifest",

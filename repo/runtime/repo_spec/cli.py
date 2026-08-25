@@ -21,10 +21,12 @@ from .conformance import (
     plan_conformance,
 )
 from .errors import RepoSpecError
+from .evidence import load_authorization_graph, require_evidence_refs, write_evidence
 from .governance import accept
 from .jsonio import load_json
 from .normative import AuthorizationGraph, Authority, Delegation
 from .repository import Repository
+from .validation import run_plan_validations
 
 
 def _emit(value: dict) -> None:
@@ -386,7 +388,23 @@ def _validate_core(repo: Repository) -> dict:
         evidence_refs=("core:plan-conformance", "core:planning-assurance"),
     )
 
-    manifest = _auto_build_manifest(repo, plan)
+    accepted_state_path = repo.root / "repo/evidence/fs0-core/accepted-state.json"
+    if accepted_state_path.is_file():
+        accepted_state = load_json(accepted_state_path)
+        core_result = accepted_state.get("resulting_revision")
+        repo.require_revision(core_result)
+        manifest = _auto_build_manifest(repo, plan)
+        manifest["resulting_revision"] = core_result
+        planned_paths = {fc.path for fc in plan.file_changes}
+        mutations = []
+        for mutation in repo.changed_paths(plan.implementation_predecessor, core_result):
+            artifact_only = mutation.path.startswith("repo/proposals/") or mutation.path.startswith("repo/planning/")
+            if artifact_only and mutation.path not in planned_paths:
+                continue
+            mutations.append({"path": mutation.path, "operation": mutation.operation})
+        manifest["mutations"] = mutations
+    else:
+        manifest = _auto_build_manifest(repo, plan)
     build_report = build_conformance(plan, manifest)
     build_assurance = make_report(
         phase="Build",
@@ -456,6 +474,8 @@ def build_parser() -> argparse.ArgumentParser:
         q.add_argument("--subject", required=True)
         q.add_argument("--disposition", choices=["PASS", "FAIL"], required=True)
         q.add_argument("--rationale", required=True)
+        q.add_argument("--evidence", action="append", default=[])
+        q.add_argument("--output")
         q.set_defaults(assurance_phase=phase)
 
     for name, stage in (("plan-accept", "Planning"), ("build-accept", "Build")):
@@ -464,10 +484,12 @@ def build_parser() -> argparse.ArgumentParser:
         q.add_argument("--subject", required=True)
         q.add_argument("--actor", required=True)
         q.add_argument("--authority", required=True)
+        q.add_argument("--authority-state", required=True)
         q.add_argument("--resulting-state", required=True)
         q.add_argument("--conformance", required=True)
         q.add_argument("--assurance", required=True)
         q.add_argument("--evidence", action="append", required=True)
+        q.add_argument("--output", required=True)
         q.set_defaults(acceptance_stage=stage)
 
     bo = sub.add_parser("build-open")
@@ -479,6 +501,8 @@ def build_parser() -> argparse.ArgumentParser:
     bc = sub.add_parser("build-check")
     bc.add_argument("plan")
     bc.add_argument("manifest", nargs="?")
+    bc.add_argument("--validation-output")
+    bc.add_argument("--conformance-output")
 
     status = sub.add_parser("status")
     mode = status.add_mutually_exclusive_group()
@@ -512,13 +536,15 @@ def main(argv=None) -> int:
             return 0
 
         if args.command.endswith("-assure"):
+            refs = require_evidence_refs(repo.root, args.evidence) if args.evidence else ()
             report = make_report(
                 phase=args.assurance_phase,
                 subject_id=args.subject,
                 disposition=args.disposition,
                 rationale=args.rationale,
+                evidence_refs=refs,
             )
-            _emit({
+            value = {
                 "schema_version": "1",
                 "artifact_type": "assurance-report",
                 "phase": report.phase,
@@ -527,16 +553,17 @@ def main(argv=None) -> int:
                 "rationale": report.rationale,
                 "evidence_refs": list(report.evidence_refs),
                 "findings": [],
-            })
+            }
+            if args.output:
+                write_evidence(repo.root, args.output, value)
+            _emit(value)
             return 0 if report.passed else 1
 
         if args.command in {"plan-accept", "build-accept"}:
             conf = _conformance_from_dict(load_json(Path(args.conformance)))
             assurance = _assurance_from_dict(load_json(Path(args.assurance)))
-            graph = AuthorizationGraph(
-                [Authority(args.authority), Authority(args.actor)],
-                [Delegation(args.authority, args.actor, f"accept:{args.acceptance_stage}")],
-            )
+            graph = load_authorization_graph(repo.root, args.authority_state)
+            refs = require_evidence_refs(repo.root, args.evidence)
             record = accept(
                 acceptance_id=args.acceptance_id,
                 stage=args.acceptance_stage,
@@ -547,9 +574,11 @@ def main(argv=None) -> int:
                 authority_graph=graph,
                 conformance=conf,
                 assurance=assurance,
-                evidence_refs=args.evidence,
+                evidence_refs=refs,
             )
-            _emit(record.to_dict())
+            value = record.to_dict()
+            write_evidence(repo.root, args.output, value)
+            _emit(value)
             return 0
 
         if args.command == "build-open":
@@ -571,9 +600,32 @@ def main(argv=None) -> int:
 
         if args.command == "build-check":
             plan, _ = plan_conformance(repo, args.plan)
+            validation_results = run_plan_validations(repo, plan)
+            validation_value = {
+                "schema_version": "1",
+                "artifact_type": "validation-run",
+                "plan_id": plan.id,
+                "results": [result.to_dict() for result in validation_results],
+                "disposition": "PASS",
+            }
+            validation_ref = (
+                write_evidence(repo.root, args.validation_output, validation_value)
+                if args.validation_output else None
+            )
             manifest = load_json(Path(args.manifest)) if args.manifest else _auto_build_manifest(repo, plan)
-            report = build_conformance(plan, manifest)
-            _emit(report.to_dict())
+            base_report = build_conformance(plan, manifest)
+            report = ConformanceReport(
+                base_report.report_id,
+                base_report.subject_type,
+                base_report.subject_id,
+                base_report.disposition,
+                base_report.evidence_refs + ((validation_ref,) if validation_ref else ()),
+                base_report.findings,
+            )
+            value = report.to_dict()
+            if args.conformance_output:
+                write_evidence(repo.root, args.conformance_output, value)
+            _emit(value)
             return 0
 
         if args.command == "status":
