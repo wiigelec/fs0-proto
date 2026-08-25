@@ -262,7 +262,7 @@
       "kind": "conformance",
       "description": "Perform Build Conformance against the accepted Plan and observed mutation manifest.",
       "command": "PYTHONPATH=repo/runtime python3 -m repo_spec build-check repo/bootstrap/data/plan/000_FS0-CORE/plan.json",
-      "success_criteria": "All observed mutations are authorized, all declared generated consequences are current, all prescribed validations pass, and the FS0 operational workflow passes.",
+      "success_criteria": "All observed mutations are authorized, applicable syntax or equivalent language checks pass, all Plan-prescribed validations pass, and Build Conformance reports PASS.",
       "requirement_ids": [
         "FS0-NR-108",
         "FS0-NR-114",
@@ -273,9 +273,9 @@
     {
       "id": "VAL-009",
       "kind": "operational",
-      "description": "Demonstrate that FS0-Core can execute the next full Design\u2192Planning\u2192Build governance cycle using temporary extension artifacts.",
+      "description": "Demonstrate that FS0-Core can execute the next full Design\u2192Planning\u2192Build governance cycle using temporary functionality-defined functional-set artifacts.",
       "command": "PYTHONPATH=repo/runtime python3 -m repo_spec status --self-host-check",
-      "success_criteria": "The runtime can validate and Design-assure a proposal, validate a new extension functional set and Plan, Planning-assure and explicitly accept that Plan, open a BuildSession, enforce default-deny authority and mutation scope, produce durable Build/Conformance/Assurance evidence, and explicitly accept the resulting state without out-of-band framework logic.",
+      "success_criteria": "The runtime can validate and Design-assure a proposal, validate the next functionality-defined functional set and Plan, Planning-assure and explicitly accept that Plan, open a BuildSession, enforce default-deny authority and mutation scope, produce durable Build/Conformance/Assurance evidence, and explicitly accept the resulting state without out-of-band framework logic.",
       "requirement_ids": [
         "FS0-NR-018",
         "FS0-NR-098",

@@ -47,7 +47,7 @@
     },
     {
       "id": "COMP-007",
-      "statement": "The built FS0-Core runtime can validate, semantically review, build, and govern acceptance of one subsequent extension functional set without out-of-band framework logic.",
+      "statement": "The built FS0-Core runtime can validate, semantically review, build, and govern acceptance of the next functionality-defined functional set without out-of-band framework logic.",
       "validation_ids": [
         "VAL-009",
         "VAL-010"
