@@ -4,7 +4,7 @@
   "plan": {
     "id": "FS0-CORE-PLAN",
     "title": "FS0-Core Implementation Plan",
-    "description": "FS0-Core irreducible end-to-end workflow kernel. The Plan implements only capabilities required for a later functional set to be technically planable, buildable, mechanically conformable, semantically reviewable, and governably acceptable using Core alone. Mature validation correspondence, generalized provenance hardening, rich normative lifecycle management, and other non-prerequisite Design semantics remain deferred."
+    "description": "FS0-Core irreducible runtime kernel for one complete successor cycle. It implements only Design addressing/revision resolution, functional-set loading, stable normative identity and applicability, closed modular Plan loading, bounded Build execution, basic Conformance, governed semantic Assurance, minimum authority/lineage, explicit acceptance, and successor self-hosting. Bootstrap-process rules and mature quality, provenance, lifecycle, and validation architecture remain deferred."
   },
   "functional_set": {
     "id": "FS0-CORE",

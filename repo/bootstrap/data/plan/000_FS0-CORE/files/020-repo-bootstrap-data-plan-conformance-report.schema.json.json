@@ -8,7 +8,6 @@
     "purpose": "Define durable machine-readable Conformance evidence for Design, functional-set, Plan, and Build acceptance decisions.",
     "requirement_ids": [
       "FS0-NR-114",
-      "FS0-NR-115",
       "FS0-NR-116",
       "FS0-NR-117",
       "FS0-NR-118",
@@ -23,7 +22,6 @@
       "FS0-NR-182",
       "FS0-NR-209",
       "FS0-NR-183",
-      "FS0-NR-184",
       "FS0-NR-185",
       "FS0-NR-186"
     ],

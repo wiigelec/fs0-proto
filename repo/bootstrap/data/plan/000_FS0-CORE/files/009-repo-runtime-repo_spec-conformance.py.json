@@ -8,8 +8,6 @@
     "purpose": "Provide mechanical Design, functional-set, Plan, and Build Conformance for the self-hosting workflow.",
     "requirement_ids": [
       "FS0-NR-002",
-      "FS0-NR-003",
-      "FS0-NR-004",
       "FS0-NR-005",
       "FS0-NR-011",
       "FS0-NR-012",
@@ -24,7 +22,6 @@
       "FS0-NR-081",
       "FS0-NR-108",
       "FS0-NR-114",
-      "FS0-NR-115",
       "FS0-NR-116",
       "FS0-NR-117",
       "FS0-NR-118",
@@ -45,7 +42,6 @@
       "FS0-NR-182",
       "FS0-NR-209",
       "FS0-NR-183",
-      "FS0-NR-184",
       "FS0-NR-185",
       "FS0-NR-186",
       "FS0-NR-187",
@@ -53,11 +49,9 @@
       "FS0-NR-189",
       "FS0-NR-190",
       "FS0-NR-191",
-      "FS0-NR-192",
       "FS0-NR-193",
       "FS0-NR-036",
       "FS0-NR-038",
-      "FS0-NR-039",
       "FS0-NR-212",
       "FS0-NR-213",
       "FS0-NR-214",
@@ -72,15 +66,6 @@
       "FS0-NR-230",
       "FS0-NR-231",
       "FS0-NR-232",
-      "FS0-NR-234",
-      "FS0-NR-236",
-      "FS0-NR-237",
-      "FS0-NR-240",
-      "FS0-NR-241",
-      "FS0-NR-242",
-      "FS0-NR-243",
-      "FS0-NR-247",
-      "FS0-NR-249",
       "FS0-NR-254"
     ],
     "implementation": [
@@ -93,9 +78,7 @@
       "Serialize each Conformance execution to a conformance-report.schema.json-valid report with stable identity and subject/evidence references.",
       "Mechanically enforce default-deny governed-state authorization where authorization relationships are structurally resolvable.",
       "Validate Build mutation manifests against build-manifest.schema.json and accepted Plan scope.",
-      "Plan Conformance operates on the complete logical Plan returned by plan.py and emits distinct rejection findings for missing, duplicate, conflicting, unreachable, unauthorized, or Plan-ID-mismatched subdocuments.",
-      "For normal post-bootstrap operation, Design, functional-set, and Plan Conformance use the maintained FS0 runtime; FS0's own pre-Build acceptance instead consumes durable externally produced bootstrap Conformance evidence.",
-      "Candidate FS0 Conformance output is never used as a prerequisite for accepting the Plan that creates that candidate runtime."
+      "Plan Conformance operates on the complete logical Plan returned by plan.py and emits distinct rejection findings for missing, duplicate, conflicting, unreachable, unauthorized, or Plan-ID-mismatched subdocuments."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/design.py",

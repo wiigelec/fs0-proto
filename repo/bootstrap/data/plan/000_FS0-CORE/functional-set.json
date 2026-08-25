@@ -6,7 +6,7 @@
     "id": "FS0-CORE",
     "kind": "core",
     "title": "FS0-Core",
-    "description": "Irreducible standalone self-hosting repo-spec core. FS0-Core provides only the Design-consumption, functional-set, modular Planning, normative identity/applicability, Build, basic Conformance, governed semantic Assurance, bounded authority, lineage, non-circular acceptance, bootstrap, and one-successor-cycle capabilities without which later functionality-defined functional sets could not be implemented."
+    "description": "Irreducible standalone self-hosting repo-spec core. FS0-Core implements only the runtime capabilities required to consume selected Design, load one functional set and closed modular Plan, represent stable normative identities and applicability, execute bounded Build work against an accepted predecessor, perform basic Conformance and governed semantic Assurance, record explicit non-circular acceptance with minimum lineage, and govern one successor functional-set cycle. Bootstrap-process policy and mature framework quality/hardening semantics remain in Design for later realization."
   },
   "accepted_predecessor": {
     "repository_revision": "65b6477dc3ed10cd6ebb83e83653e995f63b47fd"
@@ -45,8 +45,6 @@
         "DP001-INVARIANTS-003",
         "DP001-INVARIANTS-004",
         "DP001-DETAIL-001",
-        "DP001-DETAIL-002",
-        "DP001-DETAIL-003",
         "DP001-DETAIL-004",
         "DP001-DETAIL-005",
         "DP001-DETAIL-006",
@@ -177,13 +175,6 @@
         "DP020-DETAIL-173",
         "DP020-DETAIL-174",
         "DP020-DETAIL-175",
-        "DP020-DETAIL-176",
-        "DP020-DETAIL-177",
-        "DP020-DETAIL-178",
-        "DP020-DETAIL-179",
-        "DP020-DETAIL-180",
-        "DP020-DETAIL-181",
-        "DP020-DETAIL-182",
         "DP020-DETAIL-183",
         "DP020-DETAIL-184"
       ]
@@ -202,9 +193,6 @@
         "DP030-DETAIL-271",
         "DP030-DETAIL-272",
         "DP030-DETAIL-273",
-        "DP030-DETAIL-274",
-        "DP030-DETAIL-275",
-        "DP030-DETAIL-276",
         "DP030-DETAIL-277"
       ]
     },
@@ -216,11 +204,7 @@
         "DP040-DETAIL-206",
         "DP040-DETAIL-207",
         "DP040-DETAIL-210",
-        "DP040-DETAIL-213",
-        "DP040-DETAIL-216",
-        "DP040-DETAIL-217",
-        "DP040-DETAIL-218",
-        "DP040-DETAIL-219"
+        "DP040-DETAIL-213"
       ]
     }
   ]

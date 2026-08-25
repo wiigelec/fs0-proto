@@ -4,17 +4,6 @@
   "plan_id": "FS0-CORE-PLAN",
   "completion_conditions": [
     {
-      "id": "COMP-001",
-      "statement": "Selected Design, FS0-Core functional-set scope, and the complete modular Plan pass bootstrap Conformance and semantic review without candidate-runtime self-authorization.",
-      "validation_ids": [
-        "VAL-001",
-        "VAL-002",
-        "VAL-003",
-        "VAL-007",
-        "VAL-012"
-      ]
-    },
-    {
       "id": "COMP-002",
       "statement": "All files listed by the Core Plan exist with the planned Core semantics and no implementation file outside accepted Plan scope is required for Core operation.",
       "validation_ids": [
@@ -40,7 +29,7 @@
     },
     {
       "id": "COMP-005",
-      "statement": "Each retained Core normative requirement has valid identity plus governed Conformance and Assurance applicability and the selected minimal normative-statement grammar is enforced.",
+      "statement": "Each retained Core normative requirement has valid identity, mechanically accepted normative force, and governed Conformance and Assurance applicability.",
       "validation_ids": [
         "VAL-006",
         "VAL-010"

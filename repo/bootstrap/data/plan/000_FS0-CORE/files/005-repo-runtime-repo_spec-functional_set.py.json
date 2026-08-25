@@ -8,7 +8,6 @@
     "purpose": "Load and validate functional-set.json as the bounded Design scope for one Planning cycle.",
     "requirement_ids": [
       "FS0-NR-013",
-      "FS0-NR-014",
       "FS0-NR-015",
       "FS0-NR-016",
       "FS0-NR-017",

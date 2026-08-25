@@ -24,31 +24,15 @@
       "FS0-NR-129",
       "FS0-NR-137",
       "FS0-NR-172",
-      "FS0-NR-033",
-      "FS0-NR-034",
-      "FS0-NR-035",
-      "FS0-NR-037",
-      "FS0-NR-233",
-      "FS0-NR-235",
-      "FS0-NR-236",
-      "FS0-NR-237",
-      "FS0-NR-238",
-      "FS0-NR-239",
-      "FS0-NR-244",
-      "FS0-NR-245",
-      "FS0-NR-246",
-      "FS0-NR-248",
-      "FS0-NR-250",
       "FS0-NR-255"
     ],
     "implementation": [
       "Define AssuranceFinding and AssuranceReport records with phase, governed subject identity, disposition, rationale, and evidence references.",
-      "Support Design, Planning, and Build review phases without encoding the full mature review-obligation/case/finding correspondence architecture.",
+      "Support Design, Planning, and Build review phases without encoding mature per-requirement correspondence or detailed review-rubric machinery.",
       "Require a governed semantic review result before an acceptance gate when the applicable Core requirement requires Assurance.",
       "Keep Assurance case-specific and non-authoritative: findings do not mutate normative authority and persistent meaning defects route to Design while Planning-intent defects route to Planning.",
-      "For FS0 bootstrap, consume externally produced Design and Planning Assurance evidence over the selected Design revisions, functional set, and resolved logical Plan without candidate-runtime self-authorization.",
       "For successor functional sets, expose maintained Core capability to record and evaluate Design, Planning, and Build semantic review results.",
-      "Leave detailed Assurance rubrics, canonical per-requirement review-obligation correspondence, mature case/finding registries, and generalized evidence orchestration to later functional sets."
+      "Bootstrap Assurance remains external process authority defined by Design rather than an FS0 runtime implementation responsibility."
     ],
     "validation_ids": [
       "VAL-006",

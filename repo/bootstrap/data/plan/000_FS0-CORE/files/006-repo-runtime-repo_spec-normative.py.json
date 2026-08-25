@@ -20,21 +20,16 @@
       "FS0-NR-162",
       "FS0-NR-163",
       "FS0-NR-164",
-      "FS0-NR-033",
-      "FS0-NR-034",
-      "FS0-NR-035",
       "FS0-NR-036",
-      "FS0-NR-037",
-      "FS0-NR-038",
-      "FS0-NR-039"
+      "FS0-NR-038"
     ],
     "implementation": [
       "Define immutable NormativeRequirement records with stable ID, one normative statement, Conformance disposition, and Assurance disposition.",
       "Validate requirement IDs, uniqueness, applicability values, and required rationale for an explicit none disposition.",
-      "Enforce the Core normative-statement grammar selected for FS0: one independently governable rule, self-contained subject/force/behavior, and accepted SHALL/SHALL NOT/MAY force vocabulary.",
+      "Enforce only the mechanically necessary Core normative-force grammar: explicit normative force using accepted SHALL, SHALL NOT, or MAY vocabulary.",
       "Represent stable framework authority identities and explicit delegation edges without inferring authority from implementation or historical state.",
       "Provide default-deny authorization lookup for governed Core state; absence of accepted authority or an explicitly governed extension point is rejection rather than inferred permission.",
-      "Do not implement generalized normative amendment/supersession/withdrawal history, derived-primitive provenance registries, product-authority hardening, or mature semantic NR-quality automation in FS0-Core."
+      "Defer semantic normative-statement quality, generalized normative lifecycle history, derived/product provenance hardening, and mature validation correspondence to later functional sets."
     ],
     "validation_ids": [
       "VAL-003",

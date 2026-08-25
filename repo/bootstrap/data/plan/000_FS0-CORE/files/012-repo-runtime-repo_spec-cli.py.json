@@ -8,7 +8,6 @@
     "purpose": "Expose the minimum self-hosting workflow as deterministic command-line entry points for AI and human actors.",
     "requirement_ids": [
       "FS0-NR-013",
-      "FS0-NR-014",
       "FS0-NR-015",
       "FS0-NR-079",
       "FS0-NR-080",
@@ -21,7 +20,6 @@
       "FS0-NR-098",
       "FS0-NR-099",
       "FS0-NR-114",
-      "FS0-NR-115",
       "FS0-NR-116",
       "FS0-NR-117",
       "FS0-NR-118",
