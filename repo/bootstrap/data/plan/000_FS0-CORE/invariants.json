@@ -44,6 +44,7 @@
         "FS0-NR-127",
         "FS0-NR-128",
         "FS0-NR-129",
+        "FS0-NR-203",
         "FS0-NR-137"
       ]
     },
@@ -87,9 +88,12 @@
         "FS0-NR-130",
         "FS0-NR-131",
         "FS0-NR-132",
+        "FS0-NR-204",
         "FS0-NR-133",
         "FS0-NR-134",
-        "FS0-NR-135"
+        "FS0-NR-205",
+        "FS0-NR-135",
+        "FS0-NR-206"
       ]
     },
     {
@@ -170,6 +174,35 @@
         "FS0-NR-198",
         "FS0-NR-199",
         "FS0-NR-200"
+      ]
+    },
+    {
+      "id": "INV-012",
+      "statement": "The accepted Plan is one logical governed artifact whose authority is exactly the closed document graph rooted at plan.json.",
+      "requirement_ids": [
+        "FS0-NR-210",
+        "FS0-NR-211",
+        "FS0-NR-212",
+        "FS0-NR-213",
+        "FS0-NR-214",
+        "FS0-NR-215",
+        "FS0-NR-223",
+        "FS0-NR-224",
+        "FS0-NR-225",
+        "FS0-NR-226",
+        "FS0-NR-227"
+      ]
+    },
+    {
+      "id": "INV-013",
+      "statement": "Every file realization Plan document governs exactly one target path, and complete-Plan Conformance rejects missing, duplicate, conflicting, unreachable, or unauthorized fragments.",
+      "requirement_ids": [
+        "FS0-NR-222",
+        "FS0-NR-228",
+        "FS0-NR-229",
+        "FS0-NR-230",
+        "FS0-NR-231",
+        "FS0-NR-232"
       ]
     }
   ]

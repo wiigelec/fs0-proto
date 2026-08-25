@@ -30,7 +30,7 @@
     },
     {
       "id": "FS0-NR-003",
-      "statement": "Each consumed Design Proposal SHALL conform to the canonical top-level section structure.",
+      "statement": "Each consumed Design Proposal SHALL conform to the top-level section structure identified by `DP001-DETAIL-002`.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -927,7 +927,7 @@
     },
     {
       "id": "FS0-NR-075",
-      "statement": "Each Plan SHALL define the dependency and sequencing constraints applicable to its implementation.",
+      "statement": "Each Plan SHALL define the dependency constraints applicable to its implementation.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -1461,7 +1461,7 @@
     },
     {
       "id": "FS0-NR-118",
-      "statement": "Build Conformance SHALL run canonical repository validation.",
+      "statement": "Build Conformance SHALL run each repository validation explicitly declared by the accepted Plan document graph.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -1523,7 +1523,7 @@
     },
     {
       "id": "FS0-NR-123",
-      "statement": "Build Assurance SHALL evaluate semantically material edge and failure behavior.",
+      "statement": "Build Assurance SHALL evaluate semantically material edge behavior.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -1596,7 +1596,7 @@
     },
     {
       "id": "FS0-NR-129",
-      "statement": "Assurance SHALL control governed semantic review and case-specific semantic judgment.",
+      "statement": "Assurance SHALL control governed semantic review.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -1633,7 +1633,7 @@
     },
     {
       "id": "FS0-NR-132",
-      "statement": "Each maintained derived framework primitive SHALL resolve to accepted normative authority that authorizes its existence or use.",
+      "statement": "Each maintained derived framework primitive SHALL resolve to accepted normative authority that authorizes its existence.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -1658,7 +1658,7 @@
     },
     {
       "id": "FS0-NR-134",
-      "statement": "Product authority SHALL NOT independently define or amend repository-framework authority.",
+      "statement": "Product authority SHALL NOT independently define repository-framework authority.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -1670,7 +1670,7 @@
     },
     {
       "id": "FS0-NR-135",
-      "statement": "Product implementation SHALL NOT independently define or amend repository-framework authority.",
+      "statement": "Product implementation SHALL NOT independently define repository-framework authority.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -2179,7 +2179,7 @@
     },
     {
       "id": "FS0-NR-176",
-      "statement": "Design Assurance SHALL evaluate Design architecture and boundary quality.",
+      "statement": "Design Assurance SHALL evaluate Design architecture quality.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -2215,7 +2215,7 @@
     },
     {
       "id": "FS0-NR-179",
-      "statement": "Design Assurance SHALL evaluate Design alternatives and tradeoffs.",
+      "statement": "Design Assurance SHALL evaluate Design alternatives.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -2251,7 +2251,7 @@
     },
     {
       "id": "FS0-NR-182",
-      "statement": "Each Conformance finding used for Planning or Build acceptance SHALL have a durable machine-readable representation.",
+      "statement": "Each Conformance finding used for Planning acceptance SHALL have a durable machine-readable representation.",
       "evaluation": {
         "conformance": {
           "applicability": "required"
@@ -2486,6 +2486,414 @@
         },
         "assurance": {
           "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-201",
+      "statement": "Each Plan SHALL define the sequencing constraints applicable to its implementation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-202",
+      "statement": "Build Assurance SHALL evaluate semantically material failure behavior.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-203",
+      "statement": "Assurance SHALL control case-specific semantic judgment.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-204",
+      "statement": "Each maintained derived framework primitive SHALL resolve to accepted normative authority that authorizes its use.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-205",
+      "statement": "Product authority SHALL NOT independently amend repository-framework authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-206",
+      "statement": "Product implementation SHALL NOT independently amend repository-framework authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-207",
+      "statement": "Design Assurance SHALL evaluate Design boundary quality.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-208",
+      "statement": "Design Assurance SHALL evaluate Design tradeoffs.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-209",
+      "statement": "Each Conformance finding used for Build acceptance SHALL have a durable machine-readable representation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-210",
+      "statement": "An accepted Plan SHALL remain one logical governed artifact when represented by multiple physical documents.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-211",
+      "statement": "`plan.json` SHALL be the canonical root manifest of a multi-document Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-212",
+      "statement": "Each authoritative Plan subdocument SHALL be explicitly reachable from `plan.json`.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-213",
+      "statement": "A file SHALL NOT acquire Plan authority solely because it exists within a functional-set directory.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-214",
+      "statement": "A file SHALL NOT acquire Plan authority solely because it is adjacent to an accepted Plan document.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-215",
+      "statement": "The Plan document graph SHALL exclude documents not explicitly authorized by the accepted Plan graph.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-216",
+      "statement": "A multi-document Plan SHALL represent normative requirements as a distinct governed Plan document class.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-217",
+      "statement": "A multi-document Plan SHALL represent file realization plans as a distinct governed Plan document class.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-218",
+      "statement": "A multi-document Plan SHALL represent execution ordering as a distinct governed Plan document class.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-219",
+      "statement": "A multi-document Plan SHALL represent invariants as a distinct governed Plan document class.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-220",
+      "statement": "A multi-document Plan SHALL represent validation as a distinct governed Plan document class.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-221",
+      "statement": "A multi-document Plan SHALL represent completion conditions as a distinct governed Plan document class.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-222",
+      "statement": "Each file realization plan SHALL govern exactly one planned repository target path.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-223",
+      "statement": "Each Plan subdocument SHALL resolve to the stable identity of its logical Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-224",
+      "statement": "Plan Conformance SHALL resolve the complete authorized Plan document graph before Planning acceptance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-225",
+      "statement": "Plan Conformance SHALL validate the complete authorized Plan document graph as one logical Plan before Planning acceptance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-226",
+      "statement": "Planning acceptance SHALL apply to the complete resolved Plan document graph.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-227",
+      "statement": "Planning acceptance SHALL NOT independently accept an individual Plan fragment.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-228",
+      "statement": "Plan Conformance SHALL reject a Plan document graph with a missing authorized document.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-229",
+      "statement": "Plan Conformance SHALL reject a Plan document graph with a duplicate Plan document.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-230",
+      "statement": "Plan Conformance SHALL reject a Plan document graph with conflicting Plan documents.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-231",
+      "statement": "Plan Conformance SHALL reject a Plan document graph with an unreachable Plan document.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-232",
+      "statement": "Plan Conformance SHALL reject a Plan document graph with an unauthorized Plan document.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
         }
       }
     }
