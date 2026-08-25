@@ -21,7 +21,7 @@ from .conformance import (
     plan_conformance,
 )
 from .errors import RepoSpecError
-from .evidence import load_authorization_graph, require_evidence_refs, write_evidence
+from .evidence import load_authorization_graph, load_evidence, require_evidence_refs, write_evidence
 from .governance import accept
 from .jsonio import load_json
 from .normative import AuthorizationGraph, Authority, Delegation
@@ -38,15 +38,18 @@ def _repo(args) -> Repository:
 
 
 def _assurance_from_dict(value: dict) -> AssuranceReport:
-    return AssuranceReport(
-        value["phase"],
-        value["subject_id"],
-        value["disposition"],
-        value["rationale"],
-        tuple(value.get("evidence_refs", [])),
-        tuple(
+    return make_report(
+        phase=value["phase"],
+        subject_id=value["subject_id"],
+        disposition=value["disposition"],
+        rationale=value["rationale"],
+        evidence_refs=tuple(value.get("evidence_refs", [])),
+        findings=tuple(
             AssuranceFinding(
-                f["id"], f["disposition"], f["rationale"], tuple(f.get("evidence_refs", []))
+                f["id"],
+                f["disposition"],
+                f["rationale"],
+                tuple(f.get("evidence_refs", [])),
             )
             for f in value.get("findings", [])
         ),
@@ -66,6 +69,58 @@ def _conformance_from_dict(value: dict) -> ConformanceReport:
             for f in value.get("findings", [])
         ),
     )
+
+
+
+def _same_conformance(actual: ConformanceReport, expected: ConformanceReport) -> bool:
+    return (
+        actual.report_id == expected.report_id
+        and actual.subject_type == expected.subject_type
+        and actual.subject_id == expected.subject_id
+        and actual.disposition == expected.disposition
+        and actual.findings == expected.findings
+    )
+
+
+def _verify_acceptance(
+    repo: Repository,
+    value: dict,
+    *,
+    authority_state: str,
+    conformance: ConformanceReport,
+    assurance: AssuranceReport,
+):
+    refs = require_evidence_refs(repo.root, value.get("evidence_refs", []))
+    graph = load_authorization_graph(repo.root, authority_state)
+    record = accept(
+        acceptance_id=value["acceptance_id"],
+        stage=value["stage"],
+        subject_id=value["subject_id"],
+        actor=value["actor"],
+        predecessor_authority=value["predecessor_authority"],
+        resulting_state=value["resulting_state"],
+        authority_graph=graph,
+        conformance=conformance,
+        assurance=assurance,
+        evidence_refs=refs,
+    )
+    if record.to_dict() != value:
+        raise RuntimeError(f"durable acceptance record mismatch: {value.get('acceptance_id')}")
+    return record
+
+
+def _observed_mutations(repo: Repository, plan, resulting_revision: str) -> list[dict]:
+    planned_paths = {fc.path for fc in plan.file_changes}
+    mutations = []
+    for mutation in repo.changed_paths(plan.implementation_predecessor, resulting_revision):
+        artifact_only = (
+            mutation.path.startswith("repo/proposals/")
+            or mutation.path.startswith("repo/planning/")
+        )
+        if artifact_only and mutation.path not in planned_paths:
+            continue
+        mutations.append({"path": mutation.path, "operation": mutation.operation})
+    return mutations
 
 
 def _auto_build_manifest(repo: Repository, plan) -> dict:
@@ -324,8 +379,6 @@ The demonstration runtime SHALL create its planned file.
 def _validate_core(repo: Repository) -> dict:
     plan_path = repo.root / "repo/planning/000_FS0-CORE/plan.json"
     plan, plan_report = plan_conformance(repo, str(plan_path))
-    fs_path = repo.root / plan.functional_set.design_inputs[0]["path"]
-    del fs_path  # Design paths are validated through exact revision reads below.
     design_reports = [
         design_conformance(repo, item)
         for item in plan.functional_set.design_inputs
@@ -357,78 +410,114 @@ def _validate_core(repo: Repository) -> dict:
     if tests.returncode:
         raise RuntimeError(tests.stderr or tests.stdout)
 
-    planning_assurance = make_report(
-        phase="Planning",
-        subject_id=plan.id,
-        disposition="PASS",
-        rationale="Canonical FS0-Core validation confirms the resolved Plan is coherent with its bound Design scope.",
-        evidence_refs=(
-            "core:design-conformance",
-            "core:functional-set-conformance",
-            "core:plan-conformance",
-            "core:unit-tests",
-        ),
-    )
-    predecessor_authority = plan.implementation_predecessor
-    accepted_plan_authority = f"accepted-plan:{plan.id}"
-    planning_graph = AuthorizationGraph(
-        [Authority(predecessor_authority), Authority("core-governor")],
-        [Delegation(predecessor_authority, "core-governor", "accept:Planning")],
-    )
-    planning_acceptance = accept(
-        acceptance_id="FS0-CORE-PLAN-ACCEPT",
-        stage="Planning",
-        subject_id=plan.id,
-        actor="core-governor",
-        predecessor_authority=predecessor_authority,
-        resulting_state=accepted_plan_authority,
-        authority_graph=planning_graph,
-        conformance=plan_report,
-        assurance=planning_assurance,
-        evidence_refs=("core:plan-conformance", "core:planning-assurance"),
-    )
+    base = "repo/evidence/fs0-core"
+    paths = {
+        "accepted_state": f"{base}/accepted-state.json",
+        "planning_authority": f"{base}/planning-authority.json",
+        "planning_conformance": f"{base}/planning-conformance.json",
+        "planning_assurance": f"{base}/planning-assurance.json",
+        "planning_acceptance": f"{base}/planning-acceptance.json",
+        "build_manifest": f"{base}/build-manifest.json",
+        "build_conformance": f"{base}/build-conformance.json",
+        "build_assurance": f"{base}/build-assurance.json",
+        "build_authority": f"{base}/build-authority.json",
+        "build_acceptance": f"{base}/build-acceptance.json",
+    }
 
-    accepted_state_path = repo.root / "repo/evidence/fs0-core/accepted-state.json"
-    if accepted_state_path.is_file():
-        accepted_state = load_json(accepted_state_path)
-        core_result = accepted_state.get("resulting_revision")
-        repo.require_revision(core_result)
-        manifest = _auto_build_manifest(repo, plan)
-        manifest["resulting_revision"] = core_result
-        planned_paths = {fc.path for fc in plan.file_changes}
-        mutations = []
-        for mutation in repo.changed_paths(plan.implementation_predecessor, core_result):
-            artifact_only = mutation.path.startswith("repo/proposals/") or mutation.path.startswith("repo/planning/")
-            if artifact_only and mutation.path not in planned_paths:
-                continue
-            mutations.append({"path": mutation.path, "operation": mutation.operation})
-        manifest["mutations"] = mutations
-    else:
-        manifest = _auto_build_manifest(repo, plan)
-    build_report = build_conformance(plan, manifest)
-    build_assurance = make_report(
-        phase="Build",
-        subject_id=manifest["build_id"],
-        disposition="PASS",
-        rationale="Canonical FS0-Core validation confirms the complete observed Build remains within the accepted Plan.",
-        evidence_refs=("core:build-manifest", "core:build-conformance", "core:unit-tests"),
+    accepted_state = load_evidence(repo.root, paths["accepted_state"])
+    if (
+        accepted_state.get("schema_version") != "1"
+        or accepted_state.get("artifact_type") != "accepted-state"
+        or accepted_state.get("subject_id") != plan.id
+    ):
+        raise RuntimeError("invalid FS0 accepted-state root")
+    if accepted_state.get("planning_acceptance_ref") != paths["planning_acceptance"]:
+        raise RuntimeError("accepted-state Planning lineage does not resolve to canonical evidence")
+    if accepted_state.get("build_acceptance_ref") != paths["build_acceptance"]:
+        raise RuntimeError("accepted-state Build lineage does not resolve to canonical evidence")
+
+    core_result = accepted_state.get("resulting_revision")
+    repo.require_revision(core_result)
+    post_acceptance = repo.changed_paths(core_result, repo.head)
+    unexpected_post_acceptance = [
+        mutation.path
+        for mutation in post_acceptance
+        if not mutation.path.startswith(f"{base}/")
+    ]
+    if unexpected_post_acceptance:
+        raise RuntimeError(
+            "implementation changed after accepted FS0 result: "
+            + ", ".join(unexpected_post_acceptance)
+        )
+
+    planning_conformance = _conformance_from_dict(
+        load_evidence(repo.root, paths["planning_conformance"])
     )
-    build_graph = AuthorizationGraph(
-        [Authority(accepted_plan_authority), Authority("core-governor")],
-        [Delegation(accepted_plan_authority, "core-governor", "accept:Build")],
+    if not _same_conformance(planning_conformance, plan_report):
+        raise RuntimeError("durable Planning Conformance does not match current Plan")
+    if planning_conformance.disposition != "PASS":
+        raise RuntimeError("durable Planning Conformance is not PASS")
+
+    planning_assurance = _assurance_from_dict(
+        load_evidence(repo.root, paths["planning_assurance"])
     )
-    build_acceptance = accept(
-        acceptance_id="FS0-CORE-BUILD-ACCEPT",
-        stage="Build",
-        subject_id=manifest["build_id"],
-        actor="core-governor",
-        predecessor_authority=accepted_plan_authority,
-        resulting_state=repo.head,
-        authority_graph=build_graph,
-        conformance=build_report,
+    if not planning_assurance.evidence_refs:
+        raise RuntimeError("durable Planning Assurance requires evidence")
+    require_evidence_refs(repo.root, planning_assurance.evidence_refs)
+
+    planning_acceptance_value = load_evidence(repo.root, paths["planning_acceptance"])
+    planning_acceptance = _verify_acceptance(
+        repo,
+        planning_acceptance_value,
+        authority_state=paths["planning_authority"],
+        conformance=planning_conformance,
+        assurance=planning_assurance,
+    )
+    if planning_acceptance.predecessor_authority != plan.implementation_predecessor:
+        raise RuntimeError("Planning acceptance predecessor does not match implementation predecessor")
+
+    manifest = load_evidence(repo.root, paths["build_manifest"])
+    if manifest.get("artifact_type") != "build-manifest":
+        raise RuntimeError("invalid durable Build manifest")
+    if manifest.get("plan_id") != plan.id:
+        raise RuntimeError("durable Build manifest Plan mismatch")
+    if manifest.get("implementation_predecessor") != plan.implementation_predecessor:
+        raise RuntimeError("durable Build manifest predecessor mismatch")
+    if manifest.get("resulting_revision") != core_result:
+        raise RuntimeError("durable Build manifest result does not match accepted state")
+    observed_mutations = _observed_mutations(repo, plan, core_result)
+    if manifest.get("mutations") != observed_mutations:
+        raise RuntimeError("durable Build manifest does not match repository-observed mutations")
+
+    computed_build_conformance = build_conformance(plan, manifest)
+    durable_build_conformance = _conformance_from_dict(
+        load_evidence(repo.root, paths["build_conformance"])
+    )
+    if not _same_conformance(durable_build_conformance, computed_build_conformance):
+        raise RuntimeError("durable Build Conformance does not match observed Build")
+    if durable_build_conformance.disposition != "PASS":
+        raise RuntimeError("durable Build Conformance is not PASS")
+    require_evidence_refs(repo.root, durable_build_conformance.evidence_refs)
+
+    build_assurance = _assurance_from_dict(
+        load_evidence(repo.root, paths["build_assurance"])
+    )
+    if not build_assurance.evidence_refs:
+        raise RuntimeError("durable Build Assurance requires evidence")
+    require_evidence_refs(repo.root, build_assurance.evidence_refs)
+
+    build_acceptance_value = load_evidence(repo.root, paths["build_acceptance"])
+    build_acceptance = _verify_acceptance(
+        repo,
+        build_acceptance_value,
+        authority_state=paths["build_authority"],
+        conformance=durable_build_conformance,
         assurance=build_assurance,
-        evidence_refs=("core:build-conformance", "core:build-assurance"),
     )
+    if build_acceptance.predecessor_authority != planning_acceptance.resulting_state:
+        raise RuntimeError("Build acceptance does not descend from accepted Planning authority")
+    if build_acceptance.resulting_state != core_result:
+        raise RuntimeError("Build acceptance result does not match accepted state")
 
     self_host = _self_host_check()
     return {
@@ -439,12 +528,13 @@ def _validate_core(repo: Repository) -> dict:
         "tests": "PASS",
         "planning_assurance": planning_assurance.disposition,
         "planning_acceptance": planning_acceptance.decision,
-        "build_conformance": build_report.disposition,
+        "build_conformance": durable_build_conformance.disposition,
         "build_assurance": build_assurance.disposition,
         "build_acceptance": build_acceptance.decision,
         "implementation_predecessor": manifest["implementation_predecessor"],
-        "resulting_revision": manifest["resulting_revision"],
+        "resulting_revision": core_result,
         "self_host": self_host["status"],
+        "durable_lineage": "PASS",
     }
 
 

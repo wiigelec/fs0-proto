@@ -1,7 +1,0 @@
-{
-  "schema_version": "1",
-  "artifact_type": "accepted-state",
-  "subject_id": "FS0-CORE-PLAN",
-  "resulting_revision": "c19f7ad894fb19fa4103bb406cf38732cfdbc677",
-  "acceptance_basis": "explicit acceptance of reconciled FS0-Core after canonical validation and verified direct publication"
-}
