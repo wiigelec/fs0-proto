@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:repo-spec:schema:functional-set:1",
+  "title": "repo-spec Functional Set",
+  "description": "Defines the bounded Design scope selected by Planning for one functional set. This artifact identifies functional-set identity, the accepted repository predecessor, the exact Design Proposal revisions consumed, and the selected Design statement IDs. Normative requirements, file mutations, pseudo-code, sequencing, validation, and Build instructions belong in plan.json and are intentionally excluded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "functional_set",
+    "accepted_predecessor",
+    "design_inputs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "artifact_type": {
+      "const": "functional-set"
+    },
+    "functional_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "order",
+        "id",
+        "kind",
+        "title",
+        "description"
+      ],
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based accepted implementation order. FS0-Core is order 0."
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "description": "Stable functional-set identity. FS0-Core uses FS0-CORE."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "core",
+            "extension"
+          ],
+          "description": "Core identifies the standalone FS0-Core functional set; extension identifies every later functionality-defined set."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable statement of the coherent end-to-end capability selected for this functional set."
+        }
+      }
+    },
+    "accepted_predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_revision"
+      ],
+      "properties": {
+        "repository_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$",
+          "description": "Exact accepted repository revision against which Planning selected this functional set."
+        }
+      }
+    },
+    "design_inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "doc_id",
+          "path",
+          "revision",
+          "statements"
+        ],
+        "properties": {
+          "doc_id": {
+            "type": "string",
+            "pattern": "^DP-[0-9]{3}$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^repo/bootstrap/data/proposals/.+\\.md$",
+            "description": "Canonical Markdown Design Proposal path."
+          },
+          "revision": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$",
+            "description": "Exact repository revision from which this Design Proposal was consumed."
+          },
+          "statements": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^DP[0-9]{3}-[A-Z0-9-]+-[0-9]{3}$"
+            },
+            "description": "Design Proposal statement IDs selected into this functional set."
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "functional_set": {
+            "properties": {
+              "kind": {
+                "const": "core"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "functional_set": {
+            "properties": {
+              "order": {
+                "const": 0
+              },
+              "id": {
+                "const": "FS0-CORE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "functional_set": {
+            "properties": {
+              "kind": {
+                "const": "extension"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "functional_set": {
+            "properties": {
+              "order": {
+                "minimum": 1
+              },
+              "id": {
+                "not": {
+                  "const": "FS0-CORE"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
