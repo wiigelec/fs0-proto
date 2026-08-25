@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:repo-spec:schema:plan-requirements:1",
+  "title": "repo-spec Plan Requirements",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "plan_id",
+    "requirements"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "artifact_type": {
+      "const": "plan-requirements"
+    },
+    "plan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "evaluation"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9][A-Z0-9._-]*-NR-[0-9]{3}$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evaluation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "conformance",
+              "assurance"
+            ],
+            "properties": {
+              "conformance": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "applicability"
+                ],
+                "properties": {
+                  "applicability": {
+                    "enum": [
+                      "required",
+                      "none"
+                    ]
+                  },
+                  "rationale": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "applicability": {
+                          "const": "none"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "rationale"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "assurance": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "applicability"
+                ],
+                "properties": {
+                  "applicability": {
+                    "enum": [
+                      "required",
+                      "none"
+                    ]
+                  },
+                  "rationale": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "applicability": {
+                          "const": "none"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "rationale"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

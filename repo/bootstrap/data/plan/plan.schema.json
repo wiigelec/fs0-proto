@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:repo-spec:schema:plan:1",
-  "title": "repo-spec Plan",
-  "description": "Defines the durable Planning output for one functional set. A Plan binds one functional-set artifact and exact accepted predecessor, records Planning-distilled normative requirements, defines exact file mutation scope and implementation intent, orders executable work, specifies invariants and validation, declares generated consequences, and states completion and acceptance conditions. The Plan is the implementation contract consumed by Build.",
+  "$id": "urn:repo-spec:schema:plan:2",
+  "title": "repo-spec Plan Manifest",
+  "description": "Defines the canonical root manifest for one logical repo-spec Plan. The Plan is a closed graph of explicitly referenced durable subdocuments. Unreferenced files do not become Plan authority merely by existing in the functional-set directory.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11,16 +11,11 @@
     "plan",
     "functional_set",
     "implementation_predecessor",
-    "normative_requirements",
-    "file_changes",
-    "execution",
-    "invariants",
-    "validation",
-    "completion_conditions"
+    "documents"
   ],
   "properties": {
     "schema_version": {
-      "const": "1"
+      "const": "2"
     },
     "artifact_type": {
       "const": "plan"
@@ -36,8 +31,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
-          "description": "Stable Plan identity."
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
         },
         "title": {
           "type": "string",
@@ -45,8 +39,7 @@
         },
         "description": {
           "type": "string",
-          "minLength": 1,
-          "description": "Human-readable statement of the implementation contract."
+          "minLength": 1
         }
       }
     },
@@ -64,362 +57,7 @@
         },
         "path": {
           "type": "string",
-          "pattern": "^repo/bootstrap/data/plan/[0-9]{3}_[A-Za-z0-9._-]+/functional-set\\.json$",
-          "description": "Canonical functional-set artifact realized by this Plan."
-        }
-      }
-    },
-    "normative_requirements": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "statement",
-          "evaluation"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^[A-Z0-9][A-Z0-9._-]*-NR-[0-9]{3}$",
-            "description": "Planning-assigned normative requirement identity."
-          },
-          "statement": {
-            "type": "string",
-            "minLength": 1,
-            "description": "One independently governed normative obligation."
-          },
-          "evaluation": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "conformance",
-              "assurance"
-            ],
-            "properties": {
-              "conformance": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "applicability"
-                ],
-                "properties": {
-                  "applicability": {
-                    "enum": [
-                      "required",
-                      "none"
-                    ]
-                  },
-                  "rationale": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                },
-                "allOf": [
-                  {
-                    "if": {
-                      "properties": {
-                        "applicability": {
-                          "const": "none"
-                        }
-                      }
-                    },
-                    "then": {
-                      "required": [
-                        "rationale"
-                      ]
-                    }
-                  }
-                ]
-              },
-              "assurance": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "applicability"
-                ],
-                "properties": {
-                  "applicability": {
-                    "enum": [
-                      "required",
-                      "none"
-                    ]
-                  },
-                  "rationale": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                },
-                "allOf": [
-                  {
-                    "if": {
-                      "properties": {
-                        "applicability": {
-                          "const": "none"
-                        }
-                      }
-                    },
-                    "then": {
-                      "required": [
-                        "rationale"
-                      ]
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    "file_changes": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "path",
-          "operation",
-          "purpose",
-          "requirement_ids",
-          "implementation",
-          "validation_ids"
-        ],
-        "properties": {
-          "path": {
-            "type": "string",
-            "minLength": 1,
-            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
-          },
-          "operation": {
-            "enum": [
-              "create",
-              "modify",
-              "delete",
-              "regenerate"
-            ]
-          },
-          "purpose": {
-            "type": "string",
-            "minLength": 1
-          },
-          "requirement_ids": {
-            "type": "array",
-            "minItems": 1,
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^[A-Z0-9][A-Z0-9._-]*-NR-[0-9]{3}$"
-            }
-          },
-          "implementation": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "type": "string",
-              "minLength": 1
-            },
-            "description": "Ordered pseudo-code or equivalent implementation specification for this path."
-          },
-          "depends_on_paths": {
-            "type": "array",
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "generated_consequences": {
-            "type": "array",
-            "uniqueItems": true,
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "path",
-                "description"
-              ],
-              "properties": {
-                "path": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            }
-          },
-          "validation_ids": {
-            "type": "array",
-            "minItems": 1,
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^VAL-[0-9]{3}$"
-            }
-          }
-        }
-      }
-    },
-    "execution": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "ordered_steps"
-      ],
-      "properties": {
-        "ordered_steps": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "step",
-              "description",
-              "paths"
-            ],
-            "properties": {
-              "step": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "description": {
-                "type": "string",
-                "minLength": 1
-              },
-              "paths": {
-                "type": "array",
-                "minItems": 1,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "invariants": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "statement"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^INV-[0-9]{3}$"
-          },
-          "statement": {
-            "type": "string",
-            "minLength": 1
-          },
-          "requirement_ids": {
-            "type": "array",
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^[A-Z0-9][A-Z0-9._-]*-NR-[0-9]{3}$"
-            }
-          }
-        }
-      }
-    },
-    "validation": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "kind",
-          "description",
-          "success_criteria"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^VAL-[0-9]{3}$"
-          },
-          "kind": {
-            "enum": [
-              "schema",
-              "reference",
-              "syntax",
-              "parse",
-              "compile",
-              "unit",
-              "integration",
-              "conformance",
-              "assurance",
-              "repository",
-              "operational",
-              "custom"
-            ]
-          },
-          "description": {
-            "type": "string",
-            "minLength": 1
-          },
-          "command": {
-            "type": "string",
-            "minLength": 1
-          },
-          "success_criteria": {
-            "type": "string",
-            "minLength": 1
-          },
-          "requirement_ids": {
-            "type": "array",
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^[A-Z0-9][A-Z0-9._-]*-NR-[0-9]{3}$"
-            }
-          }
-        }
-      }
-    },
-    "completion_conditions": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "statement"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^COMP-[0-9]{3}$"
-          },
-          "statement": {
-            "type": "string",
-            "minLength": 1
-          },
-          "validation_ids": {
-            "type": "array",
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^VAL-[0-9]{3}$"
-            }
-          }
+          "pattern": "^repo/bootstrap/data/plan/[0-9]{3}_[A-Za-z0-9._-]+/functional-set\\.json$"
         }
       }
     },
@@ -434,8 +72,45 @@
           "type": "string",
           "pattern": "^[0-9a-f]{40}$"
         }
-      },
-      "description": "Exact accepted implementation state that this Plan intends Build to mutate. This is distinct from the later repository revision containing the accepted Planning artifacts."
+      }
+    },
+    "documents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirements",
+        "file_plans",
+        "execution",
+        "invariants",
+        "validation",
+        "completion"
+      ],
+      "properties": {
+        "requirements": {
+          "const": "requirements.json"
+        },
+        "file_plans": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^files/[0-9]{3}-[A-Za-z0-9._-]+\\.json$"
+          }
+        },
+        "execution": {
+          "const": "execution.json"
+        },
+        "invariants": {
+          "const": "invariants.json"
+        },
+        "validation": {
+          "const": "validation.json"
+        },
+        "completion": {
+          "const": "completion.json"
+        }
+      }
     }
   }
 }
