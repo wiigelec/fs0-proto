@@ -5,7 +5,7 @@
   "file_change": {
     "path": "repo/planning/conformance-report.schema.json",
     "operation": "create",
-    "purpose": "Define durable machine-readable Conformance evidence for Design, functional-set, Plan, and Build acceptance decisions.",
+    "purpose": "Define the minimum durable machine-readable Conformance evidence used by Core acceptance decisions.",
     "requirement_ids": [
       "FS0-NR-114",
       "FS0-NR-116",
@@ -24,9 +24,10 @@
       "FS0-NR-186"
     ],
     "implementation": [
-      "Define Draft 2020-12 JSON schema with stable report identity, phase/subject identity, exact subject revision where applicable, check records, pass/fail disposition, evidence references, and deterministic diagnostics.",
-      "Require findings to remain mechanical and forbid fields that purport to create or amend normative semantics.",
-      "Allow Governance acceptance records to reference reports by stable identity and repository path/revision."
+      "Define Draft 2020-12 JSON schema for stable report identity, subject type and identity, PASS/FAIL disposition, evidence references, and deterministic mechanical findings.",
+      "Each finding records a machine-oriented code, diagnostic message, and optional repository-relative path.",
+      "Forbid fields that purport to create or amend normative semantics; Conformance evidence remains mechanical and non-authoritative.",
+      "Do not require deferred mature check registries or independent exact-revision fields when evidence references establish the mechanically evaluated subject."
     ],
     "depends_on_paths": [],
     "generated_consequences": [],

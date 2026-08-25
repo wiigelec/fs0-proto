@@ -5,7 +5,7 @@
   "file_change": {
     "path": "repo/planning/build-manifest.schema.json",
     "operation": "create",
-    "purpose": "Define durable Build mutation evidence required for Plan-scope Conformance and Governance lineage.",
+    "purpose": "Define the minimum durable Build mutation evidence required for Plan-scope Conformance and Governance lineage.",
     "requirement_ids": [
       "FS0-NR-098",
       "FS0-NR-099",
@@ -22,9 +22,10 @@
       "FS0-NR-193"
     ],
     "implementation": [
-      "Define Draft 2020-12 JSON schema for manifest identity, implementation predecessor, accepted Plan identity/revision, candidate state, and ordered observed mutations.",
-      "Each mutation records repository-relative path, observed operation, applicable planned operation, and generated consequence relationship where relevant.",
-      "Require every manifest path to be unique and prohibit absolute or parent-traversal paths."
+      "Define Draft 2020-12 JSON schema for build identity, accepted Plan identity, actor, implementation predecessor, Build-start state, resulting candidate state, and observed mutations.",
+      "Each mutation records one unique repository-relative path and observed create, modify, delete, or regenerate operation.",
+      "Require repository-relative safe paths and prohibit absolute, parent-traversal, or duplicate path/operation entries.",
+      "Do not require generated-consequence relationships or other deferred evidence-orchestration metadata in FS0-Core."
     ],
     "depends_on_paths": [],
     "generated_consequences": [],

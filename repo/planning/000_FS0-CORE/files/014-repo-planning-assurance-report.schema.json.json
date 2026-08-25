@@ -5,7 +5,7 @@
   "file_change": {
     "path": "repo/planning/assurance-report.schema.json",
     "operation": "create",
-    "purpose": "Define the minimum durable semantic-review evidence representation used by FS0 Planning and Build acceptance.",
+    "purpose": "Define the minimum durable semantic-review evidence representation used by Core Planning and Build acceptance.",
     "requirement_ids": [
       "FS0-NR-082",
       "FS0-NR-120",
@@ -21,8 +21,10 @@
       "FS0-NR-147"
     ],
     "implementation": [
-      "Define Draft 2020-12 JSON schema for Assurance report identity, phase, subject, exact artifact revision, reviewer/actor identity, disposition pass/fail, required review criteria, findings, rationale, and evidence references.",
-      "Keep case findings non-normative and require explicit routing target when disposition fails because upstream correction is needed."
+      "Define Draft 2020-12 JSON schema for Assurance report phase, governed subject identity, PASS/FAIL disposition, rationale, evidence references, and case-specific findings.",
+      "Each finding records stable case identity, PASS/FAIL disposition, rationale, and optional evidence references.",
+      "Keep findings non-normative; the schema SHALL NOT provide fields that create, amend, supersede, or withdraw normative authority.",
+      "Do not require deferred mature review-criteria registries, reviewer-profile metadata, or independent exact-revision fields when the governed subject/evidence references already establish identity."
     ],
     "validation_ids": [
       "VAL-004",

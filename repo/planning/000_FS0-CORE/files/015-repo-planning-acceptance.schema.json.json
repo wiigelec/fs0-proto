@@ -5,7 +5,7 @@
   "file_change": {
     "path": "repo/planning/acceptance.schema.json",
     "operation": "create",
-    "purpose": "Define durable Governance acceptance and lineage records without circular self-authorization.",
+    "purpose": "Define the minimum durable explicit Governance acceptance and lineage representation without circular self-authorization.",
     "requirement_ids": [
       "FS0-NR-093",
       "FS0-NR-094",
@@ -21,9 +21,10 @@
       "FS0-NR-147"
     ],
     "implementation": [
-      "Define Draft 2020-12 JSON schema for acceptance identity, stage, subject artifact identity/revision, actor, decision, authority prerequisites, Conformance evidence refs, Assurance evidence refs, predecessor implementation state, and resulting accepted state.",
-      "Forbid using the resulting acceptance identity/state as one of its own authority prerequisites.",
-      "Require build acceptance to identify the resulting accepted implementation repository revision."
+      "Define Draft 2020-12 JSON schema for acceptance identity, Planning/Build stage, governed subject identity, actor, ACCEPT decision, predecessor authority, evidence references, and resulting accepted state.",
+      "Require all authority and evidence references to be explicit non-empty identities rather than inferred repository or platform activity.",
+      "The resulting state SHALL NOT equal the predecessor authority, preventing the candidate accepted state from serving as its own prerequisite.",
+      "Build acceptance resulting_state carries the accepted implementation state identity; richer separated evidence classes and rejection-history records remain deferred."
     ],
     "validation_ids": [
       "VAL-005",
