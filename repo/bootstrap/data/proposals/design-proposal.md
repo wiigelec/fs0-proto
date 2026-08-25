@@ -99,7 +99,7 @@ Design statement identifiers are non-normative addresses used for discussion and
 `functional-set.json` may select Design statement identifiers to define the Design scope of one functional set.
 
 **DP001-REQUIREMENTS-014**
-`plan.json` owns decomposition and distillation of selected Design into repository normative requirements and implementation intent.
+The logical Plan rooted at `plan.json` owns decomposition and distillation of selected Design into repository normative requirements and implementation intent.
 
 **DP001-REQUIREMENTS-015**
 No one-to-one cardinality or mandatory hard traceability relationship exists between a Design statement and a repository normative requirement.
@@ -178,7 +178,7 @@ Conversation and scratch analysis may inform Design but are not durable Design a
 `functional-set.json` identifies selected Design statement IDs.
 
 **DP001-INTERFACES-003**
-`plan.json` performs normative distillation, exact file scoping, pseudo-code specification, sequencing, and validation planning.
+The logical Plan document graph rooted at `plan.json` performs normative distillation, exact file scoping, pseudo-code specification, sequencing, and validation planning.
 
 **DP001-INTERFACES-004**
 Build consumes the accepted Plan and produces syntactically correct, validated, operational code.
@@ -242,7 +242,7 @@ Design Proposal statement IDs are the only requirement-like identities authored 
 Design Proposals do not preassign repository normative requirement IDs, even provisionally.
 
 **DP001-DETAIL-007**
-Planning selects DP statement IDs in `functional-set.json` and independently distills and assigns repository normative requirements in `plan.json`.
+Planning selects DP statement IDs in `functional-set.json` and independently distills and assigns repository normative requirements in the logical Plan rooted at `plan.json`.
 
 ## Alternatives Considered
 

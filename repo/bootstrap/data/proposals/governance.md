@@ -174,7 +174,7 @@ Design statement IDs remain non-normative addresses. Selecting a Design statemen
 ### Plan
 
 **DP020-DETAIL-020**
-`plan.json` performs the decomposition and distillation of the selected Design scope.
+The logical Plan document graph rooted at `plan.json` performs the decomposition and distillation of the selected Design scope.
 
 **DP020-DETAIL-021**
 Planning may derive zero, one, or multiple repository normative requirements from one selected Design statement and may derive one normative requirement from multiple selected Design statements.
@@ -183,10 +183,10 @@ Planning may derive zero, one, or multiple repository normative requirements fro
 Planning assigns repository normative requirement identities as needed for the selected functional set.
 
 **DP020-DETAIL-023**
-The Plan identifies every file to be created, modified, deleted, or regenerated and provides detailed pseudo-code or equivalent implementation specification for each planned change.
+The logical Plan document graph identifies every file to be created, modified, deleted, or regenerated and provides detailed pseudo-code or equivalent implementation specification for each planned change.
 
 **DP020-DETAIL-024**
-The Plan defines required invariants, sequencing, validation, generated consequences, and completion conditions.
+The logical Plan document graph defines required invariants, sequencing, validation, generated consequences, and completion conditions.
 
 **DP020-DETAIL-025**
 The Plan must be sufficiently detailed and mechanically executable so Build can implement it without inventing new Design semantics, architecture, functional scope, or unplanned mutation paths.
@@ -903,6 +903,36 @@ Planning acceptance SHALL apply to the complete resolved Plan document graph rat
 
 **DP020-DETAIL-175**
 Plan Conformance SHALL reject a Plan document graph containing a missing, duplicate, conflicting, unreachable, or unauthorized Plan document.
+
+
+### FS0 Bootstrap Governance Contract
+
+**DP020-DETAIL-176**
+Before the FS0-Core runtime exists, authorized external human or automated actors MAY perform the Design Assurance, Planning Conformance, and Planning Assurance required to govern FS0-Core.
+
+**DP020-DETAIL-177**
+The candidate FS0-Core runtime SHALL NOT serve as an authority or evidentiary prerequisite for acceptance of the Plan that creates that runtime.
+
+**DP020-DETAIL-178**
+Bootstrap Design Assurance SHALL evaluate the exact Design Proposal revisions selected by FS0-Core.
+
+**DP020-DETAIL-179**
+Bootstrap Planning Conformance SHALL mechanically evaluate the FS0-Core Design inputs, functional-set scope, complete Plan document graph, and implementation-predecessor executability before Planning acceptance.
+
+**DP020-DETAIL-180**
+Bootstrap Planning Assurance SHALL evaluate the complete FS0-Core functional set and logical Plan using the semantic criteria required for later governed Planning Assurance.
+
+**DP020-DETAIL-181**
+Bootstrap Conformance and Assurance evidence required for FS0-Core acceptance SHALL be durable and resolvable from Governance acceptance lineage.
+
+**DP020-DETAIL-182**
+Bootstrap schemas that define functional-set and Plan artifact contracts MAY be created as governed Planning artifacts before FS0-Core Build.
+
+**DP020-DETAIL-183**
+A bootstrap Planning artifact SHALL NOT become FS0-Core implementation realization solely because the FS0-Core runtime consumes that artifact.
+
+**DP020-DETAIL-184**
+FS0-Core Build MAY consume accepted bootstrap Planning artifacts while retaining the pre-Planning accepted repository revision as its declared implementation predecessor.
 
 
 ## Alternatives Considered

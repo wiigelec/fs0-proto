@@ -1262,6 +1262,21 @@ Review includes:
 - evidence sufficiency.
 Assurance findings remain case-specific. Persistent semantic correction returns to Design when intended meaning must change, or to Planning when Design remains sound but functional-set scope, normative distillation, or implementation intent must change.
 
+### FS0 Bootstrap Assurance
+
+**DP040-DETAIL-216**
+Before the candidate FS0-Core Assurance runtime exists, authorized bootstrap Assurance MAY perform Design Assurance and Planning Assurance for FS0-Core.
+
+**DP040-DETAIL-217**
+Bootstrap Design Assurance SHALL apply the Design Assurance criteria to the exact Design Proposal revisions selected by FS0-Core.
+
+**DP040-DETAIL-218**
+Bootstrap Planning Assurance SHALL apply the Planning Assurance criteria to the complete FS0-Core functional set and resolved logical Plan.
+
+**DP040-DETAIL-219**
+Candidate FS0-Core Assurance results SHALL NOT be prerequisites for accepting the Plan that creates the candidate FS0-Core Assurance runtime.
+
+
 ## Alternatives Considered
 
 **Section ID:** `ALTERNATIVES`

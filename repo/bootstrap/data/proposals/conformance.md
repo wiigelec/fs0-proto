@@ -1434,17 +1434,17 @@ Functional-set Conformance verifies that `functional-set.json`:
 #### Plan Conformance
 
 **DP030-DETAIL-270**
-Plan Conformance verifies that `plan.json`:
+Plan Conformance verifies the complete logical Plan document graph rooted at `plan.json`:
 
 **DP030-DETAIL-271**
-- conforms to the accepted Plan schema;
+- has a schema-valid `plan.json` root manifest and schema-valid explicitly referenced Plan subdocuments;
 - resolves the functional set it realizes;
 - resolves the exact accepted repository predecessor;
 - contains valid Planning-assigned normative identities where normative requirements are created;
-- identifies every planned create, modify, delete, and regenerate path;
-- contains required pseudo-code or equivalent implementation detail;
-- contains required invariants and validation intent;
-- contains no duplicate or structurally invalid paths; and
+- identifies every planned create, modify, delete, and regenerate path through authorized file-realization Plan documents;
+- contains required pseudo-code or equivalent implementation detail through authorized file-realization Plan documents;
+- contains required invariants and validation intent through their authorized Plan document classes;
+- contains no missing, duplicate, conflicting, unreachable, unauthorized, or structurally invalid Plan documents or target paths; and
 - is mechanically executable against the accepted predecessor and current mutation constraints.
 A Plan that is known to require an unauthorized or impossible mutation shall not conform.
 
@@ -1461,6 +1461,21 @@ Build Conformance verifies that:
 - canonical repository validation passes; and
 - the planned end-to-end operational checks for the functional set pass.
 Conformance failure blocks acceptance but does not itself create Design or Planning semantics.
+
+### FS0 Bootstrap Conformance
+
+**DP030-DETAIL-274**
+Before the candidate FS0-Core Conformance runtime exists, authorized bootstrap Conformance MAY mechanically evaluate FS0-Core Design, functional-set, and Plan artifacts.
+
+**DP030-DETAIL-275**
+Bootstrap Conformance SHALL apply the same objective Design, functional-set, Plan-graph, reference-resolution, mutation-scope, and predecessor-executability contracts that the FS0-Core runtime is required to enforce for later functional sets.
+
+**DP030-DETAIL-276**
+Candidate FS0-Core Conformance results SHALL NOT be prerequisites for accepting the Plan that creates the candidate FS0-Core Conformance runtime.
+
+**DP030-DETAIL-277**
+After Build, FS0-Core SHALL demonstrate that its maintained Conformance runtime can enforce the required workflow contracts for a subsequent functional set.
+
 
 ## Alternatives Considered
 
