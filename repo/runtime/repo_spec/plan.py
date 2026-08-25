@@ -208,11 +208,19 @@ def load_plan(plan_path: str | Path, repository: Repository) -> LogicalPlan:
         if unknown:
             raise PlanningError("unknown-file-validation", f"{fc.path} references unknown validation IDs {unknown}")
 
+    try:
+        repo_relative_plan = plan_path.resolve().relative_to(repository.root).as_posix()
+    except ValueError as exc:
+        raise PlanningError(
+            "plan-outside-repository",
+            f"Plan path is outside the explicit repository root: {plan_path}",
+        ) from exc
+
     return LogicalPlan(
         plan_id,
         pmeta.get("title", ""),
         pmeta.get("description", ""),
-        normalize_repo_path(plan_path.as_posix()),
+        normalize_repo_path(repo_relative_plan),
         predecessor,
         functional_set,
         requirements,
