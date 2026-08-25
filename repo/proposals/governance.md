@@ -935,6 +935,21 @@ A bootstrap Planning artifact SHALL NOT become FS0-Core implementation realizati
 FS0-Core Build MAY consume accepted bootstrap Planning artifacts while retaining the pre-Planning accepted repository revision as its declared implementation predecessor.
 
 
+### Pre-Build Design and Planning Artifact Bridge
+
+**DP020-DETAIL-185**
+Accepted Design and Planning artifacts MAY be committed after a Plan's declared implementation predecessor and before Build begins.
+
+**DP020-DETAIL-186**
+The existence of accepted Design or Planning artifact commits after the declared implementation predecessor SHALL NOT by itself change that implementation predecessor.
+
+**DP020-DETAIL-187**
+Build SHALL mechanically verify that repository changes between the declared implementation predecessor and Build start state are confined to governed Design and Planning artifact namespaces before treating those changes as pre-Build artifact-only state.
+
+**DP020-DETAIL-188**
+Build SHALL reject pre-Build artifact-only classification when any repository change between the declared implementation predecessor and Build start state mutates implementation realization outside governed Design and Planning artifact namespaces.
+
+
 ## Alternatives Considered
 
 **Section ID:** `ALTERNATIVES`
