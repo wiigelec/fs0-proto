@@ -23,8 +23,6 @@
       "FS0-NR-210",
       "FS0-NR-211",
       "FS0-NR-212",
-      "FS0-NR-213",
-      "FS0-NR-214",
       "FS0-NR-215",
       "FS0-NR-216",
       "FS0-NR-217",
@@ -36,15 +34,7 @@
       "FS0-NR-223",
       "FS0-NR-224",
       "FS0-NR-225",
-      "FS0-NR-226",
-      "FS0-NR-227",
-      "FS0-NR-228",
-      "FS0-NR-229",
-      "FS0-NR-230",
-      "FS0-NR-231",
-      "FS0-NR-232",
-      "FS0-NR-252",
-      "FS0-NR-253"
+      "FS0-NR-226"
     ],
     "implementation": [
       "Load plan.schema.json as the schema for the root manifest only; treat plan.json as a manifest rather than as the container of all Plan semantics.",
@@ -52,7 +42,6 @@
       "Validate each Plan subdocument against its dedicated accepted schema and require artifact_type, schema_version, and plan_id to match the logical Plan contract.",
       "Canonicalize every referenced Plan-document path relative to the functional-set directory; reject absolute paths, traversal, duplicate references, and references outside the authorized Plan directory.",
       "Enumerate Plan JSON documents in the functional-set directory excluding functional-set.json and reject any Plan document not explicitly reachable from the root manifest.",
-      "Require every manifest-declared Plan document to exist exactly once and reject missing, duplicate, conflicting, unreachable, or unauthorized fragments.",
       "Resolve the referenced functional-set artifact and require matching functional_set.id and exact Design revision bindings.",
       "Require implementation_predecessor.repository_revision to equal the functional-set accepted predecessor while allowing only explicitly governed bootstrap Planning-artifact descendants in the working repository state.",
       "Validate normative requirement uniqueness, normative-statement contract compliance, and applicability records through normative.py.",

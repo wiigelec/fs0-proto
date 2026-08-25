@@ -30,15 +30,12 @@
       "FS0-NR-114",
       "FS0-NR-116",
       "FS0-NR-117",
-      "FS0-NR-118",
-      "FS0-NR-119",
       "FS0-NR-120",
       "FS0-NR-126",
       "FS0-NR-127",
       "FS0-NR-128",
       "FS0-NR-129",
       "FS0-NR-137",
-      "FS0-NR-138",
       "FS0-NR-139",
       "FS0-NR-140",
       "FS0-NR-141",
@@ -75,9 +72,7 @@
       "FS0-NR-191",
       "FS0-NR-193",
       "FS0-NR-194",
-      "FS0-NR-195",
-      "FS0-NR-252",
-      "FS0-NR-253"
+      "FS0-NR-195"
     ],
     "implementation": [
       "Open a BuildSession around a minimal accepted Plan and temporary repository.",
@@ -89,7 +84,6 @@
       "Assert governed state with no resolvable accepted authorization or governed extension point is rejected by default.",
       "Assert minimal Conformance reports and Build mutation manifests are identity-bearing and resolvable from acceptance lineage.",
       "Assert Build may start from an authorized Planning-artifact-only descendant of the declared implementation predecessor.",
-      "Assert implementation realization cannot be reclassified as Planning-only to bypass predecessor or mutation-scope enforcement.",
       "Do not require rich rejection history, generalized authority-lifecycle mutation, or exhaustive platform-capability hardening in FS0-Core."
     ],
     "depends_on_paths": [

@@ -6,7 +6,7 @@
     "id": "FS0-CORE",
     "kind": "core",
     "title": "FS0-Core",
-    "description": "Irreducible standalone self-hosting repo-spec core. FS0-Core implements only the runtime capabilities required to consume selected Design, load one functional set and closed modular Plan, represent stable normative identities and applicability, execute bounded Build work against an accepted predecessor, perform basic Conformance and governed semantic Assurance, record explicit non-circular acceptance with minimum lineage, and govern one successor functional-set cycle. Bootstrap-process policy and mature framework quality/hardening semantics remain in Design for later realization."
+    "description": "Irreducible standalone self-hosting repo-spec core. FS0-Core implements only the runtime capabilities required to consume selected Design, load one functionality-defined functional set and closed modular Plan, represent stable normative identities and applicability, execute bounded Build work against an accepted predecessor, perform basic Conformance and governed semantic Assurance, record explicit non-circular acceptance with minimum lineage, and govern the next functionality-defined functional-set cycle."
   },
   "accepted_predecessor": {
     "repository_revision": "65b6477dc3ed10cd6ebb83e83653e995f63b47fd"

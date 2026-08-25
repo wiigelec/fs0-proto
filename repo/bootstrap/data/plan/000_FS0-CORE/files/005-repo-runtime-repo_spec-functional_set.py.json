@@ -9,19 +9,14 @@
     "requirement_ids": [
       "FS0-NR-013",
       "FS0-NR-015",
-      "FS0-NR-016",
-      "FS0-NR-017",
       "FS0-NR-018",
       "FS0-NR-019",
       "FS0-NR-020",
       "FS0-NR-021",
-      "FS0-NR-022",
-      "FS0-NR-023",
-      "FS0-NR-024"
+      "FS0-NR-022"
     ],
     "implementation": [
       "Load functional-set.schema.json and validate the subset of JSON Schema constructs used by the bootstrap contracts with stdlib-only code.",
-      "Verify canonical directory/order identity, including 000_FS0-CORE for core and order >=1 for extensions.",
       "Verify accepted predecessor shape and exact Design-input revision bindings.",
       "Call design.py to resolve all selected DP statements and reject references outside declared Design inputs.",
       "Return a FunctionalSet object containing scope only; reject Plan-owned fields."

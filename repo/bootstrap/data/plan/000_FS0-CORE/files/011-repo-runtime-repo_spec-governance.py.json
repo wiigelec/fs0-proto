@@ -16,7 +16,6 @@
       "FS0-NR-128",
       "FS0-NR-129",
       "FS0-NR-137",
-      "FS0-NR-138",
       "FS0-NR-139",
       "FS0-NR-140",
       "FS0-NR-141",
@@ -55,10 +54,7 @@
       "FS0-NR-194",
       "FS0-NR-195",
       "FS0-NR-210",
-      "FS0-NR-226",
-      "FS0-NR-227",
-      "FS0-NR-252",
-      "FS0-NR-253"
+      "FS0-NR-226"
     ],
     "implementation": [
       "Define governed artifact identities and acceptance records for Design readiness, Planning acceptance, and Build acceptance.",
@@ -71,7 +67,6 @@
       "Maintain stable identities for Design revisions, Planning work, accepted Plans, Build work, and accepted Build results.",
       "Reference the minimal durable Conformance, Assurance, and Build mutation evidence needed by Core acceptance lineage.",
       "Treat accepted functional-set/Plan schemas and modular Planning documents created before Build as governed Planning artifacts rather than FS0 Build realization.",
-      "Permit Build to consume accepted bootstrap Planning artifacts while preserving the Plan-declared pre-Planning implementation predecessor.",
       "Defer rich rejected-candidate history, generalized normative lifecycle mutation, derived/product provenance hardening, and exhaustive platform-capability policies."
     ],
     "depends_on_paths": [

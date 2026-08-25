@@ -28,9 +28,7 @@
       "FS0-NR-189",
       "FS0-NR-190",
       "FS0-NR-191",
-      "FS0-NR-193",
-      "FS0-NR-252",
-      "FS0-NR-253"
+      "FS0-NR-193"
     ],
     "implementation": [
       "Define Repository rooted at an explicit filesystem path and reject implicit authority from process current working directory.",

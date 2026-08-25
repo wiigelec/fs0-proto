@@ -24,8 +24,6 @@
       "requirement_ids": [
         "FS0-NR-013",
         "FS0-NR-015",
-        "FS0-NR-016",
-        "FS0-NR-017",
         "FS0-NR-018"
       ]
     },
@@ -42,8 +40,6 @@
         "FS0-NR-210",
         "FS0-NR-211",
         "FS0-NR-212",
-        "FS0-NR-213",
-        "FS0-NR-214",
         "FS0-NR-215",
         "FS0-NR-216",
         "FS0-NR-217",
@@ -55,13 +51,7 @@
         "FS0-NR-223",
         "FS0-NR-224",
         "FS0-NR-225",
-        "FS0-NR-226",
-        "FS0-NR-227",
-        "FS0-NR-228",
-        "FS0-NR-229",
-        "FS0-NR-230",
-        "FS0-NR-231",
-        "FS0-NR-232"
+        "FS0-NR-226"
       ]
     },
     {
@@ -93,7 +83,6 @@
         "FS0-NR-131",
         "FS0-NR-136",
         "FS0-NR-137",
-        "FS0-NR-138",
         "FS0-NR-139",
         "FS0-NR-194",
         "FS0-NR-195"
@@ -136,14 +125,6 @@
         "FS0-NR-162",
         "FS0-NR-163",
         "FS0-NR-164"
-      ]
-    },
-    {
-      "id": "INV-008",
-      "statement": "FS0 bootstrap acceptance uses pre-existing external authority and evidence rather than candidate-runtime self-authorization.",
-      "requirement_ids": [
-        "FS0-NR-252",
-        "FS0-NR-253"
       ]
     },
     {
