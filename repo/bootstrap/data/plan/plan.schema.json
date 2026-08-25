@@ -10,7 +10,7 @@
     "artifact_type",
     "plan",
     "functional_set",
-    "accepted_predecessor",
+    "implementation_predecessor",
     "normative_requirements",
     "file_changes",
     "execution",
@@ -66,19 +66,6 @@
           "type": "string",
           "pattern": "^repo/bootstrap/data/plan/[0-9]{3}_[A-Za-z0-9._-]+/functional-set\\.json$",
           "description": "Canonical functional-set artifact realized by this Plan."
-        }
-      }
-    },
-    "accepted_predecessor": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "repository_revision"
-      ],
-      "properties": {
-        "repository_revision": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{40}$"
         }
       }
     },
@@ -435,6 +422,20 @@
           }
         }
       }
+    },
+    "implementation_predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_revision"
+      ],
+      "properties": {
+        "repository_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "description": "Exact accepted implementation state that this Plan intends Build to mutate. This is distinct from the later repository revision containing the accepted Planning artifacts."
     }
   }
 }
