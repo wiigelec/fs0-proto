@@ -76,7 +76,19 @@
       "FS0-NR-067",
       "FS0-NR-068",
       "FS0-NR-069",
-      "FS0-NR-070"
+      "FS0-NR-070",
+      "FS0-NR-233",
+      "FS0-NR-235",
+      "FS0-NR-236",
+      "FS0-NR-237",
+      "FS0-NR-238",
+      "FS0-NR-239",
+      "FS0-NR-244",
+      "FS0-NR-245",
+      "FS0-NR-246",
+      "FS0-NR-248",
+      "FS0-NR-250",
+      "FS0-NR-255"
     ],
     "implementation": [
       "Define AssuranceFinding and AssuranceReport records with phase, subject identity, disposition, rationale, and evidence references.",
@@ -85,7 +97,10 @@
       "Require Build Assurance to address Plan fidelity, Design-through-Plan fidelity, operational adequacy, material edge/failure behavior, unauthorized improvisation, and evidence sufficiency.",
       "Do not mutate normative authority; findings route persistent meaning defects to Design and distillation/intent defects to Planning.",
       "Require Design Assurance reports to address clarity, completeness, consistency, architecture/boundaries, ambiguity, omissions, alternatives/tradeoffs, risks, and blocking questions.",
-      "For FS0 bootstrap only, accept the pre-Build Planning Assurance decision as externally produced Governance evidence; the candidate runtime's planning-assure command validates capability for later functional sets and cannot self-authorize the Plan that creates it."
+      "For FS0 bootstrap only, accept the pre-Build Planning Assurance decision as externally produced Governance evidence; the candidate runtime's planning-assure command validates capability for later functional sets and cannot self-authorize the Plan that creates it.",
+      "For FS0 bootstrap, consume externally produced Design Assurance evidence over the exact selected Design revisions before Planning acceptance.",
+      "For FS0 bootstrap, consume externally produced Planning Assurance evidence over the complete functional set and resolved logical Plan; the candidate runtime cannot self-authorize the Plan that creates it.",
+      "For post-bootstrap functional sets, the maintained FS0 runtime produces Design, Planning, and Build Assurance reports under accepted Governance authority."
     ],
     "validation_ids": [
       "VAL-006",

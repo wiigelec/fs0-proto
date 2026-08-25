@@ -37,7 +37,7 @@
     },
     {
       "step": 4,
-      "description": "Define durable Assurance and acceptance evidence schemas.",
+      "description": "Define durable Assurance, Conformance, Build-manifest, and Governance acceptance evidence schemas.",
       "paths": [
         "repo/bootstrap/data/plan/assurance-report.schema.json",
         "repo/bootstrap/data/plan/acceptance.schema.json",

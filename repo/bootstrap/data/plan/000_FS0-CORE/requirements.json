@@ -2896,6 +2896,292 @@
           "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
         }
       }
+    },
+    {
+      "id": "FS0-NR-233",
+      "statement": "Before the FS0-Core runtime exists, authorized external actors MAY perform required bootstrap Design Assurance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-234",
+      "statement": "Before the FS0-Core runtime exists, authorized external actors MAY perform required bootstrap Planning Conformance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-235",
+      "statement": "Before the FS0-Core runtime exists, authorized external actors MAY perform required bootstrap Planning Assurance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-236",
+      "statement": "The candidate FS0-Core runtime SHALL NOT serve as an authority prerequisite for acceptance of the Plan that creates that runtime.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-237",
+      "statement": "The candidate FS0-Core runtime SHALL NOT serve as an evidentiary prerequisite for acceptance of the Plan that creates that runtime.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-238",
+      "statement": "Bootstrap Design Assurance SHALL evaluate the exact Design Proposal revisions selected by FS0-Core.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-239",
+      "statement": "Bootstrap Design Assurance SHALL apply the governed Design Assurance criteria.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-240",
+      "statement": "Bootstrap Planning Conformance SHALL mechanically evaluate the FS0-Core Design inputs.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-241",
+      "statement": "Bootstrap Planning Conformance SHALL mechanically evaluate the FS0-Core functional-set scope.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-242",
+      "statement": "Bootstrap Planning Conformance SHALL mechanically evaluate the complete FS0-Core Plan document graph.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-243",
+      "statement": "Bootstrap Planning Conformance SHALL mechanically evaluate FS0-Core implementation-predecessor executability.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-244",
+      "statement": "Bootstrap Planning Assurance SHALL evaluate the complete FS0-Core functional set.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-245",
+      "statement": "Bootstrap Planning Assurance SHALL evaluate the complete resolved FS0-Core logical Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-246",
+      "statement": "Bootstrap Planning Assurance SHALL apply the governed Planning Assurance criteria.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-247",
+      "statement": "Bootstrap Conformance evidence required for FS0-Core acceptance SHALL be durable.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-248",
+      "statement": "Bootstrap Assurance evidence required for FS0-Core acceptance SHALL be durable.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-249",
+      "statement": "Governance acceptance lineage SHALL resolve required bootstrap Conformance evidence.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-250",
+      "statement": "Governance acceptance lineage SHALL resolve required bootstrap Assurance evidence.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-251",
+      "statement": "Bootstrap schemas defining functional-set or Plan artifact contracts MAY be created as governed Planning artifacts before FS0-Core Build.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-252",
+      "statement": "A bootstrap Planning artifact SHALL NOT become FS0-Core implementation realization solely because the FS0-Core runtime consumes that artifact.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-253",
+      "statement": "FS0-Core Build MAY consume accepted bootstrap Planning artifacts while retaining its declared pre-Planning implementation predecessor.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-254",
+      "statement": "After Build, FS0-Core SHALL demonstrate that its maintained Conformance runtime can enforce the required workflow contracts for a subsequent functional set.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-255",
+      "statement": "After Build, FS0-Core SHALL demonstrate that its maintained Assurance runtime can perform required workflow Assurance for a subsequent functional set.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
     }
   ]
 }

@@ -85,7 +85,17 @@
       "FS0-NR-229",
       "FS0-NR-230",
       "FS0-NR-231",
-      "FS0-NR-232"
+      "FS0-NR-232",
+      "FS0-NR-234",
+      "FS0-NR-236",
+      "FS0-NR-237",
+      "FS0-NR-240",
+      "FS0-NR-241",
+      "FS0-NR-242",
+      "FS0-NR-243",
+      "FS0-NR-247",
+      "FS0-NR-249",
+      "FS0-NR-254"
     ],
     "implementation": [
       "Expose conformance entry points for design, functional-set, plan, and build subjects.",
@@ -96,7 +106,10 @@
       "Produce structured mechanical findings only; never create or amend semantics.",
       "Serialize each Conformance execution to a conformance-report.schema.json-valid report with stable identity and subject/evidence references.",
       "Mechanically enforce default-deny governed-state authorization where authorization relationships are structurally resolvable.",
-      "Validate Build mutation manifests against build-manifest.schema.json and accepted Plan scope."
+      "Validate Build mutation manifests against build-manifest.schema.json and accepted Plan scope.",
+      "Plan Conformance operates on the complete logical Plan returned by plan.py and emits distinct rejection findings for missing, duplicate, conflicting, unreachable, unauthorized, or Plan-ID-mismatched subdocuments.",
+      "For normal post-bootstrap operation, Design, functional-set, and Plan Conformance use the maintained FS0 runtime; FS0's own pre-Build acceptance instead consumes durable externally produced bootstrap Conformance evidence.",
+      "Candidate FS0 Conformance output is never used as a prerequisite for accepting the Plan that creates that candidate runtime."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/design.py",

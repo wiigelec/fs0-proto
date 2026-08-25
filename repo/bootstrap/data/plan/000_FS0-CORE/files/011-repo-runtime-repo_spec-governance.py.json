@@ -83,7 +83,16 @@
       "FS0-NR-200",
       "FS0-NR-210",
       "FS0-NR-226",
-      "FS0-NR-227"
+      "FS0-NR-227",
+      "FS0-NR-236",
+      "FS0-NR-237",
+      "FS0-NR-247",
+      "FS0-NR-248",
+      "FS0-NR-249",
+      "FS0-NR-250",
+      "FS0-NR-251",
+      "FS0-NR-252",
+      "FS0-NR-253"
     ],
     "implementation": [
       "Define governed artifact identities and acceptance records for Design readiness, Planning acceptance, and Build acceptance.",
@@ -97,7 +106,11 @@
       "Resolve keystone delegation through explicit accepted authority relationships before permitting governed actions.",
       "Maintain stable identities for Design revisions, Planning work, accepted Plans, Build work, and Build results.",
       "Maintain normative lifecycle history for creation, amendment, supersession, and withdrawal without identity reuse.",
-      "Reference durable Conformance reports, Assurance reports, and Build mutation manifests in acceptance lineage."
+      "Reference durable Conformance reports, Assurance reports, and Build mutation manifests in acceptance lineage.",
+      "Accept FS0 bootstrap Design Assurance, Planning Conformance, and Planning Assurance only as durable evidence produced under pre-existing accepted bootstrap authority.",
+      "Record bootstrap evidence identities in Planning acceptance lineage without treating candidate FS0 runtime output as a self-authorization prerequisite.",
+      "Treat accepted functional-set/Plan schemas and modular Planning documents created before Build as governed Planning artifacts; their presence in the repository does not make them FS0 Build realization.",
+      "Permit BuildSession to consume accepted bootstrap Planning artifacts while preserving the Plan-declared pre-Planning implementation predecessor."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/assurance.py",

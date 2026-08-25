@@ -29,7 +29,10 @@
       "FS0-NR-190",
       "FS0-NR-191",
       "FS0-NR-192",
-      "FS0-NR-193"
+      "FS0-NR-193",
+      "FS0-NR-251",
+      "FS0-NR-252",
+      "FS0-NR-253"
     ],
     "implementation": [
       "Define Repository rooted at an explicit filesystem path and reject implicit authority from process current working directory.",
@@ -37,7 +40,9 @@
       "Expose exact HEAD, ancestry/descendant checks needed to distinguish implementation predecessor from later Planning-artifact-only commits, and clean/dirty working-state inspection.",
       "Capture changed paths and operation classes relative to the declared implementation predecessor for Build mutation manifests.",
       "Expose resulting candidate revision/state identity only as repository facts; Governance decides whether that state is accepted.",
-      "Raise typed errors when revisions are missing, ambiguous, inaccessible, or incompatible with the declared predecessor."
+      "Raise typed errors when revisions are missing, ambiguous, inaccessible, or incompatible with the declared predecessor.",
+      "Classify commits between the declared implementation predecessor and the Build start state as authorized Planning-artifact-only descendants only when all changed paths are within explicitly governed Design/Planning artifact namespaces.",
+      "Reject a claimed Planning-artifact-only descendant when it includes implementation realization paths."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/errors.py",

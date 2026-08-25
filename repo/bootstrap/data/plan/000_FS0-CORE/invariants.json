@@ -204,6 +204,39 @@
         "FS0-NR-231",
         "FS0-NR-232"
       ]
+    },
+    {
+      "id": "INV-014",
+      "statement": "FS0 bootstrap acceptance depends on durable externally produced Design Assurance, Planning Conformance, and Planning Assurance evidence under pre-existing authority, never on candidate runtime self-authorization.",
+      "requirement_ids": [
+        "FS0-NR-233",
+        "FS0-NR-234",
+        "FS0-NR-235",
+        "FS0-NR-236",
+        "FS0-NR-237",
+        "FS0-NR-238",
+        "FS0-NR-239",
+        "FS0-NR-240",
+        "FS0-NR-241",
+        "FS0-NR-242",
+        "FS0-NR-243",
+        "FS0-NR-244",
+        "FS0-NR-245",
+        "FS0-NR-246",
+        "FS0-NR-247",
+        "FS0-NR-248",
+        "FS0-NR-249",
+        "FS0-NR-250"
+      ]
+    },
+    {
+      "id": "INV-015",
+      "statement": "Governed bootstrap Planning artifacts may be consumed by FS0 Build without becoming Build realization or replacing the Plan-declared pre-Planning implementation predecessor.",
+      "requirement_ids": [
+        "FS0-NR-251",
+        "FS0-NR-252",
+        "FS0-NR-253"
+      ]
     }
   ]
 }

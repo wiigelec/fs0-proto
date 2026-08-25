@@ -87,6 +87,25 @@
         "VAL-007",
         "VAL-010"
       ]
+    },
+    {
+      "id": "COMP-011",
+      "statement": "Bootstrap Design Assurance, Design/functional-set/Plan Conformance, and Planning Assurance all pass without using candidate FS0 runtime output as an acceptance prerequisite.",
+      "validation_ids": [
+        "VAL-001",
+        "VAL-002",
+        "VAL-003",
+        "VAL-007",
+        "VAL-012"
+      ]
+    },
+    {
+      "id": "COMP-012",
+      "statement": "The built FS0 runtime demonstrates maintained Conformance and Assurance capability for a subsequent functional set.",
+      "validation_ids": [
+        "VAL-009",
+        "VAL-010"
+      ]
     }
   ]
 }

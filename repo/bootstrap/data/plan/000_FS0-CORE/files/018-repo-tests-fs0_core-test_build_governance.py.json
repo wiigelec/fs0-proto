@@ -109,7 +109,16 @@
       "FS0-NR-197",
       "FS0-NR-198",
       "FS0-NR-199",
-      "FS0-NR-200"
+      "FS0-NR-200",
+      "FS0-NR-236",
+      "FS0-NR-237",
+      "FS0-NR-247",
+      "FS0-NR-248",
+      "FS0-NR-249",
+      "FS0-NR-250",
+      "FS0-NR-251",
+      "FS0-NR-252",
+      "FS0-NR-253"
     ],
     "implementation": [
       "Open a BuildSession around a minimal accepted Plan and temporary repository.",
@@ -120,7 +129,10 @@
       "Assert Assurance findings cannot directly mutate normative authority.",
       "Assert governed state with no resolvable accepted authorization or governed extension point is rejected by default.",
       "Assert rejection preserves candidate, reason, and provenance and does not advance accepted state.",
-      "Assert Conformance reports and Build manifests are durable, identity-bearing, and resolvable from acceptance lineage."
+      "Assert Conformance reports and Build manifests are durable, identity-bearing, and resolvable from acceptance lineage.",
+      "Assert Build may start from an authorized Planning-artifact-only descendant of the declared implementation predecessor.",
+      "Assert a descendant containing implementation realization cannot be reclassified as Planning-only to bypass predecessor or mutation-scope enforcement.",
+      "Assert Governance lineage references required bootstrap Conformance and Assurance evidence without treating candidate-runtime output as its own acceptance prerequisite."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/build.py",

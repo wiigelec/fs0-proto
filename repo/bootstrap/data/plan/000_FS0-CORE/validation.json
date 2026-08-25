@@ -6,9 +6,8 @@
     {
       "id": "VAL-001",
       "kind": "conformance",
-      "description": "Validate the canonical Design Proposal corpus structurally and resolve FS0-selected DP statements.",
-      "command": "PYTHONPATH=repo/runtime python3 -m repo_spec design-check repo/bootstrap/data/proposals",
-      "success_criteria": "All consumed Design Proposals and selected DP statements resolve without structural or identity errors.",
+      "description": "Bootstrap Design Conformance performed before the candidate FS0 runtime exists.",
+      "success_criteria": "Authorized external mechanical review confirms all consumed Design Proposals are structurally conforming and every selected Design reference resolves at its exact bound revision.",
       "requirement_ids": [
         "FS0-NR-001",
         "FS0-NR-002",
@@ -21,15 +20,20 @@
         "FS0-NR-009",
         "FS0-NR-010",
         "FS0-NR-011",
-        "FS0-NR-012"
+        "FS0-NR-012",
+        "FS0-NR-234",
+        "FS0-NR-236",
+        "FS0-NR-237",
+        "FS0-NR-240",
+        "FS0-NR-247",
+        "FS0-NR-249"
       ]
     },
     {
       "id": "VAL-002",
       "kind": "conformance",
-      "description": "Validate FS0-Core functional-set scope against the functional-set schema and Design inputs.",
-      "command": "PYTHONPATH=repo/runtime python3 -m repo_spec functional-set-check repo/bootstrap/data/plan/000_FS0-CORE/functional-set.json",
-      "success_criteria": "The functional set is schema-valid, canonically identified, exact-revision bound, and every selected statement resolves.",
+      "description": "Bootstrap Functional-set Conformance performed before the candidate FS0 runtime exists.",
+      "success_criteria": "Authorized external mechanical review confirms FS0-Core identity/order, exact Design revision bindings, selected statement resolution, and functional-set scope-only behavior.",
       "requirement_ids": [
         "FS0-NR-013",
         "FS0-NR-014",
@@ -42,15 +46,20 @@
         "FS0-NR-021",
         "FS0-NR-022",
         "FS0-NR-023",
-        "FS0-NR-024"
+        "FS0-NR-024",
+        "FS0-NR-234",
+        "FS0-NR-236",
+        "FS0-NR-237",
+        "FS0-NR-241",
+        "FS0-NR-247",
+        "FS0-NR-249"
       ]
     },
     {
       "id": "VAL-003",
       "kind": "conformance",
-      "description": "Validate FS0-Core Plan schema, normative identities, file scope, references, and mechanical executability.",
-      "command": "PYTHONPATH=repo/runtime python3 -m repo_spec plan-check repo/bootstrap/data/plan/000_FS0-CORE/plan.json",
-      "success_criteria": "The Plan is schema-valid and no impossible, conflicting, unauthorized, or unresolved operation is known before Build.",
+      "description": "Bootstrap Plan Conformance over the complete modular FS0-Core Plan before the candidate FS0 runtime exists.",
+      "success_criteria": "Authorized external mechanical review resolves the closed Plan graph, validates all references and contracts, and confirms no known impossible or unauthorized mutation against the declared predecessor.",
       "requirement_ids": [
         "FS0-NR-025",
         "FS0-NR-031",
@@ -90,7 +99,17 @@
         "FS0-NR-229",
         "FS0-NR-230",
         "FS0-NR-231",
-        "FS0-NR-232"
+        "FS0-NR-232",
+        "FS0-NR-234",
+        "FS0-NR-236",
+        "FS0-NR-237",
+        "FS0-NR-242",
+        "FS0-NR-243",
+        "FS0-NR-247",
+        "FS0-NR-249",
+        "FS0-NR-251",
+        "FS0-NR-252",
+        "FS0-NR-253"
       ]
     },
     {
@@ -379,7 +398,30 @@
         "FS0-NR-229",
         "FS0-NR-230",
         "FS0-NR-231",
-        "FS0-NR-232"
+        "FS0-NR-232",
+        "FS0-NR-233",
+        "FS0-NR-234",
+        "FS0-NR-235",
+        "FS0-NR-236",
+        "FS0-NR-237",
+        "FS0-NR-238",
+        "FS0-NR-239",
+        "FS0-NR-240",
+        "FS0-NR-241",
+        "FS0-NR-242",
+        "FS0-NR-243",
+        "FS0-NR-244",
+        "FS0-NR-245",
+        "FS0-NR-246",
+        "FS0-NR-247",
+        "FS0-NR-248",
+        "FS0-NR-249",
+        "FS0-NR-250",
+        "FS0-NR-251",
+        "FS0-NR-252",
+        "FS0-NR-253",
+        "FS0-NR-254",
+        "FS0-NR-255"
       ]
     },
     {
@@ -514,7 +556,9 @@
         "FS0-NR-107",
         "FS0-NR-145",
         "FS0-NR-146",
-        "FS0-NR-147"
+        "FS0-NR-147",
+        "FS0-NR-254",
+        "FS0-NR-255"
       ]
     },
     {
@@ -755,7 +799,30 @@
         "FS0-NR-229",
         "FS0-NR-230",
         "FS0-NR-231",
-        "FS0-NR-232"
+        "FS0-NR-232",
+        "FS0-NR-233",
+        "FS0-NR-234",
+        "FS0-NR-235",
+        "FS0-NR-236",
+        "FS0-NR-237",
+        "FS0-NR-238",
+        "FS0-NR-239",
+        "FS0-NR-240",
+        "FS0-NR-241",
+        "FS0-NR-242",
+        "FS0-NR-243",
+        "FS0-NR-244",
+        "FS0-NR-245",
+        "FS0-NR-246",
+        "FS0-NR-247",
+        "FS0-NR-248",
+        "FS0-NR-249",
+        "FS0-NR-250",
+        "FS0-NR-251",
+        "FS0-NR-252",
+        "FS0-NR-253",
+        "FS0-NR-254",
+        "FS0-NR-255"
       ]
     },
     {
@@ -778,6 +845,21 @@
         "FS0-NR-191",
         "FS0-NR-192",
         "FS0-NR-193"
+      ]
+    },
+    {
+      "id": "VAL-012",
+      "kind": "assurance",
+      "description": "Bootstrap Design Assurance for the exact FS0-Core Design revisions performed before the candidate FS0 Assurance runtime exists.",
+      "success_criteria": "An explicit PASS review addresses clarity/coherence, completeness relative to stated scope, consistency, architecture and boundaries, ambiguity, omissions, alternatives, tradeoffs, risks, and blocking Design questions for every selected exact Design revision.",
+      "requirement_ids": [
+        "FS0-NR-233",
+        "FS0-NR-236",
+        "FS0-NR-237",
+        "FS0-NR-238",
+        "FS0-NR-239",
+        "FS0-NR-248",
+        "FS0-NR-250"
       ]
     }
   ]
