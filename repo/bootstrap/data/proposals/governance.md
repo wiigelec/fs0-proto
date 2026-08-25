@@ -869,6 +869,42 @@ No arbitrary word or character count defines normative-statement validity. A nor
 Conformance may mechanically enforce structural properties of the normative-statement contract, including identity, required normative-force vocabulary, and forbidden structural forms. Assurance shall evaluate semantic atomicity, standalone sufficiency, ambiguity, inappropriate bundling, and whether splitting or combining statements would better preserve independently governable semantics.
 
 
+### Modular Plan Artifact Contract
+
+**DP020-DETAIL-165**
+An accepted Plan SHALL remain one logical governed artifact even when represented by multiple physical documents.
+
+**DP020-DETAIL-166**
+`plan.json` SHALL be the canonical root manifest for a multi-document Plan.
+
+**DP020-DETAIL-167**
+Each authoritative Plan subdocument SHALL be explicitly reachable from `plan.json` through the Plan document graph.
+
+**DP020-DETAIL-168**
+A file SHALL NOT acquire Plan authority solely because it exists within a functional-set directory or adjacent to an accepted Plan document.
+
+**DP020-DETAIL-169**
+The Plan document graph SHALL be closed to documents not explicitly authorized by the accepted Plan graph.
+
+**DP020-DETAIL-170**
+A multi-document Plan SHALL separately represent normative requirements, file realization plans, execution ordering, invariants, validation, and completion conditions as governed Plan document classes.
+
+**DP020-DETAIL-171**
+Each file realization plan SHALL govern exactly one planned repository target path.
+
+**DP020-DETAIL-172**
+Each Plan subdocument SHALL resolve to the stable identity of the logical Plan to which it belongs.
+
+**DP020-DETAIL-173**
+Plan Conformance SHALL resolve and validate the complete authorized Plan document graph as one logical Plan before Planning acceptance.
+
+**DP020-DETAIL-174**
+Planning acceptance SHALL apply to the complete resolved Plan document graph rather than independently accepting individual Plan fragments.
+
+**DP020-DETAIL-175**
+Plan Conformance SHALL reject a Plan document graph containing a missing, duplicate, conflicting, unreachable, or unauthorized Plan document.
+
+
 ## Alternatives Considered
 
 **Section ID:** `ALTERNATIVES`
