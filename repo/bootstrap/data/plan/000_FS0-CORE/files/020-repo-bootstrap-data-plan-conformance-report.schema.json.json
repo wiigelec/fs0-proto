@@ -1,0 +1,42 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/bootstrap/data/plan/conformance-report.schema.json",
+    "operation": "create",
+    "purpose": "Define durable machine-readable Conformance evidence for Design, functional-set, Plan, and Build acceptance decisions.",
+    "requirement_ids": [
+      "FS0-NR-114",
+      "FS0-NR-115",
+      "FS0-NR-116",
+      "FS0-NR-117",
+      "FS0-NR-118",
+      "FS0-NR-119",
+      "FS0-NR-140",
+      "FS0-NR-141",
+      "FS0-NR-142",
+      "FS0-NR-143",
+      "FS0-NR-145",
+      "FS0-NR-146",
+      "FS0-NR-147",
+      "FS0-NR-182",
+      "FS0-NR-183",
+      "FS0-NR-184",
+      "FS0-NR-185",
+      "FS0-NR-186"
+    ],
+    "implementation": [
+      "Define Draft 2020-12 JSON schema with stable report identity, phase/subject identity, exact subject revision where applicable, check records, pass/fail disposition, evidence references, and deterministic diagnostics.",
+      "Require findings to remain mechanical and forbid fields that purport to create or amend normative semantics.",
+      "Allow Governance acceptance records to reference reports by stable identity and repository path/revision."
+    ],
+    "depends_on_paths": [],
+    "generated_consequences": [],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-010",
+      "VAL-011"
+    ]
+  }
+}

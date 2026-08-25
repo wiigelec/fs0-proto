@@ -1,0 +1,85 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-execution",
+  "plan_id": "FS0-CORE-PLAN",
+  "ordered_steps": [
+    {
+      "step": 1,
+      "description": "Establish shared runtime foundations and Design/functional-set resolution.",
+      "paths": [
+        "repo/runtime/repo_spec/__init__.py",
+        "repo/runtime/repo_spec/errors.py",
+        "repo/runtime/repo_spec/jsonio.py",
+        "repo/runtime/repo_spec/repository.py",
+        "repo/runtime/repo_spec/design.py",
+        "repo/runtime/repo_spec/functional_set.py"
+      ]
+    },
+    {
+      "step": 2,
+      "description": "Implement Planning normative and Plan models plus Planning Assurance.",
+      "paths": [
+        "repo/runtime/repo_spec/normative.py",
+        "repo/runtime/repo_spec/plan.py",
+        "repo/runtime/repo_spec/assurance.py"
+      ]
+    },
+    {
+      "step": 3,
+      "description": "Implement workflow Conformance, Build authorization/evidence, Governance acceptance, and CLI orchestration.",
+      "paths": [
+        "repo/runtime/repo_spec/conformance.py",
+        "repo/runtime/repo_spec/build.py",
+        "repo/runtime/repo_spec/governance.py",
+        "repo/runtime/repo_spec/cli.py",
+        "repo/runtime/repo_spec/__main__.py"
+      ]
+    },
+    {
+      "step": 4,
+      "description": "Define durable Assurance and acceptance evidence schemas.",
+      "paths": [
+        "repo/bootstrap/data/plan/assurance-report.schema.json",
+        "repo/bootstrap/data/plan/acceptance.schema.json",
+        "repo/bootstrap/data/plan/conformance-report.schema.json",
+        "repo/bootstrap/data/plan/build-manifest.schema.json"
+      ]
+    },
+    {
+      "step": 5,
+      "description": "Implement isolated FS0-Core verification tests.",
+      "paths": [
+        "repo/tests/fs0_core/test_design.py",
+        "repo/tests/fs0_core/test_planning.py",
+        "repo/tests/fs0_core/test_build_governance.py"
+      ]
+    },
+    {
+      "step": 6,
+      "description": "Run Planning, Build, repository, and self-hosting validation to prove FS0-Core can support the next functional set.",
+      "paths": [
+        "repo/runtime/repo_spec/__init__.py",
+        "repo/runtime/repo_spec/errors.py",
+        "repo/runtime/repo_spec/jsonio.py",
+        "repo/runtime/repo_spec/design.py",
+        "repo/runtime/repo_spec/functional_set.py",
+        "repo/runtime/repo_spec/normative.py",
+        "repo/runtime/repo_spec/plan.py",
+        "repo/runtime/repo_spec/assurance.py",
+        "repo/runtime/repo_spec/conformance.py",
+        "repo/runtime/repo_spec/build.py",
+        "repo/runtime/repo_spec/governance.py",
+        "repo/runtime/repo_spec/cli.py",
+        "repo/runtime/repo_spec/__main__.py",
+        "repo/bootstrap/data/plan/assurance-report.schema.json",
+        "repo/bootstrap/data/plan/acceptance.schema.json",
+        "repo/tests/fs0_core/test_design.py",
+        "repo/tests/fs0_core/test_planning.py",
+        "repo/tests/fs0_core/test_build_governance.py",
+        "repo/runtime/repo_spec/repository.py",
+        "repo/bootstrap/data/plan/conformance-report.schema.json",
+        "repo/bootstrap/data/plan/build-manifest.schema.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/jsonio.py",
+    "operation": "create",
+    "purpose": "Provide deterministic JSON loading/writing and repository-relative path safety used by all FS0 artifacts.",
+    "requirement_ids": [
+      "FS0-NR-071",
+      "FS0-NR-072",
+      "FS0-NR-079",
+      "FS0-NR-080",
+      "FS0-NR-081",
+      "FS0-NR-108"
+    ],
+    "implementation": [
+      "Load UTF-8 JSON with duplicate-key rejection and explicit parse errors.",
+      "Write canonical UTF-8 JSON with stable indentation and newline termination.",
+      "Resolve repository-relative paths while rejecting absolute paths and parent traversal.",
+      "Expose SHA-format validation and deterministic content hashing helpers without assigning semantic authority to hashes."
+    ],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-010"
+    ],
+    "depends_on_paths": [],
+    "generated_consequences": []
+  }
+}

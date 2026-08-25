@@ -1,0 +1,92 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-completion",
+  "plan_id": "FS0-CORE-PLAN",
+  "completion_conditions": [
+    {
+      "id": "COMP-001",
+      "statement": "All files listed by the Plan exist with the planned semantics and no implementation file outside the accepted Plan scope is required for FS0-Core operation.",
+      "validation_ids": [
+        "VAL-006",
+        "VAL-008"
+      ]
+    },
+    {
+      "id": "COMP-002",
+      "statement": "The canonical Design Proposal corpus and FS0 functional set validate and all selected DP statements resolve at their exact bound revisions.",
+      "validation_ids": [
+        "VAL-001",
+        "VAL-002"
+      ]
+    },
+    {
+      "id": "COMP-003",
+      "statement": "The FS0 Plan validates mechanically and Planning Assurance passes with no unresolved Design or Planning defect.",
+      "validation_ids": [
+        "VAL-003",
+        "VAL-007"
+      ]
+    },
+    {
+      "id": "COMP-004",
+      "statement": "Build Conformance and the complete repository validation sequence pass.",
+      "validation_ids": [
+        "VAL-008",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-005",
+      "statement": "The self-hosting operational check proves FS0-Core can validate and govern the next extension functional-set Planning\u2192Build cycle without out-of-band framework logic.",
+      "validation_ids": [
+        "VAL-009",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-006",
+      "statement": "Governance can record explicit non-circular Build acceptance that advances the accepted implementation state and preserves resolvable lineage.",
+      "validation_ids": [
+        "VAL-005",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-007",
+      "statement": "Default-deny governed-state authorization, explicit delegation resolution, derived-primitive provenance, product/framework separation, rejection preservation, and normative lifecycle history are all mechanically and semantically demonstrated.",
+      "validation_ids": [
+        "VAL-006",
+        "VAL-009",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-008",
+      "statement": "Durable Conformance reports and Build mutation manifests are schema-valid and resolvable from Governance acceptance lineage.",
+      "validation_ids": [
+        "VAL-006",
+        "VAL-008",
+        "VAL-011",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-009",
+      "statement": "FS0 bootstrap Planning Assurance is completed without relying on the candidate FS0 runtime, while the built runtime demonstrates Planning Assurance capability for subsequent functional sets.",
+      "validation_ids": [
+        "VAL-007",
+        "VAL-009",
+        "VAL-010"
+      ]
+    },
+    {
+      "id": "COMP-010",
+      "statement": "All FS0 normative requirements satisfy the accepted normative-statement contract and all governed actor operations enforce explicit authority independent of actor capability.",
+      "validation_ids": [
+        "VAL-006",
+        "VAL-007",
+        "VAL-010"
+      ]
+    }
+  ]
+}

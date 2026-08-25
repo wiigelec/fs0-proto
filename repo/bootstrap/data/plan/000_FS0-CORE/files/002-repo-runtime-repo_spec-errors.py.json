@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/errors.py",
+    "operation": "create",
+    "purpose": "Provide typed failure classes that preserve phase ownership and prevent downstream repair of upstream defects.",
+    "requirement_ids": [
+      "FS0-NR-029",
+      "FS0-NR-030",
+      "FS0-NR-079",
+      "FS0-NR-080",
+      "FS0-NR-081",
+      "FS0-NR-109",
+      "FS0-NR-110",
+      "FS0-NR-111",
+      "FS0-NR-112",
+      "FS0-NR-113"
+    ],
+    "implementation": [
+      "Define base RepoSpecError plus DesignError, PlanningError, ConformanceError, AssuranceError, BuildError, GovernanceError.",
+      "Include machine-readable code, human message, optional artifact/path context, and owning_phase.",
+      "Provide a routing helper that maps Design defects to Design, planning defects to Planning, and realization defects to Build without mutating artifacts."
+    ],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-010"
+    ],
+    "depends_on_paths": [],
+    "generated_consequences": []
+  }
+}

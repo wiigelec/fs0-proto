@@ -1,0 +1,2493 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-requirements",
+  "plan_id": "FS0-CORE-PLAN",
+  "requirements": [
+    {
+      "id": "FS0-NR-001",
+      "statement": "The repository framework SHALL treat maintained Markdown Design Proposals as the canonical Design semantic source.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-002",
+      "statement": "Each consumed Design Proposal SHALL declare a valid stable `DP-NNN` document identity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-003",
+      "statement": "Each consumed Design Proposal SHALL conform to the canonical top-level section structure.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-004",
+      "statement": "Each consumed Design Proposal SHALL declare stable section identities.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-005",
+      "statement": "Each consumed Design Proposal SHALL contain valid unique Design statement identities.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-006",
+      "statement": "Each functional set SHALL bind every consumed Design Proposal to an exact repository revision.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-007",
+      "statement": "Each Plan SHALL preserve the exact Design Proposal revision bindings declared by its functional set.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-008",
+      "statement": "A later Design Proposal revision SHALL NOT silently alter an accepted Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-009",
+      "statement": "A Design statement identity SHALL serve only as an address into Design.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-010",
+      "statement": "A Design statement identity SHALL NOT constitute a repository normative requirement identity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-011",
+      "statement": "Each declared Design Proposal dependency SHALL resolve before Planning acceptance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-012",
+      "statement": "Each selected Design statement identity SHALL resolve before Planning acceptance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-013",
+      "statement": "Planning SHALL select exactly one functional set for each Planning cycle.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-014",
+      "statement": "Each selected functional set SHALL be manageable within one implementation cycle.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-015",
+      "statement": "Each selected functional set SHALL provide one coherent end-to-end unit of functionality.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-016",
+      "statement": "The initial functional set SHALL have the stable identity `FS0-CORE`.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-017",
+      "statement": "`FS0-CORE` SHALL occupy implementation order `000`.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-018",
+      "statement": "Each later functional set SHALL technically depend on `FS0-CORE` for operation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-019",
+      "statement": "Each functional-set directory SHALL contain `functional-set.json`.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-020",
+      "statement": "Each functional-set directory SHALL contain `plan.json`.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-021",
+      "statement": "`functional-set.json` SHALL identify the exact Design Proposal inputs selected for the functional set.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-022",
+      "statement": "`functional-set.json` SHALL identify the Design statement identities selected for the functional set.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-023",
+      "statement": "`functional-set.json` SHALL NOT contain Planning-distilled normative requirements.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-024",
+      "statement": "`functional-set.json` SHALL NOT contain implementation intent.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-025",
+      "statement": "Planning SHALL assign a stable machine-resolvable identity to each normative requirement it distills.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-026",
+      "statement": "Planning MAY derive zero normative requirements from a selected Design statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-027",
+      "statement": "Planning MAY derive multiple normative requirements from one selected Design statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-028",
+      "statement": "Planning MAY derive one normative requirement from multiple selected Design statements.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-029",
+      "statement": "Planning SHALL NOT introduce normative semantics absent from the selected Design scope.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-030",
+      "statement": "A missing Design semantic choice discovered during Planning SHALL route to Design.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-031",
+      "statement": "Each independently governed semantic invariant SHALL have exactly one controlling normative owner.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-032",
+      "statement": "Normative authority SHALL NOT depend for its authority on a circular normative dependency.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-033",
+      "statement": "Each accepted normative requirement SHALL represent exactly one independently governable normative rule.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-034",
+      "statement": "Each normative requirement statement SHALL be self-contained.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-035",
+      "statement": "Each normative requirement statement SHALL identify an explicit normative subject.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-036",
+      "statement": "Each normative requirement statement SHALL identify an explicit normative force.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-037",
+      "statement": "Each normative requirement statement SHALL identify the behavior governed by the rule.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-038",
+      "statement": "The normative force of an accepted normative requirement statement SHALL be limited to `SHALL`, `SHALL NOT`, or `MAY`.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-039",
+      "statement": "An accepted normative requirement statement SHALL NOT use advisory or probabilistic obligation force unless that force is separately defined by accepted authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-040",
+      "statement": "A condition SHALL appear in a normative requirement only when necessary to determine applicability of that single rule.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-041",
+      "statement": "A scope qualifier SHALL appear in a normative requirement only when necessary to determine applicability of that single rule.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-042",
+      "statement": "An exception SHALL appear in a normative requirement only when necessary to determine applicability of that single rule.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-043",
+      "statement": "A normative requirement SHALL NOT combine obligations that can be independently conformed.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-044",
+      "statement": "A normative requirement SHALL NOT combine obligations that can be independently assured.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-045",
+      "statement": "A normative requirement SHALL NOT combine obligations that can be independently accepted.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-046",
+      "statement": "A normative requirement SHALL NOT combine obligations that can be independently amended.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-047",
+      "statement": "A normative requirement SHALL NOT combine obligations that can be independently superseded.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-048",
+      "statement": "A normative requirement SHALL NOT combine obligations that can be independently withdrawn.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-049",
+      "statement": "Multiple subjects or behaviors MAY appear in one normative requirement only when they form one inseparable governed rule.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-050",
+      "statement": "A normative requirement statement SHALL NOT depend on positional context for its normative meaning.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-051",
+      "statement": "A reference required for the meaning of a normative requirement SHALL use a stable resolvable identity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-052",
+      "statement": "A normative requirement statement SHALL contain normative semantics only.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-053",
+      "statement": "Rationale SHALL be represented outside the normative requirement statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-054",
+      "statement": "Explanatory commentary SHALL be represented outside the normative requirement statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-055",
+      "statement": "Examples SHALL be represented outside the normative requirement statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-056",
+      "statement": "Implementation instructions SHALL be represented outside the normative requirement statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-057",
+      "statement": "Pseudo-code SHALL be represented outside the normative requirement statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-058",
+      "statement": "Validation procedures SHALL be represented outside the normative requirement statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-059",
+      "statement": "Evidence SHALL be represented outside the normative requirement statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-060",
+      "statement": "Review findings SHALL be represented outside the normative requirement statement.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-061",
+      "statement": "Normative-statement validity SHALL NOT depend on an arbitrary word count.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-062",
+      "statement": "Normative-statement validity SHALL NOT depend on an arbitrary character count.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-063",
+      "statement": "A normative requirement statement SHALL be no longer than necessary to express its single rule unambiguously.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-064",
+      "statement": "A normative requirement statement SHALL be no shorter than necessary to stand on its own.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-065",
+      "statement": "Conformance SHALL mechanically evaluate the structural properties of the normative-statement contract.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-066",
+      "statement": "Assurance SHALL evaluate normative-requirement semantic atomicity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-067",
+      "statement": "Assurance SHALL evaluate normative-requirement standalone sufficiency.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-068",
+      "statement": "Assurance SHALL evaluate normative-requirement ambiguity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-069",
+      "statement": "Assurance SHALL evaluate inappropriate normative-requirement bundling.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-070",
+      "statement": "Assurance SHALL evaluate whether splitting or combining normative statements better preserves independently governable semantics.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-071",
+      "statement": "Each Plan SHALL identify its exact accepted implementation predecessor.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-072",
+      "statement": "Each Plan SHALL identify every repository path that Build is authorized to create, modify, delete, or regenerate.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-073",
+      "statement": "Each planned mutation SHALL contain implementation intent sufficient for Build to execute without redesigning the feature.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-074",
+      "statement": "Each Plan SHALL define the invariants applicable to its implementation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-075",
+      "statement": "Each Plan SHALL define the dependency and sequencing constraints applicable to its implementation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-076",
+      "statement": "Each Plan SHALL define its generated consequences.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-077",
+      "statement": "Each Plan SHALL define its validation intent.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-078",
+      "statement": "Each Plan SHALL define its completion conditions.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-079",
+      "statement": "Each Plan SHALL be mechanically executable against its declared implementation predecessor.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-080",
+      "statement": "Planning Conformance SHALL reject a Plan known to require an impossible mutation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-081",
+      "statement": "Planning Conformance SHALL reject a Plan known to require an unauthorized mutation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-082",
+      "statement": "Planning Assurance SHALL occur before Plan acceptance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-083",
+      "statement": "Planning Assurance SHALL evaluate fidelity to the exact Design revisions consumed.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-084",
+      "statement": "Planning Assurance SHALL evaluate functional-set coherence.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-085",
+      "statement": "Planning Assurance SHALL evaluate functional-set manageability.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-086",
+      "statement": "Planning Assurance SHALL evaluate normative distillation quality.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-087",
+      "statement": "Planning Assurance SHALL evaluate whether Planning introduced semantics absent from Design.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-088",
+      "statement": "Planning Assurance SHALL evaluate exact file-scope completeness.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-089",
+      "statement": "Planning Assurance SHALL evaluate implementation-specification sufficiency.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-090",
+      "statement": "Planning Assurance SHALL evaluate invariant sufficiency.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-091",
+      "statement": "Planning Assurance SHALL evaluate validation sufficiency.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-092",
+      "statement": "Planning Assurance SHALL evaluate evidence that the Plan is executable against its implementation predecessor.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-093",
+      "statement": "Planning acceptance SHALL be explicit.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-094",
+      "statement": "Planning acceptance SHALL be attributable.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-095",
+      "statement": "Planning acceptance SHALL be traceable.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-096",
+      "statement": "Planning acceptance SHALL be distinguishable from incidental repository or platform activity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-097",
+      "statement": "An accepted Plan SHALL authorize Build only for implementation scope explicitly expressed by that Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-098",
+      "statement": "Build SHALL consume exactly one accepted Plan for a governed Build cycle.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-099",
+      "statement": "Build SHALL use the implementation predecessor declared by the accepted Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-100",
+      "statement": "Build SHALL own implementation correctness.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-101",
+      "statement": "Build SHALL NOT change functional-set scope.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-102",
+      "statement": "Build SHALL NOT change normative intent.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-103",
+      "statement": "Build SHALL NOT change Design architecture.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-104",
+      "statement": "Build SHALL NOT change implementation intent reserved to Planning.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-105",
+      "statement": "Build SHALL produce syntactically correct source or generated state where syntax is applicable.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-106",
+      "statement": "Build SHALL produce validated realization state.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-107",
+      "statement": "Build SHALL produce operational realization state.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-108",
+      "statement": "Build mutations SHALL remain within the accepted Plan's authorized mutation scope.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-109",
+      "statement": "A Build-discovered Design defect SHALL route to Design.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-110",
+      "statement": "A Build-discovered functional-set scope defect SHALL route to Planning.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-111",
+      "statement": "A Build-discovered normative-distillation defect SHALL route to Planning.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-112",
+      "statement": "A Build-discovered implementation-intent defect SHALL route to Planning.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-113",
+      "statement": "Build SHALL NOT repair an upstream defect by inventing missing authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-114",
+      "statement": "Build Conformance SHALL verify that observed mutated paths are authorized by the accepted Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-115",
+      "statement": "Build Conformance SHALL verify declared generated consequences.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-116",
+      "statement": "Build Conformance SHALL run applicable syntax, parse, compile, or equivalent language checks.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-117",
+      "statement": "Build Conformance SHALL run Plan-prescribed validation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-118",
+      "statement": "Build Conformance SHALL run canonical repository validation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-119",
+      "statement": "Build Conformance SHALL run the planned end-to-end operational checks.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-120",
+      "statement": "Build Assurance SHALL evaluate fidelity to the accepted Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-121",
+      "statement": "Build Assurance SHALL evaluate fidelity to selected Design through the accepted Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-122",
+      "statement": "Build Assurance SHALL evaluate operational adequacy.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-123",
+      "statement": "Build Assurance SHALL evaluate semantically material edge and failure behavior.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-124",
+      "statement": "Build Assurance SHALL evaluate the absence of unauthorized improvisation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-125",
+      "statement": "Build Assurance SHALL evaluate evidence sufficiency.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-126",
+      "statement": "Accepted repository-framework normative authority SHALL reside under `repo/`.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-127",
+      "statement": "Governance SHALL control persistent changes to accepted normative authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-128",
+      "statement": "Conformance SHALL control mechanical enforcement of accepted normative authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-129",
+      "statement": "Assurance SHALL control governed semantic review and case-specific semantic judgment.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-130",
+      "statement": "Each keystone SHALL exercise only authority delegated by accepted repository-framework authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-131",
+      "statement": "Delegated authority relationships SHALL be machine-resolvable without inference from non-authoritative repository state.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-132",
+      "statement": "Each maintained derived framework primitive SHALL resolve to accepted normative authority that authorizes its existence or use.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-133",
+      "statement": "Each maintained derived framework primitive SHALL identify the keystone responsibility it serves.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-134",
+      "statement": "Product authority SHALL NOT independently define or amend repository-framework authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-135",
+      "statement": "Product implementation SHALL NOT independently define or amend repository-framework authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-136",
+      "statement": "Accepted repository-framework authority SHALL have stable machine-resolvable identities.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-137",
+      "statement": "Non-normative repository state SHALL NOT independently confer normative authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-138",
+      "statement": "Maintained governed framework state SHALL have accepted authorization or an explicitly governed extension point.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-139",
+      "statement": "Governed framework state without resolvable accepted authorization or a governed extension point SHALL be rejected.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-140",
+      "statement": "An accepted lifecycle SHALL preserve resolvable lineage from selected Design scope to Planning-distilled normative requirements.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-141",
+      "statement": "An accepted lifecycle SHALL preserve resolvable lineage from Planning-distilled normative requirements to the accepted Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-142",
+      "statement": "An accepted lifecycle SHALL preserve resolvable lineage from the accepted Plan to Build realization.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-143",
+      "statement": "An accepted lifecycle SHALL preserve resolvable lineage from Build realization to acceptance evidence.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-144",
+      "statement": "Governance acceptance SHALL depend only on authority accepted before the candidate result acquires the authority produced by that acceptance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-145",
+      "statement": "A candidate Build SHALL NOT become accepted repository state before required Conformance evidence exists.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-146",
+      "statement": "A candidate Build SHALL NOT become accepted repository state before required Assurance evidence exists.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-147",
+      "statement": "A candidate Build SHALL NOT become accepted repository state before explicit Governance acceptance.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-148",
+      "statement": "Governance rejection SHALL preserve the rejected candidate.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-149",
+      "statement": "Governance rejection SHALL preserve the reason for rejection.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-150",
+      "statement": "Governance rejection SHALL preserve provenance to the governed work.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-151",
+      "statement": "A rejected result SHALL NOT become accepted solely because downstream activity exists.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-152",
+      "statement": "Governance state SHALL be explicitly represented.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-153",
+      "statement": "Governed authorization SHALL be bounded to explicitly governed scope.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-154",
+      "statement": "A governed work item SHALL NOT independently authorize unrelated work.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-155",
+      "statement": "A governed work item SHALL NOT independently authorize successor work.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-156",
+      "statement": "A Design Proposal revision participating in authoritative lineage SHALL have a stable identity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-157",
+      "statement": "Planning work participating in authoritative lineage SHALL have a stable identity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-158",
+      "statement": "An accepted Plan participating in authoritative lineage SHALL have a stable identity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-159",
+      "statement": "Build governed work participating in authoritative lineage SHALL have a stable identity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-160",
+      "statement": "An accepted Build result participating in authoritative lineage SHALL have a stable identity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-161",
+      "statement": "Each accepted normative requirement SHALL have a governed Conformance applicability determination.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-162",
+      "statement": "Each accepted normative requirement SHALL have a governed Assurance applicability determination.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-163",
+      "statement": "Governance SHALL own acceptance of each normative requirement's cross-keystone applicability disposition.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-164",
+      "statement": "Governance SHALL support creation of accepted normative authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-165",
+      "statement": "Governance SHALL support amendment of accepted normative authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-166",
+      "statement": "Governance SHALL support supersession of accepted normative authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-167",
+      "statement": "Governance SHALL support withdrawal of accepted normative authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-168",
+      "statement": "Superseded normative authority SHALL remain historically resolvable.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-169",
+      "statement": "Withdrawn normative authority SHALL remain historically resolvable.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-170",
+      "statement": "A normative identity SHALL NOT be reused in a manner that obscures previously accepted authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-171",
+      "statement": "Each normative-authority lifecycle operation SHALL preserve lineage to the Governance work that authorized it.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-172",
+      "statement": "Design Assurance SHALL evaluate semantic planning-readiness before a Design Proposal becomes planning-ready.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-173",
+      "statement": "Design Assurance SHALL evaluate Design clarity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-174",
+      "statement": "Design Assurance SHALL evaluate Design completeness relative to stated scope.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-175",
+      "statement": "Design Assurance SHALL evaluate Design internal consistency.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-176",
+      "statement": "Design Assurance SHALL evaluate Design architecture and boundary quality.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-177",
+      "statement": "Design Assurance SHALL evaluate unresolved Design ambiguity.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-178",
+      "statement": "Design Assurance SHALL evaluate material Design omissions.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-179",
+      "statement": "Design Assurance SHALL evaluate Design alternatives and tradeoffs.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-180",
+      "statement": "Design Assurance SHALL evaluate Design risks.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-181",
+      "statement": "Design Assurance SHALL evaluate whether blocking Design questions remain.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-182",
+      "statement": "Each Conformance finding used for Planning or Build acceptance SHALL have a durable machine-readable representation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-183",
+      "statement": "Each durable Conformance report SHALL identify its governed subject.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-184",
+      "statement": "Each durable Conformance report SHALL identify the mechanical checks performed.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-185",
+      "statement": "Each durable Conformance report SHALL identify its disposition.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-186",
+      "statement": "Each durable Conformance report SHALL identify the evidence supporting its findings.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-187",
+      "statement": "Build SHALL produce a durable mutation manifest.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-188",
+      "statement": "Each Build mutation manifest SHALL identify the implementation predecessor.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-189",
+      "statement": "Each Build mutation manifest SHALL identify the accepted Plan.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-190",
+      "statement": "Each Build mutation manifest SHALL identify every observed path mutation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-191",
+      "statement": "Each Build mutation manifest SHALL identify each observed mutation operation.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-192",
+      "statement": "Each Build mutation manifest SHALL identify declared generated consequences realized by Build.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-193",
+      "statement": "Each Build mutation manifest SHALL identify the resulting candidate state.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The obligation is mechanically decidable under the accepted normative-statement contract."
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-194",
+      "statement": "A governed action performed by a human, automated tool, AI agent, or combination thereof SHALL have explicitly resolved Governance authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-195",
+      "statement": "Actor capability SHALL NOT independently confer Governance authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-196",
+      "statement": "The ability to inspect repository or platform state SHALL NOT independently confer Governance authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-197",
+      "statement": "The ability to modify repository or platform state SHALL NOT independently confer Governance authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-198",
+      "statement": "The ability to merge repository changes SHALL NOT independently confer Governance authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-199",
+      "statement": "The ability to close platform work items SHALL NOT independently confer Governance authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    },
+    {
+      "id": "FS0-NR-200",
+      "statement": "The ability to approve repository or platform activity SHALL NOT independently confer Governance authority.",
+      "evaluation": {
+        "conformance": {
+          "applicability": "required"
+        },
+        "assurance": {
+          "applicability": "required"
+        }
+      }
+    }
+  ]
+}

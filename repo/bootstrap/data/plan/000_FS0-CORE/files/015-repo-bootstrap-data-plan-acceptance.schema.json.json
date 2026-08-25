@@ -1,0 +1,36 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/bootstrap/data/plan/acceptance.schema.json",
+    "operation": "create",
+    "purpose": "Define durable Governance acceptance and lineage records without circular self-authorization.",
+    "requirement_ids": [
+      "FS0-NR-093",
+      "FS0-NR-094",
+      "FS0-NR-095",
+      "FS0-NR-096",
+      "FS0-NR-140",
+      "FS0-NR-141",
+      "FS0-NR-142",
+      "FS0-NR-143",
+      "FS0-NR-144",
+      "FS0-NR-145",
+      "FS0-NR-146",
+      "FS0-NR-147"
+    ],
+    "implementation": [
+      "Define Draft 2020-12 JSON schema for acceptance identity, stage, subject artifact identity/revision, actor, decision, authority prerequisites, Conformance evidence refs, Assurance evidence refs, predecessor implementation state, and resulting accepted state.",
+      "Forbid using the resulting acceptance identity/state as one of its own authority prerequisites.",
+      "Require build acceptance to identify the resulting accepted implementation repository revision."
+    ],
+    "validation_ids": [
+      "VAL-005",
+      "VAL-006",
+      "VAL-010"
+    ],
+    "depends_on_paths": [],
+    "generated_consequences": []
+  }
+}

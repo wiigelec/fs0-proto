@@ -1,0 +1,27 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/__main__.py",
+    "operation": "create",
+    "purpose": "Allow the runtime to be invoked as python -m repo_spec.",
+    "requirement_ids": [
+      "FS0-NR-105",
+      "FS0-NR-106",
+      "FS0-NR-107"
+    ],
+    "implementation": [
+      "Import cli.main and exit with its integer return code.",
+      "Contain no policy or workflow logic."
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/cli.py"
+    ],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-009"
+    ],
+    "generated_consequences": []
+  }
+}

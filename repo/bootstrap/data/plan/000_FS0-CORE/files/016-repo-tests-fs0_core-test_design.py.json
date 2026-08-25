@@ -1,0 +1,36 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/tests/fs0_core/test_design.py",
+    "operation": "create",
+    "purpose": "Verify canonical Design parsing, identities, dependency resolution, and exact selected-statement addressing.",
+    "requirement_ids": [
+      "FS0-NR-001",
+      "FS0-NR-002",
+      "FS0-NR-003",
+      "FS0-NR-004",
+      "FS0-NR-005",
+      "FS0-NR-006",
+      "FS0-NR-007",
+      "FS0-NR-008",
+      "FS0-NR-009",
+      "FS0-NR-010",
+      "FS0-NR-011",
+      "FS0-NR-012"
+    ],
+    "implementation": [
+      "Create temporary valid and invalid Design Proposal fixtures in test code.",
+      "Assert malformed headers, duplicate statements, wrong section order, unresolved dependencies, and wrong statement ownership fail.",
+      "Assert exact revision binding is preserved as data and later Design content cannot silently replace the bound input."
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/design.py"
+    ],
+    "validation_ids": [
+      "VAL-006"
+    ],
+    "generated_consequences": []
+  }
+}

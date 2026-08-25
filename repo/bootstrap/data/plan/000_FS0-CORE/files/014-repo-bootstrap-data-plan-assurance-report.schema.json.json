@@ -1,0 +1,51 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/bootstrap/data/plan/assurance-report.schema.json",
+    "operation": "create",
+    "purpose": "Define the minimum durable semantic-review evidence representation used by FS0 Planning and Build acceptance.",
+    "requirement_ids": [
+      "FS0-NR-082",
+      "FS0-NR-083",
+      "FS0-NR-084",
+      "FS0-NR-085",
+      "FS0-NR-086",
+      "FS0-NR-087",
+      "FS0-NR-088",
+      "FS0-NR-089",
+      "FS0-NR-090",
+      "FS0-NR-091",
+      "FS0-NR-092",
+      "FS0-NR-120",
+      "FS0-NR-121",
+      "FS0-NR-122",
+      "FS0-NR-123",
+      "FS0-NR-124",
+      "FS0-NR-125",
+      "FS0-NR-127",
+      "FS0-NR-128",
+      "FS0-NR-129",
+      "FS0-NR-140",
+      "FS0-NR-141",
+      "FS0-NR-142",
+      "FS0-NR-143",
+      "FS0-NR-145",
+      "FS0-NR-146",
+      "FS0-NR-147"
+    ],
+    "implementation": [
+      "Define Draft 2020-12 JSON schema for Assurance report identity, phase, subject, exact artifact revision, reviewer/actor identity, disposition pass/fail, required review criteria, findings, rationale, and evidence references.",
+      "Keep case findings non-normative and require explicit routing target when disposition fails because upstream correction is needed."
+    ],
+    "validation_ids": [
+      "VAL-004",
+      "VAL-006",
+      "VAL-007",
+      "VAL-010"
+    ],
+    "depends_on_paths": [],
+    "generated_consequences": []
+  }
+}

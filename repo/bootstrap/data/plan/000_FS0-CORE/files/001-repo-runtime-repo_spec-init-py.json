@@ -1,0 +1,27 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/__init__.py",
+    "operation": "create",
+    "purpose": "Define the repo-spec runtime package boundary and public versioned API surface.",
+    "requirement_ids": [
+      "FS0-NR-105",
+      "FS0-NR-106",
+      "FS0-NR-107",
+      "FS0-NR-126"
+    ],
+    "implementation": [
+      "Declare the package as the FS0-Core runtime implementation namespace.",
+      "Export only stable entry points needed by the CLI and later functional sets.",
+      "Do not embed normative semantics in module constants; normative authority remains in Planning/Governance artifacts."
+    ],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-009"
+    ],
+    "depends_on_paths": [],
+    "generated_consequences": []
+  }
+}

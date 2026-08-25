@@ -1,0 +1,59 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/build.py",
+    "operation": "create",
+    "purpose": "Execute an accepted Plan through an authorized actor while enforcing mutation scope and producing Build evidence.",
+    "requirement_ids": [
+      "FS0-NR-098",
+      "FS0-NR-099",
+      "FS0-NR-100",
+      "FS0-NR-101",
+      "FS0-NR-102",
+      "FS0-NR-103",
+      "FS0-NR-104",
+      "FS0-NR-105",
+      "FS0-NR-106",
+      "FS0-NR-107",
+      "FS0-NR-108",
+      "FS0-NR-109",
+      "FS0-NR-110",
+      "FS0-NR-111",
+      "FS0-NR-112",
+      "FS0-NR-113",
+      "FS0-NR-187",
+      "FS0-NR-188",
+      "FS0-NR-189",
+      "FS0-NR-190",
+      "FS0-NR-191",
+      "FS0-NR-192",
+      "FS0-NR-193"
+    ],
+    "implementation": [
+      "Define BuildSession from an accepted immutable Plan plus implementation predecessor.",
+      "Before any mutation, assert current implementation state matches the declared implementation predecessor or an explicitly authorized Planning-artifact-only descendant.",
+      "Expose authorized path/operation queries used by the AI or human Build actor before writes.",
+      "Record every observed mutation into a mutation manifest and reject paths/operations outside the Plan.",
+      "Do not synthesize source from pseudo-code automatically; Build actors implement the Plan, while this module enforces authorization and records evidence.",
+      "Route discovered upstream defects through typed errors rather than expanding scope.",
+      "Finalize only after Build Conformance and Build Assurance reports pass.",
+      "Persist the observed mutation manifest in the schema-defined representation before Build Conformance.",
+      "Use repository.py for predecessor/Planning-descendant checks and mutation observation; do not scatter Git-state interpretation across Build logic."
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/assurance.py",
+      "repo/runtime/repo_spec/conformance.py",
+      "repo/runtime/repo_spec/plan.py",
+      "repo/runtime/repo_spec/repository.py"
+    ],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-008",
+      "VAL-009",
+      "VAL-010"
+    ],
+    "generated_consequences": []
+  }
+}

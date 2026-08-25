@@ -1,0 +1,51 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/design.py",
+    "operation": "create",
+    "purpose": "Resolve and mechanically validate canonical Markdown Design Proposals and selected DP statements.",
+    "requirement_ids": [
+      "FS0-NR-001",
+      "FS0-NR-002",
+      "FS0-NR-003",
+      "FS0-NR-004",
+      "FS0-NR-005",
+      "FS0-NR-006",
+      "FS0-NR-007",
+      "FS0-NR-008",
+      "FS0-NR-009",
+      "FS0-NR-010",
+      "FS0-NR-011",
+      "FS0-NR-012",
+      "FS0-NR-172",
+      "FS0-NR-173",
+      "FS0-NR-174",
+      "FS0-NR-175",
+      "FS0-NR-176",
+      "FS0-NR-177",
+      "FS0-NR-178",
+      "FS0-NR-179",
+      "FS0-NR-180",
+      "FS0-NR-181"
+    ],
+    "implementation": [
+      "Parse the YAML-like metadata header using a minimal deterministic parser for the known Design Proposal metadata keys.",
+      "Verify doc_id format, artifact_type, canonical_format, dependencies, exact 16 level-two headers in canonical order, stable Section ID values, and unique DP statement IDs.",
+      "Resolve declared proposal dependencies from the functional-set Design inputs.",
+      "Given a functional-set Design input, verify path, exact revision token, doc_id, and existence/ownership of every selected statement.",
+      "Return a non-normative DesignIndex containing addresses and source locations only.",
+      "Expose a Design Assurance subject summary containing exact proposal revision, declared dependencies, section completeness, and statement index without deciding semantic readiness mechanically."
+    ],
+    "validation_ids": [
+      "VAL-001",
+      "VAL-006",
+      "VAL-010"
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/repository.py"
+    ],
+    "generated_consequences": []
+  }
+}

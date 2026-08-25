@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/functional_set.py",
+    "operation": "create",
+    "purpose": "Load and validate functional-set.json as the bounded Design scope for one Planning cycle.",
+    "requirement_ids": [
+      "FS0-NR-013",
+      "FS0-NR-014",
+      "FS0-NR-015",
+      "FS0-NR-016",
+      "FS0-NR-017",
+      "FS0-NR-018",
+      "FS0-NR-019",
+      "FS0-NR-020",
+      "FS0-NR-021",
+      "FS0-NR-022",
+      "FS0-NR-023",
+      "FS0-NR-024"
+    ],
+    "implementation": [
+      "Load functional-set.schema.json and validate the subset of JSON Schema constructs used by the bootstrap contracts with stdlib-only code.",
+      "Verify canonical directory/order identity, including 000_FS0-CORE for core and order >=1 for extensions.",
+      "Verify accepted predecessor shape and exact Design-input revision bindings.",
+      "Call design.py to resolve all selected DP statements and reject references outside declared Design inputs.",
+      "Return a FunctionalSet object containing scope only; reject Plan-owned fields."
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/jsonio.py",
+      "repo/runtime/repo_spec/design.py"
+    ],
+    "validation_ids": [
+      "VAL-002",
+      "VAL-006",
+      "VAL-010"
+    ],
+    "generated_consequences": []
+  }
+}

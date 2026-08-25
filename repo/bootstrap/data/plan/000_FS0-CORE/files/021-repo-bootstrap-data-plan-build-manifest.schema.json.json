@@ -1,0 +1,39 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/bootstrap/data/plan/build-manifest.schema.json",
+    "operation": "create",
+    "purpose": "Define durable Build mutation evidence required for Plan-scope Conformance and Governance lineage.",
+    "requirement_ids": [
+      "FS0-NR-098",
+      "FS0-NR-099",
+      "FS0-NR-108",
+      "FS0-NR-140",
+      "FS0-NR-141",
+      "FS0-NR-142",
+      "FS0-NR-143",
+      "FS0-NR-187",
+      "FS0-NR-188",
+      "FS0-NR-189",
+      "FS0-NR-190",
+      "FS0-NR-191",
+      "FS0-NR-192",
+      "FS0-NR-193"
+    ],
+    "implementation": [
+      "Define Draft 2020-12 JSON schema for manifest identity, implementation predecessor, accepted Plan identity/revision, candidate state, and ordered observed mutations.",
+      "Each mutation records repository-relative path, observed operation, applicable planned operation, and generated consequence relationship where relevant.",
+      "Require every manifest path to be unique and prohibit absolute or parent-traversal paths."
+    ],
+    "depends_on_paths": [],
+    "generated_consequences": [],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-008",
+      "VAL-010",
+      "VAL-011"
+    ]
+  }
+}

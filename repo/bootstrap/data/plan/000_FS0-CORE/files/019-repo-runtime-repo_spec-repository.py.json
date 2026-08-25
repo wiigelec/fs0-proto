@@ -1,0 +1,54 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/repository.py",
+    "operation": "create",
+    "purpose": "Own explicit repository/revision semantics used for exact Design reads, implementation-predecessor checks, mutation observation, and resulting revision identity.",
+    "requirement_ids": [
+      "FS0-NR-006",
+      "FS0-NR-007",
+      "FS0-NR-008",
+      "FS0-NR-071",
+      "FS0-NR-079",
+      "FS0-NR-080",
+      "FS0-NR-081",
+      "FS0-NR-140",
+      "FS0-NR-141",
+      "FS0-NR-142",
+      "FS0-NR-143",
+      "FS0-NR-136",
+      "FS0-NR-152",
+      "FS0-NR-153",
+      "FS0-NR-154",
+      "FS0-NR-155",
+      "FS0-NR-187",
+      "FS0-NR-188",
+      "FS0-NR-189",
+      "FS0-NR-190",
+      "FS0-NR-191",
+      "FS0-NR-192",
+      "FS0-NR-193"
+    ],
+    "implementation": [
+      "Define Repository rooted at an explicit filesystem path and reject implicit authority from process current working directory.",
+      "Validate full Git revision identities and expose content-at-revision reads for Design Proposal resolution without replacing Markdown as semantic authority.",
+      "Expose exact HEAD, ancestry/descendant checks needed to distinguish implementation predecessor from later Planning-artifact-only commits, and clean/dirty working-state inspection.",
+      "Capture changed paths and operation classes relative to the declared implementation predecessor for Build mutation manifests.",
+      "Expose resulting candidate revision/state identity only as repository facts; Governance decides whether that state is accepted.",
+      "Raise typed errors when revisions are missing, ambiguous, inaccessible, or incompatible with the declared predecessor."
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/errors.py",
+      "repo/runtime/repo_spec/jsonio.py"
+    ],
+    "generated_consequences": [],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-008",
+      "VAL-009",
+      "VAL-010"
+    ]
+  }
+}
