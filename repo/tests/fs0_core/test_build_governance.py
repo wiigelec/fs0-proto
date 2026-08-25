@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from repo_spec.repository import Repository
 ROOT = Path(__file__).resolve().parents[3]
 PLAN_PATH = ROOT / "repo/planning/000_FS0-CORE/plan.json"
 PRE_BUILD = "06a0481ac6efd77e6da3b616854ee5602d6496cc"
+CORE_ACCEPTED_REVISION = json.loads((ROOT / "repo/evidence/fs0-core/accepted-state.json").read_text(encoding="utf-8"))["resulting_revision"]
 
 
 class BuildGovernanceTests(unittest.TestCase):
@@ -50,7 +52,7 @@ class BuildGovernanceTests(unittest.TestCase):
             build_id="FS0-TEST-BUILD", actor="builder",
             build_start_revision=PRE_BUILD,
         )
-        manifest = session.manifest(resulting_revision=self.repo.head)
+        manifest = session.manifest(resulting_revision=CORE_ACCEPTED_REVISION)
         self.assertEqual(manifest["artifact_type"], "build-manifest")
         self.assertEqual(manifest["plan_id"], self.plan.id)
         self.assertGreater(len(manifest["mutations"]), 0)
