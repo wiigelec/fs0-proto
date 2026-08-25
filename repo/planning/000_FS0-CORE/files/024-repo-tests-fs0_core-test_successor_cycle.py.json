@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/tests/fs0_core/test_successor_cycle.py",
+    "operation": "create",
+    "purpose": "Verify maintained FS0-Core primitives required to govern the next functional-set cycle rather than relying on bootstrap-only or manually injected state.",
+    "requirement_ids": [
+      "FS0-NR-117",
+      "FS0-NR-130",
+      "FS0-NR-131",
+      "FS0-NR-139",
+      "FS0-NR-143",
+      "FS0-NR-145",
+      "FS0-NR-146",
+      "FS0-NR-147",
+      "FS0-NR-194",
+      "FS0-NR-195",
+      "FS0-NR-254",
+      "FS0-NR-255"
+    ],
+    "implementation": [
+      "Assert Governance authority state used by successor operation is loaded from durable repository evidence rather than manufactured by the requesting workflow.",
+      "Assert durable evidence references resolve and missing evidence is rejected.",
+      "Assert mechanically runnable Plan-prescribed validation executes and passes.",
+      "Assert BuildSession exposes no manual mutation-injection mechanism capable of adding unobserved mutations to Build evidence."
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/build.py",
+      "repo/runtime/repo_spec/conformance.py",
+      "repo/runtime/repo_spec/evidence.py",
+      "repo/runtime/repo_spec/repository.py",
+      "repo/runtime/repo_spec/validation.py"
+    ],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-009",
+      "VAL-010"
+    ],
+    "generated_consequences": []
+  }
+}

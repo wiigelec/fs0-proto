@@ -1,0 +1,60 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/evidence.py",
+    "operation": "create",
+    "purpose": "Provide durable repository-local evidence resolution and explicit authority-state loading required for governed Conformance, Assurance, and acceptance lineage.",
+    "requirement_ids": [
+      "FS0-NR-130",
+      "FS0-NR-131",
+      "FS0-NR-136",
+      "FS0-NR-139",
+      "FS0-NR-140",
+      "FS0-NR-141",
+      "FS0-NR-142",
+      "FS0-NR-143",
+      "FS0-NR-145",
+      "FS0-NR-146",
+      "FS0-NR-147",
+      "FS0-NR-152",
+      "FS0-NR-153",
+      "FS0-NR-182",
+      "FS0-NR-183",
+      "FS0-NR-185",
+      "FS0-NR-186",
+      "FS0-NR-187",
+      "FS0-NR-188",
+      "FS0-NR-189",
+      "FS0-NR-190",
+      "FS0-NR-191",
+      "FS0-NR-193",
+      "FS0-NR-194",
+      "FS0-NR-195",
+      "FS0-NR-209",
+      "FS0-NR-254",
+      "FS0-NR-255"
+    ],
+    "implementation": [
+      "Load durable evidence only from repository-contained paths.",
+      "Reject missing, malformed, or repository-escaping evidence references.",
+      "Refuse replacement of an existing durable evidence path with different content.",
+      "Resolve acceptance evidence references before Governance consumes them.",
+      "Load explicit authority-state artifacts rather than manufacturing authority as an incidental consequence of the requesting workflow.",
+      "Construct AuthorizationGraph only from resolved authority-state data."
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/errors.py",
+      "repo/runtime/repo_spec/jsonio.py",
+      "repo/runtime/repo_spec/normative.py"
+    ],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-009",
+      "VAL-010",
+      "VAL-011"
+    ],
+    "generated_consequences": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "artifact_type": "plan-file",
+  "plan_id": "FS0-CORE-PLAN",
+  "file_change": {
+    "path": "repo/runtime/repo_spec/validation.py",
+    "operation": "create",
+    "purpose": "Execute mechanically runnable validation explicitly prescribed by an accepted Plan and produce deterministic validation results for Build Conformance evidence.",
+    "requirement_ids": [
+      "FS0-NR-077",
+      "FS0-NR-116",
+      "FS0-NR-117",
+      "FS0-NR-128",
+      "FS0-NR-143",
+      "FS0-NR-209",
+      "FS0-NR-254"
+    ],
+    "implementation": [
+      "Derive required validation identities from the accepted file realization plans.",
+      "Resolve required validation identities against the accepted Plan validation document.",
+      "Execute only mechanically executable validation kinds defined by Core.",
+      "Require every selected executable validation to declare a non-empty command.",
+      "Execute validation from the explicit repository root with deterministic environment controls and a bounded timeout.",
+      "Capture command, return code, stdout, stderr, and disposition as deterministic validation results.",
+      "Reject required mechanical validation that fails or times out.",
+      "Do not perform semantic Assurance in the validation runner."
+    ],
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/errors.py",
+      "repo/runtime/repo_spec/plan.py",
+      "repo/runtime/repo_spec/repository.py"
+    ],
+    "validation_ids": [
+      "VAL-006",
+      "VAL-008",
+      "VAL-009",
+      "VAL-010"
+    ],
+    "generated_consequences": []
+  }
+}

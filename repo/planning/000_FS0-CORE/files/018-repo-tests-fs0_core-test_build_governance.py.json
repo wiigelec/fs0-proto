@@ -88,11 +88,16 @@
       "Assert governed state with no resolvable accepted authorization or governed extension point is rejected by default.",
       "Assert minimal Conformance reports and Build mutation manifests are identity-bearing and resolvable from acceptance lineage.",
       "Assert Build may start from an authorized Planning-artifact-only descendant of the declared implementation predecessor.",
-      "Do not require rich rejection history, generalized authority-lifecycle mutation, or exhaustive platform-capability hardening in FS0-Core."
+      "Do not require rich rejection history, generalized authority-lifecycle mutation, or exhaustive platform-capability hardening in FS0-Core.",
+      "Bind historical FS0 Build assertions to the explicitly accepted Core result rather than ambient repository HEAD so later governed repository evolution cannot silently change the subject of those assertions."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/build.py",
-      "repo/runtime/repo_spec/governance.py"
+      "repo/runtime/repo_spec/governance.py",
+      "repo/runtime/repo_spec/conformance.py",
+      "repo/runtime/repo_spec/assurance.py",
+      "repo/runtime/repo_spec/evidence.py",
+      "repo/runtime/repo_spec/repository.py"
     ],
     "validation_ids": [
       "VAL-006"

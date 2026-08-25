@@ -33,14 +33,23 @@
       "Provide subcommands: design-check, design-assure, functional-set-check, plan-check, planning-assure, plan-accept, build-open, build-check, build-assure, build-accept, status.",
       "All commands accept explicit repository root and artifact paths; no hidden current-directory authority.",
       "Return nonzero on failed Conformance/Assurance/acceptance and emit deterministic JSON summaries suitable for agent use.",
-      "CLI dispatches to domain modules and contains no independent policy semantics."
+      "CLI dispatches to domain modules and contains no independent policy semantics.",
+      "Accept durable evidence references for Assurance and persist Assurance output when requested.",
+      "Load explicit authority-state artifacts and resolve acceptance evidence before invoking Governance acceptance.",
+      "Persist explicit acceptance records to durable repository evidence.",
+      "Run accepted Plan mechanical validation as part of Build checking and optionally persist validation-run and Build Conformance evidence.",
+      "Delegate policy semantics to evidence, validation, conformance, assurance, governance, and build domain modules rather than implementing independent CLI policy."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/design.py",
       "repo/runtime/repo_spec/functional_set.py",
       "repo/runtime/repo_spec/plan.py",
       "repo/runtime/repo_spec/build.py",
-      "repo/runtime/repo_spec/governance.py"
+      "repo/runtime/repo_spec/governance.py",
+      "repo/runtime/repo_spec/evidence.py",
+      "repo/runtime/repo_spec/validation.py",
+      "repo/runtime/repo_spec/conformance.py",
+      "repo/runtime/repo_spec/assurance.py"
     ],
     "validation_ids": [
       "VAL-006",

@@ -36,7 +36,10 @@
       "files/018-repo-tests-fs0_core-test_build_governance.py.json",
       "files/019-repo-runtime-repo_spec-repository.py.json",
       "files/020-repo-planning-conformance-report.schema.json.json",
-      "files/021-repo-planning-build-manifest.schema.json.json"
+      "files/021-repo-planning-build-manifest.schema.json.json",
+      "files/022-repo-runtime-repo_spec-evidence.py.json",
+      "files/023-repo-runtime-repo_spec-validation.py.json",
+      "files/024-repo-tests-fs0_core-test_successor_cycle.py.json"
     ],
     "execution": "execution.json",
     "invariants": "invariants.json",

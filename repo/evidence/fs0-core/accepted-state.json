@@ -1,7 +1,0 @@
-{
-  "schema_version": "1",
-  "artifact_type": "accepted-state",
-  "subject_id": "FS0-CORE-PLAN",
-  "resulting_revision": "2271e620346f1689f0cb425c20cc2bb166d45cb3",
-  "acceptance_basis": "validated direct publication of Close FS0 validation proof gaps"
-}

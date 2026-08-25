@@ -43,7 +43,8 @@
       "Route discovered upstream defects through typed errors rather than expanding scope.",
       "Finalize only after Build Conformance and Build Assurance reports pass.",
       "Persist the observed mutation manifest in the schema-defined representation before Build Conformance.",
-      "Use repository.py for predecessor/Planning-descendant checks and mutation observation; do not scatter Git-state interpretation across Build logic."
+      "Use repository.py for predecessor/Planning-descendant checks and mutation observation; do not scatter Git-state interpretation across Build logic.",
+      "Derive Build mutation evidence only from repository observation; do not provide a manual mutation-recording mechanism capable of adding unobserved mutations to the Build manifest."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/assurance.py",

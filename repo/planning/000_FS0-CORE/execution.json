@@ -26,9 +26,11 @@
     },
     {
       "step": 3,
-      "description": "Implement workflow Conformance, Build authorization/evidence, Governance acceptance, and CLI orchestration.",
+      "description": "Implement workflow Conformance, durable evidence and authority-state loading, Plan-prescribed mechanical validation, Build authorization/evidence, Governance acceptance, and CLI orchestration.",
       "paths": [
         "repo/runtime/repo_spec/conformance.py",
+        "repo/runtime/repo_spec/evidence.py",
+        "repo/runtime/repo_spec/validation.py",
         "repo/runtime/repo_spec/build.py",
         "repo/runtime/repo_spec/governance.py",
         "repo/runtime/repo_spec/cli.py",
@@ -51,7 +53,8 @@
       "paths": [
         "repo/tests/fs0_core/test_design.py",
         "repo/tests/fs0_core/test_planning.py",
-        "repo/tests/fs0_core/test_build_governance.py"
+        "repo/tests/fs0_core/test_build_governance.py",
+        "repo/tests/fs0_core/test_successor_cycle.py"
       ]
     },
     {
@@ -78,7 +81,10 @@
         "repo/tests/fs0_core/test_build_governance.py",
         "repo/runtime/repo_spec/repository.py",
         "repo/planning/conformance-report.schema.json",
-        "repo/planning/build-manifest.schema.json"
+        "repo/planning/build-manifest.schema.json",
+        "repo/runtime/repo_spec/evidence.py",
+        "repo/runtime/repo_spec/validation.py",
+        "repo/tests/fs0_core/test_successor_cycle.py"
       ]
     }
   ]
