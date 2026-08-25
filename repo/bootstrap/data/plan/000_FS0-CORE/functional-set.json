@@ -81,7 +81,7 @@
     {
       "doc_id": "DP-020",
       "path": "repo/bootstrap/data/proposals/governance.md",
-      "revision": "65b6477dc3ed10cd6ebb83e83653e995f63b47fd",
+      "revision": "ad4c888e7786b7cf687e14e88c2b828b0b734068",
       "statements": [
         "DP020-DETAIL-010",
         "DP020-DETAIL-011",
@@ -176,7 +176,18 @@
         "DP020-DETAIL-112",
         "DP020-DETAIL-113",
         "DP020-DETAIL-114",
-        "DP020-DETAIL-115"
+        "DP020-DETAIL-115",
+        "DP020-DETAIL-154",
+        "DP020-DETAIL-155",
+        "DP020-DETAIL-156",
+        "DP020-DETAIL-157",
+        "DP020-DETAIL-158",
+        "DP020-DETAIL-159",
+        "DP020-DETAIL-160",
+        "DP020-DETAIL-161",
+        "DP020-DETAIL-162",
+        "DP020-DETAIL-163",
+        "DP020-DETAIL-164"
       ]
     },
     {
