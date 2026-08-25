@@ -1,0 +1,14 @@
+{
+  "artifact_type": "conformance-report",
+  "disposition": "PASS",
+  "evidence_refs": [
+    "repo/planning/000_FS0-CORE/plan.json"
+  ],
+  "findings": [],
+  "report_id": "CONF-PLAN-FS0-CORE-PLAN",
+  "schema_version": "1",
+  "subject": {
+    "id": "FS0-CORE-PLAN",
+    "type": "plan"
+  }
+}

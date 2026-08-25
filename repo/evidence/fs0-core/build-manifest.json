@@ -1,0 +1,108 @@
+{
+  "actor": "alignment-builder",
+  "artifact_type": "build-manifest",
+  "build_id": "FS0-ALIGNMENT-BUILD",
+  "build_start_revision": "7e64e7fe600ded62153ad4b5e009ce03bba1ba41",
+  "implementation_predecessor": "7e64e7fe600ded62153ad4b5e009ce03bba1ba41",
+  "mutations": [
+    {
+      "operation": "create",
+      "path": "repo/planning/acceptance.schema.json"
+    },
+    {
+      "operation": "create",
+      "path": "repo/planning/assurance-report.schema.json"
+    },
+    {
+      "operation": "create",
+      "path": "repo/planning/build-manifest.schema.json"
+    },
+    {
+      "operation": "create",
+      "path": "repo/planning/conformance-report.schema.json"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/__init__.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/__main__.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/assurance.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/build.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/cli.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/conformance.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/design.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/errors.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/evidence.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/functional_set.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/governance.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/jsonio.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/normative.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/plan.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/repository.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/runtime/repo_spec/validation.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/tests/fs0_core/test_build_governance.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/tests/fs0_core/test_design.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/tests/fs0_core/test_planning.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/tests/fs0_core/test_successor_cycle.py"
+    }
+  ],
+  "plan_id": "FS0-CORE-PLAN",
+  "resulting_revision": "62e3965f8b25b48955fcf5701abdaed46e4d5bfa",
+  "schema_version": "1"
+}

@@ -1,0 +1,15 @@
+{
+  "artifact_type": "authority-state",
+  "authorities": [
+    "7e64e7fe600ded62153ad4b5e009ce03bba1ba41",
+    "core-governor"
+  ],
+  "delegations": [
+    {
+      "capability": "accept:Planning",
+      "source": "7e64e7fe600ded62153ad4b5e009ce03bba1ba41",
+      "target": "core-governor"
+    }
+  ],
+  "schema_version": "1"
+}

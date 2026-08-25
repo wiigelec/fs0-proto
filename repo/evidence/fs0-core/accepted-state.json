@@ -1,0 +1,9 @@
+{
+  "acceptance_basis": "explicit acceptance after external semantic alignment review, durable Conformance and Assurance evidence, canonical validation, and verified publication",
+  "artifact_type": "accepted-state",
+  "build_acceptance_ref": "repo/evidence/fs0-core/build-acceptance.json",
+  "planning_acceptance_ref": "repo/evidence/fs0-core/planning-acceptance.json",
+  "resulting_revision": "62e3965f8b25b48955fcf5701abdaed46e4d5bfa",
+  "schema_version": "1",
+  "subject_id": "FS0-CORE-PLAN"
+}

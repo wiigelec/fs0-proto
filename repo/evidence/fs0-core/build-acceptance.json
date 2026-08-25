@@ -1,0 +1,17 @@
+{
+  "acceptance_id": "FS0-CORE-BUILD-ACCEPT",
+  "actor": "core-governor",
+  "artifact_type": "acceptance",
+  "decision": "ACCEPT",
+  "evidence_refs": [
+    "repo/evidence/fs0-core/build-manifest.json",
+    "repo/evidence/fs0-core/build-conformance.json",
+    "repo/evidence/fs0-core/build-assurance.json",
+    "repo/evidence/fs0-core/planning-acceptance.json"
+  ],
+  "predecessor_authority": "accepted-plan:FS0-CORE-PLAN",
+  "resulting_state": "62e3965f8b25b48955fcf5701abdaed46e4d5bfa",
+  "schema_version": "1",
+  "stage": "Build",
+  "subject_id": "FS0-ALIGNMENT-BUILD"
+}

@@ -1,0 +1,14 @@
+{
+  "artifact_type": "conformance-report",
+  "disposition": "PASS",
+  "evidence_refs": [
+    "repo/evidence/fs0-core/build-manifest.json"
+  ],
+  "findings": [],
+  "report_id": "CONF-BUILD-FS0-ALIGNMENT-BUILD",
+  "schema_version": "1",
+  "subject": {
+    "id": "FS0-ALIGNMENT-BUILD",
+    "type": "build"
+  }
+}

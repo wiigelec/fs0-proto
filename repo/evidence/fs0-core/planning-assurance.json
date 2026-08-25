@@ -1,0 +1,14 @@
+{
+  "artifact_type": "assurance-report",
+  "disposition": "PASS",
+  "evidence_refs": [
+    "repo/evidence/fs0-core/planning-conformance.json",
+    "repo/planning/000_FS0-CORE/functional-set.json",
+    "repo/planning/000_FS0-CORE/plan.json"
+  ],
+  "findings": [],
+  "phase": "Planning",
+  "rationale": "External semantic alignment review confirmed that the FS0-Core Plan remains within the selected irreducible functional-set scope, preserves the Conformance/Assurance distinction, and contains sufficient bounded intent for the reconciled implementation.",
+  "schema_version": "1",
+  "subject_id": "FS0-CORE-PLAN"
+}

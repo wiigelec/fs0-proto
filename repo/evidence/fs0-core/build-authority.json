@@ -1,0 +1,15 @@
+{
+  "artifact_type": "authority-state",
+  "authorities": [
+    "accepted-plan:FS0-CORE-PLAN",
+    "core-governor"
+  ],
+  "delegations": [
+    {
+      "capability": "accept:Build",
+      "source": "accepted-plan:FS0-CORE-PLAN",
+      "target": "core-governor"
+    }
+  ],
+  "schema_version": "1"
+}

@@ -1,0 +1,15 @@
+{
+  "acceptance_id": "FS0-CORE-PLAN-ACCEPT",
+  "actor": "core-governor",
+  "artifact_type": "acceptance",
+  "decision": "ACCEPT",
+  "evidence_refs": [
+    "repo/evidence/fs0-core/planning-conformance.json",
+    "repo/evidence/fs0-core/planning-assurance.json"
+  ],
+  "predecessor_authority": "7e64e7fe600ded62153ad4b5e009ce03bba1ba41",
+  "resulting_state": "accepted-plan:FS0-CORE-PLAN",
+  "schema_version": "1",
+  "stage": "Planning",
+  "subject_id": "FS0-CORE-PLAN"
+}

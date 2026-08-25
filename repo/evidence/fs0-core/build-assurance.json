@@ -1,0 +1,14 @@
+{
+  "artifact_type": "assurance-report",
+  "disposition": "PASS",
+  "evidence_refs": [
+    "repo/evidence/fs0-core/build-manifest.json",
+    "repo/evidence/fs0-core/build-conformance.json",
+    "repo/evidence/fs0-core/planning-acceptance.json"
+  ],
+  "findings": [],
+  "phase": "Build",
+  "rationale": "External semantic alignment review confirmed that the reconciled FS0-Core implementation narrows canonical validation to verification of durable governance evidence, does not expand the selected functional surface, and preserves Plan-bounded Build behavior.",
+  "schema_version": "1",
+  "subject_id": "FS0-ALIGNMENT-BUILD"
+}
