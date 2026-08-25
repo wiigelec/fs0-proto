@@ -25,8 +25,8 @@ class PlanningTests(unittest.TestCase):
         self.assertEqual(self.plan.id, "FS0-CORE-PLAN")
         self.assertEqual(self.plan.functional_set.id, "FS0-CORE")
         self.assertEqual(len(self.plan.requirements), 121)
-        self.assertEqual(len(self.plan.file_changes), 21)
-        self.assertEqual(len({f.path for f in self.plan.file_changes}), 21)
+        self.assertEqual(len(self.plan.file_changes), 24)
+        self.assertEqual(len({f.path for f in self.plan.file_changes}), 24)
 
     def test_normative_force_ignores_inline_code_vocabulary(self):
         req = parse_requirement({

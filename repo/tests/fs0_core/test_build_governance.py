@@ -16,7 +16,13 @@ from repo_spec.repository import Repository
 ROOT = Path(__file__).resolve().parents[3]
 PLAN_PATH = ROOT / "repo/planning/000_FS0-CORE/plan.json"
 PRE_BUILD = "06a0481ac6efd77e6da3b616854ee5602d6496cc"
-CORE_ACCEPTED_REVISION = json.loads((ROOT / "repo/evidence/fs0-core/accepted-state.json").read_text(encoding="utf-8"))["resulting_revision"]
+CORE_ACCEPTED_STATE = ROOT / "repo/evidence/fs0-core/accepted-state.json"
+
+
+def core_result_revision(repository: Repository) -> str:
+    if CORE_ACCEPTED_STATE.is_file():
+        return json.loads(CORE_ACCEPTED_STATE.read_text(encoding="utf-8"))["resulting_revision"]
+    return repository.head
 
 
 class BuildGovernanceTests(unittest.TestCase):
@@ -52,7 +58,7 @@ class BuildGovernanceTests(unittest.TestCase):
             build_id="FS0-TEST-BUILD", actor="builder",
             build_start_revision=PRE_BUILD,
         )
-        manifest = session.manifest(resulting_revision=CORE_ACCEPTED_REVISION)
+        manifest = session.manifest(resulting_revision=core_result_revision(self.repo))
         self.assertEqual(manifest["artifact_type"], "build-manifest")
         self.assertEqual(manifest["plan_id"], self.plan.id)
         self.assertGreater(len(manifest["mutations"]), 0)

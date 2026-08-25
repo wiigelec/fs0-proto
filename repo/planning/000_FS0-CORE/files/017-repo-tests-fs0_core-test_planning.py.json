@@ -64,7 +64,8 @@
       "Construct modular Plan fixtures rooted at plan.json and assert complete resolution across all authorized Plan document classes.",
       "Assert governed semantic review is required where Core applicability requires Assurance.",
       "Assert explicit delegation and Core default-deny authorization resolve without implementation/history inference.",
-      "Do not test bootstrap-process policy, semantic NR-quality automation, rich completion/generated-consequence metadata, generalized lifecycle mutation, or mature validation correspondence in FS0-Core."
+      "Do not test bootstrap-process policy, semantic NR-quality automation, rich completion/generated-consequence metadata, generalized lifecycle mutation, or mature validation correspondence in FS0-Core.",
+      "Assert the accepted FS0-Core Plan resolves exactly 24 unique file realization targets, including the durable evidence, Plan-validation, and successor-cycle proof realizations required by Core."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/functional_set.py",
