@@ -3,7 +3,7 @@
   "artifact_type": "plan-file",
   "plan_id": "FS0-CORE-PLAN",
   "file_change": {
-    "path": "repo/bootstrap/data/plan/conformance-report.schema.json",
+    "path": "repo/planning/conformance-report.schema.json",
     "operation": "create",
     "purpose": "Define durable machine-readable Conformance evidence for Design, functional-set, Plan, and Build acceptance decisions.",
     "requirement_ids": [

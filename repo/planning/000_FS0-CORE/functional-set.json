@@ -14,7 +14,7 @@
   "design_inputs": [
     {
       "doc_id": "DP-001",
-      "path": "repo/bootstrap/data/proposals/design-proposal.md",
+      "path": "repo/proposals/design-proposal.md",
       "revision": "323a51777f6dabd97f0ff23e53f38acdb11abb02",
       "statements": [
         "DP001-REQUIREMENTS-001",
@@ -48,7 +48,7 @@
     },
     {
       "doc_id": "DP-010",
-      "path": "repo/bootstrap/data/proposals/framework-contract.md",
+      "path": "repo/proposals/framework-contract.md",
       "revision": "65b6477dc3ed10cd6ebb83e83653e995f63b47fd",
       "statements": [
         "DP010-DETAIL-083",
@@ -69,7 +69,7 @@
     },
     {
       "doc_id": "DP-020",
-      "path": "repo/bootstrap/data/proposals/governance.md",
+      "path": "repo/proposals/governance.md",
       "revision": "323a51777f6dabd97f0ff23e53f38acdb11abb02",
       "statements": [
         "DP020-DETAIL-010",
@@ -172,7 +172,7 @@
     },
     {
       "doc_id": "DP-030",
-      "path": "repo/bootstrap/data/proposals/conformance.md",
+      "path": "repo/proposals/conformance.md",
       "revision": "323a51777f6dabd97f0ff23e53f38acdb11abb02",
       "statements": [
         "DP030-DETAIL-265",
@@ -189,7 +189,7 @@
     },
     {
       "doc_id": "DP-040",
-      "path": "repo/bootstrap/data/proposals/assurance.md",
+      "path": "repo/proposals/assurance.md",
       "revision": "323a51777f6dabd97f0ff23e53f38acdb11abb02",
       "statements": [
         "DP040-DETAIL-206",

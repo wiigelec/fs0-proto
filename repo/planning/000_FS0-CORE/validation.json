@@ -74,7 +74,7 @@
       "id": "VAL-004",
       "kind": "schema",
       "description": "Check Assurance report schema JSON syntax; semantic schema-contract behavior is verified by the FS0 unit suite.",
-      "command": "python3 -m json.tool repo/bootstrap/data/plan/assurance-report.schema.json >/dev/null",
+      "command": "python3 -m json.tool repo/planning/assurance-report.schema.json >/dev/null",
       "success_criteria": "The schema parses as JSON; FS0 unit tests validate all Draft 2020-12 constructs used by the schema and reject invalid report examples.",
       "requirement_ids": [
         "FS0-NR-082",
@@ -85,7 +85,7 @@
       "id": "VAL-005",
       "kind": "schema",
       "description": "Check Governance acceptance schema JSON syntax; semantic schema-contract behavior is verified by the FS0 unit suite.",
-      "command": "python3 -m json.tool repo/bootstrap/data/plan/acceptance.schema.json >/dev/null",
+      "command": "python3 -m json.tool repo/planning/acceptance.schema.json >/dev/null",
       "success_criteria": "The schema parses as JSON; FS0 unit tests validate all schema constructs and reject circular or incomplete acceptance examples.",
       "requirement_ids": [
         "FS0-NR-093",
@@ -261,7 +261,7 @@
       "id": "VAL-008",
       "kind": "conformance",
       "description": "Perform Build Conformance against the accepted Plan and observed mutation manifest.",
-      "command": "PYTHONPATH=repo/runtime python3 -m repo_spec build-check repo/bootstrap/data/plan/000_FS0-CORE/plan.json",
+      "command": "PYTHONPATH=repo/runtime python3 -m repo_spec build-check repo/planning/000_FS0-CORE/plan.json",
       "success_criteria": "All observed mutations are authorized, applicable syntax or equivalent language checks pass, all Plan-prescribed validations pass, and Build Conformance reports PASS.",
       "requirement_ids": [
         "FS0-NR-108",
@@ -420,7 +420,7 @@
       "id": "VAL-011",
       "kind": "schema",
       "description": "Check Conformance-report and Build-manifest schema syntax and validate their used schema contracts through the FS0 unit suite.",
-      "command": "python3 -m json.tool repo/bootstrap/data/plan/conformance-report.schema.json >/dev/null && python3 -m json.tool repo/bootstrap/data/plan/build-manifest.schema.json >/dev/null",
+      "command": "python3 -m json.tool repo/planning/conformance-report.schema.json >/dev/null && python3 -m json.tool repo/planning/build-manifest.schema.json >/dev/null",
       "success_criteria": "Both evidence schemas parse as JSON and FS0 unit tests accept valid examples and reject invalid identity, path, evidence, and mutation records.",
       "requirement_ids": [
         "FS0-NR-182",

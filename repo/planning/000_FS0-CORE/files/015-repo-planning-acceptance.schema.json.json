@@ -3,7 +3,7 @@
   "artifact_type": "plan-file",
   "plan_id": "FS0-CORE-PLAN",
   "file_change": {
-    "path": "repo/bootstrap/data/plan/acceptance.schema.json",
+    "path": "repo/planning/acceptance.schema.json",
     "operation": "create",
     "purpose": "Define durable Governance acceptance and lineage records without circular self-authorization.",
     "requirement_ids": [

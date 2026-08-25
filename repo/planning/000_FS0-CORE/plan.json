@@ -8,7 +8,7 @@
   },
   "functional_set": {
     "id": "FS0-CORE",
-    "path": "repo/bootstrap/data/plan/000_FS0-CORE/functional-set.json"
+    "path": "repo/planning/000_FS0-CORE/functional-set.json"
   },
   "implementation_predecessor": {
     "repository_revision": "65b6477dc3ed10cd6ebb83e83653e995f63b47fd"
@@ -29,14 +29,14 @@
       "files/011-repo-runtime-repo_spec-governance.py.json",
       "files/012-repo-runtime-repo_spec-cli.py.json",
       "files/013-repo-runtime-repo_spec-__main__.py.json",
-      "files/014-repo-bootstrap-data-plan-assurance-report.schema.json.json",
-      "files/015-repo-bootstrap-data-plan-acceptance.schema.json.json",
+      "files/014-repo-planning-assurance-report.schema.json.json",
+      "files/015-repo-planning-acceptance.schema.json.json",
       "files/016-repo-tests-fs0_core-test_design.py.json",
       "files/017-repo-tests-fs0_core-test_planning.py.json",
       "files/018-repo-tests-fs0_core-test_build_governance.py.json",
       "files/019-repo-runtime-repo_spec-repository.py.json",
-      "files/020-repo-bootstrap-data-plan-conformance-report.schema.json.json",
-      "files/021-repo-bootstrap-data-plan-build-manifest.schema.json.json"
+      "files/020-repo-planning-conformance-report.schema.json.json",
+      "files/021-repo-planning-build-manifest.schema.json.json"
     ],
     "execution": "execution.json",
     "invariants": "invariants.json",

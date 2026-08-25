@@ -3,7 +3,7 @@
   "artifact_type": "plan-file",
   "plan_id": "FS0-CORE-PLAN",
   "file_change": {
-    "path": "repo/bootstrap/data/plan/build-manifest.schema.json",
+    "path": "repo/planning/build-manifest.schema.json",
     "operation": "create",
     "purpose": "Define durable Build mutation evidence required for Plan-scope Conformance and Governance lineage.",
     "requirement_ids": [

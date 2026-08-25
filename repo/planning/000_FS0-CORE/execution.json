@@ -39,10 +39,10 @@
       "step": 4,
       "description": "Define durable Assurance, Conformance, Build-manifest, and Governance acceptance evidence schemas.",
       "paths": [
-        "repo/bootstrap/data/plan/assurance-report.schema.json",
-        "repo/bootstrap/data/plan/acceptance.schema.json",
-        "repo/bootstrap/data/plan/conformance-report.schema.json",
-        "repo/bootstrap/data/plan/build-manifest.schema.json"
+        "repo/planning/assurance-report.schema.json",
+        "repo/planning/acceptance.schema.json",
+        "repo/planning/conformance-report.schema.json",
+        "repo/planning/build-manifest.schema.json"
       ]
     },
     {
@@ -71,14 +71,14 @@
         "repo/runtime/repo_spec/governance.py",
         "repo/runtime/repo_spec/cli.py",
         "repo/runtime/repo_spec/__main__.py",
-        "repo/bootstrap/data/plan/assurance-report.schema.json",
-        "repo/bootstrap/data/plan/acceptance.schema.json",
+        "repo/planning/assurance-report.schema.json",
+        "repo/planning/acceptance.schema.json",
         "repo/tests/fs0_core/test_design.py",
         "repo/tests/fs0_core/test_planning.py",
         "repo/tests/fs0_core/test_build_governance.py",
         "repo/runtime/repo_spec/repository.py",
-        "repo/bootstrap/data/plan/conformance-report.schema.json",
-        "repo/bootstrap/data/plan/build-manifest.schema.json"
+        "repo/planning/conformance-report.schema.json",
+        "repo/planning/build-manifest.schema.json"
       ]
     }
   ]

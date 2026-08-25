@@ -57,7 +57,7 @@
         },
         "path": {
           "type": "string",
-          "pattern": "^repo/bootstrap/data/plan/[0-9]{3}_[A-Za-z0-9._-]+/functional-set\\.json$"
+          "pattern": "^repo/planning/[0-9]{3}_[A-Za-z0-9._-]+/functional-set\\.json$"
         }
       }
     },

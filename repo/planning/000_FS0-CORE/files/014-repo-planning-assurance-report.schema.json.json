@@ -3,7 +3,7 @@
   "artifact_type": "plan-file",
   "plan_id": "FS0-CORE-PLAN",
   "file_change": {
-    "path": "repo/bootstrap/data/plan/assurance-report.schema.json",
+    "path": "repo/planning/assurance-report.schema.json",
     "operation": "create",
     "purpose": "Define the minimum durable semantic-review evidence representation used by FS0 Planning and Build acceptance.",
     "requirement_ids": [

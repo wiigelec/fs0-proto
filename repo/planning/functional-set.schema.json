@@ -94,7 +94,7 @@
           "path": {
             "type": "string",
             "minLength": 1,
-            "pattern": "^repo/bootstrap/data/proposals/.+\\.md$",
+            "pattern": "^repo/proposals/.+\\.md$",
             "description": "Canonical Markdown Design Proposal path."
           },
           "revision": {
