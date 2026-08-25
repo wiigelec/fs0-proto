@@ -1,0 +1,89 @@
+{
+  "$id": "repo/planning/conformance-report.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_type": {
+      "const": "conformance-report"
+    },
+    "disposition": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "evidence_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "path": {
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "report_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "subject": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "design",
+            "functional-set",
+            "plan",
+            "build"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "id"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "report_id",
+    "subject",
+    "disposition",
+    "evidence_refs",
+    "findings"
+  ],
+  "title": "FS0 Conformance Report",
+  "type": "object"
+}

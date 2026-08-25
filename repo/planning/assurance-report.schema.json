@@ -1,0 +1,91 @@
+{
+  "$id": "repo/planning/assurance-report.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_type": {
+      "const": "assurance-report"
+    },
+    "disposition": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "evidence_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "disposition": {
+            "enum": [
+              "PASS",
+              "FAIL"
+            ]
+          },
+          "evidence_refs": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "rationale": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "disposition",
+          "rationale",
+          "evidence_refs"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "phase": {
+      "enum": [
+        "Design",
+        "Planning",
+        "Build"
+      ]
+    },
+    "rationale": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "subject_id": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "phase",
+    "subject_id",
+    "disposition",
+    "rationale",
+    "evidence_refs",
+    "findings"
+  ],
+  "title": "FS0 Assurance Report",
+  "type": "object"
+}

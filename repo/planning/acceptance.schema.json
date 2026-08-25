@@ -1,0 +1,65 @@
+{
+  "$id": "repo/planning/acceptance.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "acceptance_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "actor": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "artifact_type": {
+      "const": "acceptance"
+    },
+    "decision": {
+      "const": "ACCEPT"
+    },
+    "evidence_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "predecessor_authority": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "resulting_state": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "stage": {
+      "enum": [
+        "Planning",
+        "Build"
+      ]
+    },
+    "subject_id": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "acceptance_id",
+    "stage",
+    "subject_id",
+    "actor",
+    "decision",
+    "predecessor_authority",
+    "evidence_refs",
+    "resulting_state"
+  ],
+  "title": "FS0 Governance Acceptance",
+  "type": "object"
+}

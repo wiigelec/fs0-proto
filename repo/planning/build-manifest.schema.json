@@ -1,0 +1,75 @@
+{
+  "$id": "repo/planning/build-manifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "artifact_type": {
+      "const": "build-manifest"
+    },
+    "build_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "build_start_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "implementation_predecessor": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "mutations": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "enum": [
+              "create",
+              "modify",
+              "delete",
+              "regenerate"
+            ]
+          },
+          "path": {
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "operation"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "plan_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "resulting_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1"
+    }
+  },
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "build_id",
+    "plan_id",
+    "actor",
+    "implementation_predecessor",
+    "build_start_revision",
+    "resulting_revision",
+    "mutations"
+  ],
+  "title": "FS0 Build Manifest",
+  "type": "object"
+}
