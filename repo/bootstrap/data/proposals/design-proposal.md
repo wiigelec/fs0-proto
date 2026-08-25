@@ -6,32 +6,38 @@ depends_on: []
 artifact_type: design-proposal
 canonical_format: markdown
 ---
+
 # Design Proposal Architecture
 
 ## Status
 
 **Section ID:** `STATUS`
 
+**DP001-STATUS-001**
 Planning-ready Design Proposal.
 
 ## Purpose
 
 **Section ID:** `PURPOSE`
 
+**DP001-PURPOSE-001**
 Define the canonical durable Design artifact and the structural contract used to make Design machine-addressable without turning Design into a generated machine representation.
 
 ## Context
 
 **Section ID:** `CONTEXT`
 
+**DP001-CONTEXT-001**
 Design is an iterative user/AI process that may span multiple interactions, sessions, and revisions. Large products may use multiple bounded Design Proposals and may add new Design Proposals after implementation has begun.
 
+**DP001-CONTEXT-002**
 Planning consumes exact Design Proposal revisions, selects a bounded functional set, and retains autonomy to distill repository normative requirements and implementation intent from the selected Design.
 
 ## Goals
 
 **Section ID:** `GOALS`
 
+**DP001-GOALS-001**
 - Make Markdown the canonical maintained Design Proposal source.
 - Give each proposal a stable `DP-NNN` document identity.
 - Give addressable Design statements stable identifiers.
@@ -42,6 +48,7 @@ Planning consumes exact Design Proposal revisions, selects a bounded functional 
 
 **Section ID:** `NON-GOALS`
 
+**DP001-NON-GOALS-001**
 - Define the Plan schema.
 - Define FS0-Core implementation scope.
 - Assign repository normative requirement identities.
@@ -118,6 +125,18 @@ A Design Proposal shall not ordinarily define exact mutation scope or file-by-fi
 **DP001-REQUIREMENTS-022**
 Generated structured metadata may index or validate proposals but shall not replace Markdown as the canonical Design semantic source.
 
+**DP001-REQUIREMENTS-023**
+A Design Proposal shall use the canonical top-level header set, stable section IDs, and ordering defined by this proposal.
+
+**DP001-REQUIREMENTS-024**
+Proposal-specific organization shall appear only below `Detailed Design` as level-three or deeper headings; additional top-level level-two headings are not permitted.
+
+**DP001-REQUIREMENTS-025**
+Design Proposals shall not contain proposed repository normative requirement identities. Only Design Proposal statement identities belong to Design.
+
+**DP001-REQUIREMENTS-026**
+Planning alone assigns repository normative requirement identities when distilling selected Design into a Plan.
+
 ## Constraints
 
 **Section ID:** `CONSTRAINTS`
@@ -150,7 +169,7 @@ Planning may consume planning-ready proposals while unrelated proposals remain u
 
 ## Interfaces and Boundaries
 
-**Section ID:** `INTERFACES-AND-BOUNDARIES`
+**Section ID:** `INTERFACES`
 
 **DP001-INTERFACES-001**
 Conversation and scratch analysis may inform Design but are not durable Design artifacts.
@@ -180,9 +199,54 @@ Planning owns normative distillation and implementation intent.
 **DP001-INVARIANTS-004**
 Build owns implementation correctness within the accepted Plan.
 
+## Detailed Design
+
+**Section ID:** `DETAIL`
+
+### Canonical Top-Level Header Contract
+
+**DP001-DETAIL-001**
+Every planning-ready Design Proposal contains exactly these level-two headers in this order:
+
+**DP001-DETAIL-002**
+1. Status
+2. Purpose
+3. Context
+4. Goals
+5. Non-Goals
+6. Requirements
+7. Constraints
+8. Architecture
+9. Behavior
+10. Interfaces and Boundaries
+11. Invariants
+12. Detailed Design
+13. Alternatives Considered
+14. Risks and Tradeoffs
+15. Open Questions
+16. Acceptance Criteria
+Their stable section IDs are:
+
+**DP001-DETAIL-003**
+`STATUS`, `PURPOSE`, `CONTEXT`, `GOALS`, `NON-GOALS`, `REQUIREMENTS`, `CONSTRAINTS`, `ARCHITECTURE`, `BEHAVIOR`, `INTERFACES`, `INVARIANTS`, `DETAIL`, `ALTERNATIVES`, `RISKS`, `OPEN-QUESTIONS`, and `ACCEPTANCE`.
+
+**DP001-DETAIL-004**
+Proposal-specific structure uses level-three or deeper headings under `Detailed Design`.
+
+### Design Identity Boundary
+
+**DP001-DETAIL-005**
+Design Proposal statement IDs are the only requirement-like identities authored in Design.
+
+**DP001-DETAIL-006**
+Design Proposals do not preassign repository normative requirement IDs, even provisionally.
+
+**DP001-DETAIL-007**
+Planning selects DP statement IDs in `functional-set.json` and independently distills and assigns repository normative requirements in `plan.json`.
+
 ## Alternatives Considered
 
-**Section ID:** `ALTERNATIVES-CONSIDERED`
+**Section ID:** `ALTERNATIVES`
 
 **DP001-ALTERNATIVES-001**
 Canonical JSON with generated Markdown was rejected because it makes the machine projection primary instead of the document authored during Design.
@@ -195,7 +259,7 @@ Mandatory one-to-one Design-statement-to-normative-requirement mapping was rejec
 
 ## Risks and Tradeoffs
 
-**Section ID:** `RISKS-AND-TRADEOFFS`
+**Section ID:** `RISKS`
 
 **DP001-RISKS-001**
 Markdown requires explicit structural validation for metadata, headings, section identities, and statement identities.
@@ -207,11 +271,12 @@ Modular proposals require clear dependency declarations to avoid cross-document 
 
 **Section ID:** `OPEN-QUESTIONS`
 
+**DP001-OPEN-QUESTIONS-001**
 No blocking Design questions remain for the Design Proposal artifact contract.
 
 ## Acceptance Criteria
 
-**Section ID:** `ACCEPTANCE-CRITERIA`
+**Section ID:** `ACCEPTANCE`
 
 **DP001-ACCEPTANCE-001**
 This proposal is planning-ready when Markdown canonicality, metadata, required sections, stable statement addressing, modular iteration, exact revision binding, and Planning autonomy are all unambiguous.
