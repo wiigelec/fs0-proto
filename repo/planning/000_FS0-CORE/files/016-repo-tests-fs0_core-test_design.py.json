@@ -5,7 +5,7 @@
   "file_change": {
     "path": "repo/tests/fs0_core/test_design.py",
     "operation": "create",
-    "purpose": "Verify canonical Design parsing, identities, dependency resolution, and exact selected-statement addressing.",
+    "purpose": "Verify Core Design parsing, stable identities, dependency resolution, exact revision binding, and selected-statement addressing.",
     "requirement_ids": [
       "FS0-NR-001",
       "FS0-NR-002",
@@ -19,8 +19,9 @@
     ],
     "implementation": [
       "Create temporary valid and invalid Design Proposal fixtures in test code.",
-      "Assert malformed headers, duplicate statements, wrong section order, unresolved dependencies, and wrong statement ownership fail.",
-      "Assert exact revision binding is preserved as data and later Design content cannot silently replace the bound input."
+      "Assert malformed metadata headers, duplicate statements, unresolved dependencies, wrong statement ownership, and unresolved selected statements fail.",
+      "Assert exact revision binding is preserved as data and later Design content cannot silently replace the bound input.",
+      "Do not enforce deferred canonical section ordering, full header-shape quality rules, or semantic Design-quality automation in FS0-Core."
     ],
     "depends_on_paths": [
       "repo/runtime/repo_spec/design.py"
