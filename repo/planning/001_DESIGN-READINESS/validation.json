@@ -4,7 +4,7 @@
   "schema_version": "1",
   "validation": [
     {
-      "command": "PYTHONPATH=repo/runtime python3 -m unittest discover -s repo/tests -p 'test_*.py'",
+      "command": "PYTHONPATH=repo/runtime python3 -m unittest discover -s repo/tests/fs0_core -p 'test_*.py' && PYTHONPATH=repo/runtime python3 -m unittest discover -s repo/tests/design_readiness -p 'test_*.py'",
       "description": "Run FS0 regression tests and Design Readiness successor tests.",
       "id": "VAL-DR-001",
       "kind": "unit",
