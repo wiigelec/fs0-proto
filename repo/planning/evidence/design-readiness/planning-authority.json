@@ -1,0 +1,15 @@
+{
+  "artifact_type": "authority-state",
+  "authorities": [
+    "5af3425ff11eb1a4ae1d527a2fa08a8728d30710",
+    "successor-governor"
+  ],
+  "delegations": [
+    {
+      "capability": "accept:Planning",
+      "source": "5af3425ff11eb1a4ae1d527a2fa08a8728d30710",
+      "target": "successor-governor"
+    }
+  ],
+  "schema_version": "1"
+}

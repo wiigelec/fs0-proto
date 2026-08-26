@@ -1,0 +1,23 @@
+{
+  "artifact_type": "plan-file",
+  "file_change": {
+    "depends_on_paths": [],
+    "generated_consequences": [],
+    "implementation": [
+      "Extend the stage enum to Design, Planning, and Build.",
+      "Preserve all other acceptance record fields and constraints unchanged."
+    ],
+    "operation": "modify",
+    "path": "repo/planning/acceptance.schema.json",
+    "purpose": "Make Design a schema-valid Governance acceptance stage.",
+    "requirement_ids": [
+      "FS0-NR-260"
+    ],
+    "validation_ids": [
+      "VAL-DR-001",
+      "VAL-DR-002"
+    ]
+  },
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "schema_version": "1"
+}

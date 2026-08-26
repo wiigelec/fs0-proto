@@ -1,0 +1,67 @@
+{
+  "accepted_predecessor": {
+    "repository_revision": "5af3425ff11eb1a4ae1d527a2fa08a8728d30710"
+  },
+  "artifact_type": "functional-set",
+  "design_inputs": [
+    {
+      "doc_id": "DP-010",
+      "path": "repo/proposals/framework-contract.md",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
+      "statements": [
+        "DP010-DETAIL-086",
+        "DP010-DETAIL-087",
+        "DP010-DETAIL-088",
+        "DP010-DETAIL-089",
+        "DP010-DETAIL-091"
+      ]
+    },
+    {
+      "doc_id": "DP-020",
+      "path": "repo/proposals/governance.md",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
+      "statements": [
+        "DP020-DETAIL-008",
+        "DP020-DETAIL-052",
+        "DP020-DETAIL-053",
+        "DP020-DETAIL-054",
+        "DP020-DETAIL-055",
+        "DP020-DETAIL-056",
+        "DP020-DETAIL-057",
+        "DP020-DETAIL-103",
+        "DP020-DETAIL-104",
+        "DP020-DETAIL-105",
+        "DP020-DETAIL-106"
+      ]
+    },
+    {
+      "doc_id": "DP-030",
+      "path": "repo/proposals/conformance.md",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
+      "statements": [
+        "DP030-DETAIL-265",
+        "DP030-DETAIL-266",
+        "DP030-DETAIL-267"
+      ]
+    },
+    {
+      "doc_id": "DP-040",
+      "path": "repo/proposals/assurance.md",
+      "revision": "2f6e6678547db2b163affd384805a8e5fec47181",
+      "statements": [
+        "DP040-DETAIL-206",
+        "DP040-DETAIL-207",
+        "DP040-DETAIL-208",
+        "DP040-DETAIL-209"
+      ]
+    }
+  ],
+  "functional_set": {
+    "description": "First post-FS0 functional set. Adds explicit governed Design-stage acceptance so a mechanically conforming and semantically assured Design Proposal can become an attributable planning-ready Design result through the same non-circular Governance machinery already used for Planning and Build.",
+    "id": "DESIGN-READINESS",
+    "kind": "extension",
+    "order": 1,
+    "title": "Design Readiness"
+  },
+  "schema_version": "1"
+}

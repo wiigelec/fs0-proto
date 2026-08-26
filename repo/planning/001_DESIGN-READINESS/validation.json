@@ -1,0 +1,30 @@
+{
+  "artifact_type": "plan-validation",
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "schema_version": "1",
+  "validation": [
+    {
+      "command": "PYTHONPATH=repo/runtime python3 -m unittest discover -s repo/tests -p 'test_*.py'",
+      "description": "Run FS0 regression tests and Design Readiness successor tests.",
+      "id": "VAL-DR-001",
+      "kind": "unit",
+      "requirement_ids": [
+        "FS0-NR-260",
+        "FS0-NR-261",
+        "FS0-NR-262",
+        "FS0-NR-263"
+      ],
+      "success_criteria": "All tests pass."
+    },
+    {
+      "command": "python3 -c \"import json; d=json.load(open('repo/planning/acceptance.schema.json')); assert d['properties']['stage']['enum']==['Design','Planning','Build']\"",
+      "description": "Parse the acceptance schema and verify Design is an allowed stage.",
+      "id": "VAL-DR-002",
+      "kind": "schema",
+      "requirement_ids": [
+        "FS0-NR-260"
+      ],
+      "success_criteria": "Schema JSON parses and stage enum contains Design, Planning, and Build."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "artifact_type": "plan-file",
+  "file_change": {
+    "depends_on_paths": [],
+    "generated_consequences": [],
+    "implementation": [
+      "Extend the accepted stage set from Planning/Build to Design/Planning/Build.",
+      "Reuse existing authority, Conformance-pass, Assurance-pass, evidence, and non-circularity checks unchanged.",
+      "Do not infer planning-readiness or semantic adequacy inside Governance; consume explicit Design Conformance and Design Assurance results."
+    ],
+    "operation": "modify",
+    "path": "repo/runtime/repo_spec/governance.py",
+    "purpose": "Permit the existing non-circular Governance acceptance primitive to accept Design-stage results.",
+    "requirement_ids": [
+      "FS0-NR-260",
+      "FS0-NR-261",
+      "FS0-NR-262"
+    ],
+    "validation_ids": [
+      "VAL-DR-001"
+    ]
+  },
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "schema_version": "1"
+}

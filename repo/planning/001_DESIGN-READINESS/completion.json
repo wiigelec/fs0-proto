@@ -1,0 +1,30 @@
+{
+  "artifact_type": "plan-completion",
+  "completion_conditions": [
+    {
+      "id": "COMP-DR-001",
+      "statement": "Design acceptance is schema-valid, attributable, evidence-backed, authorization-bounded, and non-circular.",
+      "validation_ids": [
+        "VAL-DR-001",
+        "VAL-DR-002"
+      ]
+    },
+    {
+      "id": "COMP-DR-002",
+      "statement": "Existing Planning and Build acceptance tests continue to pass unchanged.",
+      "validation_ids": [
+        "VAL-DR-001"
+      ]
+    },
+    {
+      "id": "COMP-DR-003",
+      "statement": "The successor functional set is mechanically loadable and executable from fs0-0.1 without out-of-band framework logic.",
+      "validation_ids": [
+        "VAL-DR-001",
+        "VAL-DR-002"
+      ]
+    }
+  ],
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "schema_version": "1"
+}

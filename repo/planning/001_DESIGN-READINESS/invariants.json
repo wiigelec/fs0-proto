@@ -1,0 +1,19 @@
+{
+  "artifact_type": "plan-invariants",
+  "invariants": [
+    {
+      "id": "INV-DR-001",
+      "statement": "Design acceptance remains a Governance decision and does not replace Design Conformance or Design Assurance."
+    },
+    {
+      "id": "INV-DR-002",
+      "statement": "A Design Proposal does not become repository normative authority merely because its Design stage is accepted."
+    },
+    {
+      "id": "INV-DR-003",
+      "statement": "Planning and Build acceptance behavior remains unchanged."
+    }
+  ],
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "schema_version": "1"
+}

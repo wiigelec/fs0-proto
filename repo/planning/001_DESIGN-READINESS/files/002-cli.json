@@ -1,0 +1,26 @@
+{
+  "artifact_type": "plan-file",
+  "file_change": {
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/governance.py"
+    ],
+    "generated_consequences": [],
+    "implementation": [
+      "Add design-accept with acceptance_stage=Design beside plan-accept and build-accept.",
+      "Route design-accept through the same evidence loading, authority graph, Conformance, Assurance, and write_evidence path.",
+      "Keep design-assure as the existing semantic-review recording surface."
+    ],
+    "operation": "modify",
+    "path": "repo/runtime/repo_spec/cli.py",
+    "purpose": "Expose Design-stage Governance acceptance through the maintained CLI.",
+    "requirement_ids": [
+      "FS0-NR-263",
+      "FS0-NR-261"
+    ],
+    "validation_ids": [
+      "VAL-DR-001"
+    ]
+  },
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "schema_version": "1"
+}

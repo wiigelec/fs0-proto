@@ -1,0 +1,14 @@
+{
+  "artifact_type": "conformance-report",
+  "disposition": "PASS",
+  "evidence_refs": [
+    "repo/planning/001_DESIGN-READINESS/plan.json"
+  ],
+  "findings": [],
+  "report_id": "CONF-PLAN-DESIGN-READINESS-PLAN",
+  "schema_version": "1",
+  "subject": {
+    "id": "DESIGN-READINESS-PLAN",
+    "type": "plan"
+  }
+}

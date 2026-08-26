@@ -1,0 +1,29 @@
+{
+  "artifact_type": "plan",
+  "documents": {
+    "completion": "completion.json",
+    "execution": "execution.json",
+    "file_plans": [
+      "files/001-governance.json",
+      "files/002-cli.json",
+      "files/003-acceptance-schema.json",
+      "files/004-design-acceptance-test.json"
+    ],
+    "invariants": "invariants.json",
+    "requirements": "requirements.json",
+    "validation": "validation.json"
+  },
+  "functional_set": {
+    "id": "DESIGN-READINESS",
+    "path": "repo/planning/001_DESIGN-READINESS/functional-set.json"
+  },
+  "implementation_predecessor": {
+    "repository_revision": "5af3425ff11eb1a4ae1d527a2fa08a8728d30710"
+  },
+  "plan": {
+    "description": "Extend accepted FS0-Core Governance with explicit Design-stage acceptance. Reuse existing Design Conformance, Design Assurance, authority, evidence, and acceptance primitives; add no new keystone or semantic-review engine.",
+    "id": "DESIGN-READINESS-PLAN",
+    "title": "Design Readiness Implementation Plan"
+  },
+  "schema_version": "2"
+}

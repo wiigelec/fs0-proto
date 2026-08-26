@@ -1,0 +1,29 @@
+{
+  "artifact_type": "plan-execution",
+  "ordered_steps": [
+    {
+      "description": "Extend Governance and acceptance schema with Design stage.",
+      "paths": [
+        "repo/runtime/repo_spec/governance.py",
+        "repo/planning/acceptance.schema.json"
+      ],
+      "step": 1
+    },
+    {
+      "description": "Expose Design acceptance through the CLI.",
+      "paths": [
+        "repo/runtime/repo_spec/cli.py"
+      ],
+      "step": 2
+    },
+    {
+      "description": "Add successor-specific tests.",
+      "paths": [
+        "repo/tests/design_readiness/test_design_acceptance.py"
+      ],
+      "step": 3
+    }
+  ],
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "schema_version": "1"
+}

@@ -1,0 +1,56 @@
+{
+  "artifact_type": "plan-requirements",
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "requirements": [
+    {
+      "evaluation": {
+        "assurance": {
+          "applicability": "required"
+        },
+        "conformance": {
+          "applicability": "required"
+        }
+      },
+      "id": "FS0-NR-260",
+      "statement": "Governance SHALL support explicit Design-stage acceptance of a Design Proposal."
+    },
+    {
+      "evaluation": {
+        "assurance": {
+          "applicability": "required"
+        },
+        "conformance": {
+          "applicability": "required"
+        }
+      },
+      "id": "FS0-NR-261",
+      "statement": "Design-stage acceptance SHALL require passing Design Proposal Conformance and Design Assurance."
+    },
+    {
+      "evaluation": {
+        "assurance": {
+          "applicability": "required"
+        },
+        "conformance": {
+          "applicability": "required"
+        }
+      },
+      "id": "FS0-NR-262",
+      "statement": "Design-stage acceptance SHALL produce a distinct planning-ready accepted state without making the Design Proposal repository normative authority."
+    },
+    {
+      "evaluation": {
+        "assurance": {
+          "applicability": "none",
+          "rationale": "The CLI exposure is mechanically decidable once Design acceptance semantics are fixed."
+        },
+        "conformance": {
+          "applicability": "required"
+        }
+      },
+      "id": "FS0-NR-263",
+      "statement": "The maintained runtime SHALL expose Design-stage acceptance through the governed acceptance interface."
+    }
+  ],
+  "schema_version": "1"
+}

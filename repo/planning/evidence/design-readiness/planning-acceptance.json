@@ -1,0 +1,15 @@
+{
+  "acceptance_id": "DESIGN-READINESS-PLAN-ACCEPT",
+  "actor": "successor-governor",
+  "artifact_type": "acceptance",
+  "decision": "ACCEPT",
+  "evidence_refs": [
+    "repo/planning/evidence/design-readiness/planning-conformance.json",
+    "repo/planning/evidence/design-readiness/planning-assurance.json"
+  ],
+  "predecessor_authority": "5af3425ff11eb1a4ae1d527a2fa08a8728d30710",
+  "resulting_state": "accepted-plan:DESIGN-READINESS-PLAN",
+  "schema_version": "1",
+  "stage": "Planning",
+  "subject_id": "DESIGN-READINESS-PLAN"
+}

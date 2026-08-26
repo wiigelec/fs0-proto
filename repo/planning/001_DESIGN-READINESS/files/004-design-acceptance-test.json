@@ -1,0 +1,32 @@
+{
+  "artifact_type": "plan-file",
+  "file_change": {
+    "depends_on_paths": [
+      "repo/runtime/repo_spec/governance.py",
+      "repo/runtime/repo_spec/cli.py",
+      "repo/planning/acceptance.schema.json"
+    ],
+    "generated_consequences": [],
+    "implementation": [
+      "Construct explicit Design Conformance and Design Assurance PASS records.",
+      "Verify authorized Design acceptance returns ACCEPT and a distinct planning-ready resulting state.",
+      "Verify absence of accept:Design authority is rejected.",
+      "Verify the acceptance schema enumerates Design.",
+      "Verify CLI parser recognizes design-accept as a Design-stage acceptance command."
+    ],
+    "operation": "create",
+    "path": "repo/tests/design_readiness/test_design_acceptance.py",
+    "purpose": "Verify Design acceptance, required evidence gates, authorization, and schema exposure.",
+    "requirement_ids": [
+      "FS0-NR-260",
+      "FS0-NR-261",
+      "FS0-NR-262",
+      "FS0-NR-263"
+    ],
+    "validation_ids": [
+      "VAL-DR-001"
+    ]
+  },
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "schema_version": "1"
+}
