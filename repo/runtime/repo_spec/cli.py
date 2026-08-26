@@ -568,7 +568,7 @@ def build_parser() -> argparse.ArgumentParser:
         q.add_argument("--output")
         q.set_defaults(assurance_phase=phase)
 
-    for name, stage in (("plan-accept", "Planning"), ("build-accept", "Build")):
+    for name, stage in (("design-accept", "Design"), ("plan-accept", "Planning"), ("build-accept", "Build")):
         q = sub.add_parser(name)
         q.add_argument("--acceptance-id", required=True)
         q.add_argument("--subject", required=True)
@@ -649,7 +649,7 @@ def main(argv=None) -> int:
             _emit(value)
             return 0 if report.passed else 1
 
-        if args.command in {"plan-accept", "build-accept"}:
+        if args.command in {"design-accept", "plan-accept", "build-accept"}:
             conf = _conformance_from_dict(load_json(Path(args.conformance)))
             assurance = _assurance_from_dict(load_json(Path(args.assurance)))
             graph = load_authorization_graph(repo.root, args.authority_state)

@@ -47,7 +47,7 @@ def accept(
     assurance: AssuranceReport,
     evidence_refs: Iterable[str] = (),
 ) -> AcceptanceRecord:
-    if stage not in {"Planning", "Build"}:
+    if stage not in {"Design", "Planning", "Build"}:
         raise GovernanceError("invalid-acceptance-stage", f"unsupported acceptance stage: {stage}")
     if not all((acceptance_id, subject_id, actor, predecessor_authority, resulting_state)):
         raise GovernanceError("incomplete-acceptance", "acceptance identity, subject, actor, predecessor authority, and resulting state are required")

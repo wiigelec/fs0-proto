@@ -39,6 +39,7 @@
     },
     "stage": {
       "enum": [
+        "Design",
         "Planning",
         "Build"
       ]
