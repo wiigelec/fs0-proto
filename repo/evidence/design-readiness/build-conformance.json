@@ -1,0 +1,15 @@
+{
+  "artifact_type": "conformance-report",
+  "disposition": "PASS",
+  "evidence_refs": [
+    "DESIGN-READINESS-PLAN",
+    "repo/evidence/design-readiness/validation-run.json"
+  ],
+  "findings": [],
+  "report_id": "CONF-BUILD-DESIGN-READINESS-BUILD",
+  "schema_version": "1",
+  "subject": {
+    "id": "DESIGN-READINESS-BUILD",
+    "type": "build"
+  }
+}

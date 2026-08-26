@@ -1,0 +1,17 @@
+{
+  "acceptance_id": "DESIGN-READINESS-BUILD-ACCEPT",
+  "actor": "successor-governor",
+  "artifact_type": "acceptance",
+  "decision": "ACCEPT",
+  "evidence_refs": [
+    "repo/evidence/design-readiness/build-manifest.json",
+    "repo/evidence/design-readiness/build-conformance.json",
+    "repo/evidence/design-readiness/build-assurance.json",
+    "repo/planning/evidence/design-readiness/planning-acceptance.json"
+  ],
+  "predecessor_authority": "accepted-plan:DESIGN-READINESS-PLAN",
+  "resulting_state": "3548edbee09c75732b689a5c8da35c862846c775",
+  "schema_version": "1",
+  "stage": "Build",
+  "subject_id": "DESIGN-READINESS-BUILD"
+}

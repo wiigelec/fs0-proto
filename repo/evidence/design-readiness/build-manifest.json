@@ -1,0 +1,28 @@
+{
+  "actor": "successor-builder",
+  "artifact_type": "build-manifest",
+  "build_id": "DESIGN-READINESS-BUILD",
+  "build_start_revision": "40dc767e6cd89276be1e90c631dd98366c455d69",
+  "implementation_predecessor": "5af3425ff11eb1a4ae1d527a2fa08a8728d30710",
+  "mutations": [
+    {
+      "operation": "modify",
+      "path": "repo/planning/acceptance.schema.json"
+    },
+    {
+      "operation": "modify",
+      "path": "repo/runtime/repo_spec/cli.py"
+    },
+    {
+      "operation": "modify",
+      "path": "repo/runtime/repo_spec/governance.py"
+    },
+    {
+      "operation": "create",
+      "path": "repo/tests/design_readiness/test_design_acceptance.py"
+    }
+  ],
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "resulting_revision": "3548edbee09c75732b689a5c8da35c862846c775",
+  "schema_version": "1"
+}

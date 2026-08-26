@@ -1,0 +1,26 @@
+{
+  "artifact_type": "validation-run",
+  "disposition": "PASS",
+  "plan_id": "DESIGN-READINESS-PLAN",
+  "results": [
+    {
+      "command": "PYTHONPATH=repo/runtime python3 -m unittest discover -s repo/tests/fs0_core -p 'test_*.py' && PYTHONPATH=repo/runtime python3 -m unittest discover -s repo/tests/design_readiness -p 'test_*.py'",
+      "disposition": "PASS",
+      "id": "VAL-DR-001",
+      "kind": "unit",
+      "returncode": 0,
+      "stderr": ".........................\n----------------------------------------------------------------------\nRan 25 tests in 0.400s\n\nOK\n....\n----------------------------------------------------------------------\nRan 4 tests in 0.003s\n\nOK\n",
+      "stdout": ""
+    },
+    {
+      "command": "python3 -c \"import json; d=json.load(open('repo/planning/acceptance.schema.json')); assert d['properties']['stage']['enum']==['Design','Planning','Build']\"",
+      "disposition": "PASS",
+      "id": "VAL-DR-002",
+      "kind": "schema",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "schema_version": "1"
+}

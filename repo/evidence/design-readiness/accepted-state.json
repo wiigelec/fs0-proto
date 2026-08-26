@@ -1,0 +1,9 @@
+{
+  "acceptance_basis": "explicit successor-cycle Planning and Build acceptance using the fs0-0.1 Governance, Conformance, Assurance, Build, and evidence primitives",
+  "artifact_type": "accepted-state",
+  "build_acceptance_ref": "repo/evidence/design-readiness/build-acceptance.json",
+  "planning_acceptance_ref": "repo/planning/evidence/design-readiness/planning-acceptance.json",
+  "resulting_revision": "3548edbee09c75732b689a5c8da35c862846c775",
+  "schema_version": "1",
+  "subject_id": "DESIGN-READINESS-PLAN"
+}
